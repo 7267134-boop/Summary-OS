@@ -1,779 +1,245 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מבוא למערכות הפעלה - סיכום קורס</title>
+    <title>מבוא למערכות הפעלה - פרק 1</title>
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Rubik:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Google Fonts Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        racket: '#9e0000',
+                        primary: '#1d4ed8',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        codebg: '#1e293b',
+                        highlight: '#38bdf8'
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MathJax for rendering math symbols -->
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
     <style>
-        /* ==========================================================================
-           CSS DESIGN SYSTEM & VARIABLE DEFINITIONS
-           ========================================================================== */
-        :root {
-            /* Warm Vanilla / Notebook Theme Colors */
-            --color-bg-vanilla: #fdfbf7;
-            --color-bg-white: #ffffff;
-            --color-grid-line: rgba(43, 108, 176, 0.05);
-            --color-margin-line: #ff7676;
-            
-            /* Text & Accents */
-            --color-text-main: #2d3748;
-            --color-text-muted: #4a5568;
-            --color-text-light: #ffffff;
-            
-            --color-primary: #2b6cb0;
-            --color-primary-dark: #1a365d;
-            --color-primary-light: #ebf8ff;
-            --color-accent: #dd6b20;
-            
-            /* Alerts & States */
-            --color-success: #319795;
-            --color-success-bg: #e6fffa;
-            --color-warning-bg: #fffaf0;
-            --color-danger: #e53e3e;
-            --color-danger-bg: #fff5f5;
-            
-            /* Fonts */
-            --font-family-base: 'Assistant', sans-serif;
-            --font-family-title: 'Rubik', sans-serif;
-            --font-family-mono: 'Fira Code', 'Consolas', monospace;
-
-            /* Spacing */
-            --spacing-xs: 0.5rem;
-            --spacing-sm: 1rem;
-            --spacing-md: 1.5rem;
-            --spacing-lg: 2rem;
-            --spacing-xl: 3rem;
-
-            /* Borders & Shadows */
-            --border-radius-sm: 4px;
-            --border-radius-md: 10px;
-            --border-radius-lg: 16px;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
-            
-            --sidebar-width: 20rem;
-        }
-
-        /* ==========================================================================
-           RESET & BASE STYLES
-           ========================================================================== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: var(--font-family-base);
-            font-size: 1.1rem;
-            line-height: 1.7;
-            color: var(--color-text-main);
-            background-color: var(--color-bg-vanilla);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-            direction: rtl;
+            background-color: #f8fafc;
         }
 
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-family-title);
-            color: var(--color-primary-dark);
-            margin-bottom: var(--spacing-sm);
-            font-weight: 700;
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
 
-        h1 {
-            font-size: 2.4rem;
-            border-bottom: 3px solid var(--color-primary);
-            padding-bottom: var(--spacing-xs);
-            margin-bottom: var(--spacing-lg);
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            animation: slideUp 0.4s ease-out;
         }
 
-        h2 {
-            font-size: 1.8rem;
-            margin-top: var(--spacing-xl);
-            margin-bottom: var(--spacing-md);
-            color: var(--color-primary);
-            position: relative;
-        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-        h3 {
-            font-size: 1.35rem;
-            margin-top: var(--spacing-md);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        p {
-            margin-bottom: var(--spacing-md);
-            text-align: justify;
-        }
-
-        ul, ol {
-            margin-bottom: var(--spacing-md);
-            padding-inline-start: var(--spacing-lg);
-        }
-
-        li {
-            margin-bottom: var(--spacing-xs);
-        }
-
-        strong {
-            color: var(--color-primary-dark);
-            font-weight: 700;
-        }
-
-        /* Utility Classes (Replacing inline styles) */
-        .border-accent { border-right-color: var(--color-accent) !important; }
-        .text-accent { color: var(--color-accent) !important; }
-        .text-sm-muted { font-size: 0.85rem; color: #94a3b8; }
-        .text-cyan { color: #38bdf8; }
-        .text-slate { color: #e2e8f0; }
-        .mt-md { margin-top: var(--spacing-md); }
-        .mb-xs { margin-bottom: var(--spacing-xs); }
-        .mb-sm { margin-bottom: var(--spacing-sm); }
-        .mb-xl { margin-bottom: var(--spacing-xl); }
-        .mt-0 { margin-top: 0 !important; }
-        .opacity-30 { opacity: 0.3; }
-
-        /* ==========================================================================
-           LAYOUT & STRUCTURE
-           ========================================================================== */
-        .main-content {
-            flex: 1;
-            transition: margin-right 0.3s ease-in-out;
-            margin-right: var(--sidebar-width);
-            min-width: 0;
-        }
-
-        .main-content.sidebar-closed {
-            margin-right: 0;
-        }
-
-        .notebook-page {
-            max-width: 900px;
-            margin: 2rem auto;
-            background-color: var(--color-bg-white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-md);
-            padding: var(--spacing-xl) 5.5rem var(--spacing-xl) var(--spacing-xl);
-            position: relative;
-            background-image: linear-gradient(var(--color-grid-line) 1px, transparent 1px);
-            background-size: 100% 2.2rem;
-            line-height: 2.2rem;
-        }
-
-        .notebook-page::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 4.5rem;
-            width: 2px;
-            background-color: var(--color-margin-line);
-            opacity: 0.6;
-        }
-
-        .notebook-page p, .notebook-page ul, .notebook-page ol, .notebook-page h1, .notebook-page h2, .notebook-page h3, .notebook-page .glossary-group {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* ==========================================================================
-           COMPONENTS & CARDS
-           ========================================================================== */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: var(--spacing-md);
-            margin: var(--spacing-md) 0;
-            line-height: 1.6;
-        }
-
-        .card {
-            background-color: var(--color-bg-vanilla);
-            border: 1px solid #e2e8f0;
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-md);
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .card h4 {
-            color: var(--color-primary);
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: var(--spacing-xs);
-            margin-bottom: var(--spacing-sm);
-            font-size: 1.15rem;
-        }
-
-        .concept-box {
-            background-color: var(--color-primary-light);
-            border-right: 4px solid var(--color-primary);
-            border-radius: var(--border-radius-sm);
-            padding: var(--spacing-md);
-            margin: var(--spacing-md) 0;
-            box-shadow: var(--shadow-sm);
-            line-height: 1.6;
-        }
-
-        .concept-box-title {
-            font-family: var(--font-family-title);
-            color: var(--color-primary-dark);
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .warn-box {
-            background-color: var(--color-warning-bg);
-            border-right: 4px solid var(--color-accent);
-            border-radius: var(--border-radius-sm);
-            padding: var(--spacing-md);
-            margin: var(--spacing-md) 0;
-            box-shadow: var(--shadow-sm);
-            line-height: 1.6;
-        }
-
-        .warn-box-title {
-            font-family: var(--font-family-title);
-            color: var(--color-accent);
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .data-table-wrapper {
-            overflow-x: auto;
-            margin: var(--spacing-md) 0;
-            line-height: 1.5;
-            box-shadow: var(--shadow-sm);
-            border-radius: var(--border-radius-md);
-            border: 1px solid #e2e8f0;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-            background-color: #ffffff;
-        }
-
-        .data-table th, .data-table td {
-            padding: var(--spacing-sm);
-            border: 1px solid #e2e8f0;
-        }
-
-        .data-table th {
-            background-color: #f7fafc;
-            color: var(--color-primary-dark);
-            font-family: var(--font-family-title);
-            font-weight: bold;
-        }
-
-        .data-table tr:nth-child(even) {
-            background-color: #fcfdfd;
-        }
-
-        .glossary-group {
-            margin-bottom: var(--spacing-xl);
-            background-color: var(--color-bg-white);
-            border: 1px solid #e2e8f0;
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-md);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .glossary-group h3 {
-            margin-top: 0;
-            border-bottom: 2px solid var(--color-primary-light);
-            padding-bottom: var(--spacing-xs);
-            color: var(--color-primary);
-        }
-
-        .glossary-list {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--spacing-sm);
-            margin-top: var(--spacing-sm);
-        }
-
-        @media (min-width: 768px) {
-            .glossary-list {
-                grid-template-columns: minmax(220px, 1fr) 2fr;
-                gap: var(--spacing-md);
-                align-items: stretch;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        .glossary-list dt {
-            font-family: var(--font-family-title);
-            font-weight: 700;
-            color: var(--color-primary-dark);
-            background-color: var(--color-primary-light);
-            padding: var(--spacing-sm);
-            border-radius: var(--border-radius-sm);
-            border-right: 4px solid var(--color-primary);
-            display: flex;
-            align-items: center;
-            line-height: 1.4;
-        }
-
-        .glossary-list dd {
-            margin-inline-start: 0;
-            padding: var(--spacing-sm);
-            background-color: var(--color-bg-vanilla);
-            border: 1px solid #e2e8f0;
-            border-radius: var(--border-radius-sm);
-            line-height: 1.6;
-            display: flex;
-            align-items: center;
-        }
-
         pre {
-            background-color: #0b0f19;
-            color: #f8f9fa;
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius-md);
+            direction: ltr;
+            text-align: left;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
             overflow-x: auto;
-            margin: var(--spacing-md) 0;
-            box-shadow: var(--shadow-md);
-            line-height: 1.5;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         code {
-            font-family: var(--font-family-mono);
-            font-size: 0.95em;
-            background-color: #edf2f7;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #d53f8c;
-            direction: ltr;
-            display: inline-block;
+            font-family: 'Consolas', monospace;
         }
 
-        pre code {
-            background-color: transparent;
-            padding: 0;
-            border-radius: 0;
-            color: inherit;
-            display: block;
+        .nav-group {
+            margin-top: 1.5rem;
+            padding-right: 0.5rem;
         }
 
-        .text-wrap-container {
+        .nav-group-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-btn {
             display: block;
             width: 100%;
-            line-height: 1.6;
-        }
-
-        /* ==========================================================================
-           RIGHT SIDEBAR (RTL NAVIGATION)
-           ========================================================================== */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: var(--sidebar-width);
-            background-color: #ffffff;
-            border-left: 1px solid #e2e8f0;
-            box-shadow: -4px 0 16px rgba(0, 0, 0, 0.05);
-            z-index: 1000;
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(0);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar.closed {
-            transform: translateX(var(--sidebar-width));
-        }
-
-        .sidebar-header {
-            padding: var(--spacing-md);
-            border-bottom: 1px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fcfdfd;
-        }
-
-        .sidebar-logo {
-            font-family: var(--font-family-title);
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--color-primary-dark);
-            text-decoration: none;
-        }
-
-        .back-home-link {
-            font-size: 0.85rem;
-            color: var(--color-primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .back-home-link:hover {
-            text-decoration: underline;
-        }
-
-        .close-sidebar-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--color-text-muted);
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        .close-sidebar-btn:hover {
-            color: var(--color-danger);
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            overflow-y: auto;
-            padding: var(--spacing-sm);
-        }
-
-        .sidebar-nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar-nav li {
-            margin-bottom: 4px;
-        }
-
-        .sidebar-nav a {
-            display: block;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            color: var(--color-text-muted);
-            text-decoration: none;
-            border-radius: var(--border-radius-sm);
+            text-align: right;
+            padding: 0.85rem 1rem;
+            border-radius: 0.5rem;
+            color: #cbd5e1;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
             font-size: 0.95rem;
-            transition: background-color 0.2s, color 0.2s;
         }
 
-        .sidebar-nav a:hover, .sidebar-nav a.active {
-            background-color: var(--color-primary-light);
-            color: var(--color-primary-dark);
+        .nav-btn:hover {
+            background-color: #1e293b;
+            color: #fff;
+            padding-right: 1.5rem;
+        }
+
+        .nav-btn.active-nav {
+            background-color: #2563eb;
+            color: #fff;
             font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            border-right: 4px solid #60a5fa;
         }
 
-        .sidebar-nav .nav-section {
-            border-bottom: 1px solid #edf2f7;
-            padding-bottom: 6px;
-            margin-bottom: 6px;
+        .thought-box {
+            background: #fdf4ff;
+            border-right: 4px solid #d946ef;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
 
-        .sidebar-nav .nav-section-title {
-            font-family: var(--font-family-title);
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--color-primary-dark);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .tip-box {
+            background: #fffbeb;
+            border-right: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
 
-        .sidebar-nav .nav-section-title::after {
-            content: '▾';
-            font-size: 0.8rem;
-            transition: transform 0.2s;
+        .grammar-box {
+            background: #eff6ff;
+            border-right: 4px solid #3b82f6;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', monospace;
+            direction: ltr;
+            text-align: left;
         }
 
-        .sidebar-nav .nav-section.collapsed .nav-section-title::after {
-            transform: rotate(90deg);
+        .concept-box {
+            background: #f0fdf4;
+            border-right: 4px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
 
-        .sidebar-nav .nav-section-content {
-            max-height: 500px;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
+        .deep-dive {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-right: 4px solid #64748b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
         }
 
-        .sidebar-nav .nav-section.collapsed .nav-section-content {
-            max-height: 0;
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
         }
 
-        .floating-menu-btn {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            z-index: 998;
-            background-color: var(--color-primary);
-            color: white;
-            border: none;
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
-            box-shadow: var(--shadow-lg);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s, opacity 0.2s;
-            opacity: 0;
-            pointer-events: none;
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
 
-        .floating-menu-btn.visible {
-            opacity: 1;
-            pointer-events: auto;
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
         }
 
-        .floating-menu-btn:hover {
-            transform: scale(1.05);
-            background-color: var(--color-primary-dark);
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
-        .backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.3);
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+        .dark-scroll::-webkit-scrollbar-track {
+            background: #020617;
         }
 
-        .backdrop.active {
-            opacity: 1;
-            pointer-events: auto;
+        .dark-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
         }
 
-        /* ==========================================================================
-           INTERACTIVE SIMULATOR: SYSTEM CALL & PRIVILEGE MODES
-           ========================================================================== */
-        .simulator-card {
-            background-color: #0f172a;
-            color: #e2e8f0;
-            border-radius: var(--border-radius-lg);
-            padding: var(--spacing-lg);
-            margin: var(--spacing-xl) 0;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid #1e293b;
-            line-height: 1.5;
+        /* Sidebar collapse transition & styles */
+        aside {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
-        .simulator-header {
-            border-bottom: 1px solid #1e293b;
-            padding-bottom: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .sidebar-collapsed aside {
+            width: 0 !important;
+            min-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
-        .simulator-title {
-            color: #38bdf8;
-            font-size: 1.3rem;
-            font-family: var(--font-family-title);
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
+        #sidebar-toggle-btn {
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
         }
 
-        .cpu-status-bar {
-            background-color: #1e293b;
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-sm);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
-            font-family: var(--font-family-mono);
-            font-size: 0.9rem;
-            border: 1px solid #334155;
+        /* When sidebar is open: button floats to the left of the sidebar (RTL right side) */
+        body:not(.sidebar-collapsed) #sidebar-toggle-btn {
+            right: 21rem;
         }
 
-        .cpu-status-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        body.sidebar-collapsed #sidebar-toggle-btn {
+            right: 1rem;
         }
 
-        .cpu-status-val {
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: var(--border-radius-sm);
+        /* Premium navigation buttons styling */
+        .nav-btn-prev,
+        .nav-btn-next {
+            transition: all 0.2s ease-in-out;
         }
 
-        .status-user-mode {
-            color: #4ade80;
-            background-color: rgba(74, 222, 128, 0.1);
+        .nav-btn-prev:hover {
+            transform: translateX(2px);
         }
 
-        .status-kernel-mode {
-            color: #f87171;
-            background-color: rgba(248, 113, 113, 0.1);
+        .nav-btn-next:hover {
+            transform: translateX(-2px);
         }
 
-        .sim-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-md);
-            position: relative;
-        }
-
-        .sim-grid::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 2px;
-            background-color: #334155;
-            transform: translateX(-50%);
-            border-style: dashed;
-        }
-
-        .sim-column {
-            padding: var(--spacing-sm);
-            border-radius: var(--border-radius-md);
-            border: 1px solid transparent;
-            min-height: 250px;
-            background-color: rgba(30, 41, 59, 0.4);
-            transition: border-color 0.3s, background-color 0.3s;
-        }
-
-        .sim-column.active {
-            border-color: #38bdf8;
-            background-color: rgba(56, 189, 248, 0.05);
-        }
-
-        .column-header {
-            font-family: var(--font-family-title);
-            font-weight: 700;
-            font-size: 1.05rem;
-            text-align: center;
-            margin-bottom: var(--spacing-md);
-            padding-bottom: 4px;
-            border-bottom: 2px solid #334155;
-        }
-
-        .user-col-title { color: #4ade80; }
-        .kernel-col-title { color: #f87171; }
-
-        .sim-box {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            margin-bottom: var(--spacing-sm);
-            font-size: 0.9rem;
-            text-align: center;
-            transition: background-color 0.2s, border-color 0.2s;
-        }
-
-        .sim-box.highlight {
-            background-color: rgba(56, 189, 248, 0.2);
-            border-color: #38bdf8;
-            color: #ffffff;
-            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
-        }
-
-        .stack-container {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: var(--border-radius-sm);
-            padding: var(--spacing-xs);
-            display: flex;
-            flex-direction: column-reverse;
-            gap: 4px;
-            min-height: 100px;
-        }
-
-        .stack-item {
-            background-color: #1e293b;
-            border: 1px solid #475569;
-            padding: 4px;
-            text-align: center;
-            font-family: var(--font-family-mono);
-            font-size: 0.8rem;
-            border-radius: 2px;
-        }
-
-        .sim-controls {
-            background-color: #1e293b;
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-md);
-            border: 1px solid #334155;
-        }
-
-        .step-indicator {
-            font-family: var(--font-family-title);
-            font-weight: 700;
-            color: #38bdf8;
-            margin-bottom: var(--spacing-xs);
-            font-size: 1.1rem;
-        }
-
-        .step-desc {
-            font-size: 0.95rem;
-            min-height: 4rem;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .control-btns {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .sim-btn {
-            background-color: #334155;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: var(--border-radius-sm);
-            cursor: pointer;
-            font-family: var(--font-family-base);
-            font-weight: 600;
-            transition: background-color 0.2s;
-        }
-
-        .sim-btn:hover:not(:disabled) { background-color: #475569; }
-        .sim-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .sim-btn-primary { background-color: #2b6cb0; }
-        .sim-btn-primary:hover:not(:disabled) { background-color: #2c5282; }
-        .sim-btn-danger { background-color: #e53e3e; }
-        .sim-btn-danger:hover { background-color: #c53030; }
-
-        .crash-test-container {
-            margin-top: var(--spacing-md);
-            border-top: 1px solid #334155;
-            padding-top: var(--spacing-md);
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
-        }
-
+        /* Screen shake animation for Simulator */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -788,1146 +254,1298 @@
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
-        .shake {
+        .shake-element {
             animation: shake 0.5s;
             animation-iteration-count: 1;
         }
-
-        .crash-terminal {
-            background-color: #020617;
-            border: 1px solid #ef4444;
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-sm);
-            font-family: var(--font-family-mono);
-            font-size: 0.85rem;
-            color: #f87171;
-            display: none;
-        }
-
-        /* Crash terminal classes for JS injection */
-        .term-cmd { color: #ef4444; background: none; }
-        .term-err-title { color: #ef4444; font-weight: bold; }
-        .term-warn { color: #f87171; }
-
-        /* Rigid Question Anatomy Styling */
-        .question-badge {
-            background-color: var(--color-primary);
-            color: white;
-            padding: 3px 10px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: var(--spacing-xs);
-            font-family: var(--font-family-title);
-        }
-
-        .question-demands {
-            background-color: var(--color-primary-light);
-            border-right: 3px solid var(--color-primary);
-            padding: var(--spacing-sm);
-            margin: var(--spacing-sm) 0;
-            border-radius: var(--border-radius-sm);
-            font-size: 0.95rem;
-        }
-
-        .thought-box {
-            background-color: #f7fafc;
-            border: 1px dashed #cbd5e0;
-            padding: var(--spacing-sm);
-            margin: var(--spacing-sm) 0;
-            border-radius: var(--border-radius-md);
-            font-style: italic;
-            font-size: 0.95rem;
-        }
-
-        .solution-box {
-            border: 1px solid #e2e8f0;
-            padding: var(--spacing-md);
-            margin: var(--spacing-sm) 0;
-            border-radius: var(--border-radius-md);
-            background-color: #ffffff;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .tips-box {
-            background-color: var(--color-warning-bg);
-            border-right: 3px solid var(--color-accent);
-            padding: var(--spacing-sm);
-            margin: var(--spacing-sm) 0;
-            border-radius: var(--border-radius-sm);
-            font-size: 0.95rem;
-        }
-
-        @media (max-width: 1023px) {
-            .sidebar {
-                transform: translateX(var(--sidebar-width));
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-right: 0 !important;
-            }
-            .notebook-page {
-                padding: var(--spacing-lg) var(--spacing-md);
-            }
-            .notebook-page::before {
-                display: none;
-            }
-        }
     </style>
 </head>
-<body>
 
-    <div class="backdrop" id="backdrop" onclick="toggleSidebar()"></div>
+<body class="text-slate-800 h-screen flex overflow-hidden">
 
-    <button class="floating-menu-btn" id="floatingMenuBtn" onclick="toggleSidebar()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-    </button>
+    <!-- Sidebar Navigation -->
+    <aside class="w-80 bg-darker text-slate-300 flex flex-col h-full shadow-2xl z-20 flex-shrink-0 border-l border-slate-800">
+        <div class="p-6 border-b border-slate-800 bg-darker">
+            <h1 class="text-3xl font-black text-white tracking-tight leading-tight">מערכות<br><span class="text-blue-500">הפעלה</span></h1>
+            <p class="text-xs text-slate-400 mt-2">כרך א': יסודות ומבנה פרק 1</p>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="#" class="sidebar-logo">מערכות הפעלה</a>
-            <a href="Readme.rtf" class="back-home-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                חזרה לדף הבית
-            </a>
-            <button class="close-sidebar-btn" onclick="toggleSidebar()">&times;</button>
+            <div class="mt-4">
+                <a href="index.html" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 12l9-9m-9 9l9 9" />
+                    </svg>
+                    חזרה לדף הבית
+                </a>
+            </div>
         </div>
-        
-        <nav class="sidebar-nav">
-            <div class="nav-section" id="nav-chapter-1">
-                <div class="nav-section-title" onclick="toggleAccordion('nav-chapter-1')">
-                    פרק 1: מבוא ומושגים
+
+        <div class="flex-1 overflow-y-auto dark-scroll p-4 pb-20">
+            <div class="nav-group">
+                <div class="nav-group-title">חלק 1: יסודות ומבנה המערכת</div>
+                <button onclick="showTab('os-essence')" id="btn-os-essence" class="nav-btn active-nav">
+                    <span>🤔 1.1 מהי מערכת הפעלה?</span>
+                </button>
+                <button onclick="showTab('os-history')" id="btn-os-history" class="nav-btn">
+                    <span>📜 1.2 היסטוריה ודורות</span>
+                </button>
+                <button onclick="showTab('os-hardware')" id="btn-os-hardware" class="nav-btn">
+                    <span>💻 1.3 סקירה של חומרת המחשב</span>
+                </button>
+                <button onclick="showTab('os-zoo')" id="btn-os-zoo" class="nav-btn">
+                    <span>🦁 1.4 גן החיות של מערכות ההפעלה</span>
+                </button>
+                <button onclick="showTab('os-concepts')" id="btn-os-concepts" class="nav-btn">
+                    <span>🌍 1.5 מושגים בסיסיים במערכות הפעלה</span>
+                </button>
+                <button onclick="showTab('os-syscalls')" id="btn-os-syscalls" class="nav-btn">
+                    <span>🔌 1.6 קריאות מערכת ומעבר מצב (Trap)</span>
+                </button>
+                <button onclick="showTab('os-structure')" id="btn-os-structure" class="nav-btn">
+                    <span>🏗️ 1.7 מבנה מערכת ההפעלה</span>
+                </button>
+                <button onclick="showTab('os-glossary')" id="btn-os-glossary" class="nav-btn">
+                    <span>📖 1.8 מילון מושגים מסכם</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto scroll-smooth bg-white relative">
+        <div class="max-w-5xl mx-auto p-10 lg:p-16 pb-32">
+
+            <!-- ==========================================
+                 PART 1.1: OS ESSENCE
+            =========================================== -->
+            <div id="os-essence" class="tab-content active">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.1
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מהי מערכת הפעלה? שתי נקודות מבט</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        מערכת ההפעלה (Operating System) היא תוכנה המנהלת את חומרת המחשב ומשמשת מתווכת רשמית ומיוחסת בין תוכניות המשתמש לבין החומרה הפיזית. כדי להבין את תפקידיה, אנו מחלקים אותם לשתי נקודות מבט משלימות.
+                    </p>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">מבט מלמעלה למטה: מכונה מדומה / מורחבת</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            החומרה הפיזית של המחשב מורכבת ביותר ותובענית לתכנות. מערכת ההפעלה מסתירה מורכבות זו ומספקת למתכנת אבסטרקציה (הפשטה) נוחה ואחידה של <strong>מכונה מדומה או מורחבת (Extended Machine)</strong>.
+                        </p>
+                        <p class="text-sm text-slate-600 mt-2 italic">
+                            למשל: ייצוג הדיסק הקשיח כ"קבצים" ו"תיקיות", במקום פקודות של הזזת ראש מגנטי או קריאת סקטורים ספציפיים.
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">מבט מלמטה למעלה: מנהל משאבים</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            תוכניות רבות מתחרות על משאבים פיזיים מוגבלים. מערכת ההפעלה משמשת כ<strong>מנהל משאבים (Resource Manager)</strong> המקצה אותם בצורה הוגנת ויעילה.
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 mt-2 space-y-1 pr-2">
+                            <li><strong>ריבוב בזמן (Time Multiplexing):</strong> חלוקת המשאב על ציר הזמן (כמו המעבד).</li>
+                            <li><strong>ריבוב במרחב (Space Multiplexing):</strong> חלוקה בו-זמנית של שטח המשאב (כמו חלוקת הזיכרון ה-RAM).</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="nav-section-content">
-                    <ul>
-                        <li><a href="#section-1-1" class="nav-link">1.1 מהי מערכת הפעלה</a></li>
-                        <li><a href="#section-1-2" class="nav-link">1.2 היסטוריה ודורות</a></li>
-                        <li><a href="#section-1-3" class="nav-link">1.3 סקירה של חומרה</a></li>
-                        <li><a href="#section-1-4" class="nav-link">1.4 גן החיות של מערכות ההפעלה</a></li>
-                        <li><a href="#section-1-5" class="nav-link">1.5 מושגים בסיסיים</a></li>
-                        <li><a href="#section-1-6" class="nav-link">1.6 קריאות מערכת</a></li>
-                        <li><a href="#section-1-7" class="nav-link">1.7 מבנה המערכת</a></li>
-                        <li><a href="#section-1-10" class="nav-link">1.10 מילון מושגים מסכם</a></li>
-                        <li><a href="#section-practice-questions" class="nav-link">שאלות חזרה ותרגול</a></li>
+
+                <div class="thought-box">
+                    <h3 class="text-xl font-bold text-fuchsia-950 mb-2">🛡️ חומת המגן: מניעת השחתת נתונים (Memory Corruption)</h3>
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        ללא ניהול מיוחס, תוכניות משתמש עלולות לכתוב בו-זמנית לאותו אזור זיכרון פיזי, לדרוס מידע של תוכנית אחרת או של מערכת ההפעלה עצמה. מנהל המשאבים של מערכת ההפעלה מונע זאת על ידי יצירת בידוד מוחלט בין התהליכים בזיכרון, הנאכף ברמת החומרה.
+                    </p>
+                </div>
+
+                <div class="deep-dive">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">מדרג הרשאות המחשב: חלוקת רכיבי התוכנה</h3>
+                    <p class="text-sm text-slate-700 mb-4">
+                        תוכנות במחשב נבדלות ברמת ההרשאות שלהן וסוג הריצה שלהן על המעבד:
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-right text-slate-700 border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                                    <th class="p-3">סוג התוכנה</th>
+                                    <th class="p-3">תיאור ותפקיד</th>
+                                    <th class="p-3">רמת אמון והרשאות</th>
+                                    <th class="p-3">מצב המעבד (Mode)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                <tr>
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50/50">תוכנות יישום (Application)</td>
+                                    <td class="p-3">משחקים, דפדפנים, מעבדי תמלילים וכו'.</td>
+                                    <td class="p-3 text-red-600"><strong>הרשאות נמוכות ומוגבלות</strong>. קוד שאינו אמין שעלול להכיל באגים.</td>
+                                    <td class="p-3 font-mono">User Mode (Mode Bit = 1)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50/50">תוכנות מערכת (System)</td>
+                                    <td class="p-3">מהדרים (Compilers), מפרשים (Interpreters), מעטפת (Shell).</td>
+                                    <td class="p-3 text-emerald-600 font-bold"><strong>הרשאות גבוהות</strong>. תוכנות אמינות המבצעות פעולות תשתית.</td>
+                                    <td class="p-3 font-mono">User Mode (Mode Bit = 1)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-slate-900 bg-slate-50/50">מערכת ההפעלה (Kernel)</td>
+                                    <td class="p-3">ליבת המערכת המנהלת את הכל.</td>
+                                    <td class="p-3 text-emerald-600 font-bold"><strong>שליטה מלאה ומיוחסת</strong> על כל רכיבי החומרה.</td>
+                                    <td class="p-3 font-mono">Kernel Mode (Mode Bit = 0)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- ==========================================
+                 PART 1.2: OS HISTORY
+            =========================================== -->
+            <div id="os-history" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.2
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">היסטוריה ודורות של מערכות ההפעלה</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        התפתחות מערכות ההפעלה נבעה ישירות מהצורך להתגבר על מגבלות חומרת המחשב. נסקור את ארבעת הדורות העיקריים.
+                    </p>
+                </header>
+
+                <div class="data-table-wrapper mb-10">
+                    <table class="data-table">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                                <th class="p-3">דור</th>
+                                <th class="p-3">שנים</th>
+                                <th class="p-3">טכנולוגיית חומרה</th>
+                                <th class="p-3">מבנה תפעולי ותוכנה</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            <tr>
+                                <td class="p-3 font-bold">הראשון</td>
+                                <td class="p-3">1945–1955</td>
+                                <td class="p-3">שפופרות ריק (Vacuum Tubes), לוחות חיווט (Plugboards)</td>
+                                <td class="p-3">אין מערכת הפעלה. אדם יחיד משריין את המחשב, מחבר חוטים פיזית ומריץ קוד בינארי.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold">השני</td>
+                                <td class="p-3">1955–1965</td>
+                                <td class="p-3">טרנזיסטורים (Transistors)</td>
+                                <td class="p-3">הולדת <strong>מערכות אצווה (Batch Systems)</strong>. הפרדה בין מתכנתים למפעילים. המעבד בזבז זמן על המתנה לקלט/פלט (היה <code dir="ltr">I/O Bound</code>).</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold">השלישי</td>
+                                <td class="p-3">1965–1980</td>
+                                <td class="p-3">מעגלים משולבים (ICs)</td>
+                                <td class="p-3"><strong>ריבוב תוכניות (Multiprogramming)</strong> ו<strong>שיתוף זמן (Timesharing)</strong>. מערכות מבוססות UNIX. דרישה להגנת זיכרון בחומרה.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold">הרביעי</td>
+                                <td class="p-3">1980–ימינו</td>
+                                <td class="p-3">מעגלים משולבים בקנה מידה גדול (LSI / VLSI)</td>
+                                <td class="p-3">עידן המחשב האישי (PC). הפיכת מערכת ההפעלה למוצר צריכה המוני (Windows, Linux). ממשק משתמש גרפי (GUI), רשתות.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="concept-box">
+                    <h3 class="text-xl font-bold text-green-900 mb-3">💡 מושגי מפתח היסטוריים ללמידה</h3>
+                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 pr-2">
+                        <li><strong>מערכת אצווה (Batch System):</strong> איסוף עבודות רציפות על כרטיסי ניקוב והרצתן ברצף על ידי מפעיל המחשב, כדי למנוע זמן סרק של המעבד במעבר בין תוכניות.</li>
+                        <li><strong>ריבוב תוכניות (Multiprogramming):</strong> חלוקת הזיכרון למחיצות. כאשר תוכנית ממתינה ל-I/O, המעבד מריץ מיד תוכנית אחרת. הוליד את הדרישה ל<strong>הגנת זיכרון</strong>.</li>
+                        <li><strong>Spooling (אגירה בדיסק):</strong> שימוש בדיסק הקשיח כחוצץ מהיר עבור התקני קלט/פלט איטיים. קריאת כרטיסי ניקוב מראש לדיסק או אגירת נתוני הדפסה מונעת מהמעבד להמתין ישירות להתקנים איטיים.</li>
+                        <li><strong>שיתוף זמן (Timesharing):</strong> הקצאת פרוסת זמן קצרה ביותר (Quantum) לכל תוכנית. המעבד עובר במהירות גבוהה בין המשתמשים ויוצר אשליה של מחשב בלעדי לכל אחד.</li>
                     </ul>
                 </div>
             </div>
-        </nav>
-    </aside>
 
-    <main class="main-content" id="mainContent">
-        <article class="notebook-page">
-            <header>
-                <h1>מבוא למערכות הפעלה</h1>
-                <p class="text-wrap-container">סיכום אקדמי מעמיק ומלא של <strong>פרק 1</strong> מתוך מדריך הלמידה וספר הקורס, בתוספת הרחבות ממחברות ההרצאה המעודכנות. מותאם ספציפית לדרישות ומלכודות הבחינה.</p>
-            </header>
+            <!-- ==========================================
+                 PART 1.3: OS HARDWARE
+            =========================================== -->
+            <div id="os-hardware" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.3
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">סקירה של חומרת המחשב</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        מערכת ההפעלה פועלת באינטראקציה הדוקה עם החומרה. נסקור את רכיבי המעבד, היררכיית הזיכרון, ואת הדרך שבה המעבד מתקשר עם התקני הקלט/פלט.
+                    </p>
+                </header>
 
-            <section id="section-1-1">
-                <h2>1.1 מהותה של מערכת ההפעלה: שתי נקודות מבט</h2>
-                <p>מערכת ההפעלה (Operating System - OS) היא תוכנה המנהלת את חומרת המחשב ומשמשת כמתווכת רשמית ומיוחסת בין תוכניות המשתמש (האפליקציות) לבין החומרה הפיזית. כדי להבין את מטרתה, אנו מחלקים את תפקידיה לשתי נקודות מבט משלימות:</p>
-                
-                <div class="card-grid">
-                    <article class="card">
-                        <h4>מבט מלמעלה למטה (Top-Down): מכונה מדומה / מורחבת</h4>
-                        <p>הארכיטקטורה הפיזית של המחשב (כגון שפת מכונה, פנקסי רישום ופקודות קלט/פלט) היא פרימיטיבית ביותר ותובענית לתכנות. מערכת ההפעלה מסתירה את כל המורכבות הפיזית הזו ומציגה בפני המתכנת אבסטרקציה (הפשטה) נקייה, נוחה ואחידה - הלא היא <strong>מכונה מדומה או מורחבת (Virtual/Extended Machine)</strong>.</p>
-                        <p><strong>למה זה מועיל?</strong> היא מספקת ממשק פיתוח (API) אחיד המאפשר לאותו קוד בדיוק לרוץ על חומרות שונות (נייד, שרת, טאבלט) ללא שינוי, תוך שימוש באבסטרקציות כמו "קובץ" במקום פקודות פיזיות של הזזת זרוע הדיסק.</p>
-                    </article>
-                    
-                    <article class="card">
-                        <h4>מבט מלמטה למעלה (Bottom-Up): מנהל משאבים</h4>
-                        <p>מחשב מודרני מריץ תוכניות רבות במקביל המתחרות על משאבים פיזיים מוגבלים (מעבד, RAM, התקני רשת ודיסק). מערכת ההפעלה משמשת כ"מנהל משאבים" (Resource Manager) המקצה את המשאבים בצורה יעילה, הוגנת ומבוקרת.</p>
-                        <p>חלוקת המשאבים מתבצעת בשני מנגנונים:</p>
-                        <ul>
-                            <li><strong>ריבוב בזמן (Time Multiplexing):</strong> חלוקת המשאב על ציר הזמן. לדוגמה: המעבד מריץ תוכנית א' למשך זמן קצר, ואז תוכנית ב'.</li>
-                            <li><strong>ריבוב במרחב (Space Multiplexing):</strong> חלוקה בו-זמנית של שטח המשאב. לדוגמה: חלוקת זיכרון ה-RAM למקטעים נפרדים עבור תוכניות שונות.</li>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="deep-dive !my-0">
+                        <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">אוגרי המעבד (CPU Registers)</h3>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 pr-2">
+                            <li><strong>מונה הפקודות (Program Counter - PC):</strong> אוגר המחזיק את כתובת הזיכרון של הפקודה הבאה לביצוע.</li>
+                            <li><strong>מצביע המחסנית (Stack Pointer - SP):</strong> אוגר המצביע על ראש מחסנית הזיכרון המקומית של התהליך.</li>
+                            <li><strong>מילת מצב התוכנית (Program Status Word - PSW):</strong> אוגר הכולל את סיבית המצב (Mode Bit) הקובעת אם המעבד ב-Kernel Mode (0) או ב-User Mode (1).</li>
                         </ul>
-                    </article>
-                </div>
-
-                <div class="concept-box">
-                    <div class="concept-box-title">🛡️ חומת המגן: מניעת השחתת נתונים (Memory Corruption)</div>
-                    <p class="text-wrap-container">אחד מתפקידיה הקריטיים של מערכת ההפעלה כמנהל משאבים הוא להגן על עבודה משותפת. ללא ניהול מרכזי ומיוחס, שתי תוכניות משתמש עלולות לגשת בו-זמנית לאותו אזור זיכרון פיזי, לדרוס זו את זו ולגרום ל<strong>השחתת נתונים (Corruption)</strong> וחוסר עקביות. מערכת ההפעלה מונעת זאת על ידי יצירת בידוד מוחלט בין התהליכים ברמת החומרה.</p>
-                </div>
-
-                <h3>ההבדל בין סוגי התוכנות ומדרג ההרשאות</h3>
-                <p>על פי החומר האקדמי ומחברת ההרצאות, אנו מחלקים את רכיבי התוכנה במערכת המחשב לשלוש קבוצות עיקריות, הנבדלות ברמת ההרשאות שלהן:</p>
-                <div class="data-table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>סוג התוכנה</th>
-                                <th>תיאור ותפקיד</th>
-                                <th>הרשאות ורמת אמון</th>
-                                <th>מצב פעולת המעבד (CPU Mode)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>תוכנות יישום (Application Programs)</strong></td>
-                                <td>משחקים, דפדפנים, מעבדי תמלילים ויישומי משתמש רגילים.</td>
-                                <td><strong>נמוכות ביותר</strong>. תוכניות משתמש רצות במרחב בלתי-מהימן (Untrusted Space); המערכת מניחה כי הקוד עשוי להיות זדוני או פגום, ולכן מונעת ממנו גישה ישירה למשאבים קריטיים.</td>
-                                <td>מצב משתמש (<code dir="ltr">User Mode</code>) עם הרשאות חומרה מוגבלות.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>תוכנות מערכת (System Programs)</strong></td>
-                                <td>מהדרים (Compilers), מפרשים (Interpreters), ומעטפת הפקודה (Shell).</td>
-                                <td><strong>גבוהות</strong>. אנו סומכים על תוכנות אלו כיוון שהן נדרשות לבצע אופטימיזציה ולנהל את החומרה.</td>
-                                <td>ריצה במצב משתמש (<code dir="ltr">User Mode</code>), אך בעלות זכויות מיוחסות לפנות לגרעין.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>מערכת ההפעלה (Operating System - Kernel)</strong></td>
-                                <td>גרעין המערכת (התוכנה הראשונה הרצה מעל החומרה).</td>
-                                <td><strong>מלאות ומוחלטות</strong>. שליטה ישירה ומיוחסת על כלל רכיבי החומרה הפיזיים.</td>
-                                <td>מצב מיוחס / מצב ליבה (<code dir="ltr">Kernel Mode</code>).</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="warn-box">
-                    <div class="warn-box-title">⚠️ נקודת כשל בבחינה: מהדר (Compiler) לעומת מפרש (Interpreter)</div>
-                    <p class="text-wrap-container">מפרשים ומהדרים מבצעים אופטימיזציות חומרה ומעבירים קוד שפת עילית לשפת מכונה, אך הדרך שבה הם עושים זאת שונה בתכלית:</p>
-                    <ul>
-                        <li><strong>מהדר (Compiler):</strong> מתרגם את קוד התוכנית מראש לקוד מטרה / שפת מכונה (Target Object Code), התלוי בארכיטקטורת החומרה (ISA) הספציפית, ומייצר קובץ ריצה בינארי עצמאי. היתרון הוא ביצוע אופטימיזציה מקסימלית המותאמת לעומס החומרה הפיזית, ולכן הוא מהיר משמעותית בזמן ריצה מאשר אינטרפרטציה דינמית.</li>
-                        <li><strong>מפרש (Interpreter / Command Interpreter):</strong> מתרגם ומריץ את הקוד <strong>שורה אחר שורה באופן מיידי</strong> ללא יצירת קובץ ריצה בינארי. היתרון הוא שאין זמן המתנה לקומפילציה. החיסרון הוא פגיעה קשה בביצועים (Performance) כיוון ששורות קוד שחוזרות על עצמן (למשל בלולאה) מתורגמות שוב ושוב מחדש, מה שיוצר בזבוז זמן מעבד יקר.</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section id="section-1-2">
-                <h2>1.2 היסטוריה ודורות של מערכות ההפעלה</h2>
-                <p>התפתחות מערכות ההפעלה שזורה באופן הדוק בהתפתחות החומרה. אנו מחלקים היסטוריה זו לארבעה דורות עיקריים:</p>
-                
-                <div class="data-table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>דור</th>
-                                <th>חומרה מרכזית</th>
-                                <th>תוכנה ומערכת הפעלה</th>
-                                <th>מאפיינים וטכנולוגיות מפתח</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>הראשון (1945-1955)</strong></td>
-                                <td>שפופרות ריק (Vacuum Tubes), לוחות חיווט (Plugboards)</td>
-                                <td>אין מערכת הפעלה כלל.</td>
-                                <td>אדם יחיד שריין את המחשב פיזית. תיכנות בשפת מכונה גולמית (בינארית) ישירות לחומרה.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>השני (1955-1965)</strong></td>
-                                <td>טרנזיסטורים, מחשבים מרכזיים (Mainframes)</td>
-                                <td>מערכות אצווה (<code dir="ltr">Batch Systems</code>) פשוטות.</td>
-                                <td>כרטיסי ניקוב וסרטים מגנטיים. יצירת הפרדה בין מתכנתים למפעילים. המעבד בזבז זמן רב על המתנה לקלט/פלט (היה <code dir="ltr">I/O Bound</code>).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>השלישי (1965-1980)</strong></td>
-                                <td>מעגלים משולבים (Integrated Circuits - ICs)</td>
-                                <td>ריבוב תוכניות וחלוקת זמן. UNIX נולדה.</td>
-                                <td>הולדת <strong>ריבוב תוכניות (Multiprogramming)</strong>, שימוש ב-<strong>Spooling</strong> למניעת זמן סרק של המעבד, ו<strong>שיתוף זמן (Timesharing)</strong>. דרישה ראשונה להגנת זיכרון בחומרה.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>הרביעי (1980-ימינו)</strong></td>
-                                <td>מעגלים משולבים בקנה מידה גדול (LSI / VLSI)</td>
-                                <td>מחשבים אישיים (PCs), Windows, Linux.</td>
-                                <td>מערכת ההפעלה הופכת למוצר צריכה המוני. ממשק משתמש גרפי (GUI), תקשורת ברשת, מערכות מבוזרות ומובייל.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="concept-box">
-                    <div class="concept-box-title">💡 מושגי מפתח היסטוריים להבנה אקדמית</div>
-                    <ul>
-                        <li><strong>מערכת אצווה (Batch System):</strong> קבוצת משימות (עבודות) שנאספו מראש על כרטיסי ניקוב והורצו ברצף אחת אחרי השנייה ללא התערבות אדם, כדי למנוע זמן סרק של המעבד בין מריץ למריץ.</li>
-                        <li><strong>ריבוב תוכניות (Multiprogramming):</strong> חלוקת הזיכרון הראשי למספר מחיצות המכילות תוכניות שונות. כאשר תוכנית אחת ממתינה לקלט/פלט (I/O Blocked), המעבד עובר מיד להריץ תוכנית אחרת הנמצאת בזיכרון, ובכך ממקסם את ניצול ה-CPU.</li>
-                        <li><strong>ספולינג (Spooling - Simultaneous Peripheral Operations On-Line):</strong> שימוש בדיסק הקשיח כחוצץ (Buffer) מהיר המתווך בין המעבד לבין התקני קלט/פלט איטיים (כמו קורא כרטיסים או מדפסת). הדבר מונע מהמעבד להמתין ישירות להתקן איטי ומאפשר לו לעבוד בקצב מלא.</li>
-                        <li><strong>שיתוף זמן (Timesharing):</strong> וריאציה של ריבוב תוכניות שבה המערכת מקצה לכל תהליך פרוסת זמן קצרה ביותר (Quantum). המעבד עובר ביניהם במהירות כה גבוהה שנוצרת אשליה חזותית אצל המשתמשים כאילו המחשב מוקדש להם בלבד.</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section id="section-1-3">
-                <h2>1.3 סקירה של חומרת המחשב</h2>
-                <p>מערכת ההפעלה היא תוכנה המנהלת את החומרה באופן ישיר. להלן סקירה מורחבת של רכיבי החומרה הרלוונטיים:</p>
-                
-                <h3>אוגרי המעבד (CPU Registers)</h3>
-                <p>המעבד מכיל אוגרים פנימיים מהירים ביותר לביצוע פקודות וניהול מצבו:</p>
-                <ul>
-                    <li><strong>מונה הפקודות (Program Counter - PC):</strong> אוגר המחזיק את כתובת הזיכרון של פקודת המכונה הבאה שעומדת להתבצע.</li>
-                    <li><strong>מצביע המחסנית (Stack Pointer - SP):</strong> אוגר המצביע על כתובת ראש המחסנית (Stack Frame) הנוכחית של התהליך בזיכרון.</li>
-                    <li><strong>מילת מצב התוכנית (Program Status Word - PSW):</strong> אוגר קריטי המכיל דגלים ומצבי בקרה. אחד הדגלים החשובים ביותר בו הוא <strong>סיבית המצב (Mode Bit)</strong>, הקובעת האם המעבד נמצא כרגע ב-User Mode (1) או ב-Kernel Mode (0).</li>
-                </ul>
-
-                <h3>היררכיית הזיכרון (Memory Hierarchy)</h3>
-                <p>מערכת ההפעלה צריכה לאזן בין צורך בזיכרון מהיר לבין עלותו ונפחו הפיזי:</p>
-                <div class="data-table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>סוג הזיכרון</th>
-                                <th>זמן גישה (משוער)</th>
-                                <th>נפח טיפוסי</th>
-                                <th>סוג ועלות</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>אוגרים (Registers)</strong></td>
-                                <td>&lt; 1 ns (מחזור שעון יחיד)</td>
-                                <td>כמה מאות בתים</td>
-                                <td>נדיף, יקר ומהיר ביותר, מובנה בליבת המעבד.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>זיכרון מטמון (Cache L1/L2/L3)</strong></td>
-                                <td>1 - 10 ns</td>
-                                <td>כמה מגה-בתים (MB)</td>
-                                <td>נדיף, מנוהל ברובו בחומרה. מערכת ההפעלה מחליטה אילו בלוקים להעביר לתוכו על בסיס עקרון המקומיות.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>זיכרון ראשי (RAM)</strong></td>
-                                <td>50 - 100 ns</td>
-                                <td>כמה גיגה-בתים (GB)</td>
-                                <td>נדיף, משמש כמרחב הריצה הראשי של התהליכים במחשב.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>דיסק קשיח / SSD</strong></td>
-                                <td>0.1 - 10 ms (מילישניות)</td>
-                                <td>כמה טרה-בתים (TB)</td>
-                                <td>לא נדיף, איטי בהרבה, משמש לאחסון קבוע.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>מעבדים מודרניים: Pipeline ו-Superscalar</h3>
-                <p>מעבדים מודרניים משפרים ביצועים באמצעות מבנים מתקדמים:</p>
-                <ul>
-                    <li><strong>צינור עיבוד (Pipeline):</strong> המעבד מחלק את ביצוע פקודת המכונה למספר שלבים (למשל: Fetch, Decode, Execute, Write-back) ומבצע אותם במקביל עבור פקודות שונות. באג או הסתעפות בקוד (Branch) עלולים לרוקן את הפייפליין ולפגוע בביצועים.</li>
-                    <li><strong>מעבד סופר-סקלרי (Superscalar):</strong> מעבד המכיל מספר יחידות ביצוע עצמאיות (כמו יחידה אריתמטית ALU, יחידה לנקודה צפה FPU). הוא מסוגל לקרוא מספר פקודות בו-זמנית מהזיכרון ולהריץ פקודות שאינן תלויות זו בזו במקביל, במחזור שעון נתון (Clock cycle). יכולת זו נקראת <strong>מקביליות ברמת ההוראות (ILP - Instruction-Level Parallelism)</strong>. בשונה מ-Pipeline המריץ פקודות בשלבים שונים באותו הזמן, מעבד סופר-סקלרי מריץ מספר פקודות באותו שלב ביצוע באותו מחזור שעון בדיוק.</li>
-                </ul>
-
-                <h3>בקרים והתקני קלט/פלט (I/O Controllers)</h3>
-                <p>ה-CPU אינו מדבר ישירות עם ההתקן הפיזי (למשל, ראש הקריאה בדיסק), אלא עם **בקר ההתקן (Device Controller)**. הבקר הוא שבב אלקטרוני המכיל אוגרי בקרה, סטטוס ונתונים. קריאת קלט/פלט מתבצעת על ידי כתיבת פקודות לאוגרי הבקר במצב מיוחס. בסיום הפעולה, הבקר מעורר **פסיקת חומרה (Interrupt)** כדי להודיע לליבת מערכת ההפעלה שהנתונים מוכנים בחוצץ (Buffer).</p>
-            </section>
-
-            <section id="section-1-4">
-                <h2>1.4 גן החיות של מערכות ההפעלה (Operating System Zoo)</h2>
-                <p>מערכות הפעלה מתוכננות לפתור בעיות שונות בהתאם לסביבה והחומרה שבה הן פועלות:</p>
-                
-                <div class="card-grid">
-                    <article class="card">
-                        <h4>1. מחשבים מרכזיים (Mainframe OS)</h4>
-                        <p>מערכות הפעלה המיועדות לעיבוד נתונים אדיר. דגש על שיתוף עבודות רחב, עיבוד אצווה וביצוע אלפי פעולות קלט/פלט במקביל.</p>
-                    </article>
-                    <article class="card">
-                        <h4>2. שרתי רשת (Server OS)</h4>
-                        <p>שרתים הפועלים ברשת ומשרתים משתמשים רבים בו-זמנית. דגש מרכזי על אבטחה, יציבות, שרידות וניהול משאבי שיתוף קבצים ורשת.</p>
-                    </article>
-                    <article class="card">
-                        <h4>3. מערכות מרובות מעבדים (Multiprocessor OS)</h4>
-                        <p>מערכות המקשרות ומנהלות מספר מעבדים החולקים את אותו זיכרון פיזי (SMP). דורשות סנכרון ותקשורת מהירה במיוחד.</p>
-                    </article>
-                    <article class="card">
-                        <h4>4. מחשבים אישיים (PC OS)</h4>
-                        <p>מערכות הפעלה כמו Windows או Linux המותאמות למשתמש יחיד. דגש על ממשק גרפי (GUI) נוח, תגובתיות וחוויית משתמש.</p>
-                    </article>
-                    <article class="card">
-                        <h4>5. מערכות זמן אמת (Real-Time OS)</h4>
-                        <p>מערכות שבהן זמן התגובה הוא קריטי לפעולה.
-                        <br><strong>זמן אמת קשיח (Hard Real-Time):</strong> חובה לעמוד בזמנים באופן מוחלט, אחרת יתרחש אסון (מערכות בלימה, בקרת טיסה).
-                        <br><strong>זמן אמת רך (Soft Real-Time):</strong> פגיעה בזמן גורמת לירידה באיכות השירות אך אינה קטסטרופלית (סטרימינג של וידאו).</p>
-                    </article>
-                    <article class="card">
-                        <h4>6. מערכות משובצות (Embedded OS)</h4>
-                        <p>מערכות הרצות על רכיבי חומרה ייעודיים (כמו מכוניות, מכשירי מיקרוגל). בעלות משאבי זיכרון ו-CPU מוגבלים ביותר, ללא גמישות להתקנת תוכנות חיצוניות.</p>
-                    </article>
-                </div>
-            </section>
-
-            <section id="section-1-5">
-                <h2>1.5 מושגים בסיסיים במערכות הפעלה</h2>
-                <p>להלן מושגי היסוד שילוו אותנו לאורך כל הקורס:</p>
-                
-                <h3>1. תהליך (Process) וטבלת התהליכים</h3>
-                <p>תהליך הוא <strong>תוכנית בזמן ריצה</strong> (פעילה ויציבה), בניגוד לתוכנית שהיא קובץ סטטי על הדיסק. לכל תהליך יש מרחב זיכרון משלו, מצב מעבד (אוגרים, מונה פקודות PC, מצביע מחסנית SP) ומתארי קבצים פתוחים.</p>
-                <p>המידע על התהליך נשמר בתוך <strong>טבלת התהליכים (Process Table)</strong> במבנה נתונים ייעודי הנקרא <strong>PCB (Process Control Block)</strong>. כאשר המתזמן מבצע <strong>החלפת הקשר (Context Switch)</strong>, הוא שומר את כל ערכי האוגרים הפיזיים של התהליך הנוכחי בתוך ה-PCB שלו, וטוען את הערכים מה-PCB של התהליך החדש אל האוגרים הפיזיים של המעבד.</p>
-
-                <h3>2. אנטומיית מרחב הכתובות (Address Space)</h3>
-                <p>מרחב הכתובות הלוגי של תהליך מבודד לחלוטין על ידי מערכת ההפעלה ומורכב משלושה אזורים עיקריים:</p>
-                <ul>
-                    <li><strong>מקטע הקוד (Text Segment):</strong> האזור בזיכרון המכיל את פקודות המכונה לביצוע. אזור זה הוא לקריאה בלבד (<code dir="ltr">Read-Only</code>) כדי למנוע מתהליך לשנות את הקוד של עצמו בטעות.</li>
-                    <li><strong>מקטע הנתונים (Data & Heap Segment):</strong> מכיל משתנים גלובליים וסטטיים של התוכנית. בנוסף, הוא כולל את ה-**Heap** (ערמה) המשמש להקצאות זיכרון דינמיות במהלך הריצה (למשל על ידי <code dir="ltr">malloc</code> ב-C).</li>
-                    <li><strong>מקטע המחסנית (Stack Segment):</strong> משמש לניהול קריאות לפונקציות. מכיל את המשתנים המקומיים, הפרמטרים של פונקציות וכתובות החזרה של הקוד. המחסנית גדלה וקטנה דינמית.</li>
-                </ul>
-
-                <h3>3. מתזמן (Scheduler) וטרייד-אוף של גודל הקוואנטה</h3>
-                <p>כיוון שישנן תוכניות רבות אך מספר הליבות במעבד מוגבל, מערכת ההפעלה משתמשת באלגוריתמי תזמון (כגון <code dir="ltr">Round Robin</code>) המחלקים את המעבד לפרוסות זמן הנקראות **קוואנטה (Quantum)**. הדבר יוצר **מקביליות מדומה (Pseudo-concurrency)**.</p>
-                <div class="concept-box border-accent">
-                    <div class="concept-box-title text-accent">⚖️ הטרייד-אוף של גודל הקוואנטה (Quantum Size)</div>
-                    <p class="text-wrap-container">שאלת קביעת גודל הקוואנטה היא נושא קלאסי בבחינות:</p>
-                    <ul>
-                        <li><strong>קוואנטה קצר מדי (למשל, 1ms):</strong> משפר משמעותית את המקביליות המדומה (הכל מרגיש חלק ואינטראקטיבי), אך גורם לתקורה (Overhead) כבדה. המעבד משחית זמן יקר על ביצוע החלפות הקשר (Context Switches) במקום על ביצוע קוד המשתמש, דבר המוביל לפגיעה דרסטית בנצילות המעבד (CPU Utilization) ובזרימת המערכת (Throughput).</li>
-                        <li><strong>קוואנטה ארוך מדי (למשל, 100ms):</strong> משפר את ניצולת המעבד (תקורה נמוכה על החלפות הקשר), אך הורס את אשליית המקביליות. תהליכים אינטראקטיביים יחוו לאגים והשהיות ארוכות, והמערכת תרגיש לא תגובתית.</li>
-                    </ul>
-                </div>
-
-                <h3>4. דיאגרמת מצבי תהליך והמעברים</h3>
-                <p>במהלך חייו, תהליך נמצא באחד משלושה מצבים עיקריים:</p>
-                <ul>
-                    <li><strong>רץ (Running):</strong> המעבד מבצע כרגע את הוראות המכונה של התהליך בפועל.</li>
-                    <li><strong>מוכן (Ready):</strong> התהליך מוכן להרצה ויכול לרוץ, אך ממתין בתור שהמתזמן יקצה לו את המעבד.</li>
-                    <li><strong>חסום (Blocked):</strong> התהליך ממתין לאירוע חיצוני (כמו קריאת נתונים מהדיסק הקשיח או קלט מקלדת) ואינו יכול לרוץ גם אם המעבד פנוי.</li>
-                </ul>
-                
-                <div class="data-table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>מעבר</th>
-                                <th>מצב מקור &larr; יעד</th>
-                                <th>גורם המעבר והסבר פדגוגי</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>מעבר 1</strong></td>
-                                <td>רץ &larr; חסום</td>
-                                <td>התהליך ביצע פעולת קלט/פלט (למשל קרא מקובץ) או המתין למשאב שאינו זמין. המערכת חוסמת אותו כדי לא לבזבז זמן CPU.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>מעבר 2</strong></td>
-                                <td>רץ &larr; מוכן</td>
-                                <td>המתזמן הפסיק את ריצת התהליך כיוון שפרוסת הזמן שלו (הקוואנטה) הסתיימה, כדי לתת הזדמנות לתהליכים אחרים.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>מעבר 3</strong></td>
-                                <td>מוכן &larr; רץ</td>
-                                <td>המתזמן בחר בתהליך זה מתוך תור התהליכים המוכנים והקצה לו את המעבד לריצה.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>מעבר 4</strong></td>
-                                <td>חסום &larr; מוכן</td>
-                                <td>האירוע שהתהליך המתין לו התרחש (למשל, בקר הדיסק סיים לקרוא את הנתונים ועורר פסיקה). התהליך חוזר לתור המוכנים.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>5. קיפאון (Deadlock)</h3>
-                <p>מצב לוגי שבו שני תהליכים או יותר חסומים כיוון שכל אחד מהם מחזיק משאב שהשני זקוק לו כדי להמשיך, ואף אחד מהם אינו יכול להתקדם או לשחרר את המשאב שלו. המערכת קופאת.</p>
-            </section>
-
-            <section id="section-1-6">
-                <h2>1.6 קריאות מערכת (System Calls)</h2>
-                <p>קריאת מערכת היא ממשק הפנייה הרשמי של תוכנית משתמש (הפועלת ב-User Mode) אל ליבת מערכת ההפעלה, בבקשה לבצע עבורה פעולה מיוחסת הדורשת גישה ישירה לחומרה או למשאבים מוגנים (כגון פתיחת קובץ, הקצאת זיכרון או תקשורת רשת).</p>
-                
-                <div class="concept-box">
-                    <div class="concept-box-title">⚖️ ספרייה אקדמית: printf() לעומת write()</div>
-                    <p class="text-wrap-container">פונקציית הספרייה <code dir="ltr">printf()</code> רצה ב-**User Mode** ומבצעת עיבוד של המחרוזת (פירמוט הנתונים). היא **אינה מסוגלת** לכתוב פיזית למסך בעצמה, כיוון שלמשתמש אין הרשאה לגשת ישירות לחומרת המסך. לכן, לאחר עיבוד המחרוזת, <code dir="ltr">printf()</code> קוראת באופן פנימי לקריאת המערכת <code dir="ltr">write()</code>, המבצעת את מעבר המצב ל-Kernel Mode לצורך הדפסה. מסיבה זו, שימוש ישיר ב-<code dir="ltr">write()</code> מציג ביצועים (Performance) מהירים יותר מאשר <code dir="ltr">printf()</code>, כיוון שהוא חוסך את שכבת פירמוט הנתונים של הספרייה.</p>
-                </div>
-
-                <div class="simulator-card" id="simulator">
-                    <div class="simulator-header">
-                        <h3 class="simulator-title">⚙️ סימולטור אינטראקטיבי: קריאת המערכת read()</h3>
-                        <span class="text-sm-muted">פרק 1.6 בספר הקורס</span>
                     </div>
 
-                    <div class="cpu-status-bar">
-                        <div class="cpu-status-item">
-                            <span>CPU Mode:</span>
-                            <span class="cpu-status-val status-user-mode" id="cpuMode">User Mode (Mode Bit = 1)</span>
+                    <div class="deep-dive !my-0">
+                        <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">מעבדים מודרניים</h3>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 pr-2">
+                            <li><strong>צינור עיבוד (Pipeline):</strong> חלוקת ביצוע פקודת מכונה לשלבים שונים וביצועם במקביל עבור פקודות עוקבות, לשיפור ניצול המעבד.</li>
+                            <li><strong>מעבד סופר-סקלרי (Superscalar):</strong> מעבד בעל מספר יחידות ביצוע עצמאיות (כמו ALU, FPU) המסוגל לקרוא ולהריץ מספר פקודות במקביל בכל מחזור שעון.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h3 class="text-xl font-bold text-green-900 mb-3">📶 היררכיית הזיכרון (Memory Hierarchy)</h3>
+                    <p class="text-sm text-slate-700 mb-4">
+                        מערכת ההפעלה צריכה לאזן בין צורך בזיכרון מהיר לבין עלותו ונפחו הפיזי:
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-right text-slate-700 border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                                    <th class="p-3">סוג הזיכרון</th>
+                                    <th class="p-3">זמן גישה טיפוסי</th>
+                                    <th class="p-3">נפח טיפוסי</th>
+                                    <th class="p-3">ניהול ותכונות</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                <tr>
+                                    <td class="p-3 font-bold">אוגרים (Registers)</td>
+                                    <td class="p-3">&lt; 1 ns (מחזור שעון יחיד)</td>
+                                    <td class="p-3">כמה מאות בתים</td>
+                                    <td class="p-3">נדיף, יקר ומהיר ביותר, מובנה בליבת המעבד.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold">זיכרון מטמון (Cache L1/L2/L3)</td>
+                                    <td class="p-3">1 - 10 ns</td>
+                                    <td class="p-3">כמה מגה-בתים (MB)</td>
+                                    <td class="p-3">נדיף, מנוהל ברובו בחומרה. מערכת ההפעלה מחליטה אילו בלוקים להעביר לתוכו.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold">זיכרון ראשי (RAM)</td>
+                                    <td class="p-3">50 - 100 ns</td>
+                                    <td class="p-3">כמה גיגה-בתים (GB)</td>
+                                    <td class="p-3">נדיף, משמש כמרחב הריצה הראשי של התהליכים במחשב.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold">דיסק קשיח / SSD</td>
+                                    <td class="p-3">0.1 - 10 ms (מילישניות)</td>
+                                    <td class="p-3">כמה טרה-בתים (TB)</td>
+                                    <td class="p-3">לא נדיף, איטי בהרבה, משמש לאחסון קבוע.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h3 class="text-xl font-bold text-amber-950 mb-2">🔌 בקרים והתקני קלט/פלט (I/O Controllers)</h3>
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        המעבד אינו מדבר ישירות עם ההתקן הפיזי (למשל, ראש הקריאה בדיסק), אלא עם <strong>בקר ההתקן (Device Controller)</strong>. הבקר הוא שבב אלקטרוני המכיל אוגרי בקרה, סטטוס ונתונים. קריאת קלט/פלט מתבצעת על ידי כתיבת פקודות לאוגרי הבקר במצב מיוחס. בסיום הפעולה, הבקר מעורר <strong>פסיקת חומרה (Interrupt)</strong> כדי להודיע לליבת מערכת ההפעלה שהנתונים מוכנים בחוצץ.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 PART 1.4: OS ZOO
+            =========================================== -->
+            <div id="os-zoo" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.4
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">"גן החיות" של מערכות ההפעלה</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        מערכות הפעלה מתוכננות לפתור בעיות שונות בהתאם לסביבה שבה הן פועלות. נסקור את סוגי מערכות ההפעלה השונים.
+                    </p>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">1. מחשבים מרכזיים (Mainframes)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            עיבוד נתונים בהיקף אדיר. דגש מרכזי על יכולת עיבוד של כמות אדירה של פעולות קלט/פלט בו-זמנית וניהול מאגרי נתונים מסיביים.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">2. שרתי רשת (Servers)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            פועלות ברשתות, מספקות שירותים למשתמשי קצה רבים. דגש על שרידות וזמינות (High Availability) למניעת השבתת שירותים.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">3. מערכות מקביליות (Multiprocessors)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            מנהלות מחשבים בעלי מספר מעבדים החולקים זיכרון (SMP). דגש על תקשורת מהירה וסנכרון בין המעבדים.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">4. מחשבים אישיים (PCs)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            דגש על משתמש יחיד, נוחות שימוש וממשק (GUI), וזמן תגובה מהיר על פני יעילות חומרה מקסימלית.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">5. מערכות זמן-אמת (Real-Time)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-2">
+                            זמן הביצוע הוא קריטי לפעולה.
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1 pr-2">
+                            <li><strong>קשיח (Hard):</strong> אי עמידה בזמן היא אסון (למשל מערכת בלימה במכונית).</li>
+                            <li><strong>רך (Soft):</strong> החמצה פוגעת בחוויה אך לא קטסטרופלית (סטרימינג של וידאו).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">6. מערכות משובצות (Embedded)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            מערכות זעירות למכשירי חשמל (כמו מכוניות, מיקרוגלים). חסרות גמישות להתקנת תוכנות, יציבות מוחלטת, ודרישות מחמירות של חיסכון במשאבים.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 PART 1.5: OS CONCEPTS
+            =========================================== -->
+            <div id="os-concepts" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.5
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מושגים בסיסיים במערכות הפעלה</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        בפרק זה נכיר את מושגי היסוד שילוו אותנו לאורך כל הקורס: תהליכים, מרחבי כתובות, ומתזמן המעבד.
+                    </p>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">1. תהליך (Process) וטבלת התהליכים</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            תהליך הוא <strong>תוכנית בזמן ריצה</strong> (פעילה ואקטיבית), בניגוד לתוכנית שהיא קובץ סטטי על הדיסק. הוא כולל את קוד התוכנית, הנתונים, המחסנית, ומצב המעבד.
+                        </p>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            המידע על התהליך נשמר בתוך <strong>טבלת התהליכים (Process Table)</strong> במבנה נתונים הנקרא <strong>PCB (Process Control Block)</strong>. הוא מאפשר לגרעין לבצע החלפת הקשר (Context Switch).
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">2. אנטומיית מרחב הכתובות (Address Space)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-2">
+                            "מגרש המשחקים" המבודד של התהליך בזיכרון ה-RAM מורכב משלושה אזורים:
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1.5 pr-2">
+                            <li><strong>מקטע הקוד (Text Segment):</strong> מכיל את הוראות המכונה. אזור זה מוגדר כ-Read-Only כדי למנוע דריסה עצמית.</li>
+                            <li><strong>מקטע הנתונים (Data + Heap):</strong> מכיל משתנים גלובליים וסטטיים, ואת ה-Heap המיועד להקצאת זיכרון דינמית (כמו `malloc`).</li>
+                            <li><strong>מקטע המחסנית (Stack):</strong> מיועד לניהול קריאות לפונקציות (משתנים מקומיים וכתובות חזרה).</li>
+                        </ul>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">3. קבצים ומערכת הקבצים (Files)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            קובץ הוא אבסטרקציה שיוצרת מערכת ההפעלה המאפשרת למשתמשים לאחסן מידע לטווח ארוך בדיסק מבלי להכיר את מבנה החומרה (סקטורים ורצועות). קבצים מאורגנים במבנה של היררכיית תיקיות (Directories).
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">4. קלט / פלט (Input / Output)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            לכל מחשב יש אמצעי חומרה שונים המשמשים לקלט ולפלט. מערכת ההפעלה מספקת תשתית ופונקציות ממשק המאפשרות לגשת להתקנים בצורה אחידה, תוך שימוש במנהלי התקנים (Drivers) ייעודיים שמטפלים בחומרה הפיזית.
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">5. הגנה ואבטחה (Protection & Security)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            מערכת הפעלה מודרנית מחייבת הפרדה קשיחה ובידוד בין תהליכי משתמש שונים לבין מערכת ההפעלה עצמה. מנגנונים אלו (כמו UID/GID ורמות הרשאה של המעבד) מונעים מתוכנה זדונית או פגומה להשפיע על המערכת ומשאביה.
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">6. המעטפת (The Shell)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            ה-Shell אינו חלק מליבת מערכת ההפעלה, אלא תוכנית משתמש המשמשת ממשק משתמש טקסטואלי המאפשר לאדם להריץ פקודות ולהפעיל תוכניות על ידי הקלדת פקודות (כמו <code>bash</code>, או ה-Command Prompt).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="thought-box">
+                    <h3 class="text-xl font-bold text-fuchsia-950 mb-2">⚖️ הטרייד-אוף של גודל הקוואנטה (Quantum Size)</h3>
+                    <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                        בחלוקת זמן (Timesharing), המתזמן (Scheduler) משתמש באלגוריתם Round Robin ומקצה לכל תהליך פרוסת זמן קבועה מראש הנקראת <strong>קוואנטה (Quantum)</strong>.
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5 pr-2">
+                        <li><strong>קוואנטה קצר מדי (למשל, 1ms):</strong> משפר משמעותית את המקביליות המדומה (הכל רץ חלק), אך גורם ל<strong>בזבוז זמן מעבד קיצוני</strong> עקב ביצוע החלפות הקשר (Context Switches) מרובות בגרעין.</li>
+                        <li><strong>קוואנטה ארוך מדי (למשל, 100ms):</strong> משפר את ניצולת המעבד (פחות תקורה על החלפות הקשר), אך פוגע במקביליות. תהליכים אינטראקטיביים יחוו לאגים והשהיות ארוכות.</li>
+                    </ul>
+                </div>
+
+                <div class="deep-dive">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">דיאגרמת מצבי תהליך (Process States)</h3>
+                    <p class="text-sm text-slate-700 mb-4">
+                        תהליך במערכת עובר בין שלושה מצבים מרכזיים:
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-right text-slate-700 border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                                    <th class="p-3">מעבר</th>
+                                    <th class="p-3">מצב מקור &larr; יעד</th>
+                                    <th class="p-3">גורם המעבר והסבר</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                <tr>
+                                    <td class="p-3 font-bold">מעבר 1</td>
+                                    <td class="p-3">רץ (Running) &larr; חסום (Blocked)</td>
+                                    <td class="p-3">התהליך ממתין לקלט/פלט (I/O) או משאב שאינו זמין כעת. המעבד מתפנה לטובת תהליכים אחרים.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold">מעבר 2</td>
+                                    <td class="p-3">רץ (Running) &larr; מוכן (Ready)</td>
+                                    <td class="p-3">המתזמן הפסיק את ריצת התהליך מאחר שפרוסת הזמן שלו (הקוואנטה) הסתיימה, כדי לאפשר לתהליך אחר לרוץ.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold">מעבר 3</td>
+                                    <td class="p-3">מוכן (Ready) &larr; רץ (Running)</td>
+                                    <td class="p-3">המתזמן בחר בתהליך זה מתוך תור התהליכים המוכנים והקצה לו את המעבד להרצה.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold">מעבר 4</td>
+                                    <td class="p-3">חסום (Blocked) &larr; מוכן (Ready)</td>
+                                    <td class="p-3">האירוע שהתהליך המתין לו התרחש (למשל, הגיע קלט מהדיסק). התהליך חוזר לתור המוכנים וממתין לתורו לרוץ.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 PART 1.6: OS SYSTEM CALLS
+            =========================================== -->
+            <div id="os-syscalls" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.6
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">קריאות מערכת ומעבר מצב (Trap)</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        קריאת מערכת היא בקשה רשמית שמפנה תוכנית משתמש למערכת ההפעלה, כדי שתבצע עבורה פעולה הדורשת הרשאות מיוחדות. היא הדרך היחידה שבה תוכנית יכולה לפנות לגרעין המערכת.
+                    </p>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">תפקידן של קריאות המערכת</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            בגלל מגבלות ה-User Mode, תוכנית אינה יכולה לקרוא קובץ מהדיסק או לכתוב למסך ישירות. היא מחויבת לבקש זאת דרך הממשק המוגדר של מערכת ההפעלה (API). קריאות המערכת (System Calls) מהוות את הממשק הזה - רשימת פונקציות המוגדרת על ידי התקן (כגון POSIX ב-Unix/Linux, או Win32 ב-Windows).
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">פקודת ה-Trap ומעבר מצב</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            קריאת המערכת אינה קריאה רגילה לפונקציה (Call). כדי לעבור מ-User Mode ל-Kernel Mode בבטחה, התוכנית מפעילה פקודת מכונה מיוחדת הנקראת <code>TRAP</code> (או <code>INT 0x80</code> / <code>SYSCALL</code>). פקודה זו מייצרת <strong>חריגה (Exception) מבוקרת</strong> המעבירה שליטה למערכת ההפעלה ומשנה את סיבית המצב ל-0 במעבד, כך שהבקשה תבוצע בהרשאות גבוהות.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="thought-box">
+                    <h3 class="text-xl font-bold text-fuchsia-950 mb-2">⚖️ ספרייה אקדמית: printf() לעומת write()</h3>
+                    <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                        פונקציית הספרייה <code>printf()</code> מבוצעת ב-User Mode ומבצעת פירמוט של המחרוזת. היא אינה יכולה לכתוב ישירות למסך. לשם כך היא משתמשת בקריאת המערכת <code>write()</code>.
+                    </p>
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        לכן, שימוש ישיר בקריאת המערכת <code>write()</code> מציג ביצועים (Performance) מהירים יותר מאשר פונקציית הספרייה <code>printf()</code>, כיוון שהוא חוסך את שכבת פירמוט הנתונים של הספרייה.
+                    </p>
+                </div>
+
+                <!-- SIMULATOR WIDGET -->
+                <div class="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 text-slate-800 p-8 rounded-3xl shadow-xl border-2 border-blue-200/60 my-12 relative overflow-hidden" id="simulator-card-box">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl -z-10"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-indigo-400/10 rounded-full blur-3xl -z-10"></div>
+
+                    <div class="border-b border-blue-200/60 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h4 class="text-xl font-black text-indigo-955 flex items-center gap-2.5">
+                            <span class="p-2 bg-blue-600 text-white rounded-xl shadow-md shadow-blue-500/20 text-base leading-none">⚙️</span>
+                            <span>סימולטור אינטראקטיבי: קריאת המערכת read()</span>
+                        </h4>
+                        <span class="text-[11px] font-bold text-indigo-600 bg-indigo-100/60 border border-indigo-200/50 px-3 py-1 rounded-full">מעבר בין מצב משתמש ומצב ליבה</span>
+                    </div>
+
+                    <!-- CPU Status Bar -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 bg-white/70 backdrop-blur-sm p-4 rounded-2xl border border-blue-100/80 shadow-sm font-mono text-xs text-slate-700">
+                        <div class="flex justify-between items-center bg-white/40 p-2 rounded-lg border border-slate-100">
+                            <span class="text-slate-500">CPU Mode:</span>
+                            <span id="sim-cpu-mode" class="px-2 py-0.5 rounded font-bold bg-green-100 text-green-700">User Mode (Mode Bit = 1)</span>
                         </div>
-                        <div class="cpu-status-item">
-                            <span>Stack Pointer (SP):</span>
-                            <span class="cpu-status-val text-cyan" id="spVal">0x7FFF0000</span>
+                        <div class="flex justify-between items-center bg-white/40 p-2 rounded-lg border border-slate-100">
+                            <span class="text-slate-500">Stack Pointer (SP):</span>
+                            <span id="sim-sp" class="text-blue-600 font-bold">0x7FFF0000</span>
                         </div>
-                        <div class="cpu-status-item">
-                            <span>Register EAX:</span>
-                            <span class="cpu-status-val text-slate" id="eaxVal">-</span>
+                        <div class="flex justify-between items-center bg-white/40 p-2 rounded-lg border border-slate-100">
+                            <span class="text-slate-500">Register EAX:</span>
+                            <span id="sim-eax" class="text-emerald-600 font-bold">-</span>
                         </div>
                     </div>
 
-                    <div class="sim-grid">
-                        <div class="sim-column active" id="userSpaceCol">
-                            <div class="column-header user-col-title">עולם המשתמש (User Space)</div>
-                            
-                            <div class="sim-box" id="boxUserApp">תוכנית משתמש (App)</div>
-                            <div class="sim-box" id="boxLibStub">ספריית C (read wrapper)</div>
-                            
-                            <div class="mt-md">
-                                <div class="text-sm-muted mb-xs">User Stack:</div>
-                                <div class="stack-container" id="userStack">
-                                    <div class="stack-item opacity-30">מחסנית ריקה</div>
+                    <!-- Split Columns -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 relative">
+                        <!-- User Space -->
+                        <div id="sim-col-user" class="border border-green-200/80 bg-green-50/40 p-5 rounded-2xl transition-all duration-300">
+                            <div class="text-sm font-bold text-green-800 mb-4 border-b border-green-200 pb-2">עולם המשתמש (User Space)</div>
+                            <div id="sim-box-user-app" class="bg-white border border-slate-200/80 p-3 rounded-xl text-xs text-center mb-3 transition-all text-slate-700 shadow-sm font-medium">תוכנית משתמש (App Code)</div>
+                            <div id="sim-box-user-lib" class="bg-white border border-slate-200/80 p-3 rounded-xl text-xs text-center mb-4 transition-all text-slate-700 shadow-sm font-medium">פונקציית ספרייה (read wrapper)</div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-500 block mb-1.5">User Stack:</span>
+                                <div id="sim-stack" class="flex flex-col-reverse gap-1.5 min-h-[110px] bg-white/80 border border-slate-200/60 p-2.5 rounded-xl font-mono text-xs shadow-inner">
+                                    <div class="text-slate-400 text-center italic text-[10px]">מחסנית ריקה</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="sim-column" id="kernelSpaceCol">
-                            <div class="column-header kernel-col-title">עולם הליבה (Kernel Space)</div>
-                            
-                            <div class="sim-box" id="boxTrapVector">טבלת פסיקות (Trap Vector)</div>
-                            <div class="sim-box" id="boxSysHandler">מטפל קריאות (sys_read)</div>
-                            <div class="sim-box" id="boxHardware">בקר חומרה (Disk Driver)</div>
+                        <!-- Kernel Space -->
+                        <div id="sim-col-kernel" class="border border-red-200/80 bg-red-50/40 p-5 rounded-2xl transition-all duration-300">
+                            <div class="text-sm font-bold text-red-800 mb-4 border-b border-red-200 pb-2">עולם הליבה (Kernel Space)</div>
+                            <div id="sim-box-kernel-trap" class="bg-white border border-slate-200/80 p-3 rounded-xl text-xs text-center mb-3 transition-all text-slate-700 shadow-sm font-medium">טבלת פסיקות (Trap Vector Table)</div>
+                            <div id="sim-box-kernel-handler" class="bg-white border border-slate-200/80 p-3 rounded-xl text-xs text-center mb-3 transition-all text-slate-700 shadow-sm font-medium">מטפל קריאות (sys_read)</div>
+                            <div id="sim-box-kernel-hw" class="bg-white border border-slate-200/80 p-3 rounded-xl text-xs text-center mb-3 transition-all text-slate-700 shadow-sm font-medium">בקר חומרה (Disk Driver)</div>
                         </div>
                     </div>
 
-                    <div class="sim-controls">
-                        <div class="step-indicator" id="stepIndicator">שלב 1 מתוך 11: תחילת קריאה</div>
-                        <div class="step-desc" id="stepDescription">תוכנית המשתמש מעוניינת לקרוא נתונים מקובץ ומכינה את הפרמטרים לקריאה: read(fd, buffer, nbytes).</div>
+                    <!-- Simulator Controls -->
+                    <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-blue-100/80 shadow-sm">
+                        <div id="sim-step-title" class="text-sm font-bold text-blue-800 mb-1">שלב 1 מתוך 11: תחילת קריאה</div>
+                        <p id="sim-step-desc" class="text-xs text-slate-600 min-h-[50px] mb-4 leading-relaxed">תוכנית המשתמש מעוניינת לקרוא נתונים מקובץ ומכינה את הפרמטרים לקריאה: read(fd, buffer, nbytes).</p>
                         
-                        <div class="control-btns">
-                            <button class="sim-btn" id="btnPrev" onclick="prevStep()" disabled>שלב הקודם &larr;</button>
-                            <button class="sim-btn sim-btn-primary" id="btnNext" onclick="nextStep()">שלב הבא &rarr;</button>
-                            <button class="sim-btn" onclick="resetSimulator()">אתחול</button>
+                        <div class="flex gap-2">
+                            <button id="sim-btn-prev" onclick="prevStepSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-2 px-5 rounded-xl text-xs transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" disabled>הקודם</button>
+                            <button id="sim-btn-next" onclick="nextStepSim()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl text-xs transition-all cursor-pointer shadow-md shadow-blue-500/10 active:scale-95">הבא</button>
+                            <button onclick="resetSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-2 px-5 rounded-xl text-xs transition-colors cursor-pointer mr-auto">איפוס</button>
                         </div>
+                    </div>
 
-                        <div class="crash-test-container">
-                            <div class="text-sm-muted mb-sm">
-                                <strong>ניסוי הגנה (Crash Test):</strong> מה יקרה אם תוכנית משתמש תנסה לעקוף את קריאת המערכת ולגשת ישירות לחומרה (למשל, כתיבה ישירה לכתובת פיזית 0x000)?
+                    <!-- Crash Test Simulation -->
+                    <div class="border-t border-blue-200/60 mt-6 pt-6">
+                        <h5 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">ניסוי הגנה (Crash Test):</h5>
+                        <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                            מה יתרחש אם תוכנית משתמש תנסה לעקוף את מנגנון קריאת המערכת ותפנה ישירות לכתובת זיכרון פיזית רגישה של הדיסק?
+                        </p>
+                        <button onclick="runCrashTest()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-sm shadow-red-500/10 animate-pulse">
+                            <span>💥 הרץ הדמיית קריסת הגנה</span>
+                        </button>
+                        <div id="sim-crash-terminal" class="mt-4 p-4 rounded-xl bg-red-950 text-red-200 border border-red-900 font-mono text-xs leading-relaxed hidden">
+                            <!-- Terminal logs dynamic -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 PART 1.7: OS STRUCTURE
+            =========================================== -->
+            <div id="os-structure" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.7
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מבנה מערכת ההפעלה (Operating System Structure)</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        מבנה הקוד של מערכת ההפעלה קובע את ביצועיה ויציבותה. נסקור חמש ארכיטקטורות עיקריות.
+                    </p>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">1. מערכות מונוליתיות (Monolithic)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            כל מערכת ההפעלה רצה כיחידה אחת בתוך הגרעין ב-Kernel Mode. הכל מקומפל יחד.
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1 pr-2">
+                            <li><strong>יתרון:</strong> ביצועים מקסימליים (מהירות).</li>
+                            <li><strong>חיסרון:</strong> חוסר יציבות. באג קטן באחד הדרייברים יכול להקריס את כל המערכת.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">2. מערכות מרובדות (Layered)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            המערכת מאורגנת בשכבות. שכבה מספקת שירותים רק לשכבה שמעליה.
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1 pr-2">
+                            <li><strong>יתרון:</strong> מודולריות וקלות באיתור תקלות (Debugging).</li>
+                            <li><strong>חיסרון:</strong> פגיעה בביצועים (שרשרת ארוכה) וקושי בתכנון היררכי טהור.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">3. מיקרו-קרנל / שרת-לקוח (Microkernel)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            מרוקנים את הגרעין. המיקרו-קרנל הוא זעיר (רק ניהול פסיקות ותקשורת IPC). רוב השירותים (מערכת קבצים, רשת) רצים כתהליכי משתמש המכונים "שרתים".
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1 pr-2">
+                            <li><strong>יתרון:</strong> יציבות ואמינות (Fault Tolerance). שרת שקורס מאותחל מחדש ללא קריסת המחשב.</li>
+                            <li><strong>חיסרון:</strong> פגיעה בביצועים עקב החלפות הקשר מרובות והעברת הודעות.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">4. מכונות מדומות (Virtual Machines)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            שכבת Control Program (Hypervisor) רצה על החומרה ומדמה את החומרה הפיזית מספר פעמים עבור מערכות הפעלה אורחות (Guest OS). מספקת בידוד מוחלט.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm md:col-span-2">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">5. אקסו-קרנל (Exokernel)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            הגרעין אינו כופה פתרונות (ללא קבצים או זיכרון וירטואלי). הוא רק מקצה חומרה פיזית ומגן עליה. כל האבסטרקציות ממומשות בספריות ברמת המשתמש (Library OS).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="deep-dive">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">מכונות מדומות ומערכת ה-VM/370</h3>
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        במערכת הווירטואליזציה ההיסטורית <strong>VM/370</strong> של IBM, ה-Hypervisor (שכבת ה-CP) אינה מתפקדת כ"מכונה מורחבת". היא אינה מספקת אבסטרקציות נוחות למתכנת (כמו ניהול קבצים), אלא משחזרת העתקים מדויקים של החומרה הפיזית הבלתי-מרוסקת.
+                    </p>
+                    <p class="text-sm text-slate-700 leading-relaxed mt-2">
+                        מערכת ההפעלה האורחת הרצה בתוך המכונה המדומה (כמו CMS) היא זו שמספקת את אבסטרקציות המכונה המורחבת למתכנת.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 PART 1.8: OS GLOSSARY
+            =========================================== -->
+            <div id="os-glossary" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        חלק 1.8
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים מסכם</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        ריכוז הגדרות ומושגי מפתח מתוך פרק 1, מחולקים לפי נושאים ומותאמים לדרישות הבחינה.
+                    </p>
+                </header>
+
+                <div class="space-y-10">
+                    <!-- Group 1 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-800">קבוצה א': תפקידי מערכת ההפעלה ומבט-על</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מערכת הפעלה (Operating System - OS)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">שכבת התוכנה הראשונה הרצה ישירות מעל החומרה במצב מיוחס. תפקידה לספק לתוכניות המשתמש מודל נקי ופשוט של המחשב, ולנהל את כל משאבי המערכת ביעילות ובבטחה.</div>
                             </div>
-                            <button class="sim-btn sim-btn-danger" onclick="runCrashTest()">הרץ הדמיית קריסת הגנה</button>
-                            <div class="crash-terminal" id="crashTerminal"></div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מכונה מורחבת / מדומה (Extended / Virtual Machine)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">נקודת המבט מלעיל-למטה (Top-Down) על מערכת ההפעלה. המערכת מציגה למשתמש אבסטרקציות (הפשטות) נוחות, ובכך מסתירה את המורכבות והפרטים המייגעים של החומרה הגולמית.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מנהל משאבים (Resource Manager)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">נקודת המבט מלמטה-למעלה (Bottom-Up) על מערכת ההפעלה. המערכת פועלת כבורר וכמנהל מרכזי שתפקידו להקצות משאבים מוגבלים (מעבד, זיכרון, התקנים) בין תהליכים שונים המתחרים עליהם במקביל.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">ריבוב בזמן (Time Multiplexing)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">שיטה לניהול משאבים שבה משאב פיזי יחיד (כמו מעבד) מחולק בין מספר תהליכים על ציר הזמן — תהליך אחד משתמש במשאב לזמן קצר, ואז מפנה אותו לטובת תהליך אחר.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">ריבוב במרחב (Space Multiplexing)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">שיטה לניהול משאבים שבה משאב פיזי (כמו זיכרון ראשי או דיסק קשיח) מחולק פיזית ובו-זמנית בין מספר צרכנים, כאשר כל אחד מקבל "חתיכה" או מקטע נפרד משלו במרחב.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 2 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-800">קבוצה ב': אבולוציה היסטורית</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מערכת אצווה (Batch System)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">שיטת עבודה מהדור השני של המחשבים. כדי למנוע מהמעבד היקר לעמוד סרק, אספו קבוצת עבודות (Jobs) על גבי כרטיסי ניקוב, קראו אותן לסרט מגנטי, והמחשב הריץ אותן ברצף אחת אחרי השנייה ללא התערבות אנושית.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">ריבוב תוכניות (Multiprogramming)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">טכנולוגיה (מהדור השלישי) המאפשרת לשמור מספר תהליכים בזיכרון הראשי בו-זמנית. כאשר התהליך הנוכחי ממתין לפעולת קלט/פלט (I/O) איטית, מערכת ההפעלה מעבירה מיד את המעבד להריץ תהליך אחר, ובכך מונעת בזבוז זמן מעבד.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">Spooling</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">טכניקה שבה פעולות קלט/פלט מבוצעות ברקע מול הדיסק הקשיח. לדוגמה, במקום שהמעבד ימתין למדפסת איטית, מערכת ההפעלה כותבת את הפלט לקובץ זמני בדיסק (Spool) וממשיכה לעבוד, בזמן שהמדפסת קוראת מהדיסק בקצב שלה.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">שיתוף זמן (Timesharing)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">פיתוח מתקדם של מולטיפרוגרמינג, שבו המעבד מחולק לפרוסות זמן קטנות מאוד ועובר במהירות אדירה בין משתמשים רבים היושבים מול מסופים שונים. המהירות מייצרת אשליה לוגית שלכל משתמש יש מחשב פרטי משלו.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 3 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-800">קבוצה ג': ארכיטקטורת חומרה ומנגנוני הגנה</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מצב מיוחס (Kernel Mode / Supervisor Mode)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מצב עבודה של המעבד (CPU) שבו מורצת מערכת ההפעלה. במצב זה אין מגבלות חומרה: למעבד מותר לבצע את כל פקודות המכונה הקיימות ולגשת לכל כתובת פיזית בזיכרון.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מצב משתמש (User Mode)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מצב עבודה שבו מורצות תוכניות המשתמש הרגילות. במצב זה פקודות חומרה מסוימות (פקודות מיוחסות, כגון שינוי הגדרות זיכרון או גישה ישירה להתקנים) חסומות לחלוטין על ידי החומרה כדי למנוע פגיעה במערכת.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">סיבית המצב (Mode Bit)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">סיבית פיזית בתוך אוגר ה-PSW של המעבד, הקובעת האם המעבד נמצא כרגע ב-Kernel Mode (0) או ב-User Mode (1).</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מילת מצב התוכנית (PSW - Program Status Word)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">אוגר חומרה מרכזי במעבד המכיל מידע קריטי על סטטוס המערכת הנוכחי: סיבית המצב, קודי תנאי של פעולות אריתמטיות (כמו גלישה או חלוקה באפס), ועוד.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מונה הפקודות (PC - Program Counter)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">אוגר מעבד המכיל את כתובת הזיכרון של פקודת המכונה הבאה שעומדת להתבצע.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מצביע המחסנית (SP - Stack Pointer)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">אוגר מעבד המצביע על הכתובת הנוכחית של ראש מחסנית הזיכרון (Stack) של התהליך הרץ, המשמשת לשמירת משתנים מקומיים וכתובות חזרה מפונקציות.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">היררכיית זיכרון (Memory Hierarchy)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מודל תכנוני של חומרת הזיכרון במחשב, המסודר כפירמידה: בראש האוגרים המהירים והיקרים ביותר, מתחתיהם זיכרון המטמון (Cache), הזיכרון הראשי (RAM), ובתחתית כונני האחסון האיטיים והזולים (SSD/HDD).</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">יחידת ניהול זיכרון (MMU - Memory Management Unit)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">רכיב חומרה (לרוב כחלק מהמעבד) שתפקידו לתרגם בזמן אמת כתובות לוגיות/וירטואליות שמייצר התהליך לכתובות פיזיות אמיתיות בזיכרון ה-RAM, תוך אכיפת הגנה ובידוד בין תהליכים.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">פסיקה (Interrupt)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">אות חומרה הנשלח מהתקן חיצוני (כמו מקלדת או דיסק) אל המעבד, המודיע לו שאירוע מסוים קרה. הפסיקה גורמת למעבד להפסיק מיד את ריצת התוכנית הנוכחית, לעבור ל-Kernel Mode ולעבור להריץ פונקציית טיפול בפסיקה (Interrupt Handler) של מערכת ההפעלה.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מלכודת / חריגה (Trap / Exception)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">פסיקה פנימית שמיוצרת באופן יזום על ידי התוכנה עצמה. זה קורה בשני מקרים: עקב שגיאה (כמו חלוקה באפס) או באופן מכוון בעת ביצוע קריאת מערכת באמצעות פקודת TRAP.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 4 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-800">קבוצה ד': מושגי היסוד הלוגיים</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">תהליך (Process)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">האבסטרקציה המרכזית של המעבד. תהליך הוא תוכנית בזמן ריצה (ישות אקטיבית), הכוללת את הקוד, מרחב הזיכרון הדינמי שלה, ותמונת המצב של אוגרי המעבד.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מרחב כתובות (Address Space)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">טווח כתובות הזיכרון הלוגיות שהתהליך רשאי לקרוא ולכתוב אליהן. מרחב זה מבודד לחלוטין ומוגן מפני תהליכים אחרים.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">טבלת התהליכים (Process Table)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מבנה נתונים מרכזי בתוך גרעין מערכת ההפעלה, המכיל רשומות (Process Control Blocks - PCBs) עבור כל התהליכים במערכת. בטבלה נשמר המידע הקריטי הדרוש לשחזור התהליך בעת החלפת הקשר (Context Switch).</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">קובץ (File)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">האבסטרקציה המרכזית של מערכת האחסון. קובץ הוא רצף לוגי של בתים (Bytes) שניתן לשמור לטווח ארוך, המסתיר את המבנה הפיזי והסקטורים של הדיסק.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מדריך / תיקייה (Directory)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">קובץ מיוחד המנוהל עלי ידי מערכת ההפעלה, המכיל רשימה של שמות קבצים ומצביעים למיקומם, ומשמש לארגון היררכי של קבצים במבנה של עץ.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מדריך שורש (Root Directory)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">התיקייה העליונה ביותר בעץ מערכת הקבצים, שממנה מסתעפים כל שאר הקבצים והתיקיות. מסומנת ב-Unix באמצעות לוכסן יחיד (/).</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">נתיב מוחלט (Absolute Path)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">נתיב למיקום קובץ המתחיל ישירות ממדריך השורש (למשל: /usr/ast/bin/file.txt). הוא יישאר זהה ללא קשר למיקום הנוכחי של התהליך.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">נתיב יחסי (Relative Path)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">נתיב למיקום קובץ המחושב יחסית למדריך הנוכחי שבו נמצא התהליך באותו רגע (למשל: bin/file.txt).</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מדריך נוכחי / מדריך עבודה (Working / Current Directory)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">התיקייה שבה נמצא תהליך מסוים ברגע נתון. כל נתיב יחסי שהתהליך יבקש יתחיל מנקודה זו.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מזהה קובץ (File Descriptor - fd)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מספר שלם קטן שמחזירה מערכת ההפעלה בעת פתיחת קובץ. המספר משמש כאינדקס לטבלה פנימית של התהליך, ומאפשר לו לבצע פעולות קריאה וכתיבה על הקובץ.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">צינור (Pipe)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">אבסטרקציה המאפשרת תקשורת בין שני תהליכים (IPC). הצינור מתנהג כקובץ מדומה בזיכרון, שבו הפלט של תהליך אחד מוזרק ישירות כקלט של תהליך אחר.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מעטפת (Shell)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">תוכנית ממשק המשתמש הטקסטואלית (CLI). היא אינה חלק מגרעין המערכת אלא תהליך משתמש רגיל שתפקידו לקרוא פקודות מהמשתמש, לפענח אותן, ולהשתמש בקריאות מערכת כדי להריץ אותן.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מזהה משתמש / קבוצה (UID / GID)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מספרים ייחודיים המוצמדים לכל משתמש ותהליך במערכת, ומשמשים את מערכת ההפעלה כדי לאכוף הרשאות ואבטחה.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">קיפאון (Deadlock)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מצב שבו שני תהליכים (או יותר) חסומים וממתינים זה לזה באופן מעגלי לקבלת משאב שהשני מחזיק, כך שאף אחד מהם אינו יכול להמשיך בריצתו.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 5 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-800">קבוצה ה': קריאות מערכת ליבה</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">fork()</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">קריאת מערכת ייחודית המשכפלת את התהליך הקורא (האב) ומייצרת תהליך חדש לחלוטין (הבן). היא מחזירה את מזהה התהליך (PID) של הבן לאב, ו-0 לבן.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">execve() / exec()</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">קריאת מערכת הטוענת קובץ הרצה חדש מהדיסק אל תוך התהליך הנוכחי, ודורסת לחלוטין את הקוד והנתונים הקודמים שלו. התהליך משנה את זהותו ומריץ את התוכנית החדשה.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">wait()</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">קריאה הגורמת לתהליך האב להשעות את ריצתו (להיחסם) עד שאחד מתהליכי הבנים שלו יסיים את ריצתו.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">exit()</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">קריאה שבאמצעותה תהליך מודיע באופן יזום למערכת ההפעלה שהוא סיים את עבודתו, מה שגורם לשחרור כל משאביו בזיכרון והעברת סטטוס סיום לאב.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 6 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-800">קבוצה ו': מבנה מערכות הפעלה</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מערכת מונוליתית (Monolithic System)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מבנה שבו כל רכיבי מערכת ההפעלה (ניהול זיכרון, קבצים, דרייברים) מקומפלים יחד לקובץ הרצה יחיד וגדול הרץ כולו ב-Kernel Mode. מהיר מאוד אך פגיע לקריסות.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מערכת מרובדות (Layered System)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">תכנון היררכי שבו המערכת מחולקת לשכבות, כאשר כל שכבה משתמשת רק בשירותי השכבה שמתחתיה ומשרתת רק את זו שמעליה.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מיקרו-קרנל (Microkernel)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">ארכיטקטורה שבה הגרעין מצומצם למינימום ההכרחי (רק תקשורת IPC ותזמון בסיסי), בעוד שאר השירותים (מערכת קבצים, דרייברים) רצים כתהליכי משתמש רגילים ומבודדים (שרתים).</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מודל שרת-לקוח (Client-Server)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">מודל העבודה בתוך מיקרו-קרנל — תהליך משתמש ("לקוח") מבקש שירות על ידי שליחת הודעה דרך הגרעין לתהליך מערכת הפעלה ("שרת"), וממתין לתשובה.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">Hypervisor / VMM (Virtual Machine Monitor)</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">שכבת תוכנה הרצה ישירות על החומרה הפיזית ומדמה אותה מספר פעמים, כדי לאפשר הרצה של מספר מערכות הפעלה שלמות ושונות במקביל על אותו מחשב.</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">Exokernel</div>
+                                <div class="text-sm text-slate-600 leading-relaxed flex-1">ארכיטקטורה שבה הגרעין אינו מספק אבסטרקציות כלל, אלא רק מקצה ומגן על משאבי חומרה גולמיים עבור ספריות ברמת המשתמש (Library OS), המממשות את האבסטרקציות בעצמן באופן מותאם אישית.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="concept-box">
-                    <div class="concept-box-title">💡 הקישור הפילוסופי: המכונה המדומה וקריאות המערכת</div>
-                    <p class="text-wrap-container">כפי שראינו בסימולטור, כאשר קריאת המערכת (כמו <code>read</code>) מסתיימת, היא מחזירה ערך למשתמש (Return Value) - למשל מספר הבתים שנקראו בהצלחה, או קוד שגיאה מסודר במקרה של תקלה. <strong>העובדה שמערכת ההפעלה מטפלת בשגיאות חומרה מורכבות ומחזירה תשובה נקייה ואחידה למשתמש היא הביטוי המעשי המובהק ביותר של תפקידה כמכונה מדומה / מורחבת (Extended Machine).</strong> היא מסתירה את כל הכישלונות והפרטים הפיזיים המייגעים מאחורי ממשק תוכנה נקי ואמין.</p>
-                </div>
-            </section>
-
-            <section id="section-1-7">
-                <h2>1.7 מבנה מערכת ההפעלה (Operating System Structure)</h2>
-                <p>ארגון הקוד של מערכת ההפעלה קובע את יציבותה וביצועיה. קיימים חמישה מבנים עיקריים:</p>
-                
-                <div class="card-grid">
-                    <article class="card">
-                        <h4>1. מערכות מונוליתיות (Monolithic)</h4>
-                        <p>מערכת מונוליתית היא למעשה אוסף של פונקציות שונות שפועלות כיחידה אחת במצב מיוחס. הכל מקומפל לקובץ ריצה אחד ענק.</p>
-                        <p><strong>יתרון:</strong> ביצועים מקסימליים ומהירות גבוהה ביותר.</p>
-                        <p><strong>חיסרון:</strong> הבעיה המרכזית היא היעדר גבולות לוגיים בין מודולים – כל פונקציה במערכת ההפעלה יכולה לקרוא לכל פונקציה אחרת ללא שום הגנה, חסימה או הסתרת מידע (Information Hiding). לכן, באג קטן ביותר (למשל בדרייבר של מדפסת) יכול להשחית את הזיכרון ולהקריס את המחשב כולו.</p>
-                    </article>
-                    
-                    <article class="card">
-                        <h4>2. מערכות מרובדות (Layered Systems)</h4>
-                        <p>המערכת מאורגנת בשכבות (הררכיה). כל שכבה משתמשת בשירותים של השכבה שמתחתיה ומספקת שירותים לשכבה שמעליה.</p>
-                        <p><strong>יתרון:</strong> מודולריות וקלות באיתור באגים (Debugging).</p>
-                        <p><strong>חיסרון:</strong> פגיעה בביצועים עקב שרשרת קריאות ארוכה וקושי בתכנון היררכי מושלם.</p>
-                    </article>
-
-                    <article class="card">
-                        <h4>3. מיקרו-קרנל (Microkernel / Client-Server)</h4>
-                        <p>מרוקנים את הגרעין מרוב שירותיו (כמו מערכת קבצים ורשת) ומעבירים אותם לרוץ במרחב המשתמש כשרתים עצמאיים. הגרעין נותר זעיר ומטפל רק בניתוב פסיקות, ניהול מעבד ותקשורת (IPC).</p>
-                        <p><strong>יתרון:</strong> יציבות מוחלטת (Fault Tolerance). אם שרת מערכת הקבצים קורס, הוא מאותחל מחדש ללא קריסת מערכת ההפעלה.</p>
-                        <p><strong>חיסרון:</strong> פגיעה בביצועים עקב החלפות הקשר מרובות ומעבר הודעות תקשורת.</p>
-                    </article>
-
-                    <article class="card">
-                        <h4>4. מכונות מדומות (Virtual Machines)</h4>
-                        <p>שכבת בקרה (Hypervisor) רצה ישירות על החומרה ומדמה את החומרה הפיזית באופן מדויק מספר פעמים, ומאפשרת למספר מערכות הפעלה אורחות (Guest OS) לרוץ במקביל בבידוד מוחלט.</p>
-                        <p><strong>יתרון:</strong> אבטחה, בידוד וניצול יעיל של משאבי חומרה פיזיים.</p>
-                    </article>
-
-                    <article class="card">
-                        <h4>5. אקסו-קרנל (Exokernel)</h4>
-                        <p>הגרעין אינו כופה אבסטרקציות (כגון קבצים או זיכרון וירטואלי). הוא רק מקצה משאבים פיזיים ומגן עליהם. כל האבסטרקציות מיושמות בספריות ברמת המשתמש (Library OS).</p>
-                    </article>
-                </div>
-
-                <div class="concept-box">
-                    <div class="concept-box-title">💡 דגש אקדמי ממדריך הלמידה: מכונות מדומות ו-VM/370</div>
-                    <p class="text-wrap-container">אחת השאלות הנפוצות בקורס נוגעת לתפקוד מערכת ההפעלה <strong>VM/370</strong> של IBM. בניגוד למערכות הפעלה רגילות, שכבת ה-CP (Control Program) של VM/370 אינה מספקת אבסטרקציות מורחבות למשתמש (אינה משמשת כ"מכונה מורחבת"). היא משמשת רק כמשחזרת העתקים מדויקים של החומרה הפיזית (מנהלת משאבים). מערכת ההפעלה האורחת הרצה מעליה (כגון CMS) היא זו שמספקת את ממשק המכונה המורחבת למתכנתים.</p>
-                </div>
-            </section>
-
-            <section id="section-1-10">
-                <h2>1.10 מילון מושגים מסכם</h2>
-                
-                <div class="glossary-group">
-                    <h3 class="mt-0">קבוצה א': תפקידי מערכת ההפעלה ומבט-על</h3>
-                    <dl class="glossary-list">
-                        <dt>מערכת הפעלה (Operating System - OS)</dt>
-                        <dd>שכבת התוכנה הראשונה הרצה ישירות מעל החומרה במצב מיוחס. תפקידה לספק לתוכניות המשתמש מודל נקי ופשוט של המחשב, ולנהל את כל משאבי המערכת ביעילות ובבטחה.</dd>
-                        
-                        <dt>מכונה מורחבת / מדומה (Extended / Virtual Machine)</dt>
-                        <dd>נקודת המבט מלמעלה-למטה (Top-Down) על מערכת ההפעלה. המערכת מציגה למשתמש אבסטרקציות (הפשטות) נוחות, ובכך מסתירה את המורכבות והפרטים המייגעים של החומרה הגולמית.</dd>
-                        
-                        <dt>מנהל משאבים (Resource Manager)</dt>
-                        <dd>נקודת המבט מלמטה-למעלה (Bottom-Up) על מערכת ההפעלה. המערכת פועלת כבורר וכמנהל מרכזי שתפקידו להקצות משאבים מוגבלים (מעבד, זיכרון, התקנים) בין תהליכים שונים המתחרים עליהם במקביל.</dd>
-                        
-                        <dt>ריבוב בזמן (Time Multiplexing)</dt>
-                        <dd>שיטה לניהול משאבים שבה משאב פיזי יחיד (כמו מעבד) מחולק בין מספר תהליכים על ציר הזמן — תהליך אחד משתמש במשאב לזמן קצר, ואז מפנה אותו לטובת תהליך אחר.</dd>
-                        
-                        <dt>ריבוב במרחב (Space Multiplexing)</dt>
-                        <dd>שיטה לניהול משאבים שבה משאב פיזי (כמו זיכרון ראשי או דיסק קשיח) מחולק פיזית ובו-זמנית בין מספר צרכנים, כאשר כל אחד מקבל "חתיכה" או מקטע נפרד משלו במרחב.</dd>
-                    </dl>
-                </div>
-
-                <div class="glossary-group">
-                    <h3 class="mt-0">קבוצה ב': אבולוציה היסטורית</h3>
-                    <dl class="glossary-list">
-                        <dt>מערכת אצווה (Batch System)</dt>
-                        <dd>שיטת עבודה מהדור השני של המחשבים. כדי למנוע מהמעבד היקר לעמוד סרק, אספו קבוצת עבודות (Jobs) על גבי כרטיסי ניקוב, קראו אותן לסרט מגנטי, והמחשב הריץ אותן ברצף אחת אחרי השנייה ללא התערבות אנושית.</dd>
-                        
-                        <dt>ריבוב תוכניות (Multiprogramming)</dt>
-                        <dd>טכנולוגיה (מהדור השלישי) המאפשרת לשמור מספר תהליכים בזיכרון הראשי בו-זמנית. כאשר התהליך הנוכחי ממתין לפעולת קלט/פלט (I/O) איטית, מערכת ההפעלה מעבירה מיד את המעבד להריץ תהליך אחר, ובכך מונעת בזבוז זמן מעבד.</dd>
-                        
-                        <dt>Spooling (Simultaneous Peripheral Operations On Line)</dt>
-                        <dd>טכניקה שבה פעולות קלט/פלט מבוצעות ברקע מול הדיסק הקשיח. לדוגמה, במקום שהמעבד ימתין למדפסת איטית, מערכת ההפעלה כותבת את הפלט לקובץ זמני בדיסק (Spool) וממשיכה לעבוד, בזמן שהמדפסת קוראת מהדיסק בקצב שלה.</dd>
-                        
-                        <dt>שיתוף זמן (Timesharing)</dt>
-                        <dd>פיתוח מתקדם של מולטיפרוגרמינג, שבו המעבד מחולק לפרוסות זמן קטנות מאוד ועובר במהירות אדירה בין משתמשים רבים היושבים מול מסופים שונים. המהירות מייצרת אשליה לוגית שלכל משתמש יש מחשב פרטי משלו.</dd>
-                    </dl>
-                </div>
-
-                <div class="glossary-group">
-                    <h3 class="mt-0">קבוצה ג': ארכיטקטורת חומרה ומנגנוני הגנה</h3>
-                    <dl class="glossary-list">
-                        <dt>מצב מיוחס (Kernel Mode / Supervisor Mode)</dt>
-                        <dd>מצב עבודה של המעבד (CPU) שבו מורצת מערכת ההפעלה. במצב זה אין מגבלות חומרה: למעבד מותר לבצע את כל פקודות המכונה הקיימות ולגשת לכל כתובת פיזית בזיכרון.</dd>
-                        
-                        <dt>מצב משתמש (User Mode)</dt>
-                        <dd>מצב עבודה שבו מורצות תוכניות המשתמש הרגילות. במצב זה פקודות חומרה מסוימות (פקודות מיוחסות, כגון שינוי הגדרות זיכרון או גישה ישירה להתקנים) חסומות לחלוטין על ידי החומרה כדי למנוע פגיעה במערכת.</dd>
-                        
-                        <dt>סיבית המצב (Mode Bit)</dt>
-                        <dd>סיבית פיזית בתוך אוגר ה-PSW של המעבד, הקובעת האם המעבד נמצא כרגע ב-Kernel Mode (למשל 0) או ב-User Mode (למשל 1).</dd>
-                        
-                        <dt>מילת מצב התוכנית (PSW - Program Status Word)</dt>
-                        <dd>אוגר חומרה מרכזי במעבד המכיל מידע קריטי על סטטוס המערכת הנוכחי: סיבית המצב, קודי תנאי של פעולות אריתמטיות (כמו גלישה או חלוקה באפס), ועוד.</dd>
-                        
-                        <dt>מונה הפקודות (PC - Program Counter)</dt>
-                        <dd>אוגר מעבד המכיל את כתובת הזיכרון של פקודת המכונה הבאה שעומדת להתבצע.</dd>
-                        
-                        <dt>מצביע המחסנית (SP - Stack Pointer)</dt>
-                        <dd>אוגר מעבד המצביע על הכתובת הנוכחית של ראש מחסנית הזיכרון (Stack) של התהליך הרץ, המשמשת לשמירת משתנים מקומיים וכתובות חזרה מפונקציות.</dd>
-                        
-                        <dt>היררכיית זיכרון (Memory Hierarchy)</dt>
-                        <dd>מודל תכנוני של חומרת הזיכרון במחשב, המסודר כפירמידה: בראש האוגרים המהירים והיקרים ביותר, מתחתיהם זיכרון המטמון (Cache), הזיכרון הראשי (RAM), ובתחתית כונני האחסון האיטיים והזולים (SSD/HDD).</dd>
-                        
-                        <dt>יחידת ניהול זיכרון (MMU - Memory Management Unit)</dt>
-                        <dd>רכיב חומרה (לרוב כחלק מהמעבד) שתפקידו לתרגם בזמן אמת כתובות לוגיות/וירטואליות שמייצר התהליך לכתובות פיזיות אמיתיות בזיכרון ה-RAM, תוך אכיפת הגנה ובידוד בין תהליכים.</dd>
-                        
-                        <dt>פסיקה (Interrupt)</dt>
-                        <dd>אות חומרה הנשלח מהתקן חיצוני (כמו מקלדת, עכבר או כרטיס רשת) אל המעבד, המודיע לו שאירוע מסוים קרה. הפסיקה גורמת למעבד להפסיק מיד את ריצת התוכנית הנוכחית, לעבור ל-Kernel Mode ולעבור להריץ פונקציית טיפול בפסיקה (Interrupt Handler) של מערכת ההפעלה.</dd>
-                        
-                        <dt>מלכודת / חריגה (Trap / Exception)</dt>
-                        <dd>פסיקה פנימית שמיוצרת באופן יזום על ידי התוכנה עצמה. זה קורה בשני מקרים: עקב שגיאה (כמו חלוקה באפס או גישה לא חוקית לזיכרון) או באופן מכוון בעת ביצוע קריאת מערכת באמצעות פקודת TRAP.</dd>
-                    </dl>
-                </div>
-
-                <div class="glossary-group">
-                    <h3 class="mt-0">קבוצה ד': מושגי היסוד הלוגיים (סעיף 1.5)</h3>
-                    <dl class="glossary-list">
-                        <dt>תהליך (Process)</dt>
-                        <dd>האבסטרקציה המרכזית של המעבד. תהליך הוא תוכנית בזמן ריצה (ישות אקטיבית), הכוללת את הקוד, מרחב הזיכרון הפרטי שלה, ותמונת המצב של אוגרי המעבד.</dd>
-                        
-                        <dt>מרחב כתובות (Address Space)</dt>
-                        <dd>טווח כתובות הזיכרון הלוגיות שהתהליך רשאי לקרוא ולכתוב אליהן. מרחב זה מבודד לחלוטין ומוגן מפני תהליכים אחרים.</dd>
-                        
-                        <dt>טבלת התהליכים (Process Table)</dt>
-                        <dd>מבנה נתונים מרכזי בתוך גרעין מערכת ההפעלה, המכיל רשומות (Process Control Blocks - PCBs) עבור כל התהליכים במערכת. בטבלה נשמר המידע הקריטי הדרוש לשחזור התהליך בעת החלפת הקשר (Context Switch).</dd>
-                        
-                        <dt>קובץ (File)</dt>
-                        <dd>האבסטרקציה המרכזית של מערכת האחסון. קובץ הוא רצף לוגי של בתים (Bytes) שניתן לשמור לטווח ארוך, המסתיר את המבנה הפיזי והסקטורים של הדיסק.</dd>
-                        
-                        <dt>מדריך / תיקייה (Directory)</dt>
-                        <dd>קובץ מיוחד המנוהל ע"י מערכת ההפעלה, המכיל רשימה של שמות קבצים ומצביעים למיקומם, ומשמש לארגון היררכי של קבצים במבנה של עץ.</dd>
-                        
-                        <dt>מדריך שורש (Root Directory)</dt>
-                        <dd>התיקייה העליונה ביותר בעץ מערכת הקבצים, שממנה מסתעפים כל שאר הקבצים והתיקיות. מסומנת ב-Unix באמצעות לוכסן יחיד (/).</dd>
-                        
-                        <dt>נתיב מוחלט (Absolute Path)</dt>
-                        <dd>נתיב למיקום קובץ המתחיל ישירות ממדריך השורש (למשל: /usr/ast/bin/file.txt). הוא יישאר זהה ללא קשר למיקום הנוכחי של התהליך.</dd>
-                        
-                        <dt>נתיב יחסי (Relative Path)</dt>
-                        <dd>נתיב למיקום קובץ המחושב יחסית למדריך הנוכחי שבו נמצא התהליך באותו רגע (למשל: bin/file.txt).</dd>
-                        
-                        <dt>מדריך נוכחי / מדריך עבודה (Working / Current Directory)</dt>
-                        <dd>התיקייה שבה נמצא תהליך מסוים ברגע נתון. כל נתיב יחסי שהתהליך יבקש יתחיל מנקודה זו.</dd>
-                        
-                        <dt>מזהה קובץ (File Descriptor - fd)</dt>
-                        <dd>מספר שלם (Integer) קטן שמחזירה מערכת ההפעלה בעת פתיחת קובץ (open). המספר משמש כאינדקס לטבלה פנימית של התהליך, ומאפשר לו לבצע פעולות read ו-write על הקובץ מבלי להשתמש בשמו המלא כל פעם.</dd>
-                        
-                        <dt>צינור (Pipe)</dt>
-                        <dd>אבסטרקציה המאפשרת תקשורת בין שני תהליכים (IPC). הצינור מתנהג כקובץ מדומה בזיכרון, שבו הפלט (stdout) של תהליך אחד מוזרק ישירות כקלט (stdin) של תהליך אחר.</dd>
-                        
-                        <dt>מעטפת (Shell)</dt>
-                        <dd>תוכנית ממשק המשתמש הטקסטואלית (CLI). היא אינה חלק מגרעין המערכת אלא תהליך משתמש רגיל שתפקידו לקרוא פקודות מהמשתמש, לפענח אותן, ולהשתמש בקריאות מערכת כדי להריץ אותן.</dd>
-                        
-                        <dt>מזהה משתמש / קבוצה (UID / GID)</dt>
-                        <dd>מספרים ייחודיים המוצמדים לכל משתמש ותהליך במערכת, ומשמשים את מערכת ההפעלה כדי לאכוף הרשאות ואבטחה (למשל, לבדוק האם לתהליך מותר לקרוא קובץ מסוים).</dd>
-                        
-                        <dt>קיפאון (Deadlock)</dt>
-                        <dd>מצב שבו שני תהליכים (או יותר) חסומים וממתינים זה לזה באופן מעגלי לקבלת משאב שהשני מחזיק, כך שאף אחד מהם אינו יכול להמשיך בריצתו.</dd>
-                    </dl>
-                </div>
-
-                <div class="glossary-group">
-                    <h3 class="mt-0">קבוצה ה': קריאות מערכת ליבה (סעיף 1.6)</h3>
-                    <dl class="glossary-list">
-                        <dt><code dir="ltr">fork()</code></dt>
-                        <dd>קריאת מערכת ייחודית המשכפלת את התהליך הקורא (האב) ומייצרת תהליך חדש לחלוטין (הבן). היא מחזירה את ה-PID של הבן לאבא, ו-0 לבן.</dd>
-                        
-                        <dt><code dir="ltr">execve() / exec()</code></dt>
-                        <dd>קריאת מערכת הטוענת קובץ הרצה חדש מהדיסק אל תוך התהליך הנוכחי, ודורסת לחלוטין את הקוד והנתונים הקודמים שלו. התהליך משנה את זהותו ומריץ את התוכנית החדשה מאותה נקודה.</dd>
-                        
-                        <dt><code dir="ltr">wait()</code></dt>
-                        <dd>קריאה הגורמת לתהליך האב להשעות את ריצתו (להיחסם) עד שאחד מתהליכי הבנים שלו יסיים את ריצתו.</dd>
-                        
-                        <dt><code dir="ltr">exit()</code></dt>
-                        <dd>קריאה שבאמצעותה תהליך מודיע באופן יזום למערכת ההפעלה שהוא סיים את עבודתו, מה שגורם לשחרור כל משאביו בזיכרון והעברת סטטוס סיום לאביו.</dd>
-                    </dl>
-                </div>
-
-                <div class="glossary-group">
-                    <h3 class="mt-0">קבוצה ו': מבנה מערכות הפעלה (סעיף 1.7)</h3>
-                    <dl class="glossary-list">
-                        <dt>מערכת מונוליתית (Monolithic System)</dt>
-                        <dd>מבנה שבו כל רכיבי מערכת ההפעלה (ניהול זיכרון, קבצים, דרייברים) מקומפלים יחד לקובץ הרצה יחיד וגדול הרץ כולו ב-Kernel Mode. מהיר מאוד אך פגיע לקריסות.</dd>
-                        
-                        <dt>מערכת מרובדות (Layered System)</dt>
-                        <dd>תכנון היררכי שבו המערכת מחולקת לשכבות, כאשר כל שכבה משתמשת רק בשירותי השכבה שמתחתיה ומשרתת רק את זו שמעליה.</dd>
-                        
-                        <dt>מיקרו-קרנל (Microkernel)</dt>
-                        <dd>ארכיטקטורה שבה הגרעין ה-Kernel מצומצם למינימום ההכרחי (רק תקשורת IPC ותזמון בסיסי), בעוד שאר השירותים (מערכת קבצים, דרייברים) רצים כתהליכי משתמש רגילים ומבודדים (שרתים). מגביר יציבות אך אטי יותר.</dd>
-                        
-                        <dt>מודל שרת-לקוח (Client-Server)</dt>
-                        <dd>המודל העבודה בתוך מיקרו-קרנל — תהליך משתמש ("לקוח") מבקש שירות על ידי שליחת הודעה דרך הגרעין לתהליך מערכת הפעלה ("שרת"), וממתין לתשובה.</dd>
-                        
-                        <dt>Hypervisor / VMM (Virtual Machine Monitor)</dt>
-                        <dd>שכבת תוכנה הרצה ישירות על החומרה הפיזית ומדמה אותה מספר פעמים, כדי לאפשר הרצה של מספר מערכות הפעלה שלמות ושונות ("אורחות") במקביל על אותו מחשב.</dd>
-                        
-                        <dt>Exokernel</dt>
-                        <dd>ארכיטקטורה שבה הגרעין אינו מספק אבסטרקציות כלל, אלא רק מקצה ומגן על משאבי חומרה גולמיים עבור ספריות ברמת המשתמש (Library OS), המממשות את האבסטרקציות בעצמן באופן מותאם אישית.</dd>
-                    </dl>
-                </div>
-            </section>
-
-            <section id="section-practice-questions">
-                <h2>שאלות חזרה ותרגול (מתוך מדריך הלמידה)</h2>
-                <p>להלן שאלות החזרה המופיעות במדריך הלמידה לפרק 1, פתורות ומנותחות על פי עקרונות הבחינה של הקורס:</p>
-                
-                <div class="mb-xl">
-                    <span class="question-badge">שאלה 1 - תיווך מערכת ההפעלה</span>
-                    <h3 class="mt-0">מדוע חייבת להיות אפשרות שהוראות מחשב של תוכניות משתמש יתבצעו בלי תיווך של מערכת ההפעלה?</h3>
-                    
-                    <div class="question-demands">
-                        <strong>מה השאלה דורשת?</strong>
-                        הסבר למה לא ניתן לתכנן מחשב שבו כל פקודת מעבד (כמו חיבור, גישה למשתנים מקומיים וכו') עוברת תיווך ובדיקה על ידי מערכת ההפעלה.
-                    </div>
-
-                    <div class="thought-box">
-                        <strong>דרך מחשבה ואסטרטגיית פתרון:</strong>
-                        נחשוב מה קורה כאשר תהליך עובר למערכת ההפעלה: הוא מבצע Trap, המעבד משנה הרשאות ל-Kernel Mode, שומר רגיסטרים, מריץ קוד גרעין, ומבצע IRET. יש כאן תקורה (Overhead) עצומה. מה היה קורה אילו כל פעולת חיבור פשוטה הייתה דורשת זאת?
-                    </div>
-
-                    <div class="solution-box">
-                        <strong>הפתרון:</strong>
-                        אילו כל הוראת מחשב של תוכנית משתמש הייתה צריכה לעבור דרך מערכת ההפעלה, ביצוע התוכנית היה איטי באלפי מונים. מעבר בין מצב משתמש למצב ליבה (ותקשורת מול הגרעין) כרוך בתקורה כבדה ביותר של החלפת הקשר, שמירת אוגרים ופענוח בקשות. 
-                        <br>לכן, כדי לשמור על ביצועים גבוהים, רוב פקודות המכונה (כגון פקודות אריתמטיות, קריאת משתנים מקומיים במחסנית והסתעפויות) מבוצעות <strong>ישירות על החומרה</strong> במצב משתמש ללא שום תיווך. מערכת ההפעלה מתערבת רק כאשר מבוצעת פקודה מיוחסת (I/O, שינוי זיכרון מוגן, או קריאת מערכת).
-                    </div>
-
-                    <div class="tips-box">
-                        <strong>טעויות נפוצות וטיפים למבחן:</strong>
-                        אל תגידו "מערכת ההפעלה צריכה להגן על החומרה לכן היא תמיד מתערבת". הגנת החומרה נעשית על ידי <strong>המעבד הפיזי</strong> (באמצעות סיבית המצב ב-PSW) המונע פקודות מיוחסות במצב משתמש, ללא צורך בהתערבות תוכנתית של מערכת ההפעלה בכל פקודה פשוטה.
-                    </div>
-                </div>
-
-                <div class="mb-xl">
-                    <span class="question-badge">שאלה 2 - הגנת משאבים בחומרה</span>
-                    <h3 class="mt-0">האם ניתן להשיג הגנה על משאבי מערכת ההפעלה ללא תמיכה של המעבד בשני מצבים לפחות (מצב משתמש ומצב מיוחס)?</h3>
-                    
-                    <div class="question-demands">
-                        <strong>מה השאלה דורשת?</strong>
-                        בחינת התלות שבין רמת ההגנה והאבטחה של תוכנת מערכת ההפעלה לבין ארכיטקטורת החומרה של המעבד.
-                    </div>
-
-                    <div class="thought-box">
-                        <strong>דרך מחשבה ואסטרטגיית פתרון:</strong>
-                        נניח שהמעבד אינו תומך בשני מצבים (Mode Bit). פירוש הדבר הוא שכל תוכנית יכולה להריץ כל פקודה. האם מערכת הפעלה יכולה למנוע מתוכנית מזיקה לגשת ישירות לדיסק או לדרוס את הזיכרון של הגרעין במצב כזה?
-                    </div>
-
-                    <div class="solution-box">
-                        <strong>הפתרון:</strong>
-                        <strong>לא, לא ניתן</strong>. ללא תמיכת חומרה בשני מצבי עבודה לפחות, כל תוכנית הרצה במחשב מסוגלת לבצע כל פקודת מכונה קיימת. תוכנית משתמש תוכל לכתוב ישירות לתוך מרחב הכתובות של הליבה או של תהליכים אחרים, לגשת ישירות לבקר הדיסק ולמחוק אותו, או לחסום פסיקות חומרה.
-                        <br>רק הגנה פיזית ברמת המעבד (החומרה) המסרבת להריץ פקודות מסוימות כאשר סיבית המצב ב-PSW מצביעה על מצב משתמש, מאפשרת למערכת ההפעלה לאכוף הגנה ובידוד משאבים.
-                    </div>
-
-                    <div class="tips-box">
-                        <strong>טעויות נפוצות וטיפים למבחן:</strong>
-                        סטודנטים נוטים לחשוב שניתן להגן על הזיכרון באמצעות תוכנה בלבד (כמו קומפיילר חכם שמסרב לקמפל קוד מסוכן). זוהי טעות קלאסית: המשתמש תמיד יכול לכתוב קוד אסמבלי ישירות או להריץ קובץ הרצה זדוני שלא עבר דרך המהדר הרשמי. לכן חובה הגנה פיזית בחומרה.
-                    </div>
-                </div>
-
-                <div class="mb-xl">
-                    <span class="question-badge">שאלה 3 - מכונות מדומות ומכונה מורחבת</span>
-                    <h3 class="mt-0">האם תפקידה של מערכת ההפעלה כמכונה מורחבת מקבל ביטוי במערכת ההפעלה VM/370?</h3>
-                    
-                    <div class="question-demands">
-                        <strong>מה השאלה דורשת?</strong>
-                        ניתוח הארכיטקטורה של VM/370 והאם שכבת הווירטואליזציה שלה מתפקדת כמכונה מורחבת (Extended Machine) המפשטת את השימוש בחומרה.
-                    </div>
-
-                    <div class="thought-box">
-                        <strong>דרך מחשבה ואסטרטגיית פתרון:</strong>
-                        נזכור את ההבדל: מכונה מורחבת מספקת אבסטרקציות (כמו קבצים במקום סקטורים). מכונה מדומה ב-VM/370 מספקת העתק מדויק ופיזי של המחשב הפיזי IBM 370 (כולל רישומים ודרייברים גולמיים).
-                    </div>
-
-                    <div class="solution-box">
-                        <strong>הפתרון:</strong>
-                        <strong>לא</strong>. תפקידה של מערכת ההפעלה כמכונה מורחבת אינו מקבל ביטוי בשכבת ה-CP (Control Program) של מערכת VM/370. שכבת ה-CP היא שכבת וירטואליזציה שתפקידה היחיד הוא לדמות ולשכפל באופן מדויק את החומרה הפיזית של ה-IBM 370 עבור מערכות ההפעלה האורחות. היא אינה מספקת ממשק פשוט או אבסטרקציות כמו קבצים למתכנת. 
-                        <br>מערכת ההפעלה האורחת הרצה בתוך המכונה המדומה (למשל מערכת CMS) היא זו שמספקת את האבסטרקציות והכלים של המכונה המורחבת למשתמשי הקצה.
-                    </div>
-
-                    <div class="tips-box">
-                        <strong>טעויות נפוצות וטיפים למבחן:</strong>
-                        הבחינו היטב בין המונח הכללי "מכונה מדומה" (כאבסטרקציה נוחה) לבין מימוש המכונות המדומות ההיסטורי של VM/370. ב-VM/370 המטרה הייתה שכפול חומרה פיזית מלאה ולא פישוט הממשק.
-                    </div>
-                </div>
-
-                <div class="mb-xl">
-                    <span class="question-badge">שאלה 4 - אימות/הפרכה: קריאות מערכת ומצב מיוחס</span>
-                    <h3 class="mt-0">אמתו או הפריכו את הטענה: קריאות מערכת אינן גורמות למעבר למצב מיוחס.</h3>
-                    
-                    <div class="solution-box">
-                        <strong>הפתרון:</strong>
-                        <strong>הטענה מופרכת (שקרית)</strong>. מהותה של קריאות המערכת היא לבצע פעולות מיוחסות שאין לתוכנית המשתמש הרשאה לבצע בעצמה. כדי לעשות זאת, קריאת המערכת מריצה את פקודת ה-Trap, אשר גורמת לחומרה של המעבד להעביר את מצבו ל-Kernel Mode (מצב מיוחס) ולהריץ את קוד הליבה המורשה. ללא מעבר זה למצב מיוחס, קריאת המערכת לא הייתה יכולה לבצע את תפקידה.
-                    </div>
-                </div>
-
-                <div class="mb-xl">
-                    <span class="question-badge">שאלה 5 - אימות/הפרכה: שפת תכנות עילית ומצב מיוחס</span>
-                    <h3 class="mt-0">אמתו או הפריכו את הטענה: פונקציות של שפת תכנות עילית מבוצעות תמיד במצב מיוחס.</h3>
-                    
-                    <div class="solution-box">
-                        <strong>הפתרון:</strong>
-                        <strong>הטענה מופרכת (שקרית)</strong>. פונקציות רבות בשפות עיליות (כמו חישוב אורך מחרוזת `strlen`, העתקת מחרוזת, או פונקציות מתמטיות) רצות ומתבצעות באופן מלא ב-**User Mode** (מצב משתמש) ללא מעבר לגרעין. רק פונקציות ספרייה הנדרשות לשירותי מערכת ההפעלה (כמו פתיחת קובץ, הקצאת זיכרון דינמית או כתיבה למסך) מפעילות באופן פנימי קריאות מערכת שעוברות למצב מיוחס.
-                    </div>
-                </div>
-            </section>
-        </article>
+        </div>
     </main>
 
+    <!-- JAVASCRIPT SCOPING & SAFETY BLOCK -->
     <script>
         {
-            let currentStep = 1;
-            const totalSteps = 11;
-            
-            const stepsData = {
+            // Simulator State
+            let simStep = 1;
+            const totalSimSteps = 11;
+            let crashTerminalOpen = false;
+
+            const simStepsData = {
                 1: {
                     title: "שלב 1 מתוך 11: דחיפת nbytes למחסנית",
-                    desc: "תוכנית המשתמש דוחפת את הפרמטר השלישי, <code>nbytes</code> (מספר הבתים לקריאה), למחסנית המשתמש (User Stack). הארגומנטים נדחפים בסדר הפוך לחתימת הפונקציה.",
+                    desc: "תוכנית המשתמש דוחפת את הפרמטר השלישי, <code>nbytes</code> (מספר הבתים לקריאה), למחסנית המשתמש (User Stack) בסדר הפוך לחתימת הפונקציה.",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FFC",
                     eaxVal: "-",
-                    activeColumn: "user",
-                    highlights: ["boxUserApp"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-app"],
                     stackItems: ["nbytes"]
                 },
                 2: {
                     title: "שלב 2 מתוך 11: דחיפת buffer למחסנית",
                     desc: "תוכנית המשתמש דוחפת את הפרמטר השני, <code>buffer</code> (מצביע הזיכרון לאחסון הנתונים שייקראו), למחסנית המשתמש.",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF8",
                     eaxVal: "-",
-                    activeColumn: "user",
-                    highlights: ["boxUserApp"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-app"],
                     stackItems: ["nbytes", "buffer"]
                 },
                 3: {
                     title: "שלב 3 מתוך 11: דחיפת fd למחסנית",
                     desc: "תוכנית המשתמש דוחפת את הפרמטר הראשון, <code>fd</code> (מתאר הקובץ), למחסנית המשתמש. כעת <code>fd</code> בראש המחסנית.",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF4",
                     eaxVal: "-",
-                    activeColumn: "user",
-                    highlights: ["boxUserApp"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-app"],
                     stackItems: ["nbytes", "buffer", "fd"]
                 },
                 4: {
                     title: "שלב 4 מתוך 11: קריאה לפונקציית הספרייה read()",
                     desc: "תוכנית המשתמש מבצעת פקודת <code>CALL</code> לפונקציית הספרייה read הכלולה בספריית ה-C הסטנדרטית. המעבד עדיין במצב משתמש רגיל.",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF0",
                     eaxVal: "-",
-                    activeColumn: "user",
-                    highlights: ["boxLibStub"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-lib"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 5: {
                     title: "שלב 5 מתוך 11: השמת מזהה הקריאה באוגר",
-                    desc: "פונקציית הספרייה read שמה את המספר המזהה הייחודי של קריאת המערכת read (למשל, מספר 3 ב-Linux) לתוך אוגר המעבד <code>EAX</code> / <code>RAX</code>.",
+                    desc: "פונקציית הספרייה read שמה את המספר המזהה הייחודי של קריאת המערכת (למשל, מספר 3 ב-Linux) לתוך אוגר המעבד <code>EAX</code> / <code>RAX</code>.",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF0",
                     eaxVal: "3",
-                    activeColumn: "user",
-                    highlights: ["boxLibStub"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-lib"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 6: {
                     title: "שלב 6 מתוך 11: פקודת TRAP (מעבר לליבה)",
                     desc: "מבוצעת פקודת המכונה המיוחדת <code>TRAP</code>. החומרה משנה באופן מיידי את המצב ב-PSW ל-<strong>Kernel Mode (Mode Bit = 0)</strong> וקופצת לכתובת קבועה מראש במערכת ההפעלה.",
                     cpuMode: "Kernel Mode (Mode Bit = 0)",
-                    cpuClass: "status-kernel-mode",
+                    cpuClass: "bg-red-100 text-red-700",
                     spVal: "0x7FFF0FF0",
                     eaxVal: "3",
-                    activeColumn: "kernel",
-                    highlights: ["boxTrapVector"],
+                    activeCol: "kernel",
+                    highlights: ["sim-box-kernel-trap"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 7: {
                     title: "שלב 7 מתוך 11: פענוח הבקשה על ידי ה-Dispatcher",
-                    desc: "מערכת ההפעלה מקבלת שליטה. ה-Dispatcher קורא את מזהה הקריאה (3) מאוגר <code>EAX</code> וניגש לטבלת קריאות המערכת (System Call Table) כדי למצוא את כתובת הטיפול.",
+                    desc: "מערכת ההפעלה מקבלת שליטה במצב מיוחס. ה-Dispatcher קורא את מזהה הקריאה (3) מאוגר <code>EAX</code> וניגש לטבלת קריאות המערכת (System Call Table) כדי למצוא את כתובת הטיפול.",
                     cpuMode: "Kernel Mode (Mode Bit = 0)",
-                    cpuClass: "status-kernel-mode",
+                    cpuClass: "bg-red-100 text-red-700",
                     spVal: "0x7FFF0FF0",
                     eaxVal: "3",
-                    activeColumn: "kernel",
-                    highlights: ["boxTrapVector", "boxSysHandler"],
+                    activeCol: "kernel",
+                    highlights: ["sim-box-kernel-trap", "sim-box-kernel-handler"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 8: {
                     title: "שלב 8 מתוך 11: ביצוע בגרעין (sys_read)",
-                    desc: "מטפל קריאות המערכת <code>sys_read</code> רץ בגרעין, בודק הרשאות ופונה לבקר החומרה (בקר הדיסק) כדי לקרוא את הנתונים הפיזיים ולכתוב אותם ל-RAM.",
+                    desc: "מטפל קריאות המערכת <code>sys_read</code> רץ בגרעין, בודק הרשאות ופונה לבקר החומרה (בקר הדיסק) כדי לקרוא את הנתונים הפיזית ולכתוב אותם ל-RAM.",
                     cpuMode: "Kernel Mode (Mode Bit = 0)",
-                    cpuClass: "status-kernel-mode",
+                    cpuClass: "bg-red-100 text-red-700",
                     spVal: "0x7FFF0FF0",
                     eaxVal: "3",
-                    activeColumn: "kernel",
-                    highlights: ["boxSysHandler", "boxHardware"],
+                    activeCol: "kernel",
+                    highlights: ["sim-box-kernel-handler", "sim-box-kernel-hw"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 9: {
                     title: "שלב 9 מתוך 11: חזרה מליבה (פקודת IRET)",
                     desc: "הגרעין שם את ערך החזרה באוגר <code>EAX</code> (למשל, מספר הבתים שנקראו) ומבצע פקודת חזרה מיוחסת <code>IRET</code>. החומרה מחזירה את המעבד למצב משתמש (Mode Bit = 1).",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF0",
                     eaxVal: "1024 (Bytes read)",
-                    activeColumn: "user",
-                    highlights: ["boxLibStub"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-lib"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 10: {
                     title: "שלב 10 מתוך 11: חזרה אל תוכנית המשתמש",
                     desc: "פונקציית הספרייה read מקבלת את תוצאת הריצה מאוגר <code>EAX</code> ומחזירה אותה לתוכנית המשתמש שקראה לה.",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF4",
                     eaxVal: "1024",
-                    activeColumn: "user",
-                    highlights: ["boxUserApp"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-app"],
                     stackItems: ["nbytes", "buffer", "fd"]
                 },
                 11: {
                     title: "שלב 11 מתוך 11: ניקוי המחסנית (Increment SP)",
                     desc: "תוכנית המשתמש מנקה את הארגומנטים מהמחסנית על ידי הגדלת מצביע המחסנית (SP) בשלוש מילים. קריאת המערכת הסתיימה בהצלחה!",
                     cpuMode: "User Mode (Mode Bit = 1)",
-                    cpuClass: "status-user-mode",
+                    cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0000",
                     eaxVal: "1024",
-                    activeColumn: "user",
-                    highlights: ["boxUserApp"],
+                    activeCol: "user",
+                    highlights: ["sim-box-user-app"],
                     stackItems: []
                 }
             };
 
-            function toggleSidebar() {
-                const sidebar = document.getElementById("sidebar");
-                const mainContent = document.getElementById("mainContent");
-                const floatingMenuBtn = document.getElementById("floatingMenuBtn");
-                const backdrop = document.getElementById("backdrop");
-                
-                sidebar.classList.toggle("closed");
-                sidebar.classList.toggle("open");
-                mainContent.classList.toggle("sidebar-closed");
-                
-                const isOpen = sidebar.classList.contains("open") || !sidebar.classList.contains("closed");
-                
-                if (isOpen) {
-                    floatingMenuBtn.classList.remove("visible");
-                    if (window.innerWidth < 1024) {
-                        backdrop.classList.add("active");
-                    }
-                } else {
-                    floatingMenuBtn.classList.add("visible");
-                    backdrop.classList.remove("active");
+            function showTab(tabId) {
+                // hide all tabs, deactivate all nav buttons
+                document.querySelectorAll('.tab-content').forEach(el => {
+                    el.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-btn').forEach(el => {
+                    el.classList.remove('active-nav');
+                });
+                // show selected tab, activate matching button
+                const activeTab = document.getElementById(tabId);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                    const mainArea = document.querySelector('main');
+                    if (mainArea) mainArea.scrollTop = 0;
                 }
-                
-                localStorage.setItem("sidebarState", isOpen ? "open" : "closed");
+                const activeBtn = document.getElementById('btn-' + tabId);
+                if (activeBtn) {
+                    activeBtn.classList.add('active-nav');
+                }
+                // Save current tab in localStorage
+                localStorage.setItem('activeTab_ch1', tabId);
+                window.location.hash = tabId;
             }
 
-            function toggleAccordion(id) {
-                const element = document.getElementById(id);
-                element.classList.toggle("collapsed");
+            function toggleSidebar() {
+                document.body.classList.toggle('sidebar-collapsed');
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+                updateToggleBtnIcon(isCollapsed);
             }
 
-            function updateSimulator() {
-                const step = stepsData[currentStep];
+            function updateToggleBtnIcon(isCollapsed) {
+                const icon = document.getElementById('sidebar-toggle-icon');
+                if (!icon) return;
+                if (isCollapsed) {
+                    // Show << (chevron left to open/expand in RTL)
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7M19 19l-7-7 7-7" />';
+                } else {
+                    // Show >> (chevron right to close/collapse in RTL)
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />';
+                }
+            }
+
+            // Simulator Updates
+            function updateSimView() {
+                const step = simStepsData[simStep];
                 if (!step) return;
 
-                document.getElementById("stepIndicator").textContent = step.title;
-                document.getElementById("stepDescription").innerHTML = step.desc;
-                
-                const modeEl = document.getElementById("cpuMode");
+                // Update info bar
+                const modeEl = document.getElementById("sim-cpu-mode");
                 modeEl.textContent = step.cpuMode;
-                modeEl.className = "cpu-status-val " + step.cpuClass;
-                
-                document.getElementById("spVal").textContent = step.spVal;
-                document.getElementById("eaxVal").textContent = step.eaxVal;
+                modeEl.className = "px-2 py-0.5 rounded font-bold " + step.cpuClass;
+                document.getElementById("sim-sp").textContent = step.spVal;
+                document.getElementById("sim-eax").textContent = step.eaxVal;
 
-                const userCol = document.getElementById("userSpaceCol");
-                const kernelCol = document.getElementById("kernelSpaceCol");
-                
-                if (step.activeColumn === "user") {
-                    userCol.classList.add("active");
-                    kernelCol.classList.remove("active");
+                // Update split columns
+                const userCol = document.getElementById("sim-col-user");
+                const kernelCol = document.getElementById("sim-col-kernel");
+                if (step.activeCol === "user") {
+                    userCol.className = "border-2 border-green-300 bg-green-50/50 p-5 rounded-2xl transition-all duration-300 shadow-sm";
+                    kernelCol.className = "border border-slate-200 bg-slate-50/30 p-5 rounded-2xl transition-all duration-300 opacity-50 shadow-none";
                 } else {
-                    userCol.classList.remove("active");
-                    kernelCol.classList.add("active");
+                    userCol.className = "border border-slate-200 bg-slate-50/30 p-5 rounded-2xl transition-all duration-300 opacity-50 shadow-none";
+                    kernelCol.className = "border-2 border-red-300 bg-red-50/50 p-5 rounded-2xl transition-all duration-300 shadow-sm";
                 }
 
-                const allBoxes = document.querySelectorAll(".sim-box");
-                allBoxes.forEach(box => box.classList.remove("highlight"));
-
+                // Update element highlights
+                const allBoxes = ["sim-box-user-app", "sim-box-user-lib", "sim-box-kernel-trap", "sim-box-kernel-handler", "sim-box-kernel-hw"];
+                allBoxes.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const mb = (id === "sim-box-user-lib") ? "mb-4" : "mb-3";
+                        el.className = `bg-white border border-slate-200/80 p-3 rounded-xl text-xs text-center ${mb} transition-all text-slate-700 shadow-sm font-medium`;
+                    }
+                });
                 step.highlights.forEach(id => {
                     const el = document.getElementById(id);
-                    if (el) el.classList.add("highlight");
+                    if (el) {
+                        const mb = (id === "sim-box-user-lib") ? "mb-4" : "mb-3";
+                        el.className = `bg-blue-600 text-white border border-blue-700 p-3 rounded-xl text-xs text-center ${mb} transition-all font-bold shadow-md shadow-blue-500/20`;
+                    }
                 });
 
-                const stackContainer = document.getElementById("userStack");
-                stackContainer.innerHTML = "";
-                
+                // Update User Stack
+                const stackEl = document.getElementById("sim-stack");
+                stackEl.innerHTML = "";
                 if (step.stackItems.length === 0) {
-                    stackContainer.innerHTML = '<div class="stack-item opacity-30">מחסנית ריקה</div>';
+                    stackEl.innerHTML = '<div class="text-slate-400 text-center italic text-[10px]">מחסנית ריקה</div>';
                 } else {
                     step.stackItems.forEach(item => {
-                        const itemEl = document.createElement("div");
-                        itemEl.className = "stack-item";
-                        itemEl.textContent = item;
-                        stackContainer.appendChild(itemEl);
+                        const itemDiv = document.createElement("div");
+                        itemDiv.className = "bg-slate-100 border border-slate-200 p-1.5 text-center text-slate-800 rounded font-mono text-[10px]";
+                        itemDiv.textContent = item;
+                        stackEl.appendChild(itemDiv);
                     });
                 }
 
-                document.getElementById("btnPrev").disabled = currentStep === 1;
-                document.getElementById("btnNext").disabled = currentStep === totalSteps;
+                // Update Control Texts
+                document.getElementById("sim-step-title").textContent = step.title;
+                document.getElementById("sim-step-desc").innerHTML = step.desc;
+
+                // Disable buttons if at limits
+                document.getElementById("sim-btn-prev").disabled = (simStep === 1);
+                document.getElementById("sim-btn-next").disabled = (simStep === totalSimSteps);
             }
 
-            function nextStep() {
-                if (currentStep < totalSteps) {
-                    currentStep++;
-                    updateSimulator();
+            function nextStepSim() {
+                if (simStep < totalSimSteps) {
+                    simStep++;
+                    updateSimView();
                 }
             }
 
-            function prevStep() {
-                if (currentStep > 1) {
-                    currentStep--;
-                    updateSimulator();
+            function prevStepSim() {
+                if (simStep > 1) {
+                    simStep--;
+                    updateSimView();
                 }
             }
 
-            function resetSimulator() {
-                currentStep = 1;
-                updateSimulator();
-                const term = document.getElementById("crashTerminal");
-                term.style.display = "none";
+            function resetSim() {
+                simStep = 1;
+                updateSimView();
+                const term = document.getElementById("sim-crash-terminal");
+                term.classList.add("hidden");
                 term.innerHTML = "";
             }
 
             function runCrashTest() {
-                const simulatorCard = document.getElementById("simulator");
-                const terminal = document.getElementById("crashTerminal");
+                const simulatorCard = document.getElementById("simulator-card-box");
+                const terminal = document.getElementById("sim-crash-terminal");
                 
-                simulatorCard.classList.remove("shake");
-                void simulatorCard.offsetWidth;
-                simulatorCard.classList.add("shake");
-                
-                terminal.style.display = "block";
-                terminal.innerHTML = "מבצע פקודה ישירה לחומרה: <code dir='ltr' class='term-cmd'>MOV [0x00000000], EAX</code>...<br>";
-                
+                // Shake screen/card
+                simulatorCard.classList.remove("shake-element");
+                void simulatorCard.offsetWidth; // force reflow
+                simulatorCard.classList.add("shake-element");
+
+                terminal.classList.remove("hidden");
+                terminal.innerHTML = "מבצע פקודת אסמבלי ישירה למרחב הפיזי: <code class='text-red-500 bg-red-950/20 border border-red-900/30 px-1 rounded' dir='ltr'>MOV [0x00000000], EAX</code>...<br>";
+
                 setTimeout(() => {
-                    terminal.innerHTML += "<span class='term-err-title'>[CPU EXCEPTION] Privileged Instruction Exception at Ring 3 (User Mode)</span><br>";
-                    terminal.innerHTML += "<span class='term-warn'>[OS KERNEL] Access violation detected: process PID 1042 tried to write to protected page physical memory 0x00000000.</span><br>";
-                    terminal.innerHTML += "<span class='term-warn'>[OS KERNEL] Mode switched to Kernel Space to handle safety violation.</span><br>";
-                    terminal.innerHTML += "<span class='term-err-title'>[OS KERNEL] Action: Process terminated. Status: SIGSEGV (Segmentation Fault) - Core Dumped.</span>";
+                    terminal.innerHTML += "<span class='text-red-500 font-bold'>[CPU EXCEPTION] General Protection Fault (Privileged Instruction Exception in User Mode)</span><br>";
+                    terminal.innerHTML += "<span class='text-slate-400'>[OS KERNEL] Access violation detected: process PID 1042 tried to bypass write restrictions.</span><br>";
+                    terminal.innerHTML += "<span class='text-slate-400'>[OS KERNEL] Mode switched to Kernel Space to handle safety violation.</span><br>";
+                    terminal.innerHTML += "<span class='text-red-500 font-bold'>[OS KERNEL] Action: Process terminated. Status: SIGSEGV (Segmentation Fault) - Core Dumped.</span>";
                 }, 800);
             }
 
-            function initScrollSpy() {
-                const sections = document.querySelectorAll("section[id]");
-                const navLinks = document.querySelectorAll(".sidebar-nav a.nav-link");
-                
-                window.addEventListener("scroll", () => {
-                    let currentSectionId = "";
-                    const scrollPosition = window.scrollY + 100;
-                    
-                    sections.forEach(section => {
-                        const top = section.offsetTop;
-                        const height = section.offsetHeight;
-                        if (scrollPosition >= top && scrollPosition < top + height) {
-                            currentSectionId = section.getAttribute("id");
-                        }
-                    });
-                    
-                    if (currentSectionId) {
-                        navLinks.forEach(link => {
-                            link.classList.remove("active");
-                            if (link.getAttribute("href") === "#" + currentSectionId) {
-                                link.classList.add("active");
-                            }
-                        });
+            // Document Initialization
+            document.addEventListener("DOMContentLoaded", () => {
+                // 1. Create and inject sidebar toggle button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.id = 'sidebar-toggle-btn';
+                toggleBtn.className = 'fixed top-6 p-2 rounded-lg bg-white/80 backdrop-blur-md hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-md z-30 flex items-center justify-center w-10 h-10 transition-all duration-300 active:scale-95 cursor-pointer';
+                toggleBtn.title = 'הצג/הסתר תפריט ניווט';
+                toggleBtn.onclick = toggleSidebar;
+                toggleBtn.innerHTML = '<svg id="sidebar-toggle-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"></svg>';
+                document.body.appendChild(toggleBtn);
+
+                // 2. Load sidebar collapsed state from localStorage
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    document.body.classList.add('sidebar-collapsed');
+                }
+                updateToggleBtnIcon(isCollapsed);
+
+                // 3. Setup tabs hash routing or load from localStorage
+                const hashTab = window.location.hash ? window.location.hash.substring(1) : null;
+                const savedTab = localStorage.getItem('activeTab_ch1');
+                const defaultTab = 'os-essence';
+                const finalTab = hashTab || savedTab || defaultTab;
+                showTab(finalTab);
+
+                // 4. Initialize Simulator Visuals
+                updateSimView();
+
+                // 5. Inject navigation buttons at the bottom of each tab
+                const tabs = [];
+                const seenIds = new Set();
+                document.querySelectorAll('.tab-content').forEach(el => {
+                    const id = el.id;
+                    if (id && !seenIds.has(id)) {
+                        seenIds.add(id);
+                        tabs.push(el);
                     }
                 });
-            }
 
-            window.addEventListener("DOMContentLoaded", () => {
-                updateSimulator();
-                initScrollSpy();
-                
-                const savedState = localStorage.getItem("sidebarState");
-                const sidebar = document.getElementById("sidebar");
-                const mainContent = document.getElementById("mainContent");
-                const floatingMenuBtn = document.getElementById("floatingMenuBtn");
-                
-                if (savedState === "closed") {
-                    sidebar.classList.add("closed");
-                    sidebar.classList.remove("open");
-                    mainContent.classList.add("sidebar-closed");
-                    floatingMenuBtn.classList.add("visible");
-                } else {
-                    sidebar.classList.remove("closed");
-                    sidebar.classList.add("open");
-                    mainContent.classList.remove("sidebar-closed");
-                    floatingMenuBtn.classList.remove("visible");
-                }
+                tabs.forEach((tab, index) => {
+                    const navContainer = document.createElement('div');
+                    navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
+
+                    // Previous Button
+                    if (index > 0) {
+                        const prevTabId = tabs[index - 1].id;
+                        const prevBtn = document.createElement('button');
+                        prevBtn.onclick = () => showTab(prevTabId);
+                        prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                        prevBtn.innerHTML = `
+                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span>הקודם</span>
+                        `;
+                        navContainer.appendChild(prevBtn);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'w-10 invisible';
+                        navContainer.appendChild(placeholder);
+                    }
+
+                    // Next Button
+                    if (index < tabs.length - 1) {
+                        const nextTabId = tabs[index + 1].id;
+                        const nextBtn = document.createElement('button');
+                        nextBtn.onclick = () => showTab(nextTabId);
+                        nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                        nextBtn.innerHTML = `
+                            <span>הבא</span>
+                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        `;
+                        navContainer.appendChild(nextBtn);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'w-10 invisible';
+                        navContainer.appendChild(placeholder);
+                    }
+
+                    tab.appendChild(navContainer);
+                });
             });
 
+            // Expose required methods to window
+            window.showTab = showTab;
             window.toggleSidebar = toggleSidebar;
-            window.toggleAccordion = toggleAccordion;
-            window.nextStep = nextStep;
-            window.prevStep = prevStep;
-            window.resetSimulator = resetSimulator;
+            window.nextStepSim = nextStepSim;
+            window.prevStepSim = prevStepSim;
+            window.resetSim = resetSim;
             window.runCrashTest = runCrashTest;
         }
     </script>
 </body>
+
 </html>
