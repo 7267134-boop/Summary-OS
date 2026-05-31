@@ -3,38 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>סיכום פרק 4: מערכות קבצים</title>
+    <title>מערכות הפעלה - פרק 4: מערכות קבצים</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- MathJax for rendering math symbols -->
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
     <style>
-        body { font-family: 'Heebo', sans-serif; }
-        .gradient-text {
-            background: linear-gradient(to left, #2563eb, #0891b2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        body {
+            background-color: #f8fafc;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        pre {
+            direction: ltr;
+            text-align: left;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: 'Consolas', monospace;
+        }
+
+        .nav-group {
+            margin-top: 1.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 0.85rem 1rem;
+            border-radius: 0.5rem;
+            color: #cbd5e1;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            background-color: #1e293b;
+            color: #fff;
+            padding-right: 1.5rem;
+        }
+
+        .nav-btn.active-nav {
+            background-color: #2563eb; /* Blue-600 */
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            border-right: 4px solid #3b82f6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .dark-scroll::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        .dark-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        /* Sidebar collapse transition & styles */
+        aside {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .sidebar-collapsed aside {
+            width: 0 !important;
+            min-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        #sidebar-toggle-btn {
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+        }
+
+        /* When sidebar is open: button floats to the left of the sidebar (RTL right side) */
+        body:not(.sidebar-collapsed) #sidebar-toggle-btn {
+            right: 21rem;
+        }
+
+        body.sidebar-collapsed #sidebar-toggle-btn {
+            right: 1rem;
+        }
+
+        /* Premium navigation buttons styling */
+        .nav-btn-prev,
+        .nav-btn-next {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-btn-prev:hover {
+            transform: translateX(2px);
+        }
+
+        .nav-btn-next:hover {
+            transform: translateX(-2px);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="text-slate-800 h-screen flex overflow-hidden">
 
-    <!-- Header / Hero Section -->
-    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">מדריך למידה - מערכות הפעלה</h1>
-                <p class="text-sm text-slate-500 mt-1">סיכום פרק 4, סעיפים 4.1 עד 4.2.4</p>
-            </div>
-            <div class="hidden md:flex bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-medium text-sm items-center gap-2 border border-blue-100">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                מערכות קבצים (File Systems)
+    <!-- Sidebar Navigation -->
+    <aside class="w-80 bg-darker text-slate-300 flex flex-col h-full shadow-2xl z-20 flex-shrink-0 border-l border-slate-800">
+        <div class="p-6 border-b border-slate-800 bg-darker">
+            <h1 class="text-3xl font-black text-white tracking-tight leading-tight">מערכות<br><span class="text-blue-500">הפעלה</span></h1>
+            <p class="text-xs text-slate-400 mt-2">כרך א': יסודות ומבנה פרק 4</p>
+
+            <div class="mt-4">
+                <a href="1.html" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 12l9-9m-9 9l9 9" />
+                    </svg>
+                    חזרה לדף הבית
+                </a>
             </div>
         </div>
-    </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-10 space-y-12">
-        
-        <!-- Introduction -->
+        <div class="flex-1 overflow-y-auto dark-scroll p-4 pb-20">
+            <div class="nav-group">
+                <div class="nav-group-title">חלק 4: מערכות קבצים</div>
+                <button onclick="showTab('intro')" id="btn-intro" class="nav-btn active-nav">
+                    <span>📂 4.1 מבוא וקבצים</span>
+                </button>
+                <button onclick="showTab('directories')" id="btn-directories" class="nav-btn">
+                    <span>🗂️ 4.2 מדריכים</span>
+                </button>
+                <button onclick="showTab('implementation')" id="btn-implementation" class="nav-btn">
+                    <span>🛠️ 4.3 יישום מערכת הקבצים</span>
+                </button>
+                <hr class="border-slate-800 my-4 opacity-50">
+                <button onclick="showTab('practice')" id="btn-practice" class="nav-btn">
+                    <span>❓ שאלות חזרה ותרגול</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto scroll-smooth bg-white relative">
+        <div class="max-w-5xl mx-auto p-10 lg:p-16 pb-32">
+            
+            <!-- Tab 1: intro -->
+            <div id="intro" class="tab-content active">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        סעיף 4.1
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">סיכום פרק 4: מערכות קבצים (File Systems)</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        סקירת יסודות מערכת הקבצים, שמות ומבנים פנימיים, ופעולות קריאות מערכת בסיסיות.
+                    </p>
+                </header>
+                <div class="space-y-12">
+                    
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
                 <h2 class="text-xl font-bold flex items-center gap-3">
@@ -444,7 +631,23 @@
             </div>
         </section>
 
-        <!-- 4.2 Directories -->
+        
+                </div>
+            </div>
+
+            <!-- Tab 2: directories -->
+            <div id="directories" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        סעיף 4.2
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מדריכים וספריות (Directories)</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        מבנה ספריות, היררכיה, שמות נתיבים ופעולות לניהול מדריכים במערכת ההפעלה.
+                    </p>
+                </header>
+                <div class="space-y-12">
+                    
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden mt-12">
             <div class="absolute top-0 right-0 w-2 h-full bg-indigo-500"></div>
             <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
@@ -458,7 +661,44 @@
                 <strong class="text-indigo-800">מבחינה מבנית:</strong> מדריך הוא בעצמו סוג מיוחד של קובץ המנוהל על ידי מערכת ההפעלה. במקום להכיל נתוני משתמש רגילים, התוכן שלו הוא רשימה של <strong class="text-indigo-700">כניסות (Directory Entries)</strong>. 
                 <br>כל כניסה כזו מכילה את שם הקובץ הלוגי ומצביע למבנה הניהולי שלו (כמו מספר ה-<code>i-node</code> ב-UNIX או המיקום בטבלת ה-<code>MFT</code> ב-Windows), ובכך היא מספקת את המיפוי שבין השם שבן-אדם מבין לבין המיקום הפיזי בדיסק.
             </div>
-        </section>
+        
+                <!-- שאלות מנחות 4.2.3 -->
+                <div class="mt-6 pt-6 border-t border-slate-100 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800">שאלות מנחות ללימוד (שמות נתיבים):</h4>
+                    
+                    <!-- Q1 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.1</span>
+                                <span>מהן ההשלכות של שינוי ספריית עבודה נוכחית על ידי תהליך או ספריית תוכנה?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <strong class="text-slate-800">א) שינוי על ידי תהליך משתמש:</strong>
+                            <p class="mt-1">השפעה מקומית בלבד. לכל תהליך יש ספריית עבודה נוכחית (Current Working Directory) משלו השמורה במטא-נתונים שלו (PCB). שינוי הספרייה בעזרת <code>chdir</code> משפיע רק על התהליך עצמו, ללא שום השפעה על תהליכים אחרים במערכת.</p>
+                            <strong class="text-slate-800 mt-2 block">ב) שינוי על ידי ספריית תוכנה (Library) בתוך תהליך:</strong>
+                            <p class="mt-1">השפעה על כל התהליך. מכיוון שספריית התוכנה רצה באותו מרחב כתובות של התהליך, שינוי ספריית העבודה ישפיע על כל שאר חלקי הקוד של התהליך המנסים לפנות לנתיבים יחסיים, מה שעלול ליצור שגיאות טעינה קשות ביישום.</p>
+                        </div>
+                    </details>
+
+                    <!-- Q2 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.2</span>
+                                <span>האם כמות אינסופית של מחרוזות נתיב המצביעות לאותו קובץ נכונה גם לנתיב יחסי?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p><b>כן, הטענה נכונה בהחלט.</b> גם עבור נתיב יחסי ניתן להוסיף כמות אינסופית של שמות מיוחדים כגון <code>..</code> (ספריית אב) או קישורים סימבוליים מעגליים המצביעים חזרה לתיקיית האב. למשל: <code>./file</code>, <code>./dir/../file</code>, <code>./dir/../dir/../file</code> וכן הלאה. כולם מצביעים בדיוק לאותו קובץ פיזי.</p>
+                        </div>
+                    </details>
+                </div>
+
+</section>
 
         <!-- 4.2.1 - 4.2.2 Architecture Models -->
         <div class="space-y-6">
@@ -559,6 +799,26 @@
         </section>
 
         <!-- 4.2.4 Directory Operations -->
+
+                <!-- שאלות מנחות 4.2.4 -->
+                <div class="mt-6 pt-6 border-t border-slate-100 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800">שאלות מנחות ללימוד (פעולות על מדריכים):</h4>
+                    
+                    <!-- Q3 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.3</span>
+                                <span>האם פעולות על מדריכים מהוות קבוצה בלתי תלויה של פעולות?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p><b>לא, הקבוצה אינה בלתי תלויה לחלוטין.</b> לדוגמה, פעולת שינוי שם של מדריך (Rename) ניתנת למימוש על ידי יצירת קישור חדש (Link) ומחיקת הקישור הישן (Unlink). כמו כן, קריאת ספרייה מתבצעת במערכות ישנות דרך קריאת קובץ רגילה (Read), אם כי במערכות מודרניות קיימות קריאות ייעודיות לשיפור האבטחה והניהול.</p>
+                        </div>
+                    </details>
+                </div>
+
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-indigo-600 text-white px-6 py-4">
                 <h3 class="font-bold flex items-center gap-2 text-lg">
@@ -614,7 +874,23 @@
             </div>
         </section>
 
-        <!-- 4.3 File System Implementation -->
+        
+                </div>
+            </div>
+
+            <!-- Tab 3: implementation -->
+            <div id="implementation" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        סעיף 4.3
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">יישום מערכת הקבצים (Implementation)</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        מבנה הדיסק, שיטות הקצאת בלוקים (Contiguous, Linked List, FAT, i-nodes), ועיצוב מדריכים ושיתוף קבצים.
+                    </p>
+                </header>
+                <div class="space-y-12">
+                    
         <section class="mt-16 border-t-[6px] border-slate-800 pt-12">
             <h2 class="text-3xl font-black mb-4 flex items-center gap-3 text-slate-900">
                 <span class="bg-slate-800 text-white rounded px-3 py-1 text-2xl font-mono">4.3</span>
@@ -731,6 +1007,22 @@
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col hover:shadow-md transition-shadow">
                         <h4 class="font-bold text-lg text-slate-800 border-b pb-2 mb-3">1. הקצאה רציפה (Contiguous)</h4>
                         <p class="text-sm text-slate-600 mb-4">כל קובץ נשמר כרצף אחד ארוך של בלוקים עוקבים פיזית על הדיסק.</p>
+                        <!-- Q4 -->
+                        <details class="mt-4 bg-blue-50/50 border border-blue-100 rounded-lg p-3 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between text-xs">
+                                <span>שאלה מנחה 4.4: יתרונות וחסרונות ההקצאה הרציפה</span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                            </summary>
+                            <div class="mt-2 pt-2 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-1">
+                                <strong class="block text-slate-800">יתרונות:</strong>
+                                <p>1. פשטות במימוש: נדרש לשמור רק את כתובת הבלוק ההתחלתי ואת אורך הקובץ.</p>
+                                <p>2. ביצועים מעולים: גישה סדרתית או אקראית מהירה מאוד מכיוון שכל בלוקי הקובץ נמצאים זה אחר זה פיזית בדיסק, מה שממזער את תנועת ראש הדיסק (Seek Time).</p>
+                                <strong class="block text-slate-800 mt-2">חסרונות:</strong>
+                                <p>1. קיטוע חיצוני (External Fragmentation): מחיקת קבצים ויצירת חדשים גורמת ל"חורים" בגדלים שונים בדיסק שקשה לנצלם ביעילות.</p>
+                                <p>2. חוסר גמישות לגידול: אם קובץ צריך לגדול מעבר לגודלו המקורי, יש להעתיקו למקום חדש פנוי בדיסק שיכול להכיל את הגודל החדש, מה שיוצר תקורה אדירה.</p>
+                            </div>
+                        </details>
+
                         <div class="mt-auto space-y-2">
                             <div class="bg-green-50 text-green-800 p-2 rounded text-xs flex gap-2"><span class="font-bold">יתרונות:</span> קל למימוש (שומר רק התחלה ואורך). ביצועים פנומנליים (מינימום תזוזת ראש דיסק).</div>
                             <div class="bg-red-50 text-red-800 p-2 rounded text-xs flex gap-2"><span class="font-bold">חסרונות:</span> קיטוע חיצוני (External Fragmentation). הדיסק מתמלא ב"חורים". קשה להגדיל קובץ קיים.</div>
@@ -741,6 +1033,21 @@
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col hover:shadow-md transition-shadow">
                         <h4 class="font-bold text-lg text-slate-800 border-b pb-2 mb-3">2. הקצאה ע"י רשימה מקושרת</h4>
                         <p class="text-sm text-slate-600 mb-4">הבלוקים מפוזרים חופשי. כל בלוק מכיל בסופו "מצביע" לבלוק הבא של הקובץ.</p>
+                        <!-- Q5 & Q6 -->
+                        <details class="mt-4 bg-blue-50/50 border border-blue-100 rounded-lg p-3 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between text-xs">
+                                <span>שאלה מנחה 4.5 ו-4.6: ניתוח הקצאה מקושרת</span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                            </summary>
+                            <div class="mt-2 pt-2 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-1">
+                                <strong class="block text-slate-800">מדוע יעילות קריאה סדרתית גבוהה מקריאה אקראית?</strong>
+                                <p class="mb-2">בקריאה סדרתית, המערכת קוראת את הבלוק הנוכחי המכיל מצביע לבלוק הבא וניגשת אליו ישירות. בקריאה אקראית (למשל לבלוק ה-100), לא ניתן לדלג אליו ישירות כי כתובתו אינה ידועה מראש, והמערכת חייבת לקרוא את כל 99 הבלוקים הקודמים אחד-אחד כדי לעקוב אחר המצביעים, מה שמצריך 100 פניות נפרדות לדיסק (Seek Time אדיר).</p>
+                                <strong class="block text-slate-800 border-t pt-1">יתרונות וחסרונות:</strong>
+                                <p><b>יתרונות:</b> אין קיטוע חיצוני (כל בלוק פנוי בדיסק מנוצל) וקיימת גמישות מרבית לגידול קבצים.</p>
+                                <p><b>חסרונות:</b> גישה אקראית אטית ביותר; אובדן שטח (המצביע בבלוק גוזל כמה בתים ומשבש את גודל הנתונים כך שאינו כפולה של 2); ואמינות נמוכה (אם מצביע אחד נפגם, כל המשך הקובץ אובד).</p>
+                            </div>
+                        </details>
+
                         <div class="mt-auto space-y-2">
                             <div class="bg-green-50 text-green-800 p-2 rounded text-xs flex gap-2"><span class="font-bold">יתרונות:</span> אין קיטוע חיצוני (ניצול 100% מהחללים). לא צריך לדעת גודל מראש.</div>
                             <div class="bg-red-50 text-red-800 p-2 rounded text-xs flex gap-2"><span class="font-bold">חסרונות:</span> גישה אקראית מזוויעה (חייבים לסרוק הכל). בזבוז חישובי (גודל הנתונים בבלוק אינו כפולה של 2 עקב המצביע).</div>
@@ -751,6 +1058,21 @@
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col hover:shadow-md transition-shadow">
                         <h4 class="font-bold text-lg text-slate-800 border-b pb-2 mb-3">3. טבלה בזיכרון (FAT)</h4>
                         <p class="text-sm text-slate-600 mb-4">מרכזת את כל שרשרת המצביעים לטבלה אחת גדולה (File Allocation Table) שנשמרת בזיכרון הראשי (RAM).</p>
+                        <!-- Q7 -->
+                        <details class="mt-4 bg-blue-50/50 border border-blue-100 rounded-lg p-3 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between text-xs">
+                                <span>שאלה מנחה 4.7: יתרונות וחסרונות טבלה בזיכרון (FAT)</span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                            </summary>
+                            <div class="mt-2 pt-2 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-1">
+                                <strong class="block text-slate-800">יתרונות:</strong>
+                                <p>1. בלוקי הנתונים מנוצלים במלואם (למשל 512 בתים שלמים לנתונים, ללא מצביעים בתוכם), מה שמקל על יישומים ללא שיבוש גודלי בלוקים.</p>
+                                <p>2. גישה אקראית מהירה בהרבה: החיפוש אחר הבלוק ה-N מתבצע כולו בתוך טבלת ה-FAT המצויה בזיכרון הראשי (RAM) המהיר, ללא פניות פיזיות לדיסק. רק הבלוק הנדרש עצמו נקרא מהדיסק.</p>
+                                <strong class="block text-slate-800 mt-2">חסרונות:</strong>
+                                <p>1. צריכת זיכרון משמעותית: טבלת ה-FAT חייבת להיות בזיכרון הראשי (RAM) בכל עת. עבור דיסקים גדולים מאוד בנפח טרה-בייטים, הטבלה גדלה לממדי ענק ותופסת נפח יקר בזיכרון ה-RAM.</p>
+                            </div>
+                        </details>
+
                         <div class="mt-auto space-y-2">
                             <div class="bg-green-50 text-green-800 p-2 rounded text-xs flex gap-2"><span class="font-bold">יתרונות:</span> ניצול 100% של הבלוקים לנתונים. גישה אקראית מהירה (הדילוג מחושב ב-RAM).</div>
                             <div class="bg-red-50 text-red-800 p-2 rounded text-xs flex gap-2"><span class="font-bold">חסרונות:</span> צריכת RAM פסיכית לדיסקים גדולים. לא מתאים לשרתים ולדיסקים בנפח טרה-בייטים.</div>
@@ -762,6 +1084,38 @@
                         <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                         <h4 class="font-bold text-lg text-blue-900 border-b border-blue-200 pb-2 mb-3">4. i-nodes (צמתי אינדקס)</h4>
                         <p class="text-sm text-blue-800 mb-4">לכל קובץ מוצמד מבנה קטן המכיל תכונות ומערך מצביעים פיזיים. הפתרון המודרני ל-UNIX/Linux.</p>
+                        <!-- Q8 -->
+                        <details class="mt-4 bg-blue-50/50 border border-blue-100 rounded-lg p-3 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between text-xs">
+                                <span>שאלה מנחה 4.8: חישובי נפח קובץ מרבי ב-i-nodes</span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                            </summary>
+                            <div class="mt-2 pt-2 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-2">
+                                <div>
+                                    <strong class="block text-slate-800">נתונים:</strong>
+                                    גודל בלוק = 2KB, גודל מצביע לבלוק = 4B.
+                                    <br>מספר מצביעים בבלוק מצביעים:
+                                    <div class="font-mono bg-slate-100 p-1 rounded inline-block text-[10px]" dir="ltr">2048 Bytes / 4 Bytes = 512 מצביעים</div>
+                                </div>
+                                <div>
+                                    <strong class="block text-slate-800">א) נפח קובץ מרבי תחת Direct, Single, Double-Indirect:</strong>
+                                    <ul class="list-disc list-inside space-y-0.5 text-slate-600">
+                                        <li>Direct (10 מצביעים): $10 \times 2\text{ KB} = 20\text{ KB}$</li>
+                                        <li>Single Indirect (מצביע אחד): $512 \times 2\text{ KB} = 1024\text{ KB} = 1\text{ MB}$</li>
+                                        <li>Double Indirect (מצביע אחד): $512 \times 512 \times 2\text{ KB} = 512\text{ MB}$</li>
+                                        <li><b>סה"כ נפח:</b> $20\text{ KB} + 1\text{ MB} + 512\text{ MB} = 513.02\text{ MB}$</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <strong class="block text-slate-800">ב) נפח קובץ מרבי אם מוסיפים Triple-Indirect:</strong>
+                                    <ul class="list-disc list-inside space-y-0.5 text-slate-600">
+                                        <li>Triple Indirect: $512 \times 512 \times 512 \times 2\text{ KB} = 256\text{ GB}$</li>
+                                        <li><b>סה"כ נפח:</b> $513.02\text{ MB} + 256\text{ GB} \approx 256.5\text{ GB}$</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
                         <div class="mt-auto space-y-2">
                             <div class="bg-white text-blue-900 p-2 rounded text-xs flex gap-2 border border-blue-100"><span class="font-bold">היתרון העצום:</span> טוענים ל-RAM רק i-nodes של קבצים פתוחים כרגע, חוסך המון זיכרון.</div>
                             <div class="bg-white text-blue-900 p-2 rounded text-xs flex gap-2 border border-blue-100">
@@ -785,6 +1139,20 @@
                     <div>
                         <h4 class="font-bold text-indigo-800 mb-3 border-b pb-2">טיפול בשמות קבצים ארוכים</h4>
                         <p class="text-xs text-slate-500 mb-3">כיום נדרשת תמיכה בשמות של עד 255 תווים.</p>
+                        <!-- Q9 -->
+                        <details class="mt-4 bg-blue-50/50 border border-blue-100 rounded-lg p-3 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between text-xs">
+                                <span>שאלה מנחה 4.9: השוואת שיטות לשמות ארוכים</span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                            </summary>
+                            <div class="mt-2 pt-2 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-1">
+                                <strong class="text-slate-800 block">1. רשומות באורך משתנה (In-line):</strong>
+                                <p><b>יתרון:</b> השם והמטא-נתונים מאוגדים יחד ברשומה אחת. <b>חיסרון:</b> קיטוע פנימי וחיצוני של המדריך כשיש מחיקות, ומורכבות סריקה (אי אפשר לקפוץ ישירות לרשומה ה-N).</p>
+                                <strong class="text-slate-800 block mt-1">2. רשומות באורך קבוע עם מצביע לערימה (Heap):</strong>
+                                <p><b>יתרון:</b> רשומות המדריך קבועות ונוחות לסריקה. השמות מרוכזים בערימה בסוף. <b>חיסרון:</b> תקורה של ניהול ערימה (סכנת קיטוע בערימה עצמה במחיקת שמות).</p>
+                            </div>
+                        </details>
+
                         <ul class="space-y-3 text-sm">
                             <li class="bg-slate-50 p-3 rounded border border-slate-100">
                                 <strong class="text-slate-800">1. מקום קבוע (Fixed Size):</strong> כל רשומה מקבלת 255 תווים מראש. <span class="text-red-600">חיסרון:</span> בזבוז אדיר של מקום.
@@ -820,6 +1188,31 @@
                 <p class="text-slate-700 mb-6">
                     כדי למנוע בזבוז מקום וחוסר עקביות (כאשר מעדכנים קובץ אחד והשני לא), משתמשים בשיתוף קבצים המאפשר לאותו קובץ פיזי להופיע במספר מדריכים.
                 </p>
+                <!-- Q10 -->
+                <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mt-6">
+                    <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2 text-sm">
+                            <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.10</span>
+                            <span>השוואת קישור קשיח (Hard Link) לעומת קישור סימבולי (Symbolic/Soft Link)</span>
+                        </span>
+                        <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed space-y-2">
+                        <div class="grid md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-white p-3 rounded-lg border border-slate-100">
+                                <strong class="text-purple-700 block mb-1">🔗 קישור קשיח (Hard Link)</strong>
+                                <p class="mb-1"><b>יתרון:</b> מהירות גישה ישירה ל-i-node ללא תקורה נוספת. שרידות של הקובץ גם אם המקור נמחק (מונה הקישורים ב-i-node מונע מחיקה פיזית עד שהערך מתאפס).</p>
+                                <p><b>חיסרון:</b> לא ניתן לקשר בין מערכות קבצים/מחיצות שונות (מזהה i-node הוא מקומי), ולא ניתן לקשר לספריות.</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border border-slate-100">
+                                <strong class="text-cyan-700 block mb-1">🔗 קישור סימבולי (Soft/Symbolic Link)</strong>
+                                <p class="mb-1"><b>יתרון:</b> גמישות – ניתן לקשר לקבצים/מדריכים במחיצות אחרות או בשרתים שונים, וניתן לקשר לספריות.</p>
+                                <p><b>חיסרון:</b> גישה אטית יותר (צריך לקרוא את נתיב הטקסט מתוך הקובץ ולעבור מחדש מהשורש), ואם המקור נמחק הקישור נשאר שבור (Broken Link).</p>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
 
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-t-4 border-t-purple-500">
@@ -947,7 +1340,292 @@
 
         </section>
 
+    
+                </div>
+            </div>
+
+            <!-- Tab 4: practice -->
+            <div id="practice" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-emerald-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        תרגול וסיכום
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">שאלות חזרה ופתרון בעיות</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        שאלות מנחות לניהול שטח, גיבוי, עקביות, וביצועים, לצד בעיות פתורות ושאלות חזרה מסכמות.
+                    </p>
+                </header>
+                
+        <div class="space-y-8">
+            <!-- 1. שאלות מנחות לניהול ואופטימיזציה (סעיף 4.4) -->
+            <section class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">🛠️ שאלות מנחות לניהול ואופטימיזציה (סעיף 4.4)</h3>
+                <div class="space-y-4">
+                    
+                    <!-- Q11 -->
+                    <details class="bg-white border border-slate-200 rounded-xl p-4 group transition-all duration-300 shadow-sm">
+                        <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-slate-700 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.11</span>
+                                <span>באיזו משתי השיטות לניהול שטח פנוי קל יותר למצוא מקום פנוי? ומה קורה בכל שיטה כשבלוק פנוי הופך לתפוס?</span>
+                            </span>
+                            <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-2">
+                            <p><b>מציאת מקום פנוי:</b> קל בהרבה בשיטת <b>מפת הסיביות (Bitmap)</b>. ניתן לטעון חלקים מה-Bitmap לזיכרון הראשי ולבצע חיפושי מילים מהירים בחומרה/תוכנה (למשל, חיפוש אחר המילה הראשונה שאינה 0). ברשימה משורשרת יש צורך לפעמים לסרוק בלוקים של מצביעים בדיסק כדי למצוא רצף של בלוקים פנויים.</p>
+                            <p><b>הפיכת בלוק פנוי לתפוס:</b>
+                                <br>• <i>במפת סיביות:</i> פשוט משנים את הסיבית המתאימה מ-1 ל-0 (או מ-0 ל-1, בהתאם למימוש).
+                                <br>• <i>ברשימה משורשרת:</i> מוציאים את הבלוק מראש הרשימה. אם בלוק המצביעים בראש הרשימה מתרוקן, משחררים את הבלוק עצמו לשימוש כבלוק נתונים רגיל ומעדכנים את מצביע ראש הרשימה.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q12 -->
+                    <details class="bg-white border border-slate-200 rounded-xl p-4 group transition-all duration-300 shadow-sm">
+                        <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-slate-700 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.12</span>
+                                <span>תארו את אלגוריתם ארבעת השלבים המבצע את הגיבוי הלוגי (Logical Backup).</span>
+                            </span>
+                            <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-600 text-xs leading-relaxed">
+                            <ol class="space-y-1.5 list-decimal list-inside">
+                                <li><b>שלב 1 (סימון ספריות משתנות):</b> המערכת סורקת את עץ הספריות מלמטה למעלה ומסמנת (למשל, במפת ביטים) כל ספרייה המכילה קובץ שחל בו שינוי מאז הגיבוי האחרון.</li>
+                                <li><b>שלב 2 (סימון קבצים לגיבוי):</b> המערכת סורקת שוב את העץ מלמעלה למטה ומסמנת את כל הקבצים שחייבים בגיבוי (קבצים ששונו, וכן את כל הספריות שסומנו בשלב 1).</li>
+                                <li><b>שלב 3 (גיבוי ספריות):</b> המערכת עוברת על הספריות שסומנו וכותבת את מבנה המדריכים שלהן לדיסק/קלטת הגיבוי, כדי ליצור מחדש את השלד ההיררכי של מערכת הקבצים.</li>
+                                <li><b>שלב 4 (גיבוי נתוני הקבצים):</b> המערכת מעתיקה את התוכן של כל הקבצים המסומנים לגיבוי אל מדיית הגיבוי.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <!-- Q13 -->
+                    <details class="bg-white border border-slate-200 rounded-xl p-4 group transition-all duration-300 shadow-sm">
+                        <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-slate-700 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.13</span>
+                                <span>כיצד ניתן להתגבר על בעיות גיבוי הקשורות לקישורים ולחורים בקבצים (Sparse Files)?</span>
+                            </span>
+                            <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-2">
+                            <p><b>בעיית קישורים (Links):</b> קובץ שמשותף דרך מספר קישורים עלול להיות מגובה מספר פעמים בטעות. כדי לפתור זאת, תוכנית הגיבוי מחזיקה טבלת מעקב (כגון מפת מספרי i-node שכבר גובו). אם קובץ כבר קיים בטבלה, התוכנית כותבת רק את מצביע הקישור (ההפניה) במקום להעתיק את הנתונים מחדש.</p>
+                            <p><b>בעיית חורים בקבצים (Sparse Files / Holes):</b> קבצים גדולים המכילים שטחים עצומים של אפסים לא תופסים בלוקים פיזיים בדיסק (הם מיוצגים על ידי מצביעי NULL ב-i-node). בגיבוי רגיל, קריאת הקובץ עלולה להחזיר את האפסים ולגבות קובץ ענק ומלא שומן. תוכנת גיבוי חכמה מזהה את החורים (על ידי השוואת גודל הקובץ הלוגי למספר הבלוקים שהוקצו לו בפועל) ומשמרת את מבנה החורים בדיסק הגיבוי על ידי כתיבת פקודות דילוג (seek) מיוחדות, מבלי לכתוב אפסים פיזית.</p>
+                        </div>
+                    </details>
+
+                    <!-- Q14 -->
+                    <details class="bg-white border border-slate-200 rounded-xl p-4 group transition-all duration-300 shadow-sm">
+                        <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-slate-700 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.14</span>
+                                <span>מהן הפעולות שמחזירות את מערכת הקבצים למצב עקבי (Consistency Check) בבעיות בלוקים?</span>
+                            </span>
+                            <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-2">
+                            <p><b>א) בלוק מופיע פעמיים בטבלת הבלוקים המשומשים:</b> מצב חמור מאוד (שני קבצים שונים טוענים בעלות על אותו בלוק פיזי בדיסק). בודק העקביות (כמו <code>fsck</code> או <code>chkdsk</code>) יקצה בלוק פנוי חדש בדיסק, יעתיק את תוכן הבלוק המשותף אליו, ויעדכן את אחד הקבצים להצביע על הבלוק החדש. כך מופרדת הבעלות, והמשתמש יתבקש לבדוק את תקינות הקבצים.</p>
+                            <p><b>ב) בלוק אינו מופיע באף טבלה (לא בשימוש ולא ברשימת הפנויים):</b> בלוק אבוד (Leak). בודק העקביות פשוט יוסיף את הבלוק הזה חזרה לרשימת הבלוקים הפנויים או למפת הסיביות הפנויה, כדי שניתן יהיה להשתמש בו שוב.</p>
+                        </div>
+                    </details>
+
+                    <!-- Q15 -->
+                    <details class="bg-white border border-slate-200 rounded-xl p-4 group transition-all duration-300 shadow-sm">
+                        <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-slate-700 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.15</span>
+                                <span>מהם הסימנים הנוספים שיכולים להצביע על מערכת קבצים בלתי עקבית?</span>
+                            </span>
+                            <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-600 text-xs leading-relaxed">
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>מספר הקישורים (Link Count) הרשום ב-i-node של קובץ אינו תואם למספר הפעמים שהקובץ מופיע בפועל בכל המדריכים במערכת.</li>
+                                <li>בלוק מופיע גם בטבלת הבלוקים המשומשים וגם ברשימת הבלוקים הפנויים (בלוק כפול).</li>
+                                <li>רשומת מדריך מצביעה על מספר i-node שאינו קיים או שאינו מוקצה.</li>
+                                <li>קובץ או ספרייה מופיעים ללא אב-ספרייה (יתומים).</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Q16 -->
+                    <details class="bg-white border border-slate-200 rounded-xl p-4 group transition-all duration-300 shadow-sm">
+                        <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-slate-700 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.16</span>
+                                <span>מהם השינויים שיש לבצע באלגוריתם LRU עבור זיכרון מטמון של מערכת קבצים?</span>
+                            </span>
+                            <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-2">
+                            <p><b>1. עקביות מערכת הקבצים (Consistency):</b> בלוקים קריטיים המכילים מטא-נתונים (כמו i-nodes או בלוקים של ספריות) חייבים להיכתב לדיסק ללא השהיה ממושכת. אם הם יישארו בזיכרון המטמון זמן רב בגלל שהם פופולריים, קריסת מערכת תשאיר את הדיסק במצב בלתי עקבי חמור. לכן, ה-LRU מותאם כך שבלוקים של מטא-נתונים נדחפים פיזית לדיסק באופן מיידי או כל 30 שניות (פעולת <code>sync</code>), בניגוד לנתוני משתמש רגילים.</p>
+                            <p><b>2. בלוקים של קריאה חד-פעמית:</b> ישנם בלוקים שסביר שלא יידרשו שוב בקרוב (למשל, בלוקים של קובץ שנפתח לקריאה מלאה פעם אחת). ה-LRU משתמש בחיזוי כדי להוציא בלוקים אלו מהמטמון מהר יותר במקום להשאירם על חשבון בלוקים אחרים.</p>
+                        </div>
+                    </details>
+
+                    <!-- Q17 -->
+                    <details class="bg-white border border-slate-200 rounded-xl p-4 group transition-all duration-300 shadow-sm">
+                        <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-slate-700 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4.17</span>
+                                <span>מהם היתרונות והחסרונות של שיטת הבאת הבלוקים מראש (Read-Ahead)? והאם מתאימה לדפדוף?</span>
+                            </span>
+                            <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-1">
+                            <p><b>יתרונות:</b> שיפור ביצועים משמעותי. כאשר המערכת מזהה קריאה סדרתית של קובץ, היא מביאה את הבלוקים הבאים מראש לתוך זיכרון המטמון. כך, כשהיישום יבקש אותם, הם כבר יהיו ב-RAM והוא לא ימתין לדיסק.</p>
+                            <p><b>חסרונות:</b> אם הגישה לקובץ היא אקראית, הבאת בלוקים מראש היא בזבוז משאבים (גישות מיותרות לדיסק ותפיסת מקום במטמון על חשבון בלוקים נדרשים).</p>
+                            <p><b>בזיכרון מדופדף:</b> בתיאוריה ניתן להשתמש בה (Pre-paging), אך בפועל זה קשה מאוד ולא יעיל מכיוון שתהליכים נוטים לקפוץ בזיכרון בצורה הרבה פחות צפויה וסדרתית מאשר קריאת קבצים, והבאת דפים מראש בדרך כלל גורמת לבזבוז זיכרון.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- 2. בעיות פתורות -->
+            <section class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">🧮 בעיות פתורות מהמדריך (תרגול אקדמי)</h3>
+                <div class="space-y-4">
+                    
+                    <!-- Problem 1 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">בעיה פתורה 1: ניתוח קריאות דיסק ב-open()</span>
+                        <div class="mt-3 text-xs leading-relaxed text-slate-700">
+                            <strong>השאלה:</strong>
+                            <p class="mt-1 bg-slate-50 p-2.5 rounded font-medium border border-slate-100">
+                                מהו מספר פעולות הקריאה של בלוק מהדיסק שצריך לבצע בהרצת השורה הזאת: <code>fd = open("/a/b/c");</code> במערכת UNIX, כאשר:
+                                <br>• ניתן להניח כי קובץ c כבר קיים על הדיסק.
+                                <br>• גודלו של כל קובץ ספרייה הוא בלוק אחד.
+                                <br>• הבלוקים (למעט ה-super block והבלוק המכיל את ה-i-node של ספריית השורש) אינם נמצאים בזיכרון מראש.
+                                <br>• קריאות המערכת אינן נכשלות, וה-i-nodes נמצאים בבלוקים שונים.
+                            </p>
+                            
+                            <strong class="block text-slate-850 mt-3">פתרון מפורט צעד אחר צעד:</strong>
+                            <ul class="list-decimal list-inside space-y-1 text-slate-650 mt-1">
+                                <li>ספריית השורש "/" נמצאת ב-i-node שמספרו 2. הבלוק המכיל i-node זה כבר נמצא בזיכרון. לכן, צריך לקרוא מהדיסק את הבלוק של ספריית השורש עצמו כדי למצוא את המיפוי של <code>a</code> (<b>קריאה 1</b>).</li>
+                                <li>מבלוק הנתונים של ספריית השורש מוצאים את ה-i-node של הספרייה <code>a</code>. קוראים מהדיסק את הבלוק המכיל את ה-i-node של <code>a</code> (<b>קריאה 2</b>).</li>
+                                <li>מה-i-node של <code>a</code> מוצאים את כתובת בלוק הנתונים של <code>a</code> וקוראים אותו מהדיסק (<b>קריאה 3</b>).</li>
+                                <li>מבלוק הנתונים של <code>a</code> מוצאים את ה-i-node של הספרייה <code>b</code>. קוראים מהדיסק את הבלוק המכיל את ה-i-node של <code>b</code> (<b>קריאה 4</b>).</li>
+                                <li>מה-i-node של <code>b</code> מוצאים את כתובת בלוק הנתונים של <code>b</code> וקוראים אותו מהדיסק (<b>קריאה 5</b>).</li>
+                                <li>מבלוק הנתונים של <code>b</code> מוצאים את ה-i-node של הקובץ <code>c</code>. קוראים מהדיסק את הבלוק המכיל את ה-i-node של <code>c</code> (<b>קריאה 6</b>).</li>
+                            </ul>
+                            <div class="mt-3 p-2 bg-blue-50 text-blue-800 font-bold rounded text-center">
+                                סה"כ פעולות קריאה מהדיסק: 6 קריאות.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem 2 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">בעיה פתורה 2: חישוב גודל קובץ ב-i-nodes</span>
+                        <div class="mt-3 text-xs leading-relaxed text-slate-700">
+                            <strong>השאלה:</strong>
+                            <p class="mt-1 bg-slate-50 p-2.5 rounded font-medium border border-slate-100">
+                                במערכת קבצים נתונה משתמשים בשיטת i-nodes. נתון כי:
+                                <br>• גודל הבלוק הוא 1KB.
+                                <br>• גודל המצביע לבלוק הוא 8 בתים (8 bytes).
+                                <br>• כל i-node מכיל 10 מצביעים ישירים ושלושה מצביעים לא ישירים: single-indirect, double-indirect ו-triple-indirect.
+                                <br>ידוע כי קובץ מסוים משתמש ב-21 בלוקים (כולל בלוקים של נתונים ובלוקים של מצביעים. אין מביאים בחשבון את הבלוק המכיל את ה-i-node עצמו). מהו גודלו של הקובץ הזה?
+                            </p>
+                            
+                            <strong class="block text-slate-850 mt-3">פתרון מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1.5 text-slate-650 mt-1">
+                                <li>הקובץ משתמש ב-21 בלוקים סה"כ.</li>
+                                <li>10 המצביעים הישירים ב-i-node מצביעים ישירות על <b>10 בלוקי נתונים</b>.</li>
+                                <li>נותרו לנו 11 בלוקים לשימוש.</li>
+                                <li>המצביע הלא-ישיר הראשון (single-indirect) פונה אל בלוק מצביעים פנימי.</li>
+                                <li>כמה מצביעים נכנסים בבלוק אינדקס יחיד?
+                                    <div class="font-mono bg-slate-50 p-1 rounded inline-block text-[10px]" dir="ltr">1024 Bytes / 8 Bytes = 128 מצביעים</div>
+                                </li>
+                                <li>מתוך 11 הבלוקים הנותרים, בלוק אחד משמש כבלוק המצביעים עצמו (בלוק האינדקס של ה-single-indirect).</li>
+                                <li>ה-10 הבלוקים הנותרים הם בלוקי נתונים המוצבעים על ידי בלוק המצביעים (מתוך ה-128 האפשריים).</li>
+                                <li>נמפה את כל בלוקי הנתונים של הקובץ:
+                                    <div class="font-bold text-slate-800 my-1">10 (ישירים) + 10 (עקיפים דרך single-indirect) = 20 בלוקי נתונים.</div>
+                                </li>
+                                <li>נחשב את נפח הקובץ:
+                                    <div class="font-mono bg-slate-50 p-1.5 rounded inline-block text-[10px]" dir="ltr">20 blocks * 1 KB = 20 KB</div>
+                                </li>
+                            </ul>
+                            <div class="mt-3 p-2 bg-blue-50 text-blue-800 font-bold rounded text-center">
+                                גודל הקובץ: 20KB (והוא משתמש בבלוק אינדקס אחד נוסף, סה"כ 21 בלוקים בדיסק).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem 3 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">בעיה פתורה 3: תיקון עקביות מערכת קבצים</span>
+                        <div class="mt-3 text-xs leading-relaxed text-slate-700">
+                            <strong>השאלה:</strong>
+                            <p class="mt-1 bg-slate-50 p-2.5 rounded font-medium border border-slate-100">
+                                להלן תוצאות הבדיקה של עקביות מערכת הקבצים בדיסק המכיל 15 בלוקים:
+                                <br><span class="font-mono block mt-1 bg-slate-900 text-slate-300 p-2 rounded text-[10px]" dir="ltr">
+                                    Blocks in use: 1 0 0 1 0 0 0 0 1 1 1 1 1 1 0
+                                    <br>Free blocks:   0 0 1 0 1 1 1 0 0 1 0 0 0 0 1
+                                </span>
+                                מה אפשר להסיק מן הנתונים האלה, וכיצד בודק העקביות יתקן אותם?
+                            </p>
+                            
+                            <strong class="block text-slate-850 mt-3">ניתוח בלוק-בלוק:</strong>
+                            <ul class="list-disc list-inside space-y-1.5 text-slate-650 mt-1">
+                                <li><b>בלוק 2:</b> אינו מופיע בטבלת השימוש (0) ואינו מופיע בטבלת החופשיים (0). זהו <b>בלוק אבוד (Leak)</b>.
+                                    <br><span class="text-slate-500 font-bold">&larr; תיקון:</span> בודק העקביות יוסיף את בלוק 2 לטבלת הבלוקים החופשיים כדי למנוע אובדן שטח בדיסק.
+                                </li>
+                                <li><b>בלוק 10:</b> מופיע גם בשימוש (1) וגם בטבלת החופשיים (1). זהו <b>בלוק כפול (מצב לא עקבי)</b>.
+                                    <br><span class="text-slate-500 font-bold">&larr; תיקון:</span> בודק העקביות יסיר את בלוק 10 מטבלת הבלוקים החופשיים (הוא תפוס בפועל על ידי קובץ).
+                                </li>
+                                <li>כל שאר הבלוקים עקביים (מופיעים בדיוק פעם אחת: או בשימוש או חופשיים).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. שאלות חזרה (נכון / לא נכון) -->
+            <section class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">❓ שאלות חזרה (נכון / לא נכון)</h3>
+                <div class="space-y-4">
+                    
+                    <!-- Q1 -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded font-bold">שאלה 1</span>
+                            <strong>האם זמן החיפוש בקובץ, שהוא בעל מבנה פנימי המורכב מרשומות, הוא יחסי לגודל הקובץ?</strong>
+                        </div>
+                        <p class="text-slate-600 bg-red-50/50 p-2 rounded border border-red-100/30">
+                            <b>תשובה: לא נכון.</b> אם הקובץ בנוי במבנה עץ של רשומות המאורגנות לפי מפתח (Tree Structure), החיפוש מתבצע בצורה לוגריתמית (למשל בעץ חיפוש) ואינו יחסי ישירות לגודל הקובץ.
+                        </p>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded font-bold">שאלה 2</span>
+                            <strong>האם גישה אקראית לקבצים על גבי מדיה סדרתית (כגון טייפ מגנטי) ניתנת למימוש?</strong>
+                        </div>
+                        <p class="text-slate-600 bg-green-50/50 p-2 rounded border border-green-100/30">
+                            <b>תשובה: נכון.</b> תיאורטית ניתן לממש גישה אקראית על ידי הרצה קדימה ואחורה של הסרט המגנטי עד למיקום המבוקש, אך פעולה זו אטית באופן קיצוני ואינה מעשית לשימוש שוטף.
+                        </p>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded font-bold">שאלה 3</span>
+                            <strong>כאשר שני תהליכים פותחים את אותו קובץ בו-זמנית ב-UNIX, נוצרת רשומה אחת משותפת בטבלת הקבצים הפתוחים המערכתית.</strong>
+                        </div>
+                        <p class="text-slate-600 bg-red-50/50 p-2 rounded border border-red-100/30">
+                            <b>תשובה: לא נכון.</b> לכל קריאת <code>open</code> נוצרת רשומה נפרדת בטבלת הקבצים הפתוחים של מערכת ההפעלה (כדי להחזיק offset נפרד לכל תהליך). שתי הרשומות מצביעות בסופו של דבר לאותה כניסת i-node בזיכרון.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+            </div>
+
+        </div>
     </main>
+
 
     <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-slate-500 text-sm">
         <p>נבנה באמצעות Gem 3 UI Engine • עיצוב מותאם לקריאות מרבית ושימור מלא של התוכן הפדגוגי.</p>
@@ -975,6 +1653,138 @@
                 simSoft.classList.remove('hidden');
                 simHard.classList.add('hidden');
             }
+        }
+
+        {
+            // === TABS & SIDEBAR CONTROLS ===
+            function showTab(tabId) {
+                // hide all tabs, deactivate all nav buttons
+                document.querySelectorAll('.tab-content').forEach(el => {
+                    el.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-btn').forEach(el => {
+                    el.classList.remove('active-nav');
+                });
+                // show selected tab, activate matching button
+                const activeTab = document.getElementById(tabId);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                    const mainArea = document.querySelector('main');
+                    if (mainArea) mainArea.scrollTop = 0;
+                }
+                const activeBtn = document.getElementById('btn-' + tabId);
+                if (activeBtn) {
+                    activeBtn.classList.add('active-nav');
+                }
+                // Save current tab in localStorage
+                localStorage.setItem('activeTab_ch4', tabId);
+                window.location.hash = tabId;
+            }
+
+            function toggleSidebar() {
+                document.body.classList.toggle('sidebar-collapsed');
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+                updateToggleBtnIcon(isCollapsed);
+            }
+
+            function updateToggleBtnIcon(isCollapsed) {
+                const icon = document.getElementById('sidebar-toggle-icon');
+                if (!icon) return;
+                if (isCollapsed) {
+                    // Show << (chevron left to open/expand in RTL)
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7M19 19l-7-7 7-7" />';
+                } else {
+                    // Show >> (chevron right to close/collapse in RTL)
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />';
+                }
+            }
+
+            // === DOCUMENT INITIALIZATION ===
+            document.addEventListener("DOMContentLoaded", () => {
+                // 1. Create and inject sidebar toggle button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.id = 'sidebar-toggle-btn';
+                toggleBtn.className = 'fixed top-6 p-2 rounded-lg bg-white/80 backdrop-blur-md hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-md z-30 flex items-center justify-center w-10 h-10 transition-all duration-300 active:scale-95 cursor-pointer';
+                toggleBtn.title = 'הצג/הסתר תפריט ניווט';
+                toggleBtn.onclick = toggleSidebar;
+                toggleBtn.innerHTML = '<svg id="sidebar-toggle-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"></svg>';
+                document.body.appendChild(toggleBtn);
+
+                // 2. Load sidebar collapsed state from localStorage
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    document.body.classList.add('sidebar-collapsed');
+                }
+                updateToggleBtnIcon(isCollapsed);
+
+                // 3. Setup tabs hash routing or load from localStorage
+                const hashTab = window.location.hash ? window.location.hash.substring(1) : null;
+                const savedTab = localStorage.getItem('activeTab_ch4');
+                const defaultTab = 'intro';
+                const finalTab = hashTab || savedTab || defaultTab;
+                showTab(finalTab);
+
+                // 4. Inject navigation buttons at the bottom of each tab
+                const tabs = [];
+                const seenIds = new Set();
+                document.querySelectorAll('.tab-content').forEach(el => {
+                    const id = el.id;
+                    if (id && !seenIds.has(id)) {
+                        seenIds.add(id);
+                        tabs.push(el);
+                    }
+                });
+
+                tabs.forEach((tab, index) => {
+                    const navContainer = document.createElement('div');
+                    navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
+
+                    // Previous Button
+                    if (index > 0) {
+                        const prevTabId = tabs[index - 1].id;
+                        const prevBtn = document.createElement('button');
+                        prevBtn.onclick = () => showTab(prevTabId);
+                        prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                        prevBtn.innerHTML = `
+                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span>הקודם</span>
+                        `;
+                        navContainer.appendChild(prevBtn);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'w-10 invisible';
+                        navContainer.appendChild(placeholder);
+                    }
+
+                    // Next Button
+                    if (index < tabs.length - 1) {
+                        const nextTabId = tabs[index + 1].id;
+                        const nextBtn = document.createElement('button');
+                        nextBtn.onclick = () => showTab(nextTabId);
+                        nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                        nextBtn.innerHTML = `
+                            <span>הבא</span>
+                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        `;
+                        navContainer.appendChild(nextBtn);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'w-10 invisible';
+                        navContainer.appendChild(placeholder);
+                    }
+
+                    tab.appendChild(navContainer);
+                });
+            });
+
+            // Expose required methods to window
+            window.showTab = showTab;
+            window.toggleSidebar = toggleSidebar;
         }
     </script>
 </body>

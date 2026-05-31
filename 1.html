@@ -303,8 +303,9 @@
                 <button onclick="showTab('os-structure')" id="btn-os-structure" class="nav-btn">
                     <span>🏗️ 1.7 מבנה מערכת ההפעלה</span>
                 </button>
+                <hr class="border-slate-800 my-4 opacity-50">
                 <button onclick="showTab('os-glossary')" id="btn-os-glossary" class="nav-btn">
-                    <span>📖 1.8 מילון מושגים מסכם</span>
+                    <span>❓ שאלות חזרה ובעיות פתורות</span>
                 </button>
             </div>
         </div>
@@ -326,6 +327,10 @@
                     <p class="text-xl text-slate-600 leading-relaxed">
                         מערכת ההפעלה (Operating System) היא תוכנה המנהלת את חומרת המחשב ומשמשת מתווכת רשמית ומיוחסת בין תוכניות המשתמש לבין החומרה הפיזית. כדי להבין את תפקידיה, אנו מחלקים אותם לשתי נקודות מבט משלימות.
                     </p>
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl my-4 text-xs text-blue-900 leading-relaxed">
+                        <strong>💡 הגדרת "משתמש" בקורס זה:</strong>
+                        בקורס מערכות הפעלה, כאשר אנו מתייחסים ל"משתמש" (User) או "תוכנית משתמש" (User Program), כוונתנו בדרך כלל היא ל<b>מתכנת/ת היישומים</b> המפתח קוד המשתמש בשירותי מערכת ההפעלה דרך קריאות מערכת. זאת להבדיל מהמובן היומיומי המתייחס ל"משתמש קצה" המפעיל אפליקציה מוכנה (כמו דפדפן או משחק).
+                    </div>
                 </header>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
@@ -397,6 +402,26 @@
                     </div>
                 </div>
 
+                <!-- שאלה מנחה 1 -->
+                <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 my-6 group transition-all duration-300">
+                    <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.1</span>
+                            <span>מדוע חייבת להיות אפשרות שהוראות מחשב של תוכניות משתמש יתבצעו בלי תיווך מערכת ההפעלה?</span>
+                        </span>
+                        <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                        <div class="thought-box">
+                            <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון:</strong>
+                            חשבו על התקורה והבזבוז הכרוכים במעבר בין מצבי המעבד (Context Switch ו-Mode Switch) עבור כל פקודה פשוטה.
+                        </div>
+                        <strong class="text-slate-800">תשובה:</strong>
+                        <p class="mt-2">
+                            אם כל הוראה קטנה (כמו חיבור אוגרים, ביצוע לולאה או חישוב אריתמטי) הייתה מצריכה פנייה למערכת ההפעלה דרך פקודת Trap ומעבר למצב גרעין, המחשב היה מתפקד באיטיות עצומה. התקורה של החלפת המצב (Mode Switch) הייתה גוזלת את רוב זמן המעבד. לכן, הוראות שאינן מיוחסות (כמו חישובים רגילים) חייבות לרוץ ישירות על החומרה במהירות מקסימלית ללא תיווך.
+                        </p>
+                    </div>
+                </details>
 
             </div>
 
@@ -458,7 +483,7 @@
                     <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 pr-2">
                         <li><strong>מערכת אצווה (Batch System):</strong> איסוף עבודות רציפות על כרטיסי ניקוב והרצתן ברצף על ידי מפעיל המחשב, כדי למנוע זמן סרק של המעבד במעבר בין תוכניות.</li>
                         <li><strong>ריבוב תוכניות (Multiprogramming):</strong> חלוקת הזיכרון למחיצות. כאשר תוכנית ממתינה ל-I/O, המעבד מריץ מיד תוכנית אחרת. הוליד את הדרישה ל<strong>הגנת זיכרון</strong>.</li>
-                        <li><strong>Spooling (אגירה בדיסק):</strong> שימוש בדיסק הקשיח כחוצץ מהיר עבור התקני קלט/פלט איטיים. קריאת כרטיסי ניקוב מראש לדיסק או אגירת נתוני הדפסה מונעת מהמעבד להמתין ישירות להתקנים איטיים.</li>
+                        <li><strong>Spooling (Simultaneous Peripheral Operations On-Line):</strong> שימוש בדיסק הקשיח כחוצץ (Buffer) רחב ומהיר המגשר על פער המהירויות העצום בין התקני קלט/פלט איטיים (כמו קוראי כרטיסים, מדפסות) לבין המעבד האלקטרוני המהיר. במקום שהמעבד ימתין ישירות לקורא כרטיסים מכני, העבודות נקראות מראש מהכרטיסים אל הדיסק ברקע. כאשר מתפנה זמן מעבד, הוא טוען את העבודות במהירות ישירות מהדיסק. באופן דומה, במקום להמתין למדפסת איטית, פלט התוכנית נכתב ישירות לקובץ בדיסק (Spool), והמערכת ממשיכה לפעילות הבאה בזמן שהמדפסת מושכת את המידע מהדיסק בקצב שלה. מנגנון זה היווה פריצת דרך היסטורית המבטלת את תלות המעבד במהירות ההתקנים המכניים.</li>
                         <li><strong>שיתוף זמן (Timesharing):</strong> הקצאת פרוסת זמן קצרה ביותר (Quantum) לכל תוכנית. המעבד עובר במהירות גבוהה בין המשתמשים ויוצר אשליה של מחשב בלעדי לכל אחד.</li>
                     </ul>
                 </div>
@@ -547,6 +572,86 @@
                     <p class="text-sm text-slate-700 leading-relaxed">
                         המעבד אינו מדבר ישירות עם ההתקן הפיזי (למשל, ראש הקריאה בדיסק), אלא עם <strong>בקר ההתקן (Device Controller)</strong>. הבקר הוא שבב אלקטרוני המכיל אוגרי בקרה, סטטוס ונתונים. קריאת קלט/פלט מתבצעת על ידי כתיבת פקודות לאוגרי הבקר במצב מיוחס. בסיום הפעולה, הבקר מעורר <strong>פסיקת חומרה (Interrupt)</strong> כדי להודיע לליבת מערכת ההפעלה שהנתונים מוכנים בחוצץ.
                     </p>
+                </div>
+
+                <!-- שאלות מנחות 1.7 -->
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <h4 class="text-lg font-bold text-slate-800 mb-4">שאלות מנחות מתוך מדריך הלמידה (מבנה המערכת)</h4>
+                    <div class="space-y-4">
+                        <!-- Q2 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.2</span>
+                                    <span>מה היתרון של מערכת שמרכיביה מאורגנים ברבדים (קליפות) לעומת מערכת מונוליתית?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    <b>מודולריות וקלות תחזוקה ופיתוח.</b> במערכת מרובדת, כל רובד מתבסס אך ורק על השירותים של הרובד שמתחתיו ומציג ממשק מוגדר לרובד שמעליו. תכנון זה מאפשר לשנות, לעדכן או לאתר שגיאות ברובד בודד מבלי להשפיע על שאר רכיבי המערכת, בעוד שבמערכת מונוליתית כל שינוי קוד קטן יכול להשפיע על המערכת כולה ולגרום לקריסתה.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q3 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.3</span>
+                                    <span>מה הופך את המכונה המדומה (בסעיף 1.7.3) למערכת הפעלה?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    המכונה המדומה (Hypervisor/VMM) היא שכבת תוכנה המנהלת ומקצה באופן בלעדי את המשאבים הפיזיים של המחשב (מעבד, זיכרון, התקנים) ומציגה אבסטרקציה (וירטואלית) שלהם למערכות האורחות. לכן, היא ממלאת את שני התפקידים המהותיים של מערכת הפעלה: <b>ניהול משאבים</b> ו<b>יצירת מכונה מדומה/מורחבת</b>.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q4 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.4</span>
+                                    <span>מהם היתרונות של מערכות לקוח-שרת (Microkernel)?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    1. <b>אמינות ושרידות (Fault Tolerance):</b> שירותי מערכת ההפעלה (כמו מערכת הקבצים או מנהל הרשת) רצים כתהליכים נפרדים במרחב משתמש. אם שרת קורס עקב באג, הוא אינו מפיל את כל המחשב וניתן לאתחל אותו מחדש.
+                                    <br>2. <b>קלות הרחבה ותחזוקה:</b> ניתן להוסיף, לשנות או לעדכן שרתים ללא צורך לקמפל מחדש את הגרעין.
+                                    <br>3. <b>התאמה לביזור:</b> מודל לקוח-שרת מתאים מאוד למערכות מבוזרות, כיוון שתהליך הלקוח ותהליך השרת יכולים לרוץ פיזית על מחשבים שונים ברשת.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q5 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.5</span>
+                                    <span>לאור היתרונות המובהקים של מודל זה, מדוע הוא איננו מיושם תמיד?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <div class="thought-box">
+                                    <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון ומלכודות קלאסיות:</strong>
+                                    זכרו תמיד את הטרייד-אוף ההנדסי: במערכת לקוח-שרת, קריאה לשירות מחייבת מעבר של הודעה (IPC) בין תהליך הלקוח לשרת דרך הקרנל, בעוד שבמערכת מונוליתית מדובר בקריאת פונקציה מהירה.
+                                </div>
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    <b>עקב פגיעה בביצועים.</b> במערכת מונוליתית, שירות מבוצע כקריאת פונקציה מהירה וישירה בתוך הגרעין. במערכת לקוח-שרת (מיקרו-קרנל), קריאה לשירות מחייבת העברת הודעות (IPC) דרך הגרעין. תהליך זה דורש מעברים מרובים בין מצב משתמש למצב מיוחס (Mode Switches) והחלפות הקשר (Context Switches) בין תהליך הלקוח, המיקרו-קרנל ותהליך השרת, דבר המייצר תקורה כבדה ומאט את ביצועי המערכת.
+                                </p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
 
@@ -924,19 +1029,99 @@
                         מערכת ההפעלה האורחת הרצה בתוך המכונה המדומה (כמו CMS) היא זו שמספקת את אבסטרקציות המכונה המורחבת למתכנת.
                     </p>
                 </div>
+
+                <!-- שאלות מנחות 1.7 -->
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <h4 class="text-lg font-bold text-slate-800 mb-4">שאלות מנחות מתוך מדריך הלמידה (מבנה המערכת)</h4>
+                    <div class="space-y-4">
+                        <!-- Q2 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.2</span>
+                                    <span>מה היתרון של מערכת שמרכיביה מאורגנים ברבדים (קליפות) לעומת מערכת מונוליתית?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    <b>מודולריות וקלות תחזוקה ופיתוח.</b> במערכת מרובדת, כל רובד מתבסס אך ורק על השירותים של הרובד שמתחתיו ומציג ממשק מוגדר לרובד שמעליו. תכנון זה מאפשר לשנות, לעדכן או לאתר שגיאות ברובד בודד מבלי להשפיע על שאר רכיבי המערכת, בעוד שבמערכת מונוליתית כל שינוי קוד קטן יכול להשפיע על המערכת כולה ולגרום לקריסתה.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q3 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.3</span>
+                                    <span>מה הופך את המכונה המדומה (בסעיף 1.7.3) למערכת הפעלה?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    המכונה המדומה (Hypervisor/VMM) היא שכבת תוכנה המנהלת ומקצה באופן בלעדי את המשאבים הפיזיים של המחשב (מעבד, זיכרון, התקנים) ומציגה אבסטרקציה (וירטואלית) שלהם למערכות האורחות. לכן, היא ממלאת את שני התפקידים המהותיים של מערכת הפעלה: <b>ניהול משאבים</b> ו<b>יצירת מכונה מדומה/מורחבת</b>.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q4 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.4</span>
+                                    <span>מהם היתרונות של מערכות לקוח-שרת (Microkernel)?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    1. <b>אמינות ושרידות (Fault Tolerance):</b> שירותי מערכת ההפעלה (כמו מערכת הקבצים או מנהל הרשת) רצים כתהליכים נפרדים במרחב משתמש. אם שרת קורס עקב באג, הוא אינו מפיל את כל המחשב וניתן לאתחל אותו מחדש.
+                                    <br>2. <b>קלות הרחבה ותחזוקה:</b> ניתן להוסיף, לשנות או לעדכן שרתים ללא צורך לקמפל מחדש את הגרעין.
+                                    <br>3. <b>התאמה לביזור:</b> מודל לקוח-שרת מתאים מאוד למערכות מבוזרות, כיוון שתהליך הלקוח ותהליך השרת יכולים לרוץ פיזית על מחשבים שונים ברשת.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q5 -->
+                        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.5</span>
+                                    <span>לאור היתרונות המובהקים של מודל זה, מדוע הוא איננו מיושם תמיד?</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <div class="thought-box">
+                                    <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון ומלכודות קלאסיות:</strong>
+                                    זכרו תמיד את הטרייד-אוף ההנדסי: במערכת לקוח-שרת, קריאה לשירות מחייבת מעבר של הודעה (IPC) בין תהליך הלקוח לשרת דרך הקרנל, בעוד שבמערכת מונוליתית מדובר בקריאת פונקציה מהירה.
+                                </div>
+                                <strong class="text-slate-800">תשובה:</strong>
+                                <p class="mt-2">
+                                    <b>עקב פגיעה בביצועים.</b> במערכת מונוליתית, שירות מבוצע כקריאת פונקציה מהירה וישירה בתוך הגרעין. במערכת לקוח-שרת (מיקרו-קרנל), קריאה לשירות מחייבת העברת הודעות (IPC) דרך הגרעין. תהליך זה דורש מעברים מרובים בין מצב משתמש למצב מיוחס (Mode Switches) והחלפות הקשר (Context Switches) בין תהליך הלקוח, המיקרו-קרנל ותהליך השרת, דבר המייצר תקורה כבדה ומאט את ביצועי המערכת.
+                                </p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
             </div>
 
             <!-- ==========================================
-                 PART 1.8: OS GLOSSARY
+                 PART 1.8 - 1.10: OS GLOSSARY & QUESTIONS
             =========================================== -->
             <div id="os-glossary" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
-                        חלק 1.8
+                        חלק 1.8 - 1.10
                     </div>
-                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים מסכם</h2>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים ושאלות חזרה מסכמות</h2>
                     <p class="text-xl text-slate-600 leading-relaxed">
-                        ריכוז הגדרות ומושגי מפתח מתוך פרק 1, מחולקים לפי נושאים ומותאמים לדרישות הבחינה.
+                        ריכוז הגדרות מונחי מפתח ושאלות חזרה מסכמות מתוך פרק 1 למדריך הלמידה.
                     </p>
                 </header>
 
@@ -1165,6 +1350,121 @@
                                 <div class="text-sm text-slate-600 leading-relaxed flex-1">ארכיטקטורה שבה הגרעין אינו מספק אבסטרקציות כלל, אלא רק מקצה ומגן על משאבי חומרה גולמיים עבור ספריות ברמת המשתמש (Library OS), המממשות את האבסטרקציות בעצמן באופן מותאם אישית.</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- שאלות חזרה מתוך מדריך הלמידה -->
+                <div class="mt-12 pt-8 border-t border-slate-200">
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                        <span>❓ שאלות חזרה וסיכום (סעיף 1.9)</span>
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+                        להלן שאלות החזרה המופיעות בעמ' 22 במדריך הלמידה, בליווי פתרונות אקדמיים מעמיקים ודגשים מפורטים. השתמש במתקפלים כדי לבחון את עצמך.
+                    </p>
+
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 1</span>
+                                    <span>האם תפקידה של מערכת ההפעלה כמכונה מורחבת מקבל ביטוי במערכת VM/370?</span>
+                                </span>
+                                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                                <div class="thought-box">
+                                    <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון ומלכודות קלאסיות:</strong>
+                                    סטודנטים רבים נוטים לחשוב ש-VM/370 עצמו מדמה את החומרה ולכן מתפקד כמכונה מורחבת. עם זאת, זכרו כי ה-Hypervisor (שכבת ה-CP) מדמה <b>חומרה גולמית</b> ובלתי-מרוסקת, ולא מציג אבסטרקציות נוחות. יש להבחין בין שכבת הווירטואליזציה לבין המערכות האורחות הרצות בתוכה.
+                                </div>
+                                <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                                <p class="mt-2">
+                                    <b>כן, באופן עקיף.</b> שכבת הווירטואליזציה הפיזית (ה-Hypervisor או ה-Control Program) של מערכת <b>VM/370</b> אינה מספקת בעצמה את הפונקציות של "מכונה מורחבת" (היא אינה מנהלת קבצים או מספקת אבסטרקציות נוחות למתכנת, אלא משחזרת העתק מדויק של חומרת ה-System/370). 
+                                </p>
+                                <p class="mt-2">
+                                    עם זאת, המכונה המדומה מאפשרת להריץ בתוכה מערכת הפעלה אורחת חד-משתמשית כמו <b>CMS</b> (Conversational Monitor System). מערכת האורח CMS היא זו שמספקת למתכנת את אבסטרקציות המכונה המורחבת (קריאות מערכת, ניהול קבצים נוח, קלט/פלט מופשט) מעל החומרה המדומה שקיבלה.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q2 -->
+                        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 2</span>
+                                    <span>האם ניתן להשיג הגנה על משאבי מערכת ההפעלה ללא תמיכה של מעבד בשני מצבים לפחות?</span>
+                                </span>
+                                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                                <div class="thought-box">
+                                    <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון ומלכודות קלאסיות:</strong>
+                                    שימו לב לשאלה זו – היא בוחנת את גבולות היכולת של מערכת הפעלה ללא תמיכת חומרה (Dual Mode). ללא מנגנון פיזי שמונע הרצת פקודות מסוימות במצב משתמש, תוכנות משתמש זדוניות או שגויות יכלו לשכתב את מערכת ההפעלה בקלות.
+                                </div>
+                                <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                                <p class="mt-2">
+                                    <b>לא, לא ניתן להשיג הגנה הרמטית.</b> כדי להגן על משאבי המחשב (כמו הזיכרון הפיזי, התקני הקלט/פלט וטבלאות פסיקות), תוכניות משתמש רגילות חייבות להיות חסומות מביצוע הוראות מיוחסות (Privileged Instructions).
+                                </p>
+                                <p class="mt-2">
+                                    חסימה זו מחייבת תמיכה פיזית של חומרת המעבד:
+                                    <ol class="list-decimal list-inside pr-4 mt-2 space-y-1">
+                                        <li>מעבד התומך בלפחות שני מצבים (כמו User Mode ו-Kernel Mode).</li>
+                                        <li>אכיפת מניעה מצד החומרה: אם תוכנית במצב משתמש מנסה להריץ הוראה מיוחסת, המעבד יסרב ויבצע פסיקה (Trap) המעבירה את השליטה למערכת ההפעלה.</li>
+                                    </ol>
+                                    ללא מנגנון זה בחומרה, כל תוכנית משתמש יכולה לעקוף את מערכת ההפעלה, לגשת ישירות לדיסק או לזיכרון של תוכנית אחרת, ולא ניתן לממש הגנה.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q3 -->
+                        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 3</span>
+                                    <span>אמתו או הפריכו: קריאות מערכת אינן גורמות למעבר למצב מיוחס (Kernel Mode).</span>
+                                </span>
+                                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                                <p class="mt-2">
+                                    <b>הטענה מופרכת (לא נכונה).</b> 
+                                </p>
+                                <p class="mt-2">
+                                    קריאות מערכת (System Calls) הן המנגנון הרשמי והיחיד שבאמצעותו תוכנית משתמש רגילה (הרצה ב-User Mode) מבקשת שירותים ממערכת ההפעלה. ביצוע הקריאה מתבצע על ידי פקודת חומרה מיוחדת המכונה <b>Trap</b> או <b>Syscall</b>.
+                                </p>
+                                <p class="mt-2">
+                                    פקודה זו מעבירה באופן מכוון ומבוקר את המעבד למצב מיוחס (Kernel Mode) ומעבירה את מונה הפקודות (PC) לכתובת קבועה בתוך קוד מערכת ההפעלה (Handler), כדי שזו תבצע את הפעולה המבוקשת בצורה מוגנת ומאובטחת.
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Q4 -->
+                        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 4</span>
+                                    <span>אמתו או הפריכו: פונקציות של שפת תכנות עילית מבוצעות תמיד במצב מיוחס.</span>
+                                </span>
+                                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                                <div class="thought-box">
+                                    <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון ומלכודות קלאסיות:</strong>
+                                    שימו לב להבדל הברור בין פונקציות חישוביות רגילות לבין פונקציות המפעילות קריאות מערכת. פונקציית ספרייה כמו <code>printf()</code> של שפת C רצה במרחב משתמש ומבצעת הכנות רבות לפני שהיא מפעילה את קריאת המערכת הגולמית <code>write()</code>.
+                                </div>
+                                <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                                <p class="mt-2">
+                                    <b>הטענה מופרכת (לא נכונה).</b> 
+                                </p>
+                                <p class="mt-2">
+                                    פונקציות של שפת תכנות עילית (למשל כפל מספרים, מניפולציה של מחרוזות, חישוב לוגי) מבוצעות כמעט תמיד במצב משתמש (User Mode). אין להן שום צורך או הרשאה לרוץ במצב מיוחס.
+                                </p>
+                                <p class="mt-2">
+                                    רק כאשר פונקציה מסוימת זקוקה לשירותי חומרה או הגנה (למשל, הדפסה למסך באמצעות פונקציית ספרייה כמו <code>printf</code>, או הקצאת זיכרון דינמי באמצעות <code>malloc</code>), קוד הספרייה יבצע בסופו של דבר קריאת מערכת (System Call / Trap). המעבר למצב מיוחס מתבצע <b>אך ורק לזמן הטיפול בקריאת המערכת עצמה בתוך גרעין מערכת ההפעלה</b>, ולאחר סיומה המעבד חוזר מיד למצב משתמש רגיל.
+                                </p>
+                            </div>
+                        </details>
                     </div>
                 </div>
             </div>

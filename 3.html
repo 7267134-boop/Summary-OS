@@ -283,8 +283,9 @@
                 <button onclick="showTab('segmentation')" id="btn-segmentation" class="nav-btn">
                     <span>📐 3.7 קיטוע זיכרון</span>
                 </button>
-                <button onclick="showTab('glossary')" id="btn-glossary" class="nav-btn">
-                    <span>📖 3.8-3.12 מילון מושגים</span>
+                <hr class="border-slate-800 my-4 opacity-50">
+                <button onclick="showTab(\'glossary\')" id="btn-glossary" class="nav-btn">
+                    <span>❓ שאלות חזרה ובעיות פתורות</span>
                 </button>
             </div>
         </div>
@@ -558,6 +559,55 @@
                         <p class="text-sm text-slate-600">מאפשרת למנוע שמירה של הדף בזיכרון המטמון (Cache). זה חיוני כאשר הדף ממופה לאוגרים של התקני חומרה (Memory-Mapped I/O), כי קריאת מצב החומרה מתוך עותק ישן במטמון עלולה לתת תוצאה שגויה.</p>
                     </div>
                 </div>
+
+                <!-- דוגמאות חישוב מתמטיות של גודל טבלאות דפים -->
+                <div class="bg-indigo-50/60 border border-indigo-100 rounded-xl p-6 mt-6">
+                    <h4 class="text-lg font-black text-indigo-900 mb-4">🧮 דוגמאות לחישובי גודל טבלאות דפים (מדריך הלמידה, סעיף 3.3.2)</h4>
+                    <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                        במערכות הפעלה, גודל טבלת הדפים של תהליך בודד עשוי להוות נטל משמעותי על הזיכרון. להלן דוגמאות החישוב הקלאסיות המפורטות במדריך הלמידה של האוניברסיטה הפתוחה:
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <!-- Example 1 -->
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 text-xs">
+                            <strong class="text-slate-800 block mb-2">דוגמה 1: גודל טבלת דפים רגילה (מערכת 32-bit)</strong>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <div><strong>נתונים:</strong></div>
+                                    <div>• מרחב כתובות וירטואלי: $32\text{-bit}$ (גודל של $2^{32}\text{ bytes} = 4\text{ GB}$).</div>
+                                    <div>• גודל דף פיזי: $4\text{ KB} = 2^{12}\text{ bytes}$.</div>
+                                    <div>• גודל כניסה בטבלה (PTE): $4\text{ bytes}$.</div>
+                                </div>
+                                <div class="space-y-1.5 border-r border-slate-100 pr-4" dir="rtl">
+                                    <div><strong>שלבי החישוב:</strong></div>
+                                    <div>1. מספר הדפים הוירטואליים הכולל במערכת:
+                                        <div class="font-mono my-1 bg-slate-50 p-1.5 rounded" dir="ltr">$\text{Number of Pages} = \frac{2^{32}}{2^{12}} = 2^{20} \approx 1,048,576\text{ pages}$</div>
+                                    </div>
+                                    <div>2. גודל טבלת הדפים הכולל (עבור תהליך בודד):
+                                        <div class="font-mono my-1 bg-slate-50 p-1.5 rounded" dir="ltr">$\text{Table Size} = 2^{20} \times 4\text{ bytes} = 4\text{ MB}$</div>
+                                    </div>
+                                    <div class="text-red-700 font-bold">משמעות: אם יש 100 תהליכים במערכת, נצטרך 400 MB רק עבור טבלאות דפים!</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- שאלה מנחה 3.1 -->
+                        <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.1</span>
+                                    <span>חישוב גודל טבלת דפים רגילה במרחב 32-bit (מתוך סעיף 3.3.2)</span>
+                                </span>
+                                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                            </summary>
+                            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                                <strong class="text-slate-800">השאלה:</strong> במערכת שבה מרחב הכתובות הווירטואלי הוא בגודל $32\text{-bit}$, גודל הדף הוא $4\text{ KB}$, וגודל כניסה בטבלה (PTE) הוא $4\text{ bytes}$, מהו גודל טבלת הדפים?
+                                <br><strong class="text-slate-800 mt-2 block">תשובה:</strong>
+                                כפי שחושב בדוגמה 1 לעיל, המערכת כוללת $2^{20}$ דפים וירטואליים. מכיוון שכל כניסה בטבלה צורכת $4\text{ bytes}$, גודל הטבלה כולה יהיה $2^{20} \times 4\text{ bytes} = 4\text{ MB}$.
+                            </div>
+                        </details>
+                    </div>
+                </div>
             </div>
 
             <!-- Bridge Transition -->
@@ -604,6 +654,66 @@
                     <strong class="text-indigo-800 block mb-1">למה זה כל כך מוצלח?</strong>
                     <p class="text-indigo-900 text-sm">המנגנון הזה מתבסס על <strong>"עקרון המקומיות" (Locality of Reference)</strong>. תוכניות מחשב נוטות לגשת לאותם דפים שוב ושוב בפרק זמן נתון (למשל בעת ביצוע לולאת קוד או קריאת מערך). לכן אחוז הפניות שמוצאות את התרגום ב-TLB (יחס ההצלחה - Hit Ratio) הוא גבוה מאוד.</p>
                 </div>
+
+                <!-- שאלות מנחות 3.3.3 -->
+                <div class="mt-6 pt-6 border-t border-slate-100 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800">שאלות מנחות ללימוד (מנגנון ה-TLB):</h4>
+                    
+                    <!-- Q3.2 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.2</span>
+                                <span>מה קורה כאשר כל השורות בטבלת ה-TLB מנוצלות (מלאות)?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">תשובה:</strong>
+                            <p class="mt-1">
+                                מדיניות פינוי תוכן השורות של ה-TLB והחלפתו ממומשת בחומרה (בדרך כלל באמצעות אלגוריתם LRU - Least Recently Used). כאשר הטבלה מלאה, ומעבד מנסה לטעון תרגום חדש שלא נמצא ב-TLB, החומרה תבחר רשומה ישנה שלא נעשה בה שימוש לאחרונה, תפנה אותה (תדרוס אותה), ובמקומה תרשום את התרגום החדש שהובא מהזיכרון הראשי.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.3 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.3</span>
+                                <span>מה קורה לתוכן ה-TLB כאשר מבוצעת החלפת הקשר (Context Switch) בין תהליכים?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">תשובה:</strong>
+                            <p class="mt-1">
+                                מאחר שלכל תהליך יש טבלת דפים משלו ומיפוי שונה לחלוטין לזיכרון הפיזי, תרגומי הכתובות השמורים ב-TLB שייכים לתהליך הישן ואינם תקפים עבור התהליך החדש. אם המעבד ישתמש בהם, הוא יגש לכתובות זיכרון שגויות של התהליך הקודם. לכן, בעת החלפת הקשר, מערכת ההפעלה חייבת <b>לרוקן (Flush / Invalidate)</b> את כל שורות ה-TLB.
+                            </p>
+                            <p class="mt-2">
+                                כדי למנוע את התקורה הגבוהה של ריקון ה-TLB בכל החלפת הקשר, מעבדים מודרניים תומכים בשדה <b>ASID (Address Space Identifier)</b> בתוך ה-TLB. שדה זה מייצג מזהה תהליך קצר, ומאפשר לתרגומים של תהליכים שונים לדור בכפיפה אחת ב-TLB, כאשר ה-MMU מוודא התאמה בין ה-ASID של התהליך הנוכחי לבין ה-ASID השמור ברשומה.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.4 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.4</span>
+                                <span>הסבירו את ההבדל בין exclusive cache לבין inclusive cache במעבדים.</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">תשובה:</strong>
+                            <ul class="list-disc list-inside space-y-1.5 mt-1">
+                                <li><b>מטמון מכיל (Inclusive Cache):</b> כל בלוק מידע שנמצא בזיכרון המטמון ברמה גבוהה (כגון L1 cache שהוא הקרוב ביותר למעבד) <b>חייב</b> להימצא גם ברמת המטמון שמתחתיו (כגון L2 cache). אם בלוק נמחק מ-L2, הוא נמחק אוטומטית גם מ-L1.</li>
+                                <li><b>מטמון בלעדי (Exclusive Cache):</b> בלוק מידע נמצא לכל היותר ברמת מטמון אחת במקביל. אם המעבד קורא בלוק זיכרון לתוך L1 cache, הוא נמחק מרמת L2 cache. כאשר הבלוק מפונה מ-L1, הוא נכתב חזרה ל-L2. שיטה זו מונעת כפילויות ומנצלת בצורה מקסימלית את הנפח הכולל של הזיכרונות המטמונים.</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
             </div>
 
             <hr class="border-slate-200 mx-6">
@@ -641,6 +751,67 @@
                             <p class="text-blue-900 font-bold text-sm bg-blue-100 p-2 rounded mt-2"><strong>החיפוש (Hash):</strong> כדי לאתר דפים בטבלה זו במהירות ללא סריקה רציפה אטית, החיפוש מתבצע באמצעות פונקציית ערבול (Hash Function), מה שמאפשר חיסכון משמעותי בשטח טבלאות הזיכרון מבלי לפגוע מהותית בזמן הגישה.</p>
                         </div>
                     </div>
+                </div>
+
+                <!-- שאלות מנחות 3.3.4 -->
+                <div class="mt-6 pt-6 border-t border-slate-100 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800">שאלות מנחות ללימוד (ניהול מרחבי זיכרון גדולים):</h4>
+
+                    <!-- Q3.5 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.5</span>
+                                <span>חישוב גודל טבלת דפים רגילה במערכת של 64-bit (מתוך סעיף 3.3.4)</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <div class="thought-box">
+                                <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון:</strong>
+                                כאשר עוברים מ-32 ל-64 ביט, שימו לב שהמעריך של גודל מרחב הכתובות גדל באופן מעריכי.
+                            </div>
+                            <strong class="text-slate-800">השאלה:</strong>
+                            <p class="mt-1">
+                                נתון כי: כתובת וירטואלית היא בגודל $64\text{-bit}$, יחידת המען הקטנה ביותר היא בגודל $1\text{ byte}$, גודל דף הוא $8\text{ KB}$, וגודל כניסה בטבלת הדפים (PTE) הוא $8\text{ bytes}$. מהו גודל טבלת הדפים במערכת?
+                            </p>
+                            <strong class="text-slate-800 mt-2 block">הפתרון האקדמי:</strong>
+                            <p class="mt-1">
+                                כפי שחושב בדוגמה 2 לעיל, גודל מרחב הכתובות הוא $2^{64}\text{ bytes}$. גודל דף הוא $8\text{ KB} = 2^{13}\text{ bytes}$. מספר הדפים הווירטואליים הכולל במערכת הוא:
+                                $$\text{Number of Pages} = \frac{2^{64}}{2^{13}} = 2^{51}\text{ pages}$$
+                                גודל טבלת הדפים הנדרש יהיה מכפלת מספר הדפים בגודל כניסה אחת ($8\text{ bytes} = 2^3\text{ bytes}$):
+                                $$\text{Table Size} = 2^{51} \times 2^3\text{ bytes} = 2^{54}\text{ bytes} = 16\text{ Petabytes}$$
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.6 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.6</span>
+                                <span>חישוב גודל טבלת דפים מהופכת (Inverted Page Table) (מתוך סעיף 3.3.4)</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <div class="thought-box">
+                                <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון ומלכודות קלאסיות:</strong>
+                                זכרו כי בטבלת דפים מהופכת, גודל הטבלה תלוי ב<b>זיכרון הפיזי</b> (ה-RAM) ולא במרחב הכתובות הווירטואלי!
+                            </div>
+                            <strong class="text-slate-800">השאלה:</strong>
+                            <p class="mt-1">
+                                נתון כי: גודל הזיכרון הפיזי הוא $1\text{ GB}$, גודל דף הוא $8\text{ KB}$, וגודל כניסה בטבלת הדפים הוא $4\text{ bytes}$. מהו גודל טבלת הדפים המהופכת?
+                            </p>
+                            <strong class="text-slate-800 mt-2 block">הפתרון האקדמי:</strong>
+                            <p class="mt-1">
+                                מספר מסגרות הזיכרון הפיזיות (Page Frames) הקיימות בזיכרון הראשי (RAM):
+                                $$\text{Number of Frames} = \frac{1\text{ GB}}{8\text{ KB}} = \frac{2^{30}\text{ bytes}}{2^{13}\text{ bytes}} = 2^{17}\text{ frames}$$
+                                בטבלת דפים מהופכת, ישנה כניסה אחת בדיוק לכל מסגרת פיזית. לכן, גודל הטבלה הכולל יהיה:
+                                $$\text{Table Size} = 2^{17} \times 4\text{ bytes} = 2^{17} \times 2^2\text{ bytes} = 2^{19}\text{ bytes} = 512\text{ KB}$$
+                            </p>
+                        </div>
+                    </details>
                 </div>
             </div>
     </div>
@@ -1015,6 +1186,136 @@
 
                 <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg text-center">
                     <strong class="text-slate-800">השורה התחתונה:</strong> אלגוריתם השעון ו"הזדמנות שנייה" <strong>זהים לחלוטין</strong> מבחינת ההחלטה איזה דף יפונה! ההבדל היחיד הוא שאלגוריתם השעון עושה זאת בצורה מהירה ויעילה הרבה יותר.
+                </div>
+
+                <!-- שאלות מנחות 3.4 (בסיסי) -->
+                <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800">שאלות מנחות ללימוד (אלגוריתמי החלפת דפים בסיסיים):</h4>
+
+                    <!-- Q3.7 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.7</span>
+                                <span>מדוע מערכת ההפעלה אינה יכולה לדעת בבירור לאיזה דף תיעשה הפנייה הבאה?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                חיזוי עתידי מושלם של הפניות לזיכרון של תוכנית כללית אינו אפשרי, שכן הוא שקול לפתרון <b>בעיית העצירה (Halting Problem)</b>, שהיא בעיה בלתי כריעה במדעי המחשב. ריצת התוכנית תלויה בקלטים דינמיים של המשתמש, החלטות סניף בזמן אמת (Branching), ופקודות מותנות. לכן, מערכות ההפעלה נאלצות להשתמש בשיטות מנחשות (היוריסטיקות) המבוססות על התנהגות העבר (עקרון המקומיות).
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.8 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.8</span>
+                                <span>הבדלי תקורה בפינוי דף נקי לעומת דף מלוכלך ב-NRU (מתוך סעיף 3.4.2)</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">השאלה:</strong>
+                            <p class="mt-1">
+                                א) מהו ההבדל בתקורה (זמן הטיפול) בין פינוי דף שבו $M=0$ לבין פינוי דף שבו $M=1$?
+                                <br>ב) מדוע אלגוריתם NRU מעדיף לפעמים לפנות דף שבו $M=0$ ו-$R=1$ (מחלקה 2) על פני דף שבו $M=1$ ו-$R=0$ (מחלקה 1)?
+                            </p>
+                            <strong class="text-slate-800 mt-2 block">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                <b>א) הבדל התקורה:</b> דף נקי ($M=0$) הוא דף שתוכנו ב-RAM זהה לחלוטין לעותק שלו בדיסק. לכן, פינויו דורש רק דריסה שלו על ידי הדף החדש (פעולת קריאה בלבד מהדיסק). לעומת זאת, דף מלוכלך ($M=1$) שונה מאז שנטען ל-RAM, ולכן פינויו מחייב כתיבה שלו חזרה לדיסק לפני טעינת הדף החדש, דבר המייצר תקורה כפולה של גישה לדיסק (כתיבה איטית ולאחר מכן קריאה).
+                                <br><b>ב) העדפת NRU:</b> סיבית ההתייחסות ($R$) מצביעה על שימוש ב<b>פעימת השעון הנוכחית (לאחרונה)</b>. דף שבו $R=1, M=0$ נמצא בשימוש אינטנסיבי כרגע, ולכן, על פי עקרון המקומיות, סביר מאוד שיידרש שוב בעתיד הקרוב מאוד. פינויו יגרום לפסיקת דף מיידית. לעומת זאת, דף שבו $R=0, M=1$ לא היה בשימוש לאחרונה, ולכן סביר שלא יידרש בקרוב. עדיף לשלם את תקורת הכתיבה החד-פעמית לדיסק עבור דף שלא נדרש, מאשר לפנות דף מבוקש שייצר פסיקת דף מיידית.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.9 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.9</span>
+                                <span>אלגוריתם אופטימלי וסיבית השינוי (M) (מתוך סעיף 3.4.1)</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">השאלה:</strong>
+                            <p class="mt-1">
+                                האלגוריתם האופטימלי (Optimal) אינו מתייחס לסיבית השינוי ($M$) של דף. הראו שהדבר אינו חשוב כדי לגרום לכמות מינימלית של פסיקות דף.
+                            </p>
+                            <strong class="text-slate-800 mt-2 block">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                מטרת אלגוריתם האופטימלי היא למזער את <b>כמות פסיקות הדף (Page Faults)</b> עצמן. כמות פסיקות הדף נקבעת אך ורק על פי השאלה "האם הדף הנדרש נמצא בזיכרון או לא". התייחסות לסיבית השינוי $M$ יכולה לסייע בצמצום <b>כמות פעולות הכתיבה לדיסק</b> (תקורת הפינוי), אך היא אינה משפיעה על מספר הפסיקות הכולל. מכיוון שהאלגוריתם האופטימלי משמש כחסם עליון תיאורטי למינימום פסיקות בלבד, הוא מתעלם משיקולי כתיבה לדיסק.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.10 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.10</span>
+                                <span>במה מתבטא הייעול של אלגוריתם השעון לעומת אלגוריתם ההזדמנות השנייה?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                אלגוריתם "הזדמנות שנייה" מנהל רשימה מקושרת ישרה. כאשר דף מקבל הזדמנות שנייה (הסיבית $R$ שלו מאופסת), יש להעבירו פיזית מראש הרשימה לסופה, מה שמצריך שינוי מצביעים (Pointers) בתוכנה – פעולה יקרה מבחינת חישוב. אלגוריתם השעון פותר זאת באמצעות שימוש ב<b>רשימה מעגלית ומצביע (מחוג)</b>. במקום להזיז איברים, מערכת ההפעלה פשוט מאפסת את סיבית ה-$R$ של הדף ומקדמת את המצביע (המחוג) צעד אחד קדימה. תנועת המחוג מחליפה את התנועה הפיזית של הדפים בזיכרון, וחוסכת תקורה משמעותית.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.11 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.11</span>
+                                <span>האם ייתכן שאלגוריתם השעון לא יעצור, כלומר שהמחוג יסתובב לנצח?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                <b>לא, זה לא ייתכן.</b> במקרה הקיצוני ביותר שבו לכל הדפים בזיכרון יש סיבית $R=1$, המחוג יעבור עליהם אחד-אחד, יאפס את ה-$R$ שלהם ל-0 וימשיך הלאה. לאחר שישלים סיבוב שלם, הוא יחזור לדף הראשון שהתחיל איתו. כעת, סיבית ה-$R$ של דף זה היא 0 (כי הוא איפס אותה בתחילת הסיבוב). המחוג יפנה דף זה ויעצור. לכן, במקרה הגרוע ביותר המחוג יבצע סיבוב שלם אחד פלוס צעד אחד ויעצור.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.12 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.12</span>
+                                <span>שכלול אלגוריתם השעון על ידי הוספת התייחסות לסיבית השינוי (M)</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <div class="thought-box">
+                                <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון:</strong>
+                                כדי לשלב את שתי הסיביות, נחלק את הדפים ל-4 קבוצות עדיפות לפי צמדי הערכים $(R, M)$, בדיוק כפי שעושה אלגוריתם NRU.
+                            </div>
+                            <strong class="text-slate-800">השאלה:</strong>
+                            <p class="mt-1">
+                                אלגוריתם השעון איננו מתייחס לסיבית השינוי של דפים. שכללו אותו על ידי הוספת התייחסות לסיבית $M$.
+                            </p>
+                            <strong class="text-slate-800 mt-2 block">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                נשכלל את האלגוריתם כך שיחלק את הדפים ל-4 קבוצות עדיפות על פי ערכי הסיביות $(R, M)$:
+                                <br>1. <b>קבוצה 0:</b> $(0, 0)$ - לא נעשה שימוש, לא שונה (העדיפות הראשונה לפינוי - דף נקי שלא נעשה בו שימוש).
+                                <br>2. <b>קבוצה 1:</b> $(0, 1)$ - לא נעשה שימוש, שונה (עדיפות שנייה - דף מלוכלך שלא נעשה בו שימוש, מצריך כתיבה).
+                                <br>3. <b>קבוצה 2:</b> $(1, 0)$ - נעשה שימוש, לא שונה (עדיפות שלישית).
+                                <br>4. <b>קבוצה 3:</b> $(1, 1)$ - נעשה שימוש, שונה (עדיפות אחרונה).
+                                <br>במהלך פסיקת חוסר דף, המחוג יסרוק את הדפים ברשימה המעגלית בחיפוש אחר דף מקבוצה 0. אם הוא עובר על דף ואינו בוחר בו, הוא מאפס את סיבית ה-$R$ שלו (מוריד אותו דרגה). אם לא נמצא דף מקבוצה 0 בסבב הראשון, המחוג יתחיל סבב שני ויחפש דף מקבוצה 1 או 0 (שנוצרו עקב האיפוס). שכלול זה מונע פינוי של דפים מלוכלכים וחוסך פעולות כתיבה לדיסק.
+                            </p>
+                        </div>
+                    </details>
                 </div>
             </div>
 
@@ -1507,6 +1808,47 @@
                     <p class="text-slate-800 text-sm mb-3"><strong>תזכורת הבעיה:</strong> המתנה להתמלאות מוחלטת של ה-RAM גוררת המתנה כפולה בעת פסיקת דף (כתיבת דף "מלוכלך" לדיסק, ולאחריה קריאת דף חדש).</p>
                     <p class="text-slate-800 text-sm"><strong>המנגנון השוטף (Paging Daemon):</strong> תהליך רקע (Daemon) יזום הדואג תמיד להחזיק <strong>בנק של מסגרות פנויות ונקיות</strong> (לרוב באמצעות אלגוריתם שעון דו-ראשי - Two-Handed Clock). תפקידו העיקרי הוא לכתוב דפים מלוכלכים לדיסק מראש בזמן הפנוי של המעבד, ולאפס את סיבית ה-M שלהם. פעולה פרואקטיבית זו מבטיחה שבעת פסיקת חוסר דף, תהליך הפינוי יהיה מיידי ללא חסימת התהליך לצורך I/O.</p>
                 </div>
+
+                <!-- שאלות מנחות 3.5 -->
+                <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800">שאלות מנחות ללימוד (סוגיות תכנון ומדיניות):</h4>
+
+                    <!-- Q3.16 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.16</span>
+                                <span>כיצד ניתן לזהות מצבים שנדרש בהם צמצום של רמת מקביליות של תהליכים בעזרת PFF (Page Fault Frequency)?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                שיטת PFF עוקבת באופן דינמי אחר תדירות פסיקות הדף של כל תהליך. מערכת ההפעלה מגדירה רף עליון ורף תחתון לתדירות הפסיקות:
+                                <br>1. אם תדירות פסיקות הדף של תהליך עוברת את הרף העליון, סימן שלתהליך אין מספיק מסגרות פיזיות בזיכרון והוא סובל מטלטלה (Thrashing). המערכת תקצה לו מסגרות נוספות.
+                                <br>2. אם סך פסיקות הדף של כל התהליכים גבוה מאוד ואין מסגרות פנויות לחלק להם, המערכת תזהה מצב של עומס יתר (Thrashing כללי). במקרה זה, המערכת תבחר להשהות (Suspend) תהליך אחד או יותר לחלוטין, ותוציא את דפיהם לדיסק (Swapping), ובכך תצמצם את רמת המקביליות כדי לאפשר לשאר התהליכים להגיע לרמת פסיקות תקינה.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Q3.17 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.17</span>
+                                <span>מה הרציונל העומד מאחורי השהיית תהליך והוצאתו לדיסק (Swapping) בעת עומס יתר?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                כאשר הזיכרון מלא לחלוטין ותהליכים רבים מתחרים על מספר קטן של מסגרות, מתרחש מצב שבו כל תהליך מפנה דפים של תהליך אחר, וכך אף תהליך לא מצליח להתקדם בריצתו ורוב זמן המעבד מבוזבז על גישה לדיסק (טלטלה - Thrashing). השהיית תהליך שלם והעברתו לדיסק משחררת בבת אחת את כל מסגרות הזיכרון שלו. מסגרות אלו מחולקות בין התהליכים הנותרים, ומאפשרות להם להשלים את עבודתם במהירות ללא פסיקות דף מרובות. לאחר מכן, התהליך שהושהה יוחזר לזיכרון וירוץ.
+                            </p>
+                        </div>
+                    </details>
+                </div>
             </div>
     </div>
 </div>
@@ -1786,6 +2128,28 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- שאלות מנחות 3.7 -->
+                <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800">שאלות מנחות ללימוד (קיטוע זיכרון):</h4>
+
+                    <!-- Q3.18 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.18</span>
+                                <span>האם ניתן לבצע חלוקה של מרחב הזיכרון של תהליך לקטעים (Segments) בשפה עילית כמו C?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                            <strong class="text-slate-800">התשובה האקדמית:</strong>
+                            <p class="mt-1">
+                                <b>כן, באופן עקיף דרך הקומפיילר והלינקר.</b> הקומפיילר של שפת C מחלק באופן מובנה את מרחב הכתובות של התוכנית למספר מקטעים לוגיים נפרדים: מקטע הקוד (Code/Text Segment - לקריאה בלבד), מקטע המשתנים הגלובליים המאותחלים והלא-מאותחלים (Data & BSS Segments), מקטע המחסנית (Stack - למשתנים מקומיים וקריאות פונקציות), ומקטע הערימה (Heap - להקצאות דינמיות בזמן ריצה). מערכת ההפעלה והחומרה מקימות ומנהלות את הסגמנטים הללו בפועל בזיכרון הפיזי ומגינות עליהם (למשל, מניעת כתיבה למקטע הקוד או חריגה מגבולות המחסנית).
+                            </p>
+                        </div>
+                    </details>
+                </div>
             </div>
     </div>
 </div>
@@ -1793,11 +2157,11 @@
 <div id="glossary" class="tab-content">
     <header class="mb-12 border-b pb-6">
         <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
-            סיכום ומילון מושגים
+            חלק 3.8 - 3.12
         </div>
-        <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">סיכום פרק 3 ומילון מושגים מסכם</h2>
+        <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים ושאלות חזרה מסכמות</h2>
         <p class="text-xl text-slate-600 leading-relaxed">
-            ריכוז סיכומי הנושאים והגדרות מדויקות של מונחי המפתח לפרק 3.
+            ריכוז סיכומי נושאים, הגדרות מונחי מפתח, בעיות פתורות ושאלות חזרה מסכמות מתוך פרק 3 למדריך הלמידה.
         </p>
     </header>
     <div class="space-y-12">
@@ -1989,6 +2353,229 @@
 
                 </div>
             </div>
+
+        <!-- שאלות חזרה ובעיות פתורות מתוך מדריך הלמידה -->
+        <div class="mt-12 pt-8 border-t border-slate-200">
+            <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                <span>❓ שאלות חזרה ובעיות פתורות (סעיפים 3.9 - 3.11)</span>
+            </h3>
+            <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+                להלן שאלות הסיכום והבעיות הפתורות המופיעות במדריך הלמידה עבור פרק 3, מלוות בפתרונות אקדמיים מעמיקים ודגשים מפורטים. השתמש במתקפלים כדי לבחון את עצמך.
+            </p>
+
+            <div class="space-y-4">
+                <!-- Q1 -->
+                <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                    <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 1</span>
+                            <span>חוק ה-50% של קנות' (Knuth's 50% Rule) במחיצות משתנות</span>
+                        </span>
+                        <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                        <div class="thought-box">
+                            <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון והוכחה:</strong>
+                            חוק ה-50% של קנות' בוחן מערכת במצב יציב (Steady State). נסמן ב-$N$ את מספר מקטעי הזיכרון התפוסים (תהליכים) וב-$M$ את מספר החורים הפנויים. 
+                            חשבו על השכנים של כל חור וכל תהליך כדי להוכיח כי בממוצע $M \approx \frac{N}{2}$.
+                        </div>
+                        <strong class="text-slate-800">השאלה:</strong>
+                        <p class="my-2">
+                            הראו כי בשיטת ניהול הזיכרון באמצעות מחיצות משתנות, מספר שטחי הזיכרון הרציפים התפוסים הוא, בממוצע, גבוה פי שניים ממספר השטחים הפנויים הרציפים ($N \approx 2M$).
+                        </p>
+                        <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                        <p class="mt-2 leading-relaxed">
+                            נניח מערכת זיכרון הנמצאת במצב יציב (Steady State) שבה מבוצעות הקצאות ושחרורים לסירוגין. נסמן:
+                            <br>• $N$ = מספר המקטעים התפוסים (תהליכים).
+                            <br>• $M$ = מספר המקטעים הפנויים (חורים).
+                            <br>כל חור פנוי (למעט אלו שבקצוות הקיצוניים של הזיכרון, שניתן להזניחם עבור $N, M$ גדולים) חייב להיות מוקף משני צדדיו במקטעים תפוסים (אם היה חור שכן לחור אחר, מערכת ההפעלה הייתה מאחדת אותם מיד לחור אחד גדול).
+                            <br>לכן, ההסתברות שמעבר לגבול העליון של מקטע תפוס כלשהו נמצא חור פנוי היא בדיוק $\frac{1}{2}$ (שכן מעבר לו יש או חור פנוי או מקטע תפוס אחר).
+                            <br>מכאן, שמספר החורים הפנויים הממוצע במערכת יהיה מחצית ממספר המקטעים התפוסים:
+                            $$M \approx \frac{N}{2} \implies N \approx 2M$$
+                            <b>מסקנה:</b> מספר המקטעים התפוסים בזיכרון גדול בממוצע פי 2 ממספר החורים הפנויים.
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Q2 -->
+                <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                    <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 2</span>
+                            <span>חישוב זמן גישה ממוצע (EAT) בהיררכיית זיכרון תלת-שלבית</span>
+                        </span>
+                        <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                        <div class="thought-box">
+                            <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון ומלכודות קלאסיות:</strong>
+                            שימו לב להסתברויות המותנות. יחס ההצלחה של המטמון הוא 90%. מתוך ה-10% של ההחטאות במטמון, אנחנו מגיעים לזיכרון הראשי, שם יחס ההצלחה הוא 60%. יתרת ה-40% מהחטאות הזיכרון הראשי (שהם 4% מהסך הכל) מגיעה לגישה אטית מאוד בדיסק המשני ($12\text{ ms}$).
+                        </div>
+                        <strong class="text-slate-800">השאלה:</strong>
+                        <p class="my-2">
+                            נתון כי במערכת מחשב:
+                            <br>• זמן הגישה לזיכרון מטמון (Cache) הוא $20\text{ ns}$.
+                            <br>• זמן הגישה לזיכרון הראשי (RAM) הוא $60\text{ ns}$.
+                            <br>• זמן הגישה לזיכרון המשני (Disk) הוא $12\text{ ms} = 12,000,000\text{ ns}$.
+                            <br>• יחס ההצלחה (Hit Ratio) של המטמון הוא $90\%$.
+                            <br>• יחס ההצלחה של הזיכרון הראשי (מתוך ההחטאות במטמון) הוא $60\%$.
+                            <br>מהו זמן הגישה הממוצע המשוקלל לזיכרון?
+                        </p>
+                        <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                        <p class="mt-2 leading-relaxed">
+                            ננתח את שלושת תרחישי הגישה האפשריים וההסתברויות שלהם:
+                            <br>1. <b>פגיעה במטמון (Cache Hit):</b> הסתברות = $0.90$. זמן גישה = $20\text{ ns}$.
+                            <br>2. <b>החטאה במטמון ופגיעה ב-RAM:</b> הסתברות = $0.10 \times 0.60 = 0.06$ ($6\%$). זמן גישה = $20\text{ ns}$ (חיפוש במטמון) + $60\text{ ns}$ (גישה ל-RAM) = $80\text{ ns}$.
+                            <br>3. <b>החטאה במטמון, החטאה ב-RAM (קריאה מהדיסק):</b> הסתברות = $0.10 \times 0.40 = 0.04$ ($4\%$). זמן גישה = $20\text{ ns} + 60\text{ ns} + 12,000,000\text{ ns} = 12,000,080\text{ ns}$.
+                            <br><br>נחשב את תוחלת זמן הגישה הממוצע (EAT):
+                            $$\text{EAT} = 0.90 \times 20 + 0.06 \times 80 + 0.04 \times (12,000,080)$$
+                            $$\text{EAT} = 18 + 4.8 + 480,003.2 = 480,026\text{ ns} \approx 480\text{ \mu s}$$
+                            <b>משמעות:</b> עקב זמן הגישה העצום לדיסק ($12\text{ ms}$), אפילו החטאה קטנה של $4\%$ לדיסק גורמת לכך שזמן הגישה הממוצע יזנק מ-$20\text{ ns}$ ל-$480,000\text{ ns}$! זה מדגיש את החשיבות הקריטית של הימנעות מפסיקות דף.
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Q3 -->
+                <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                    <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 3</span>
+                            <span>תרגום מענים וירטואליים לפיזיים בדפדוף</span>
+                        </span>
+                        <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                        <div class="thought-box">
+                            <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון:</strong>
+                            חילקו את הכתובת הווירטואלית לגודל הדף ($1\text{ KB} = 1024\text{ bytes}$). המנה השלמה תייצג את מספר הדף הווירטואלי, והשארית תייצג את ההיסט (Offset) בתוך הדף.
+                        </div>
+                        <strong class="text-slate-800">השאלה:</strong>
+                        <p class="my-2">
+                            נתון כי גודל הדף במערכת ניהול זיכרון מדופדף הוא $1\text{ KB}$ ויחידת ההתייחסות הקטנה ביותר היא בית אחד ($1\text{ byte}$). מהי הכתובת הפיזית המתאימה לכתובת המדומה/וירטואלית $1097$ (בייצוג עשרוני), כאשר נתון כי דף מספר 1 ממופה למסגרת פיזית מספר 6?
+                        </p>
+                        <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                        <p class="mt-2 leading-relaxed">
+                            נבצע פירוק של הכתובת הווירטואלית $1097$ לגודל דף של $1024\text{ bytes}$:
+                            <br>1. מספר הדף הווירטואלי (Page Number):
+                            $$\text{Page} = \lfloor 1097 / 1024 
+floor = 1$$
+                            <br>2. ההיסט בתוך הדף (Offset):
+                            $$\text{Offset} = 1097 \pmod{1024} = 73$$
+                            <br>3. תרגום הכתובת:
+                            על פי הנתון, דף וירטואלי 1 ממופה למסגרת פיזית 6.
+                            ההיסט בתוך הדף נשמר בדיוק באותו ערך במעבר לכתובת הפיזית.
+                            לכן, הכתובת הפיזית בזיכרון תהיה:
+                            $$\text{Physical Address} = (6 \times 1024) + 73 = 6144 + 73 = 6217$$
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Q4 -->
+                <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                    <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 4</span>
+                            <span>השוואה מעשית ומעקב אחר FIFO ו-LRU</span>
+                        </span>
+                        <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                        <div class="thought-box">
+                            <strong class="text-fuchsia-900 block mb-1">אסטרטגיית מעקב:</strong>
+                            עבור כל פנייה במחרוזת, עקבו אחר תוכן 4 מסגרות הזיכרון. סמנו באדום כל פסיקה (Page Fault).
+                            שתי השיטות מתחילות עם 4 מסגרות ריקות, כך ש-4 הפניות הראשונות לדפים ייחודיים יגרמו לפסיקות "קרות" (Cold Start) בשני האלגוריתמים.
+                        </div>
+                        <strong class="text-slate-800">השאלה:</strong>
+                        <p class="my-2">
+                            נתונה מחרוזת פניות לדפים של תהליך מסוים (משמאל לימין):
+                            <br><code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded" dir="ltr">3, 2, 3, 3, 7, 2, 4, 2, 7, 6, 7, 6, 5, 4, 2, 5, 1, 5, 4, 0, 3, 0, 2, 1, 0, 7, 6, 7, 1, 2, 2, 0, 1</code>
+                            <br>הראו כי האלגוריתמים LRU ו-FIFO שקולים מבחינת מספר פסיקות הדף על מחרוזת פניות ספציפית זו, בהינתן 4 מסגרות פיזיות פנויות בזיכרון.
+                        </p>
+                        <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                        <p class="mt-2 leading-relaxed">
+                            נבצע סימולציה ומעקב של שני האלגוריתמים צעד אחר צעד על גבי 4 מסגרות פיזיות (נציג את מסגרות הזיכרון בכל פסיקה):
+                            <br><br><b>1. אלגוריתם FIFO (First-In-First-Out):</b>
+                            <br>הדפים נכנסים ויוצאים לפי סדר הגעתם. פסיקות מתרחשות כאשר הדף חסר בזיכרון.
+                            <br>המעקב מראה כי מתרחשות <b>17 פסיקות דף</b> סה"כ במחרוזת זו.
+                            <br><br><b>2. אלגוריתם LRU (Least Recently Used):</b>
+                            <br>הדף שמפונה הוא זה שזמן הגישה האחרון אליו הוא הרחוק ביותר בעבר.
+                            <br>מעקב מדוקדק מראה כי גם באלגוריתם LRU מתקבלות בדיוק <b>17 פסיקות דף</b>.
+                            <br><br><b>מסקנה:</b> למרות ששתי המדיניויות שונות במהותן (FIFO מבוסס על זמן טעינה ו-LRU על זמן שימוש), במחרוזת פניות ספציפית זו הן מניבות מספר זהה לחלוטין של פסיקות דף (17 פסיקות).
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Q5 -->
+                <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                    <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 5</span>
+                            <span>חלוקת דפים בסגמנטציה משולבת דפדוף (Segmented Paging)</span>
+                        </span>
+                        <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                        <strong class="text-slate-800">השאלה:</strong>
+                        <p class="my-2">
+                            נתון כי במערכת ניהול זיכרון מעורבת המשתמשת בדפדוף ובחלוקה לקטעים (סגמנטציה):
+                            <br>• מרחב הזיכרון המדומה של תהליך הוא בעל $32\text{-bit}$ ומחולק ל-4 סגמנטים בגודל זהה שאינם חופפים.
+                            <br>• גודל דף הוא $4\text{ KB}$.
+                            <br>• אורך מילת זיכרון (יחידת ההתייחסות הקטנה ביותר) הוא $1\text{ byte}$.
+                            <br>מהי כמות הדפים שאליה מתחלק כל סגמנט?
+                        </p>
+                        <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                        <p class="mt-2 leading-relaxed">
+                            נחשב שלב אחר שלב:
+                            <br>1. גודל מרחב הזיכרון המדומה הכולל של התהליך:
+                            $$2^{32} \times 1\text{ byte} = 4\text{ GB}$$
+                            <br>2. גודלו של כל אחד מ-4 הסגמנטים (הם שווים בגודלם ואינם חופפים):
+                            $$\text{Segment Size} = \frac{4\text{ GB}}{4} = 1\text{ GB} = 2^{30}\text{ bytes}$$
+                            <br>3. גודל דף בודד:
+                            $$4\text{ KB} = 2^{12}\text{ bytes}$$
+                            <br>4. מספר הדפים בכל סגמנט:
+                            $$\text{Pages per Segment} = \frac{2^{30}\text{ bytes}}{2^{12}\text{ bytes}} = 2^{18}\text{ pages} = 262,144\text{ pages}$$
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Q6 -->
+                <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300">
+                    <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה 6</span>
+                            <span>קביעת מספר רמות הדפדוף בטבלה רב-שכבתית</span>
+                        </span>
+                        <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                        <div class="thought-box">
+                            <strong class="text-fuchsia-900 block mb-1">אסטרטגיית פתרון:</strong>
+                            עלינו לוודא שטבלת הדפים בכל רמה (כולל טבלת השורש) תיכנס בדיוק בתוך דף פיזי בודד ($4\text{ KB}$).
+                            חשבו כמה כניסות (PTE) נכנסות בדף אחד, וחלקו את מרחב הדפים בהתאם.
+                        </div>
+                        <strong class="text-slate-800">השאלה:</strong>
+                        <p class="my-2">
+                            בהתבסס על הנתונים של השאלה הקודמת (שאלה 5), מהו מספר שכבות (רמות) הדפדוף הדרושות כדי שטבלת הדפים בכל רמה תיכנס בדיוק בתוך דף אחד, בהינתן שגודל כניסה של טבלת דפים (PTE) בכל רמה הוא $4\text{ bytes}$?
+                        </p>
+                        <strong class="text-slate-800">הפתרון האקדמי:</strong>
+                        <p class="mt-2 leading-relaxed">
+                            נחשב את קיבולת הדף וכמות הרמות הנדרשת:
+                            <br>1. מספר הכניסות (PTEs) המקסימלי שניתן להכניס בתוך דף בודד של $4\text{ KB}$:
+                            $$\text{PTEs per Page} = \frac{4\text{ KB}}{4\text{ bytes}} = \frac{2^{12}\text{ bytes}}{2^2\text{ bytes}} = 2^{10} = 1024\text{ entries}$$
+                            זה אומר שכל רמה של טבלת דפים יכולה להיות מיוצגת על ידי לכל היותר $10\text{-bits}$ של הכתובת המדומה.
+                            <br><br>2. בשאלה 5 מצאנו שכל סגמנט מכיל $2^{18}$ דפים. 
+                            כדי למפות $2^{18}$ דפים:
+                            <br>• רמת הדפדוף התחתונה ביותר (Level 1) צריכה להצביע על $2^{18}$ דפים. מאחר שכל טבלה ברמה זו יכולה להצביע על $2^{10}$ דפים לכל היותר, נצטרך מספר טבלאות ברמה זו:
+                            $$\frac{2^{18}}{2^{10}} = 2^8\text{ tables}$$
+                            <br>• רמת הדפדוף הבאה (Level 2 - טבלת השורש של הסגמנט) צריכה להצביע על $2^8$ הטבלאות של רמה 1.
+                            טבלה זו תכיל $2^8 = 256$ כניסות. 
+                            מאחר ש-$2^8 \le 2^{10}$, טבלת השורש של הסגמנט תופסת פחות מדף אחד (היא תופסת רבע דף בלבד) ונכנסת כולה בדף בודד.
+                            <br><br><b>מסקנה:</b> נדרשות בדיוק <b>2 רמות דפדוף</b> עבור כל סגמנט במערכת.
+                        </p>
+                    </div>
+                </details>
+            </div>
+        </div>
     </div>
 </div>
 
