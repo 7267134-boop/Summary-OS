@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרק 6: קיפאון (Deadlock)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 leading-relaxed pb-16">
+
+    <!-- Header Section -->
+    <header class="bg-indigo-900 text-white py-12 px-6 shadow-lg mb-10">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4">פרק 6: קיפאון (Deadlock)</h1>
+            <p class="text-xl md:text-2xl text-indigo-200 font-light">
+                אנחנו פותחים כעת את פרק 6, שעוסק באחת התקלות המרתקות (והמטרידות) ביותר במדעי המחשב: קיפאון (Deadlock). כדי להבין למה המחשב "נתקע", אנחנו חייבים קודם כל להבין על מה התהליכים נאבקים. זהו בדיוק הנושא של סעיף 6.1.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 space-y-12">
+
+        <!-- 6.1 Resources -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-xl">6.1</span>
+                משאבים
+            </h2>
+            <p class="mb-6 text-lg">
+                כל תוכנית שרצה במחשב זקוקה לכלים כדי לעבוד: זיכרון, זמן מעבד, או גישה להתקני קלט/פלט כמו מדפסת. הכלים האלו נקראים <strong class="text-indigo-600">משאבים</strong>. מערכת ההפעלה מבחינה בין שתי קבוצות עיקריות של משאבים:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-slate-50 rounded-xl p-6 border border-slate-100">
+                    <h3 class="font-bold text-xl mb-3 text-slate-800">משאבים הניתנים לחלוקה (Shareable Resources)</h3>
+                    <p>אלו משאבים שמספר תהליכים יכולים לחלוק ביניהם ואינם דורשים גישה בלעדית. חלוקה זו יכולה להתבצע בו-זמנית באופן פיזי (כמו חלוקת שטח המסך לחלונות שונים, או חלוקת הזיכרון הראשי) או באמצעות חלוקת זמן מהירה כך שנוצרת אשליה של מקביליות (כמו במקרה של המעבד הראשי). משאבים מסוג זה לרוב אינם גורמים לבעיות קיפאון.</p>
+                </div>
+                <div class="bg-red-50 rounded-xl p-6 border border-red-100">
+                    <h3 class="font-bold text-xl mb-3 text-red-900">משאבים בלעדיים (Dedicated/Exclusive Resources)</h3>
+                    <p>אלו משאבים שאינם ניתנים לחלוקה בין כמה תהליכים. כדי להשתמש בהם, תהליך חייב להבטיח גישה רצופה ובלעדית אליהם עד שיסיים את עבודתו. למשל: גישה למדפסת (אם שני תהליכים ידפיסו יחד, נקבל פלטים שישתלבו זה בזה), או עדכון של רשומה פנימית בטבלת מערכת ההפעלה (גישה בו-זמנית תביא לחוסר עקביות בנתונים). חשוב לציין שמשאב אינו חייב להיות חומרה פיזית; הוא יכול להיות גם משאב לוגי, כמו משתנים של תוכנית או הודעה (משיכת אותה הודעה על ידי שני תהליכים עלולה להרוס את שלמותה).</p>
+                </div>
+            </div>
+
+            <p class="text-lg bg-yellow-50 p-4 rounded-lg border-r-4 border-yellow-400">
+                תופעת הקיפאון מתרחשת בדרך כלל סביב המשאבים הבלעדיים. קיפאון בצורתו הפשוטה ביותר קורה כאשר קיימים שני תהליכים, שכל אחד מהם מחזיק ברשותו משאב בלעדי אחד, ובמקביל זקוק למשאב שמוחזק על ידי התהליך האחר. במצב זה, אף אחד משני התהליכים אינו יכול להתקדם, והם תקועים לנצח. קיפאון יכול להתרחש גם סביב אירועים לוגיים, למשל כאשר תהליך A מחכה לסיום של תהליך B, אבל תהליך B זקוק למשאב שמוחזק על ידי A. מדריך הלמידה ממשיל זאת ל"קיפאון תחבורתי": מכוניות שנתקעו בצומת מכל הכיוונים ואף אחת לא יכולה לנסוע קדימה או אחורה.
+            </p>
+        </section>
+
+        <!-- 6.1.1 Preemptable vs Non -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-lg">6.1.1</span>
+                משאבים שאינם ניתנים לחילוץ לעומת משאבים הניתנים לחילוץ
+            </h2>
+            <p class="mb-6 text-lg">
+                כדי לפתור את הפלונטר של התחרות על המשאבים, נשאלת השאלה האם מערכת ההפעלה יכולה פשוט "להחרים" משאב מתהליך אחד ולהעביר אותו לאחר? התשובה נגזרת מאופיו של המשאב:
+            </p>
+
+            <ul class="space-y-4 mb-6">
+                <li class="flex gap-4 items-start">
+                    <div class="mt-1 bg-green-100 text-green-600 rounded-full p-2 flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-800">משאב הניתן לחילוץ (Preemptable Resource):</h3>
+                        <p class="text-slate-700">זהו משאב שניתן לקחת אותו מתהליך המחזיק בו, לתת אותו לאחר, ואז להחזירו לתהליך המקורי מאוחר יותר – בלי לשבש את תוצאות הריצה שלו. הדוגמה הקלאסית היא הזיכרון הראשי. המערכת יכולה להעתיק את הזיכרון של תהליך אחד אל הדיסק הקשיח (הוצאה בכוח), להעניק את משאב הזיכרון לתהליך שני, ולאחר מכן לשחזר את הזיכרון של התהליך הראשון כדי שימשיך לעבוד.</p>
+                    </div>
+                </li>
+                <li class="flex gap-4 items-start">
+                    <div class="mt-1 bg-red-100 text-red-600 rounded-full p-2 flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-800">משאב שאינו ניתן לחילוץ (Non-preemptable Resource):</h3>
+                        <p class="text-slate-700">זהו משאב שאם נחלץ אותו בכוח מידי התהליך המחזיק בו, ייגרם לאותו תהליך נזק משמעותי ובלתי הפיך. לדוגמה, אם תהליך החל לצרוב מידע על כונן תקליטורים, עצירת התהליך באמצע כדי לתת את הצורב לתהליך אחר פשוט תהרוס את התקליטור.</p>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="bg-slate-100 p-4 rounded-lg font-medium text-slate-700 text-center">
+                מבחינה מעשית, הכלל הוא שקיפאון נגרם בדרך כלל רק כתוצאה מדרישה למשאבים בלעדיים שאינם ניתנים לחילוץ.
+            </div>
+        </section>
+
+        <!-- 6.1.2 Resource Allocation -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-lg">6.1.2</span>
+                הקצאת משאבים
+            </h2>
+            <p class="mb-6 text-lg">
+                כדי שתהליך יוכל להשתמש במשאב בלעדי, עליו לעבור מחזור חיים קפדני של הקצאה. המחזור בנוי משלושה שלבים ברורים:
+            </p>
+
+            <div class="flex flex-col md:flex-row justify-between items-stretch gap-4 mb-8">
+                <div class="flex-1 bg-blue-50 rounded-xl p-5 border border-blue-100 text-center">
+                    <div class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-3">1</div>
+                    <h3 class="font-bold text-lg mb-2 text-blue-900">בקשה (Request)</h3>
+                    <p class="text-sm text-blue-800">התהליך פונה למערכת ההפעלה ומבקש לקבל גישה למשאב.</p>
+                </div>
+                <div class="hidden md:flex items-center justify-center text-blue-300">
+                    <svg class="w-8 h-8 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </div>
+                <div class="flex-1 bg-indigo-50 rounded-xl p-5 border border-indigo-100 text-center">
+                    <div class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-3">2</div>
+                    <h3 class="font-bold text-lg mb-2 text-indigo-900">שימוש (Use)</h3>
+                    <p class="text-sm text-indigo-800">במידה שהמשאב פנוי, מערכת ההפעלה מקצה אותו לתהליך, והוא מבצע את עבודתו.</p>
+                </div>
+                <div class="hidden md:flex items-center justify-center text-indigo-300">
+                    <svg class="w-8 h-8 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </div>
+                <div class="flex-1 bg-emerald-50 rounded-xl p-5 border border-emerald-100 text-center">
+                    <div class="bg-emerald-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-3">3</div>
+                    <h3 class="font-bold text-lg mb-2 text-emerald-900">שחרור (Release)</h3>
+                    <p class="text-sm text-emerald-800">עם סיום העבודה, התהליך משחרר את המשאב בחזרה כדי שתהליכים אחרים יוכלו להשתמש בו.</p>
+                </div>
+            </div>
+
+            <div class="bg-red-50 p-5 rounded-xl border-2 border-red-200 shadow-sm text-red-900">
+                <p>
+                    <strong>אזור הסכנה נוצר בשלב הבקשה.</strong> כאשר תהליך מבקש משאב שכבר תפוס על ידי מישהו אחר, הבקשה שלו נדחית והוא מועבר למצב חסום (Blocked). התהליך ממתין בתור עד שהמשאב יתפנה. הקיפאון נוצר בדיוק כאן – כאשר קבוצה של תהליכים חסומים ממתינה במעגל סגור למשאבים שמוחזקים על ידי תהליכים אחרים, שגם הם חסומים.
+                </p>
+            </div>
+        </section>
+
+        <!-- 6.2 Deadlock Core Definition -->
+        <section class="bg-rose-600 text-white rounded-2xl shadow-lg p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 opacity-10">
+                <svg class="w-64 h-64 -mr-16 -mt-16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path></svg>
+            </div>
+            <div class="relative z-10">
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center gap-3">
+                    <span class="bg-rose-800 text-rose-100 px-3 py-1 rounded-lg text-xl">6.2</span>
+                    קיפאון (Deadlock)
+                </h2>
+                <p class="text-xl leading-relaxed font-light">
+                    לאחר שהבנו מהם משאבים וכיצד תהליכים מתחרים עליהם, אנו מגיעים להגדרת הבעיה עצמה. קיפאון (Deadlock) מוגדר כמצב שבו קבוצה של תהליכים נתקעת לנצח, משום שכל תהליך בקבוצה ממתין לאירוע (שחרור משאב) שרק תהליך אחר באותה קבוצה יכול לגרום לו. מאחר שכל התהליכים בקבוצה חסומים וממתינים, אף אחד מהם לא יתעורר לעולם כדי לשחרר את המשאבים, והמערכת נכנסת למבוי סתום.
+                </p>
+            </div>
+        </section>
+
+        <!-- 6.2.1 Coffman Conditions -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-lg">6.2.1</span>
+                התנאים להיווצרות קיפאון
+            </h2>
+            <p class="mb-8 text-lg">
+                קיפאון אינו מתרחש סתם כך במקרה. חוקר בשם קופמן (Coffman) הוכיח בשנת 1971 שכדי שקיפאון יתרחש במערכת, חייבים להתקיים <strong>ארבעה תנאים בו-זמנית</strong>. אם מערכת ההפעלה תצליח לשבור אפילו תנאי אחד ויחיד מתוך הארבעה, קיפאון לעולם לא יוכל להתרחש:
+            </p>
+
+            <div class="grid sm:grid-cols-2 gap-6">
+                <!-- Condition 1 -->
+                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-indigo-500 shadow-sm relative">
+                    <div class="absolute -top-4 -right-4 bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">1</div>
+                    <h3 class="font-bold text-lg mb-2 text-indigo-900">תנאי המניעה ההדדית (Mutual Exclusion Condition)</h3>
+                    <p class="text-slate-700 text-sm">כל משאב המעורב בקיפאון חייב להיות במצב של גישה בלעדית. כלומר, ברגע נתון, המשאב מוקצה לתהליך אחד בלבד או שהוא פנוי. אם שני תהליכים היו יכולים להשתמש במשאב בו-זמנית (כמו קובץ לקריאה בלבד), הם לא היו צריכים להמתין זה לזה.</p>
+                </div>
+                <!-- Condition 2 -->
+                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-amber-500 shadow-sm relative">
+                    <div class="absolute -top-4 -right-4 bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">2</div>
+                    <h3 class="font-bold text-lg mb-2 text-amber-900">תנאי ההחזק והמתן (Hold and Wait Condition)</h3>
+                    <p class="text-slate-700 text-sm">תהליך חייב להחזיק ברשותו משאב אחד לפחות שכבר הוקצה לו, ובאותו הזמן לבקש משאב נוסף (או מספר משאבים) המוחזק כרגע על ידי תהליך אחר. כלומר, התהליך "שומר לעצמו" את מה שיש לו, ומסרב לוותר עליו בזמן שהוא ממתין בתור לדבר הבא.</p>
+                </div>
+                <!-- Condition 3 -->
+                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-rose-500 shadow-sm relative">
+                    <div class="absolute -top-4 -right-4 bg-rose-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">3</div>
+                    <h3 class="font-bold text-lg mb-2 text-rose-900">תנאי אי-חילוץ משאבים (No Preemption Condition)</h3>
+                    <p class="text-slate-700 text-sm">מערכת ההפעלה אינה יכולה לחלץ (להפקיע) משאב בכוח מידי תהליך שמחזיק בו. משאב שהוקצה לתהליך ישוחרר אך ורק באופן התנדבותי על ידי התהליך עצמו, לאחר שסיים את עבודתו. לו המערכת הייתה יכולה פשוט לקחת את המשאב באמצע, היא הייתה פותרת את הפלונטר.</p>
+                </div>
+                <!-- Condition 4 -->
+                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-emerald-500 shadow-sm relative">
+                    <div class="absolute -top-4 -right-4 bg-emerald-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">4</div>
+                    <h3 class="font-bold text-lg mb-2 text-emerald-900">תנאי ההמתנה המעגלית (Circular Wait Condition)</h3>
+                    <p class="text-slate-700 text-sm">חייבת להיות שרשרת סגורה (מעגל) של שני תהליכים או יותר. בשרשרת זו, תהליך א' ממתין למשאב שמוחזק על ידי תהליך ב', תהליך ב' ממתין למשאב שמוחזק על ידי תהליך ג', וכך הלאה, עד שהתהליך האחרון בשרשרת ממתין למשאב שמוחזק על ידי תהליך א'. המעגל הסגור הזה הוא שנועל את כולם.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6.2.2 Resource Allocation Graph -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-lg">6.2.2</span>
+                מודלים של קיפאון (גרף הקצאת משאבים)
+            </h2>
+            <p class="mb-6 text-lg">
+                כדי שמערכת ההפעלה (או אנחנו כבני אדם) תוכל לאבחן ולעקוב אחרי סכנת קיפאון, פותח מודל מתמטי חזותי הנקרא <strong class="text-indigo-600">גרף הקצאת משאבים (Resource Allocation Graph)</strong>. זהו גרף מכוון (עם חצים) הממפה בכל רגע נתון מי מחזיק במה ומי מחכה למה.
+            </p>
+
+            <h3 class="text-xl font-bold mb-3 border-b pb-2">איך קוראים את הגרף?</h3>
+            <div class="mb-6">
+                <p class="font-semibold mb-2">הגרף מורכב משני סוגים של צמתים:</p>
+                <ul class="list-disc list-inside space-y-1 pr-4 mb-4">
+                    <li><strong class="text-indigo-700">תהליכים:</strong> מסומנים כעיגולים (למשל, תהליך A, תהליך B).</li>
+                    <li><strong class="text-teal-700">משאבים:</strong> מסומנים כריבועים (למשל, מדפסת R, סורק S).</li>
+                </ul>
+
+                <p class="font-semibold mb-2">החצים (הקשתות) מתארים את הפעילות:</p>
+                <ul class="list-disc list-inside space-y-1 pr-4 mb-6">
+                    <li><strong>חץ מריבוע (משאב) אל עיגול (תהליך):</strong> משמעותו <span class="text-green-600 font-semibold">הקצאה</span>. המשאב נמצא כרגע בשימוש בלעדי של התהליך. התהליך קיבל את מה שביקש והמשאב תפוס.</li>
+                    <li><strong>חץ מעיגול (תהליך) אל ריבוע (משאב):</strong> משמעותו <span class="text-red-600 font-semibold">בקשה</span>. התהליך רוצה להשתמש במשאב, אך המשאב תפוס על ידי מישהו אחר. התהליך חסום (Blocked) וממתין שהחץ יתהפך.</li>
+                </ul>
+            </div>
+
+            <div class="bg-indigo-50 p-6 rounded-xl">
+                <h3 class="text-xl font-bold mb-3 text-indigo-900">זיהוי הקיפאון בגרף:</h3>
+                <p class="mb-3 text-indigo-800">
+                    הכוח של המודל הזה הוא בפשטות שבה הוא חושף קיפאון. הכלל אומר כך (בהנחה שלכל סוג משאב יש רק עותק אחד במערכת): <strong>אם ורק אם נוצר מעגל סגור של חצים בגרף - קיים קיפאון.</strong>
+                </p>
+                <p class="mb-3 text-indigo-800">
+                    אם אפשר לטייל לאורך החצים מעיגול לריבוע, לעיגול הבא, לריבוע הבא ולחזור חזרה לעיגול המקורי – המערכת תקועה. אם אין מעגל, אין קיפאון, ואחד התהליכים בסופו של דבר יסיים את עבודתו, ישחרר את המשאבים שלו, ויאפשר לשאר התהליכים להתקדם בשרשרת.
+                </p>
+                <p class="text-indigo-800">
+                    הגרף מאפשר למערכת ההפעלה לבצע סימולציות עתידיות: כאשר תהליך מבקש משאב, המערכת "מציירת" את החץ בגרף הפנימי שלה. אם הוספת החץ תסגור מעגל ותיצור קיפאון, המערכת יכולה מראש לסרב לבקשה או להשהות אותה, ובכך למנוע את הקיפאון בטרם התרחש.
+                </p>
+            </div>
+        </section>
+
+        <!-- 6.3 Strategies -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-xl">6.3</span>
+                אסטרטגיות להתמודדות עם קיפאון
+            </h2>
+            <p class="mb-6 text-lg">
+                לאחר שהבנו מהו קיפאון ומהם התנאים להיווצרותו, השאלה הגדולה היא כיצד מערכת ההפעלה אמורה לנהל את המשאבים כדי להתמודד עם האיום הזה. בספרות המקצועית קיימות ארבע גישות מרכזיות לטיפול בבעיה, והן נעות על הסקאלה שבין זהירות פרנואידית לבין התעלמות מוחלטת:
+            </p>
+
+            <ul class="space-y-4 mb-8">
+                <li class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-4">
+                    <span class="text-2xl opacity-50">🙈</span>
+                    <div>
+                        <strong class="text-slate-900">התעלמות מהבעיה (אלגוריתם בת היענה):</strong> פשוט להניח שקיפאון לעולם לא יקרה, ולא לעשות שום דבר בנידון.
+                    </div>
+                </li>
+                <li class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-4">
+                    <span class="text-2xl opacity-50">🔍</span>
+                    <div>
+                        <strong class="text-slate-900">גילוי והתאוששות (Detection and Recovery):</strong> לתת לתהליכים לקחת אילו משאבים שהם רוצים ולהסתכן בקיפאון. במקביל, המערכת סורקת את עצמה באופן קבוע כדי לזהות אם מעגל ההמתנה נסגר, ואם כן - היא תנקוט צעדים אלימים כדי לשבור אותו (למשל, חיסול תהליך).
+                    </div>
+                </li>
+                <li class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-4">
+                    <span class="text-2xl opacity-50">🚦</span>
+                    <div>
+                        <strong class="text-slate-900">הימנעות דינמית (Dynamic Avoidance):</strong> הקצאה זהירה מאוד של משאבים בזמן אמת. בכל פעם שתהליך מבקש משאב, מערכת ההפעלה מריצה אלגוריתם מורכב כדי לבדוק האם ההקצאה הזו עלולה להוביל את המערכת בעתיד למצב מסוכן. אם יש סכנה, הבקשה תסורב או תושהה.
+                    </div>
+                </li>
+                <li class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-4">
+                    <span class="text-2xl opacity-50">🛡️</span>
+                    <div>
+                        <strong class="text-slate-900">מניעה מבנית (Prevention):</strong> תכנון קפדני של מערכת ההפעלה מראש, כך שלפחות אחד מארבעת התנאים של קופמן (שראינו בסעיף 6.2.1) לעולם לא יוכל להתקיים. אם תנאי אחד נשבר, קיפאון פיזיקלית לא יכול להיווצר.
+                    </div>
+                </li>
+            </ul>
+
+            <!-- 6.3.1 Ostrich Algorithm -->
+            <div class="mt-12 bg-sky-50 border border-sky-200 rounded-2xl overflow-hidden shadow-sm">
+                <div class="bg-sky-600 text-white p-4">
+                    <h3 class="text-xl font-bold flex items-center gap-3">
+                        <span class="bg-sky-800 px-2 py-0.5 rounded text-sm">6.3.1</span>
+                        אלגוריתם בת היענה (The Ostrich Algorithm)
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <p class="mb-4 text-slate-800">
+                        הגישה הראשונה, והנפוצה ביותר בעולם מערכות ההפעלה המודרניות (כולל חלונות, UNIX ולינוקס), מכונה בהומור "אלגוריתם בת היענה". הרעיון הוא פשוט לטמון את הראש בחול ולהעמיד פנים שבעיית הקיפאון כלל אינה קיימת במערכת.
+                    </p>
+                    <p class="mb-4 text-slate-800">
+                        במבט ראשון, זה נשמע כמו הנדסת תוכנה גרועה ועצלנות של המתכנתים, אך למעשה מדובר <strong>בפשרה הנדסית וכלכלית מחושבת היטב:</strong>
+                    </p>
+                    <ul class="list-disc list-inside space-y-2 pr-4 mb-6 text-slate-800">
+                        <li>כדי למנוע או לזהות קיפאון באופן מוחלט, מערכת ההפעלה נדרשת להשקיע מאמץ אדיר. היא תצטרך להפעיל אלגוריתמים מתמטיים כבדים בכל פעם שתוכנית מבקשת לגשת לקובץ, או להגביל בצורה נוקשה את האופן שבו מתכנתים כותבים קוד (למשל, לאלץ אותם להצהיר על כל המשאבים מראש). פעולות אלו יצרכו זמן מעבד יקר, יבזבזו זיכרון, ויאטו את המחשב עבור כל המשתמשים ב-100% מהזמן.</li>
+                        <li>מצד שני, ההסתברות שקיפאון אמיתי יתרחש במחשב אישי סטנדרטי היא נמוכה ביותר (אולי פעם בכמה חודשים או שנים). מהנדסי מערכות ההפעלה שאלו את עצמם: <em>האם זה הגיוני להקריב את הביצועים של המחשב בכל יום ויום, רק כדי למנוע תקיעה תיאורטית שאולי תקרה פעם בשנה?</em></li>
+                    </ul>
+                    <p class="mb-6 text-slate-800">
+                        התשובה הייתה לא. במערכות הפעלה לשימוש כללי (General Purpose), נוחות עבודה וביצועים מהירים חשובים יותר מאמינות אבסולוטית. לכן, האלגוריתם אומר: תן למערכת לרוץ בחופשיות בלי בדיקות כבדות. אם פעם ב... ייווצר קיפאון והמערכת תקפא, המשתמש יאבד את הסבלנות, ילחץ על כפתור האתחול (Reset) של המחשב, או יאלץ סגירה של התוכנית דרך מנהל המשימות, וימשיך בחייו.
+                    </p>
+
+                    <!-- Warning Box inside 6.3.1 -->
+                    <div class="bg-amber-100 border-r-4 border-amber-500 p-4 rounded-lg flex gap-4 mt-6">
+                        <div class="text-amber-600">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        </div>
+                        <div>
+                            <strong class="block text-amber-900 mb-1">הערת אזהרה:</strong>
+                            <p class="text-amber-800 text-sm">
+                                אלגוריתם בת היענה מושלם למחשב האישי שלנו, אך הוא אינו מקובל לחלוטין במערכות זמן אמת קריטיות (Real-Time Systems). במחשב שמנהל טיסה של מטוס נוסעים, בקרת כור גרעיני או מכשור רפואי תומך חיים, אתחול מחדש אינו בא בחשבון. במערכות כאלו יושקעו כל המשאבים הנדרשים (באמצעות מניעה או הימנעות) כדי להבטיח שקיפאון לעולם לא יתרחש.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>

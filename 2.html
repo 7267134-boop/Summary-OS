@@ -105,7 +105,7 @@
             display: block;
             width: 100%;
             text-align: right;
-            padding: 0.85rem 1rem;
+            padding: 0.85rem 1rem 0.85rem 3rem;
             border-radius: 0.5rem;
             color: #cbd5e1;
             transition: all 0.2s;
@@ -244,6 +244,15 @@
         .token-comment { color: #34d399; }
         .token-function { color: #7dd3fc; }
         .token-type { color: #fbbf24; }
+    
+        /* Modal transitions */
+        #questions-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #questions-modal .transform {
+            transition: transform 0.3s ease-in-out;
+        }
+
     </style>
 </head>
 
@@ -268,26 +277,59 @@
         <div class="flex-1 overflow-y-auto dark-scroll p-4 pb-20">
             <div class="nav-group">
                 <div class="nav-group-title">חלק 2: מעבד ותהליכים</div>
+                <div class="relative group/nav mb-1">
                 <button onclick="showTab('cpu-architecture')" id="btn-cpu-architecture" class="nav-btn active-nav">
                     <span>💻 2.0 מבנה המעבד (CPU)</span>
                 </button>
+                <button onclick="showQuestions('cpu-architecture', 'מבנה המעבד (CPU)', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
+                    ❓
+                </button>
+            </div>
+                <div class="relative group/nav mb-1">
                 <button onclick="showTab('processes-intro')" id="btn-processes-intro" class="nav-btn">
                     <span>🤖 2.1 מבוא לתהליכים</span>
                 </button>
+                <button onclick="showQuestions('processes-intro', 'מבוא לתהליכים', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
+                    ❓
+                </button>
+            </div>
+                <div class="relative group/nav mb-1">
                 <button onclick="showTab('threads')" id="btn-threads" class="nav-btn">
                     <span>🧵 2.2 תהליכונים (Threads)</span>
                 </button>
+                <button onclick="showQuestions('threads', 'תהליכונים (Threads)', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
+                    ❓
+                </button>
+            </div>
+                <div class="relative group/nav mb-1">
                 <button onclick="showTab('ipc')" id="btn-ipc" class="nav-btn">
                     <span>🔌 2.3 תקשורת בין תהליכים</span>
                 </button>
+                <button onclick="showQuestions('ipc', 'תקשורת בין תהליכים', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
+                    ❓
+                </button>
+            </div>
+                <div class="relative group/nav mb-1">
                 <button onclick="showTab('scheduling')" id="btn-scheduling" class="nav-btn">
                     <span>🧠 2.4 תזמון תהליכים (Scheduling)</span>
                 </button>
+                <button onclick="showQuestions('scheduling', 'תזמון תהליכים (Scheduling)', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
+                    ❓
+                </button>
+            </div>
+                <div class="relative group/nav mb-1">
                 <button onclick="showTab('classic-sync')" id="btn-classic-sync" class="nav-btn">
                     <span>🍽️ 2.5 בעיות סנכרון קלאסיות</span>
                 </button>
-                <button onclick="showTab('glossary')" id="btn-glossary" class="nav-btn">
-                    <span>📖 2.6 מילון מושגים מסכם</span>
+                <button onclick="showQuestions('classic-sync', '️ 2.5 בעיות סנכרון קלאסיות', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
+                    ❓
+                </button>
+            </div>
+                <button onclick="showTab('glossary-concepts')" id="btn-glossary-concepts" class="nav-btn">
+                    <span>📖 2.6 סיכום מושגים</span>
+                </button>
+                <button onclick="showTab('glossary-questions')" id="btn-glossary-questions" class="nav-btn">
+                    <span>❓ 2.7 שאלות חזרה ובעיות פתורות</span>
                 </button>
             </div>
         </div>
@@ -1738,7 +1780,7 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
             <!-- ==========================================
                  PART 2.6: GLOSSARY
             =========================================== -->
-            <div id="glossary" class="tab-content">
+            <div id="glossary-concepts" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
                         חלק 2.6
@@ -1848,6 +1890,160 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
                     </div>
                 </div>
             </div>
+            <div id="glossary-questions" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-rose-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 2 • שאלות ותשובות
+                    </div>
+                    <h2 class="text-4xl font-black text-slate-800 tracking-tight mb-4">שאלות חזרה ובעיות פתורות</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        בעיות פתורות ושאלות חזרה מסכמות מתוך פרק 2 למדריך הלמידה.
+                    </p>
+                </header>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-black text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span>📝 בעיות פתורות</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <!-- Q1 -->
+        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-rose-600 text-white px-2 py-0.5 rounded font-black">שאלה 1</span>
+                    <span class="text-sm">במערכת נתונה יש 8 מעבדים -ו20 .דיסקים המערכת עמוסה במשימות שכל אחת מהן דורשת 4 דיסקים כדי להסתיים. מבין 4 ,הדיסקים 3 דרושים לכל משימה במהלך ריצתה, והדיסק הרביעי דרוש רק לפרק זמן קצר, לקראת סיום המשימה. המשימות מן הסוג המתואר מגיעות למערכת כל הזמן. .א נניח שהדיסקים המוקצים למשימות משוחררים עם רק סיומן. לא אם נתזמן את המשימות עוד כל אין ברשותן 4 ,דיסקים מהו מספר המשימות המרבי שיכול לרוץ במערכת במקביל? מהו המספר המרבי (או המספר המזערי) של הדיסקים שיכולים להיות מושבתים כתוצאה ממדיניות התזמון? .ב הציעו מדיניות טובה יותר שתשפר את הניצולת של הדיסקים. מהו מספר המשימות המרבי שיכול לרוץ במערכת בהינתן המדיניות החדשה? מהו המספר המרבי (המספר המזערי) של הדיסקים שיכולים להיות מושבתים כתוצאה ממדיניות התזמון החדשה? Yair Kurtzman</span>
+                </span>
+                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                א מספר המשימות המרבי הוא 20/4 = 5. מכיוון שלכל משימה יכול להיות דיסק אחד מושבת, המספר המרבי של הדיסקים המושבתים הוא 5. המספר המזערי הוא 0 כי במקרה הטוב שום דיסק לא יהיה מושבת ברגע נתון. .ב כדי לשפר את הניצולת, נקצה לכל משימה 3 דיסקים ואת הדיסק הרביעי נקצה על פי דרישה. מספר המשימות המרבי יגדל להיות 6 = L20/3J . המספר המרבי של הדיסקים המושבתים הוא 2. המספר המזערי הוא 0.
+            </div>
+        </details>
+        
+        <!-- Q2 -->
+        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-rose-600 text-white px-2 py-0.5 rounded font-black">שאלה 2</span>
+                    <span class="text-sm">האם תהליך השוהה בלולאה אינסופית נמצא במצב של הרעבה?</span>
+                </span>
+                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                . לא במקרה של לולאה אינסופית, הגורם לקפיאת התהליך הוא פעולתו של התהליך עצמו, ולא פעולתו של גורם חיצוני.
+            </div>
+        </details>
+        
+        <!-- Q3 -->
+        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-rose-600 text-white px-2 py-0.5 rounded font-black">שאלה 3</span>
+                    <span class="text-sm">סנטה קלאוס ישן בביתו בקוטב הצפוני, ויכול להתעורר רק באחד המקרים האלה: • כאשר כל תשעת האיילים שלו חוזרים מהחופשה כדי לצאת ולחלק מתנות לילדים • כאשר לפחות שלושה גמדים נתקלים בבעיה בבניית הצעצועים כאשר שלושה גמדים שנתקלו בבעיה מעירים את סנטה קלאוס, גמדים אחרים שנתקלו בבעיות נאלצים לחכות עד שהשלושה הראשונים יסיימו לפתור את בעיותיהם. אם סנטה קלאוס מתעורר כדי לפתור בעיות לגמדים, והאייל האחרון מגיע מהחופשה, הגמדים ייאלצו לחכות עד אחרי חלוקת המתנות לילדים מכיוון שהחלוקה דחופה יותר. האייל התשיעי שחוזר מהחופשה (זה עשוי להיות אייל אחר מדי שנה) צריך להעיר את סנטה קלאוס בזמן שהאחרים מחכים ליד המזחלת. כתבו שגרות לסנטה, לאייל ולגמד. הפתרון יהיה באמצעות סמפורים. הניחו כי הפעולות HelpDwarves -וGiveGifts מוגדרות מראש.</span>
+                </span>
+                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                Initialization(){ Int Number_of_deer = 9 // constant Int Size_of_dwarves_group = 3 // constant Int deer_counter = 0 Bool deer_ready = false Int dwarves_counter = 0 Int dwarves_ready = 0 Sem s_deercount = 1 // number of deer that are ready (between 0 and 9) // true iff all nine deer are ready // number of waiting dwarves // number of groups (threes) of waiting dwarves // protects (ensures mutual exclusion) deer_counter Sem s_deerready = 1 Sem s_dwarfcount = 1 Sem s_dwarvesready = 1 Sem s_deerfree = 0 Sem s_dwarffree = 0 Sem s_santa = 0 // protects deer_ready // protects dwarves_counter // protectes dwarves_ready // causes deer to wait until santa comes // causes dwarves to wait until santa comes // causes santa to sleep while nobody needs him } Deer(){ while (1) { enjoy_my_vacation(); bridle_myself_to_sledge(); wait(s_deercount){ deer_counter = deer_counter + 1; if (deer_counter == Number_of_deer ){ wait(s_deerready); deer_ready = true; signal(s_deerready); signal(s_santa); } signal(s_deercount); wait(s_deerfree); } } Dwarf(){ while (true){ build_toys(); wait(s_dwarfcount); dwarves_counter = dwarves_counter + 1; if (dwarves_counter modulo Size_of_dwarves_group == 0){ wait(s_dwarvesready); dwarves_ready = dwarves_ready + 1; signal(s_dwarvesready); signal(s_santa); } wait(s_dwarfcount); signal(s_dwarffree); } } Santa(){ while (true){ wait(s_santa); Yair Kurtzman wait(s_dearready); if (deerready){ give_gifts_to_children(); deerready = false; for i := 1 to Number_of_deer signal(s_deerfree); } signal(s_dearready); wait(s_dwarvesready); if (dwarvesready > 0){ help_three_dwarves() dwarvesready = dwarvesready – 1; for i := 1 to Size_of_dwarves_group signal(s_dwarffree); } } }
+            </div>
+        </details>
+        
+        <!-- Q4 -->
+        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-rose-600 text-white px-2 py-0.5 rounded font-black">שאלה 4</span>
+                    <span class="text-sm">הוכיחו כי קיימת שקילות בין העברת הודעות לבין סמפורים על כך ידי שתראו שניתן לממש את העברת ההודעות באמצעות סמפורים ולהפך. רמז לכיוון הראשון של ההוכחה: השתמשו בחוצץ משותף המשמש להחזקת -הmailboxes כאשר כל mailbox הוא מערך המורכב מהודעות. רמז לכיוון השני של ההוכחה: השתמשו בתהליך עזר לסנכרון.</span>
+                </span>
+                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                בכיוון ראשון: send (message, dest){ wait (mbuf) //wait for message buffer available wait (mutex) //mutual exclusion on message queue acquire free buffer slog copy message to slot link slot to other messages signal (dest.sem) //wake destination process signal (mutex) //release mutual exclusion } Receive(message){ wait (own.sem) //wait for message to arrive wait (mutex) //mutual exclusion on message queue unlink slot from own.queue copy buffer slot to message add buffer slot to freelist signal (mbuf) // indicate message slot freed signal (mutex) // release mutual exclusion } בכיוון השני: תהליך שמבצע סנכרון מחזיק מונה ורשימה מקושרת של תהליכים שממתינים על סמפור מסוים. תהליך שמבצע wait אוsignal קורא לפונקציית ספרייה מתאימה. הספרייה דואגת לשלוח הודעה לתהליך הסנכרון ובהודעה נמסרים סוג הפעולה וזהות הסמפור שעליו מתבצעת הפעולה. הספרייה גם דואגת לקבל תשובה מתהליך הסנכרון. כאשר ההודעה מגיעה לתהליך הסנכרון, עליו לבדוק אם קיימת אפשרות לסיים את הפעולה בהצלחה (כי wait לא תמיד מסתיים, ולעתים עלול לגרום להשהיית התהליך המבקש לבצע אותו). אם הפעולה המבוקשת ניתנת לביצוע, אז תהליך הסנכרון שולח חזרה הודעה ריקה. בעקבות קבלת ההודעה, התהליך שביקש לבצע פעולה יימשך. לעומת זאת, אם הפעולה המבוקשת היא wait וערך הסמפור היה 0, אז תהליך הסנכרון יכניס את התהליך הקורא לתור מתאים וכתוצאה מכך התהליך הקורא יישאר חסום. מאוחר יותר, כאשר יישלח signal אל אותו הסמפור, תהליך הסנכרון יבחר את אחד התהליכים הממתינים בתור וישלח הודעה ריקה לתהליך הקורא המתאים.
+            </div>
+        </details>
+        
+        <!-- Q5 -->
+        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-rose-600 text-white px-2 py-0.5 rounded font-black">שאלה 5</span>
+                    <span class="text-sm">נגדיר אלגוריתם תזמון המבוסס על עדיפות דינאמית. מספר גדול מבטא עדיפות גבוהה. כאשר תהליך ממתין -לCPU , כלומר נמצא במצב ready , עדיפותו משתנה בקצב של α ליחידת זמן. כאשר תהליך רץ, עדיפותו משתנה בקצב של β ליחידת זמן. כל התהליכים מקבלים עדיפות התחלתית 0 בהגיעם למערכת. שינוי הפרמטרים α,β מאפשר לקבל אלגוריתמי תזמון רבים. .א איזה אלגוריתם מתקבל כאשר 0 < β>α ? .ב איזה אלגוריתם מתקבל כאשר 0 > α<β ?</span>
+                </span>
+                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                .א כאשר 0 < β>α מתקבל האלגוריתם FCFS . תהליך שנמצא במערכת במשך זמןt ועדיין לא התחיל לרוץ, עדיפותו תהיה αt . התהליך שייבחר לריצה לא יפסיק לרוץ כיוון -שβ>α , ומכיוון שכך עדיפותו רק תעלה ככל שימשיך לרוץ. .ב כאשר 0 > α<β , נקבל אלגוריתם חדש הפועל כדלהלן: • האלגוריתם יבחר לתזמן את התהליכים שנמצאים במערכת במשך הזמן הקצר ביותר. זאת כיוון שעדיפותו של התהליך הנמצא בהמתנה במשך זמן t תהיה |αt -|. Yair Kurtzman • תהליך שהתחיל לרוץ יסיים את ריצתו בתנאי שלא יגיעו תהליכים חדשים למערכת. זאת מכיוון שכאשר התהליך נבחר לריצה, עדיפותו הייתה מרבית, ובזמן הריצה העדיפות תרד בקצב איטי יותר של מזו התהליכים האחרים במערכת. • תהליך שהתחיל לרוץ ייאלץ לעבור למצב ready עם הגעת תהליך חדש. זאת מכיוון שלתהליך חדש תמיד מוקנית עדיפות גבוהה יותר.
+            </div>
+        </details>
+        
+        <!-- Q6 -->
+        <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+            <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-rose-600 text-white px-2 py-0.5 rounded font-black">שאלה 6</span>
+                    <span class="text-sm">הרבה מאלגוריתמי התזמון כוללים פרמטרים. Round Robin , ,למשל דורש את מנת הזמן הניתנת לכל תהליך בכל סיבוב, -וMultilevel Feedback Queues כולל את מספר התורים, את מנת הזמן המוקצבת לתהליך מכל תור ואת הקריטריון למעבר בין תורים. כך ידי על אלגוריתמים אלו מגדירים למעשה משפחה של אלגוריתמים. משפחות אלו יכולות להכיל זו: את זו FCFS , ,למשל הוא מקרה פרטי של RR עם מנת זמן אינסופית. אילו קשרי הכלה, אם בכלל, קיימים בין האלגוריתמים האלה: .א Priority -וSJF .ב FCFS -וMultilevel Feedback Queues .ג Priority -וFCFS .ד RR -וSJF</span>
+                </span>
+                <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                .א SJF שייך למשפחה של אלגוריתמים עם עדיפויות. נגדיר את עדיפותו של תהליך כהופכי של זמן הריצה המשוער שלו. .ב FCFS שייך -לMFQ עם מנת זמן אינסופית. .ג FCFS שייך למשפחה של אלגוריתמים עם עדיפויות, כאשר העדיפויות מוגדרות כך שכל תהליך חדש מקבל את העדיפות של התהליך שקדם לו פחות אפסילון חיובי קטן. .ד אין קשר הכלה ביןSFJ -וRR . אם גם נקבע פלח זמן אינסופי -לRR , לא נוכל לעשות עם דבר מדיניות ההכנסה לתור. לכן אין אפשרות למצוא פרמטרים כך ששני האלגוריתמים ייתנו את אותה התשובה כל על הרכב משימות אפשרי.
+            </div>
+        </details>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-black text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                            <span>🔍 שאלות חזרה (נכון / לא נכון)</span>
+                        </h3>
+                        <div>
+                            <ol class="space-y-4 list-none text-sm text-slate-750">
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-slate-700">כדי לפתור את בעיית הקטע הקריטי המשותף לשני תהליכים, די להשתמש במשתנה משותף יחיד.</span>
+        </li>
+        
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-slate-700">בעזרת סמפורים בינאריים ניתן לפתור את בעיית הקטע הקריטי בעבור שני תהליכים בלבד.</span>
+        </li>
+        
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-slate-700">קיימים מקרים שבעבורם ניתן להוכיח אופטימליות של שיטת תזמון.</span>
+        </li>
+        
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-slate-700">כל התהליכים ב- UNIX הם בנים של תהליך יחיד.</span>
+        </li>
+        
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-slate-700">תהליך אינו יכול לעבור ממצב שבו הוא ממתין -לCPU למצב שבו הוא חסום בלי לקבל זמן עיבוד.</span>
+        </li>
+        
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-slate-700">הפתרון של פטרסון מונע קיפאון.</span>
+        </li>
+        
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">8</span>
+            <span class="text-slate-700">כאשר משתמשים בעדיפויות קבועות לתזמון תהליכים, קיימת סכנת הרעבה.</span>
+        </li>
+        
+        <li class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm leading-relaxed mb-4 flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0">9</span>
+            <span class="text-slate-700">הפתרון ההסתברותי לבעיית הפילוסופים הסועדים מונע לחלוטין הרעבה.</span>
+        </li>
+        </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
         </div>
     </main>
@@ -1855,7 +2051,50 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
     <!-- Script Block for Tabs & Sidebar Controls -->
     <script>
         {
-            function showTab(tabId) {
+            
+            // Modal Functions for Sidebar Q&A Triggers
+            function showQuestions(tabId, sectionName, event) {
+                if (event) event.stopPropagation();
+
+                const repo = document.getElementById('questions-' + tabId);
+                const modal = document.getElementById('questions-modal');
+                const modalBody = document.getElementById('modal-body');
+                const modalSectionName = document.getElementById('modal-section-name');
+
+                if (!repo || !modal || !modalBody || !modalSectionName) return;
+
+                let html = repo.innerHTML.trim();
+                if (!html) {
+                    html = '<div class="text-slate-500 text-center py-8">אין שאלות מנחות ליחידה זו.</div>';
+                }
+
+                modalBody.innerHTML = html;
+                modalSectionName.textContent = 'שאלות מנחות - ' + sectionName;
+
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise([modalBody]).catch(function(err) { console.log(err.message); });
+                }
+            }
+
+            function closeQuestionsModal() {
+                const modal = document.getElementById('questions-modal');
+                if (!modal) return;
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                const inner = modal.querySelector('.transform');
+                if (inner) {
+                    inner.classList.remove('scale-100');
+                    inner.classList.add('scale-95');
+                }
+            }
+
+            window.showQuestions = showQuestions;
+            window.closeQuestionsModal = closeQuestionsModal;
+
+function showTab(tabId) {
                 // hide all tabs, deactivate all nav buttons
                 document.querySelectorAll('.tab-content').forEach(el => {
                     el.classList.remove('active');
@@ -1900,6 +2139,17 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
 
             // Document Initialization
             document.addEventListener("DOMContentLoaded", () => {
+                // Close modal on click outside or Escape
+                const qModal = document.getElementById('questions-modal');
+                if (qModal) {
+                    qModal.addEventListener('click', function(e) {
+                        if (e.target === qModal) closeQuestionsModal();
+                    });
+                }
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') closeQuestionsModal();
+                });
+
                 // 1. Create and inject sidebar toggle button
                 const toggleBtn = document.createElement('button');
                 toggleBtn.id = 'sidebar-toggle-btn';
@@ -1985,6 +2235,448 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
             window.toggleSidebar = toggleSidebar;
         }
     </script>
+
+    <!-- Repository of Guide Questions -->
+    <div id="questions-repo" class="hidden">
+        <div id="questions-cpu-architecture">
+            
+            <!-- Q1 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                        <span class="text-sm">מה קורה כאשר בעת הטיפול בפסיקה, מגיע איתות חדש לבקשת פסיקה?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> אפשר לנקוט אחת משתי גישות. בגישה הראשונה תיחסם קבלת איתותים בזמן שמתבצע טיפול בפסיקה. עם סיום הטיפול בפסיקה, המעבד יבטל את החסימה ויבדוק אם הגיעו בקשות לפסיקות חדשות בזמן שטיפל בפסיקה הקודמת. לפשטותה של הגישה יש חיסרון משמעותי – היא אינה מתמודדת היטב עם פסיקות המחייבות טיפול מהיר .מאוד למשל, אם תגיע פסיקה המבקשת קריאה מדויקת של שעון, לא סביר לצפות שהיא תמתין לסיומה של הפסיקה הקודמת. , לכן ברובם המכריע של המעבדים יש אפשרות לקבוע סדר קדימויות של טיפול בפסיקות. בגישה זו (ראו איור למטה) פסיקות בעלות עדיפות גבוהה יכולות לגרום להשהיית הטיפול בפסיקות בעלות עדיפות נמוכה. התוכן של הפסיקה המושהית X , שהיא בעלת עדיפות נמוכה, נשמר, ומתבצע טיפול בפסיקה בעלת העדיפות הגבוהה Y . לאחר הטיפול -בY משוחזר התוכן של X . בגישה הזאת יתבצע טיפול בפסיקה רק כאשר לא ממתינות פסיקות בעלות עדיפות גבוהה יותר. לביצוע התוכנית עצמה תהיה העדיפות הנמוכה ביותר. איור 4
+                </div>
+            </details>
+        
+        </div>
+        <div id="questions-processes-intro">
+            
+            <!-- Q2 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 2</span>
+                        <span class="text-sm">מהו ההבדל בין תוכנית לבין תהליך?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> אילו נתונים צריך להחזיק כדי לאפשר את קטיעת הביצוע של תהליך כך שהתוצאה הסופית לא תושפע מכך? 2.1.2 יצירת תהליכים במערכת הפעלה תכליתית-רב יש כמה מקרים שבהם אפשר או צריך ליצור תהליכים חדשים: 1. בעת האתחול של מערכת ההפעלה נוצרים תהליכים שמטרתם לבצע משימות בעבור מערכת ההפעלה. לדוגמה, תהליכי רקע (daemons ) כגון שרת Web אוspooler של מדפסת. 2. תהליכים קיימים יכולים ליצור תהליכים חדשים. המטרה יכולה להיות שיפור המודולריות של תוכניות או ניצול של ריבוי מעבדים לשיפור המקביליות. 3. עבודות אצווה – מערכת ההפעלה מקבלת את ההוראות דרך -הbatch control stream ויוצרת לפיהן תהליכים חדשים. ניתן לראות צורה של זו יצירת תהליכים במחשבי mainframe , כאשר משתמשים רבים מבקשים לבצע עבודות אצווה כגון מפתוח (indexing ) של בסיסי נתונים. 2.1.3 סיום תהליכים כפי שאמרנו, תהליכים הם ישויות במודל התהליכים של מערכת הפעלה, ולכן הם עצמם מהווים משאבים של המערכת ודינם ככל משאב אחר בעולם החומרי. כמות המשאבים במערכת מוגבלת, ולכן כאשר תוכנית מסתיימת, גם התהליך המתאים צריך להסתיים. אנו נבדיל בין כמה סוגים של סיום תהליכים: 1. סיום רגיל – תהליך שמסתיים בעקבות סיום של תוכנית ומפנה את המשאבים שתפס. 2. סיום בעקבות שגיאה – סיום מתוכנן של תהליך בעקבות שגיאה במהלך ריצת התוכנית. למשל, תוכנית שמגלה שלא קיבלה מספר נכון של פרמטרים או תוכנת דוא"ל שנכשלה במשלוח הודעה, למשל בעקבות נפילת רשת. 3. סיום בעקבות שגיאה פטאלית – תהליך שמסתיים בעקבות שגיאה שלא נצפתה מראש ותרחיש בעייתי שקוד התוכנית לא סיפק לו מענה. סיום מן הסוג הזה גורם למה שמכונה קריסה (crash ) של התוכנית. 4. סיום בעקבות הריגת תהליך – תהליך שמסתיים בעקבות בקשה מפורשת ממערכת ההפעלה לסיים את ריצתו. מערכת הפעלה שמקבלת בקשה כזאת בוחנת את הרשאות המבקש (המבקש יכול להיות תהליך אחר כלשהו, ובפרט – תהליך של מערכת ההפעלה עצמה), ואם קיימות הרשאות מתאימות, היא מסיימת את ריצתו של התהליך כמבוקש. 2.1.4 היררכיה של תהליכים מודל התהליכים מתאפיין בהגדרה של מבנה היררכי בין תהליכי מערכת ההפעלה והגדרה של כללי שינוי המעמד בהיררכיה. 2.1.5 מכונת מצבים סעיף זה מתאר את אחד המרכיבים החשובים ביותר של מודל תהליכים – מכונתמצבים . המכונה מתארת את תקופות חייו של התהליך. אפשר לומר שמכונת מצבים היא לב לבו של מודל התהליכים ושככל שהמודל יהיה משוכלל יותר, כך ישרת את מטרתו טוב יותר. בספר מתואר מודל פשוט שבו שלושה מצבים: Yair Kurtzman 1. Process blocks for input 2. Scheduler picks another process 3. Scheduler picks this process 4. Input becomes available איור 5 • המעבר ממצב רץ למצב חסום מתבצע כאשר התהליך אינו יכול להתקדם עוד. תהליך במצב חסום יחכה לאירוע חיצוני שיגרום לו להשתחרר מחסימה. לדוגמה, תהליך שמבקש לקרוא קובץ מדיסק יכול להיחסם על ידי מערכת ההפעלה עד אשר תתבצע קריאת הקובץ. עם קריאת הקובץ, ישלח בקר הדיסק בקשה לפסיקה אשר תביא לשחרור התהליך ממצב חסום. • המעבר ממצב חסום למצב מוכן יתבצע כאשר מתרחש האירוע החיצוני אשר בגללו התהליך מחכה במצב חסום. נחזור שוב לדוגמה של קובץ בדיסק: בקר הדיסק שולח בקשה לפסיקה, הפסיקה מטופלת על ידי מערכת ההפעלה שגורמת לשינוי של מצב התהליך והפעלת מתזמן המערכת. • המעברים ממצב רץ למצב מוכן ולהפך מתרחשים כתוצאה מהחלטת מתזמן המערכת להפקיע את -ה CPU מתהליך רץ ולהקצותו לאחד התהליכים הממתין לו במצב מוכן. באופן מופשט, נחשוב על המימוש הזה של מודל מכונת המצבים: איור 6 התהליכים במצב מוכן וחסום מוחזקים בתורים נפרדים, כאשר כל תור יכול להיות מנוהל באמצעות מדיניות שנבחרה לכך. מובן שבמציאות המצב מורכב בהרבה. כדי לתאר את רמת ההפשטה ואת רמת הקירוב של מכונת שלושת המצבים, דמיינו שהיינו מתארים את חייהם של בני אדם באמצעות המצבים ישן, אוכל או ממתין לארוחה. מובן שמכונות מצבים במערכות הפעלה הן שונות זו מזו, והשוני הזה נגזר מן המאפיינים השונים של מערכות ההפעלה. לדוגמה, מכונת המצבים המשוכללת באחת הגרסאות של מערכת ההפעלה UNIX נראית כך: איור 7 מכונת המצבים המשוכללת נותנת ביטוי לעובדה שתהליכים נוצרים ומסתיימים.
+                </div>
+            </details>
+        
+
+            <!-- Q3 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3</span>
+                        <span class="text-sm">מהם השיקולים לטובת הוספת המצבים חדש וסיום הוספת המצב חדש נגזרת משיקולי תזמון תהליכים. כפי שנראה בהמשך, הסיווג לקבוצות נעשה לפי טווחים שונים. תהליכים חדשים יכולים להיכלל בקבוצה של התהליכים אשר חייבים להיות מתוזמנים בטווח הקצר או בקבוצה של התהליכים שניתן להשהות את תזמונם עד למועד מאוחר יותר. בעקבות החלטת מערכת ההפעלה, התהליכים יכולים להיכנס למצב מוכן (בזיכרון הראשי, כלומר מוכן להרצה) או מוכן בדיסק. הוספת מצב סיום נובעת מן הצורך במידע על התהליך שסיים לרוץ. ברוב מערכות ההפעלה תהליך שמסיים לרוץ משחרר כל את משאבי המערכת. אך מערכת ההפעלה שומרת רשומת מידע במבני נתונים של גרעין על התהליך שזה עתה סיים לרוץ. רשומת המידע הזאת כוללת נתונים על זמני ריצת התהליך במצב מיוחס ובמצב משתמש, קודים המתארים סטטוס סיום תהליך וכו'. המידע נדרש בעיקר לצורך ניהול נתונים סטטיסטיים שונים במערכת ההפעלה. שימוש חשוב נוסף הוא לצורך קבלת החלטות המסתמכות על אופן הסיום של התוכניות. למשל, בעקבות סיומה של התוכנית שנכשלה בהעתקת קובץ עקב שגיאה בדיסק, יש טעם להריץ תוכנית לבדיקה ולשחזור של מערכת קבצים. בכל אופן, בסיום השימוש במידע מתוך רשומת המידע אפשר וצריך שמערכת ההפעלה תמחק את הרשומה ממבני הנתונים של גרעין המערכת. איסוף נתונים סטטיסטיים יכול להיעשות אחרי העתקת זמני הריצה של תהליך ליומן הסטטיסטיקות, ובמקרה של העתקת קובץ – לאחר קריאת קוד השגיאה שהתרחשה. Yair Kurtzman נתאר שוב בקצרה את גם המצבים הנותרים: • – רץ מצב שבו נמצא תהליך שרץ כרגע במעבד הראשי. • מוכן – מצב שבו נמצאים תהליכים אשר נמצאים בזיכרון הראשי וממתינים למעבד. • מוכן בדיסק – מצב שבו נמצאים תהליכים אשר יהיו מוכנים לריצה עם טעינתם לזיכרון הראשי, אך כרגע הם נמצאים בזיכרון המשני (דיסק). • חסום – מצב שבו נמצאים תהליכים אשר נמצאים בזיכרון הראשי וממתינים לאירוע כלשהו. • חסום בדיסק – מצב שבו נמצאים תהליכים אשר ממתינים לאירוע כלשהו ונמצאים בזיכרון המשני. כמו במקרה של מכונת שלושת המצבים, ניתן לחשוב שבאופן עקרוני מכונת המצבים המשוכללת ממומשת באמצעות תורים (הסתכלו באיור 5 במדריך למידה זה ושרטטו איור המתאים למכונת המצבים המשוכללת). כעת נתאר את המעברים של המכונה המשוכללת: • המעבר ממצב חסום למצב חסום בדיסק יכול להתרחש כדי לפנות יותר זיכרון ראשי. בעקבות המעבר, קטעי הזיכרון הראשי (או מה שמכונה גם מפת הזיכרון של ) התהליך המועבר יירשמו בדיסק בקובץ מיוחד שנקרא קובץ החלפה (swap file .) שטחי הזיכרון הראשי שיתפנו יועמדו לטובת תהליכים מוכנים או לטובת התהליך הרץ. • המעבר ממצב חסום בדיסק למצב מוכן בדיסק יכול להתרחש עם קרות האירוע אשר לו ציפה התהליך החסום. • המעבר ממצב מוכן בדיסק למצב מוכן יכול להתרחש כאשר אין תהליכים במצב מוכן או כאשר עדיפותו של תהליך שהיה במצב מוכןבדיסק עולה עד כך כדי שהיא גוברת על הצורך בהעתקת מפת הזיכרון מהדיסק לזיכרון הראשי. • המעבר ממצב מוכן למצב מוכן בדיסק יכול להתרחש כאשר עדיפותו של תהליך שהיה במצב מוכן יורדת עד כך כדי שהיא גוברת על הצורך בהעתקת מפת הזיכרון מהדיסק לזיכרון הראשי. • המעבר ממצב חסום בדיסק למצב חסום יכול להתרחש בעקבות פינוי של מקום בזיכרון הראשי, אם עדיפותו של התהליך החסום בדיסק גוברת על עדיפותו כל של אחד מהתהליכים הנמצאים במצב מוכןבדיסק . • המעבר ממצב רץ למצב מוכן בדיסק יכול להתרחש רק במקרים נדירים, וזאת כאשר הפקעת מעבד מתהליך רץ מתרחשת בעקבות קבלת אירוע ידי על תהליך בעל עדיפות גבוהה מאוד ובהינתן הצורך המיידי בפינוי הזיכרון. בתנאים הללו מתבצעת העתקה של שטח הזיכרון הראשי לדיסק והתהליך שהיה במצב רץ עובר ישירות למצב מוכןבדיסק . • באיור של מכונת המצבים המשוכללת לא הוצגו המעברים מכל מצב (פרט למצב חדש ) למצב סיום, לא כדי להעמיס על האיור יתר על המידה. אם המעבר למצב סיום אינו מתבצע ממצב רץ , הוא עדיין יכול להתרחש, למשל כפי שראינו בסעיף 2.1.3 , כאשר מערכת ההפעלה גורמת לסיום ריצת תהליך ידי על הריגתו. במקרה כזה, האינדיקציה המתאימה תישמר ברשומת המידע שבגרעין המערכת. 2.1.6 יישום תהליכים בסעיף זה מתוארים באופן כללי וללא התייחסות למערכת הפעלה ספציפית המבנים הדרושים למימוש מודל התהליכים. מערכת ההפעלה מנהלת טבלה המכונה טבלת תהליכים וכל רשומה בטבלה מכילה מידע המתייחס לתהליך באופן ערכי.-חד-חד הרשומה יכולה להכיל מידע ישיר או מצביעים למבנים נוספים, בהתאם למימוש או זה אחר, אך באופן כללי המידע השמור ברשומה (או שניתן להגיע אליו מתוך הרשומה) משקף במלואו את מצב התהליך ואת המשאבים המוקצים לו. באמצעות המידע הזה ניתן לשחזר תהליך שהמעבר הופקע ממנו, וכדי שהשחזור יהיה אפשרי – מערכת ההפעלה צריכה לדאוג לעדכון עקבי של מבני הנתונים המתייחסים לתהליך. כל מערכת הפעלה מנהלת מבני נתונים רבים כדי לאפשר החלפת תהליכים וכדי לאפשר קיום מעברים בין מצב משתמש למצב מיוחס. כאן צריכה להתעורר השאלה: כיצד מתבצע הקוד של מערכת ההפעלה?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> האם מערכת ההפעלה היא אוסף של תהליכים? או אולי מערכת ההפעלה היא חלק מתהליכי משתמש? השאלות הללו מגדירות גישות שונות ולכל אחת מהן יש אחיזה במציאות. בפרק הראשון בספר למדנו על מערכות הפעלה במבנה של לקוח-שרת – מערכות אלו ממומשות כאוסף של תהליכים. מערכות הפעלה במחשבים ביתיים רצות במרחב הכתובות של תהליכי המשתמש. 2.1.7 מודל לריבוי תוכניות העלאת רמת המקביליות של המערכת מביאה לניצול טוב יותר של משאבים. נראה כיצד הגדלה של מספר התהליכים יכולה להשפיע על ניצולת -הCPU . לשם כך נבנה מודל הסתברותי פשוט. נניח שתהליך מבלה חלק 1 > 0 < P מזמנו בפעולות קלט/פלט. כאשר n תהליכים נמצאים בזיכרון בבת אחת, ההסתברות לכך שכל התהליכים מבצעים פעולות קלט/פלט היא pn (בהנחה שהתהליכים אינם תלויים זה בזה ). בתנאים אלה, ההסתברות לכך שהמעבד פעיל היא 1 - pn וזאת גם הנוסחה לחישוב הניצולת של המעבד. איור 2-6 בספר הוא גרף המציג את הניצולת כפונקציה של מספר התהליכים במערכת, אשר נקרא הדרגה של ריבוי התוכניות. המודל המתואר באיור הוא כמובן כללי מאוד. גם הוא מניח הנחה לא מציאותית: במערכת שבה מספר התהליכים גדול ממספר המעבדים, התהליכים שמוכנים לריצה יהיו תלויים זה ולו בזה מפני שניתן לבחור את זמן הקצאת המעבדים לתהליכים השונים. התמונה האמיתית, שניתן לראותה בצורה אמפירית או למדל אותה באמצעות כלים מתמטיים קצת יותר מתוחכמים כמו תורת התורים, מוצגת באיור שלהלן: Yair Kurtzman Degree of muhpiograitunuig איור 8 כפי שניתן לראות מן האיור, עד לנקודה A הניצולת גדלה בצורה ליניארית. בנקודה זו, כאשר העומס עולה ניכרת האטה בגידול הניצולת עם הגדלת רמת המקביליות (העקומה בין הנקודות A -וB .) החל משלב מסוים, הגדלת רמת המקביליות רק לא שלא תגרום לגידול הניצולת, אלא יתרחש תהליך הפוך (החל מנקודה B .) המערכת תעבוד תחת עומס כבד, וככל שהעומס יגבר, כך תפחת יעילותה של המערכת. בסופו של דבר, אם ממשיכים להגדיל את דרישות המקביליות, המערכת תקרוס. הנקודה B בגרף היא נקודה שבה המערכת חייבת להוציא תהליכים מהזיכרון הראשי אל הדיסק. הצורה המדויקת של העקומה תלויה במספר גדול של גורמים, אך התבנית הכללית הכוללת עלייה חדה, האטה ולאחר מכן ירידה אקספוננציאלית היא תבנית אופיינית למערכות רבות. אפשר להביא לכך דוגמה ממערכות תנועה. אם מספר מכוניות מסוים ייסעו בכביש נתון – התנועה תזרום כסדרה. הגדלת מספר המכוניות תביא לניצולת גבוהה של הכביש, אך לאחר כמות מסוימת של מכוניות, האטה משמעותית בתנועה תהיה בלתי נמנעת. אם מספר המכוניות ימשיך לגדול, ייווצר פקק. מי כל שנסע בנתיבי איילון בשעות שונות של הבוקר, חווה על בשרו את השינויים בניצולת הכביש כתוצאה מהגדלת הדרישה למקביליות בשימוש של משאב משותף. 2.2 תהליכונים 2.2.1 שימוש בתהליכונים 2.2.2 מודל של תהליכונים 2.2.3 תהליכוני POSIX 2.2.4 מימוש תהליכונים במרחב משתמש 2.2.5 מימוש תהליכונים בגרעין המערכת 2.2.7 - 2.2.6 הפעלת מתזמן 2.2.8 תהליכונים "קופצים" 2.2.9 :אלתורים ריבוי חוטי ביצוע מקוד שנועד לחוט ביצוע אחד --- PDF PAGE 41 (Printed Page 39) --- מדריך למידה • 39
+                </div>
+            </details>
+        
+        </div>
+        <div id="questions-threads">
+            
+            <!-- Q4 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 4</span>
+                        <span class="text-sm">בניגוד לתהליכים, כל התהליכונים של תהליך יחיד חולקים את אותו מרחב כתובות. מתי עובדה זו יכולה להיות שימושית?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> 2.2.1 שימוש בתהליכונים בסעיף זה מופיעות דוגמאות אחדות של שימוש בתהליכונים. חשוב להבין שגם אלמלא היה עומד לרשותנו מודל לתהליכונים, היה אפשר לתכנת שרת שביצועיו היו יעילים באותה מידה. במקום להשתמש בקריאות מערכת חוסמות, היה אפשר להשתמש בקריאות מערכת שאינן חוסמות את התהליך הקורא. למשל, כאשר השרת מקבל בקשה להבאת קובץ אפשר לבצע בקשה לקריאה מן הדיסק, לשמור את סטטוס הבקשה ולעבור לטיפול בבקשות אחרות. לכל הבקשות שמגיעות לשרת תוחזק שורה בטבלה שבה יישמר מהו המצב כל של אחת מן הבקשות. המידע שבטבלה ישמש לשחזור של ביצוע הבקשות בדיוק מן המקום שבו הושהה הביצוע עקב הצורך לטפל באירועים חיצוניים או עקב המתנה לנתונים. קונספציית התכנות הזאת, כאשר יש כמה חוטים של ביצוע וכל חוט ביצוע יכול להימצא במצב מסוים או לעבור ממצב למצב עקב כמה אירועים שמוגדרים מראש, נקראת מכונת מצבים סופית. כפי שניתן לראות מן הדוגמה של שרת, מימושה של מכונת מצבים סופית הוא מימוש של תהליכונים (חוטי ביצוע) למקרה היחיד של שרת. קיומם של תהליכונים במערכת ההפעלה חוסך מלאכה רבה הנגזרת ממימוש של מכונת מצבים במקרה זה ובמקרה של תכנות אפליקציות רבות דומות. נסיים את הדיון בשאלה למחשבה:
+                </div>
+            </details>
+        
+
+            <!-- Q5 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 5</span>
+                        <span class="text-sm">האם ייתכן שבאפליקציות מסוימות, מימוש באמצעות מכונת מצבים סופית יהיה יעיל יותר ממימושן באמצעות תהליכונים?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> 2.2.2 מודל של תהליכונים המושג "תהליך" מאגד שני היבטים שונים בתכלית. האחד הוא היבט הבקרה של ביצוע סדרתי של תוכניות, והאחר הוא ניהול המשאבים של מערכת. במערכת הפעלה התומכת בתהליכונים, מבצעים הפרדה בין שני ההיבטים הללו כדי לאפשר מקביליות בתוך התהליך עצמו. התהליך מוגדר כישות שמאגדת את קבוצת המשאבים, אולם התהליכונים מוגדרים כישויות הניתנות לתזמון (ביצוע ידי על המעבד). מערכות הפעלה Yair Kurtzman אשר תומכות במקביליות בתוך תהליכים נקראות מערכות התומכותבריבוי תהליכונים (multithreading operating systems .) כל אחד מהתהליכונים שייך לאחד מתהליכי המערכת. מערכות הפעלה שבהן לכל תהליך יכולה להיות רק ישות אחת הניתנת לתזמון נקראות מערכות הפעלה שאינןתומכותבריבוי תהליכונים ( single threaded operating systems .) במילים אחרות, מודל התהליכונים הוא הרחבה של מודל התהליכים. :דוגמאות • MSDOS היא מערכת הפעלה single processed -וsingle threaded . ויש גרסאות (Solaris, System V) multithreading-התומכות ב UNIX יש גרסאות של • שהמאפיין הזה אינו קיים בהן (LINUX .(4BSD היא מערכת התומכת בתהליכונים. • OS/2 ,Mach ,(10, XP, Vista) Windows הן דוגמאות נוספות למערכות התומכות בתהליכונים. במערכות הפעלה שתומכות בתהליכונים יש לכל תהליך במערכת מרחב זיכרון מדומה משלו, וכל תהליך כזה מחזיק במשאבים שהוקצו על לו ידי מערכת ההפעלה. בכל תהליך יכולים להימצא כמה תהליכונים, ולכל אחד מהם יש המאפיינים האלה: (running, ready, blocked) מצב התהליכון • • מצב הרגיסטרים של המעבד • מחסנית (stack ) נפרדת בעבור כל תהליכון • אפשרות גישה לזיכרון ולמשאבים המשותפים בתוך התהליך מצב התהליכון, מצב הרגיסטרים והמחסנית יוצרים ביחד את המידע שישמש לשחזור חוט הבקרה של התהליכון. חשוב לעמוד על הבדל מהותי בין תהליכים לתהליכונים. תהליכונים שרצים במרחב כתובות של תהליך מארח משתפים גישה למרחב הזיכרון שלו. כך, למשל, אפשר ליצור תהליכונים בתוך תהליך אחד, ואז הם יכולים לגשת לכל המשאבים שהוקצו לתהליך. שינוי של משתנה גלובלי ידי על תהליכון אחד בתהליך המארח יגרום לכך שכל שאר התהליכונים של אותו התהליך יראו את השינוי. דוגמה אחרת: אם אחד התהליכונים פותח קובץ עם הרשאות קריאה, שאר התהליכונים של התהליך המארח יכולים הם גם לקרוא מאותו הקובץ.
+                </div>
+            </details>
+        
+
+            <!-- Q6 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 6</span>
+                        <span class="text-sm">מודל התהליכונים הוא הרחבה של מודל התהליכים. מהם היתרונות שמספק המודל המורחב?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> אפשר לזהות כמה יתרונות: • יצירת תהליך חדש מצריכה משאבים רבים יחסית לדרישות של תהליכון. למשל, יצירה של תהליכון חדש נוסף איננה דורשת יצירה של מפת זיכרון. לכן זמן היצירה של תהליכונים קטן בהרבה מזמן יצירתם של תהליכים חדשים. • בשל אותם שיקולים, זמן ההשמדה של תהליכונים, בתנאי שאין מדובר בתהליכון האחרון בתהליך המארח, קטן בהרבה מזמן ההשמדה של תהליכים. • החלפת תהליכים ותהליכונים מצריכה שמירת תוכן לשם שחזור עתידי. ברור כי החלפת תהליכונים תהיה מהירה מהחלפת תהליכים. אגב, זאת הסיבה שתהליכונים מכונים לעתים lightweight processes . • תקשורת בין תהליכים דורשת מעורבות של גרעין מערכת ההפעלה. לעומת זאת, תקשורת בין תהליכונים בתוך תהליך מארח יכולה להתבצע ללא התערבותו של גרעין מערכת ההפעלה, מכיוון שתהליכונים אלה משתפים זיכרון, קבצים וכו'. מודל התהליכונים מאפשר לשנות את הגישה התכנותית שהייתה מוכרת לנו. בשלבי עיצוב התוכנה קיום התהליכונים מאפשר חלוקת תוכנית למודולים שונים, כאשר כל מודול כזה מבצע משימה ייחודית שלו במקביל למודולים אחרים. תקשורת בין המודולים השונים במודל תהליכונים, שהיא יעילה יותר מתקשורת בין תהליכים, הופכת את הגישה למושכת מאוד. למשל, תוכנת שרת קבצים יכולה ליצור תהליכון לכל בקשה שמגיעה אל השרת. שימוש בתהליכונים יכול לשפר את זמן התגובה של שרת הקבצים, מכיוון שכמות הבקשות שמגיעות לשרת הקבצים בדרך כלל גדולה מאוד, ולכן החיסכון בזמן של יצירת תהליכונים יכול להשפיע על טיב השירות. עקב השימוש בנתונים משותפים, רמת התיאום הנדרשת בין המודולים השונים של שרת קבצים יכולה להיות תובענית מאוד, ולפיכך שימוש בתהליכונים יכול לשפר את הביצועים הודות לתקשורת יעילה. בדוגמה של שרת הקבצים, השימוש בתהליכונים התאים לאופי של הבעיה. באופן כללי כדאי לשקול את השימוש בתהליכונים במקרה של אפליקציות שנותנות מענה למספר של רב אירועים לא סינכרוניים. לכל מאורע לא סינכרוני אפשר ליצור תהליכון שייתן מענה מתאים. באופן עוד יותר כללי, השימוש בתהליכונים יכול להתאים לתכנות אפליקציות שיכולות להיות או צריכות להיות ממומשות כאוסף של מודולים בעלי גישה לנתונים (משאבים) משותפים, כאשר כל אחד מהמודולים הללו נועד לבצע משימה מסוימת וקיים צורך בתיאום יעיל בין המודולים. מימוש של מודל התהליכונים מעלה שאלות רבות.
+                </div>
+            </details>
+        
+
+            <!-- Q7 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 7</span>
+                        <span class="text-sm">נתבונן בתהליך הכולל כמה תהליכונים. אחד התהליכונים קורא קריאת מערכת דמוית הפונקציה fork שלUNIX . ,כזכור הקריאה -לfork גורמת ליצירת תהליך חדש עם תכונות דומות לאלה של התהליך היוצר. נשאלת השאלה: האם מערכת ההפעלה צריכה ליצור תהליכונים בתוך התהליך החדש?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> אם המערכת יוצרת תהליכונים בתהליך החדש, האם הם צריכים להיות שכפול של התהליכונים שהיו האב?-בתהליך אם התהליכונים החדשים הם שכפול של התהליכונים של האב,-תהליך אם אזי אחד התהליכונים האב-בתהליך היה במצב חסום, האם גם התהליכון המשוכפל יהיה באותו מצב? במקרה כזה נשאלת השאלה: איזה מן התהליכונים החדשים מגיב על האירוע שלו המתין במצב חסום? (כי כעת יש שני תהליכונים המחכים כך!) Yair Kurtzman שאלות אלה מציגות קשיים במישור התכנוני של מערכות הפעלה. קשיים אחרים מתעוררים בשלב התכנות של אפליקציות שמשתמשות במודל תהליכונים. נניח שתהליך מסוים מכיל כמה תהליכונים המבצעים משימה משותפת שדורשת הקצאת זיכרון. מכיוון שלא ידוע מראש איזה מהתהליכונים יהיה מתוזמן, כל אחד מהם מבצע בדיקה יש אם מספיק זיכרון לביצוע המשימה. ייתכן שהתהליכון שביצע בדיקה יוחלף בדיוק לפני הקצאת הזיכרון וירוץ תהליכון אחר שיבצע גם את הוא הבדיקה. במקרה כזה יכול להיות ששני התהליכונים יגרמו להקצאת זיכרון, ואז הזיכרון יוקצה פעמיים. ברור שמקור הבעיה שתיארנו הוא חוסר תיאום בין התהליכונים. בהמשך הפרק נראה שהבעיה שתיארנו כרגע שייכת לקבוצה של בעיות מרוץ , ונקדיש לפתרון בעיות כאלה תשומת לב רבה. 2.2.3 תהליכוני POSIX סעיף זה כולל חומר רשות. 2.2.4 מימוש תהליכונים במרחב משתמש מודל התהליכונים יכול להיות ממומש ברמת המשתמש או בגרעין המערכת. לכל אחת מן האפשרויות הללו יש יתרונות וחסרונות. כמו תמיד, הרצון להשיג זמנית-בו את היתרונות של שתי השיטות ולמזער את חסרונותיהן הביא להתפתחות השיטות המעורבות (ראו סעיף 2.2.4 .)בספר בשיטה הראשונה, ניהול התהליכונים מתבצע במרחב של התהליך המארח, וגרעין המערכת כלל אינו מודע לקיום התהליכונים. מימוש אפשרי של השיטה הוא באמצעות ספריית פונקציות שמספקת ממשק ליצירה, להשמדה ולתזמון של תהליכונים, ומספקת מנגנוני תקשורת ביניהם. באחריותה של הספרייה לדאוג לניהולה של טבלת התהליכונים , המכילה מאפיינים כל של התהליכונים הנמצאים בתהליך המארח. תהליך יכול, בכל שלב של ריצתו, לקרוא לפונקציה של הספרייה שנועדה לייצור תהליכונים. בעקבות הקריאה לפונקציה זו תתבצע יצירת מבני הנתונים של התהליכון החדש ורישומו של התהליכון החדש בטבלת התהליכונים המנוהלת ידי על הספרייה. אם נוצרו כמה תהליכונים בתוך התהליך המארח, הספרייה תהיה אחראית לתזמונם. הספרייה תבצע שמירת תוכן של תהליכונים ממתינים ועדכון מבני נתונים מתאימים. צריך לזכור שכל הפעולות שמבצעת הספרייה מתבצעות במצב משתמש, וגרעין המערכת איננו מודע כלל וכלל לקיום התהליכונים. מכאן נובעים כמה יתרונות, אבל גם חסרונות המאפיינים את השיטה. נסכם את היתרונות של מימוש תהליכונים בספרייה ברמת המשתמש: • החלפת תהליכונים ברמת המשתמש איננה דורשת מעבר למצב ראשוני, כפי שנדרש בהחלפת תהליכים. להבדיל מהחלפת תהליכים שדורשת את הפעלת המתזמן של מערכת ההפעלה, החלפת תהליכונים מתבצעת ידי על המתזמן שנמצא במרחב הזיכרון של התהליך המארח. • שימוש תהליכונים בספרייה ברמת המשתמש מאפשר את התאמת אלגוריתם התזמון של ספריית התהליכונים לצרכים כל של יישום בנפרד. ספריית תהליכונים ברמת המשתמש יכולה אף לספק אפשרות לשנות לגמרי את אלגוריתם תזמון התהליכונים. • חבילת תוכנה שמממשת תהליכונים ברמת המשתמש יכולה לרוץ ללא שום תמיכה מצד גרעין המערכת, ולכן הדבר נותן אפשרות לממש אפליקציות שיש בהן מספר גדול של תהליכונים גם במערכות הפעלה שאינן תומכות בתהליכונים. נסכם את החסרונות של מימוש תהליכונים בספרייה ברמת המשתמש: • קריאות מערכת רבות במערכת ההפעלה יכולות לגרום לכך שהתהליך שביצע קריאה עובר למצב חסום. אם אחד התהליכונים בתהליך המארח מבצע קריאה שגורמת לחסימת התהליך, אזי בשיטה שמממשת תהליכונים ברמת המשתמש, מערכת ההפעלה תשהה את התהליך ואיתו יושהו כל גם התהליכונים שלו. זאת אף שייתכן שבתהליך המארח היו תהליכונים שהיו מוכנים לריצה. מכאן שכאשר מימוש התהליכונים נעשה ברמת המשתמש, אפליקציות מרובות תהליכונים לא יוכלו לנצל את היתרונות שנותן ריבוי התהליכים, ובפרט ריבוי של מעבדים. גרעין המערכת יכול להקצות מעבד לתהליך המארח, אך אינו מסוגל להקצות מעבדים לתהליכונים נפרדים מכיוון שהגרעין כלל אינו מודע לקיומם. יתרה מזו, הניסיון להריץ אפליקציות מרובות תהליכונים שממומשים ברמת המשתמש במערכת הפעלה שאיננה תומכת בתהליכונים יכול להביא לתוצאות חמורות יותר מירידה ברמת המקביליות. • חיסרון נוסף של יישום תהליכונים ברמת המשתמש הוא שבדרך כלל הספריות המממשות את התהליכונים ברמת המשתמש משאירות את האופציה להפקיע מעבד מתהליכון אחד בידי התהליכונים עצמם. הדבר, כמובן, פוגע ברמה התכנונית של השימוש בתהליכונים כחוטים נפרדים של ביצוע. ,לסיכום מימוש תהליכונים ברמת המשתמש מעורר בעיות רבות. המטרידות שביניהן קשורות לקריאות של פונקציות המערכת שגורמות למעבר של התהליך המארח למצב חסום, בעוד שקיימים בתוכו תהליכונים שמוכנים לריצה. ספר הלימוד מציע דרכים אחדות להתגבר על חלק מהבעיות במימוש התהליכונים ברמת המשתמש. 2.2.5 מימוש תהליכונים בגרעין המערכת כאשר נוקטים גישה זו בצורתה הטהורה, כל מלאכת ניהול התהליכונים מתבצעת על ידי גרעין המערכת. ברמת האפליקציה ולו אין פיסת קוד אחת המיועדת לניהול התהליכונים. האפליקציה משתמשת רק בקריאות מערכת המפעילות את מנגנון ניהול התהליכים, וזה מתבצע בתוך גרעין המערכת. Yair Kurtzman אפליקציות יכולות להיות מתוכנתות באמצעות תהליכונים כאשר כל התהליכונים מאוגדים תחת תהליך אחד. גרעין המערכת אחראי לתחזק את תוכן תהליכי המערכת ואת תוכן התהליכונים אשר רצים תחת התהליכים הללו. גרעין המערכת גם מבצע את התזמון הנדרש. כפי שניתן לראות, גישה זו מתגברת בקלות על הבעיות העיקריות של הגישה הקודמת: הגרעין יכול לתזמן את התהליכונים השייכים לאותו התהליך על מעבדים שונים, וגם אם אחד מהם עובר למצב חסום, אין מניעה לתזמן תהליכון אחר השייך לתהליך המארח. יתרון נוסף של הגישה הזאת הוא שפרוצדורות של גרעין המערכת עצמו יכולות להיות ממומשות בעזרת תהליכונים! ,כמובן החיסרון המשמעותי של מימוש התהליכונים בגרעין המערכת הוא בזבוז הזמן הכרוך במעבר ממצב משתמש למצב ראשוני. אם נשווה בין זמן יצירת תהליכון ברמת המשתמש לבין זמן יצירת תהליכון ברמת גרעין המערכת, נוכל לראות במקרה השני תוספת של סדר גודל בזמן הדרוש.
+                </div>
+            </details>
+        
+
+            <!-- Q8 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 8</span>
+                        <span class="text-sm">.א אחת האפשרויות להקטנת הבזבוז הזה ידי על היא ביצוע החלפת תהליכים באופן פחות תדיר. האם גישה זו פותרת את הבעיה?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> .ב מנו חסרונות נוספים של מימוש התהליכונים בגרעין המערכת. גישות מעורבות אומצו כדי לנצל יתרונות של הגישות שראינו בסעיפים הקודמים ולמזער את השפעת החסרונות. קיימים מימושים רבים של הגישות המעורבות, אך לכולן מכנה משותף אחד: גרעין מערכת ההפעלה מספק תהליכונים ברמת הגרעין, כאשר תהליכונים ברמת המשתמש שמסופקים על ידי ספריית תהליכונים כלשהי רצים בלא שהגרעין מודע לקיומם. 2.2.6 הפעלת מתזמן אפשר לסווג את הגישות השונות למימוש תהליכונים בהתאם ליחס תהליכון/תהליך. כך בגישה הישנה שבה לכל תהליך יש חוט ביצוע אחד בלבד, היחס הוא1:1 . היחס 1 : M מאפיין את הגישה שראינו בסעיף 2.2.5 , כאשר התהליכונים ממומשים בגרעין של מערכת ההפעלה. מקרה מעניין של היחס 1: M מתאפיין באפשרות של נדידת תהליכונים מתהליך מארח אחד לתהליך אחר. נדידת תהליכונים יכולה להיות שימושית במערכות מבוזרות או במערכות מרובות מעבדים לאיזון עומסים. האפשרות של נדידת תהליכונים בשילוב עם אפשרות קיומם של כמה תהליכונים בתוך תהליך מארח מבוטאת על ידי היחס M:N . דוגמה למימוש היחס M:N היא מערכת ההפעלה NetBSD . הרעיון שעומד מאחורי במאמר בשם) Anderson et al. המימוש מכונה שיטת הפעלת מתזמן והוא הוצע ידי על Scheduler Activations: Effective Kernel Support for User Level Management of " .("Parallelism בשיטה זו, גרעין המערכת יכול להקצות לכל תהליך כמה מעבדים מדומים. מספר המעבדים יכול להשתנות בהתאם לבקשת תהליך או לפי שיקולה של מערכת ההפעלה, שיכולה להחליט על הקצאת מספר גדול יותר (או קטן יותר) של מעבדים מדומים, לפי עדיפותו של התהליך. גרעין של מערכת ההפעלה מספק מנגנון הקרוי upcall , אשר דרכו גרעין מערכת ההפעלה יכול להודיע לתהליך על שינוי במצבם של המעבדים המדומים שלו. בהינתן המעבדים המדומים ומנגנון -הupcall , אפשר להשתמש בספרייה שמספקת תהליכונים ברמת המשתמש בצורה זו: • התהליך יכול להקצות לתהליכונים הנמצאים במצב מוכן לריצה מעבדים מדומים. • אם אחד התהליכונים, תוך כדי ריצתו במעבד המדומה שהוקצה לו, מבצע קריאת מערכת שדורשת המתנה (למשל פסיקת I/O ,) אזי גרעין המערכת יפעיל את מנגנון -הupcall ויעביר לתהליך המארח מידע על כך. התהליך המארח יוכל להשתמש בשירותי ספריית התהליכונים כדי להעביר את התהליכון שלא יכול להמשיך לרוץ למצב מושהה, ולהקצות את המעבד המדומה לתהליכון אחר שיימצא מוכן לריצה. כאשר יקרה האירוע שלו ממתין התהליכון המושהה, גרעין המערכת יודיע לתהליך המארח דרך אותו המנגנון של upcall על קרות האירוע. התהליך המארח יוכל אז לקבל החלטת תזמון, לשחזר את תוכן התהליך המושהה ולהקצות לו מעבד מדומה, או לעשות זאת מאוחר יותר. בצורה כזאת גרעין מערכת ההפעלה כביכול אינו מודע לקיום תהליכונים ברמת המשתמש, ואינו מתערב בהחלטות התזמון שלהם עוד כל הריצה של תהליכונים איננה קשורה למשאבים של מערכת ההפעלה. למשל, אם תהליכון צריך להמתין לתהליכון אחר בתוך התהליך המארח, הדבר לא יגרום למעבר לגרעין מערכת ההפעלה. 2.2.7 :אלתורים ריבוי חוטי ביצוע מקוד שנועד לחוט ביצוע אחד החומר בסעיף זה טכני לחלוטין ואינו דורש הסברים נוספים. אתם מוזמנים לעיין בספר הלימוד. 2.4 תקשורת בין תהליכים 2.4.1 מרוץ קריטי (critical sections) 2.4.2 קטעים קריטיים 2.4.3 מניעה הדדית הכוללת המתנה פעילה 2.4.4 הרדמה והערה 2.4.5 סמפורים 2.4.6 מנעולים 2.4.7 מבני פיקוח (monitors ) (message passing) 2.4.8 העברת הודעות (barriers) 2.4.9 מחסומים Yair Kurtzman
+                </div>
+            </details>
+        
+        </div>
+        <div id="questions-ipc">
+            
+            <!-- Q9 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 9</span>
+                        <span class="text-sm">ListHeadPtr=ListHeadPtr->next; ל deleteFirst האם שינוי השורה השנייה של היה פותר את בעיית המרוץ המתוארת לעיל?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> (critical sections) 2.4.2 קטעים קריטיים בסעיף הקודם אמרנו שלולא ההחלפה התדירה של תהליכונים, היה אפשר למנוע את היווצרות הבעיה. הבעיה הייתה נמנעת אילו שני התהליכונים לא היו ניגשים לעדכון הרשימה המשורשרת זמנית.-בו למעשה, קטע הקוד שבו התבצע עדכון של הרשימה המשורשרת הפך להיות, הוא עצמו, מושא למרוץ בין התהליכונים. דבר לא זה היה קורה לו התהליכונים היו משתפים פעולה. של סוג שיתוף פעולה הקרוי מניעה הדדית , ואשר מסוגל למנוע מתהליכון לבצע עדכון של הרשימה המשורשרת עוד כל התהליכון השני לא סיים לעדכנה, היה פותר את בעיית המרוץ. כל קטע עם קוד משאב משותף לשני תהליכים או יותר ואשר מתבצע בו עדכון יכול להביא למצב מרוץ. קטעי קוד כאלה מכונים "קטעים קריטיים". כדי להבטיח פעולה תקינה של תוכנית הכוללת קטע קריטי, שיתוף פעולה מסוג המניעה ההדדית אינו מספיק, כי אם הוא תנאי הכרחי לפתרון סביר של בעיית מרוץ. ארבעה תנאים דרושים להשגת פתרון סביר: • שני תהליכים לא ישהו זמנית-בו בתוך קטע קריטי. • הפתרון לא יסתמך על השערות הקשורות למהירות או למספר המעבדים. • תהליך מחוץ לקטע קריטי לא ימנע מתהליך אחר להיכנס לקטע קריטי. • תהליך לא ימתין לנצח כדי להיכנס לקטע קריטי. התנאים הללו כמובן נכונים גם לגבי תהליכונים. הערה חשובה נוספת היא שזמן השהייה בקטע קריטי הוא סופי.6 --- PDF PAGE 51 (Printed Page 49) --- מדריך למידה • 49 2.4.3 מניעה הדדית הכוללת המתנה פעילה בסעיף זה נבחן פתרונות שונים להשגת מניעה הדדית. מניעת הפסיקות מניעת הפסיקות לפני כניסת תהליך לקטע קריטי היא הדרך הפשוטה ביותר להשיג מניעה הדדית. הפסיקות מופעלות רק שוב לאחר היציאה מהקטע הקריטי. מניעת פסיקות גורמת לכך שהמעבד אינו עובר מתהליך לתהליך, ולכן אין חשש שתהליך אחר יימצא בקטע קריטי. לשיטה יש שלושה חסרונות מהותיים: • לא סביר לתת לתהליך משתמש אפשרות למנוע פסיקות. תהליכי משתמש יכולים למנוע תהליכים אחרים מלקבל זמן מעבד עקב שגיאות תכנות – למשל כאשר מתכנת שוכח לאפשר פסיקות מחדש. קוד זדוני של תהליך יכול לגרום לכך בכוונה, ולכן מתן אפשרות כזאת לתהליך משתמש היא פרצת בטיחות. • חסימת הפסיקות לפרק זמן ארוך יכולה להביא לתופעות לא נעימות. ירידה ברמת המקביליות של מערכת ההפעלה יכולה לגרום למשל הצפה של שידור בכרטיס תקשורת או תגובה איטית של מקלדת עכבר. • חסימה של פסיקות תקפה לגבי מעבד אחד בלבד. פתרון בסביבה שבה כמה מעבדים נידון בפרק 8. לעומת זאת, בגרעין המערכת חייבים לעתים למנוע פסיקות למשך הביצוע של כמה הוראות ובהמשך נראה דוגמה לכך. ,לסיכום מניעת פסיקות היא שיטה שימושית בגרעין המערכת, אולם לא סביר להשתמש בה בעבור תהליכי משתמש. (lock variables) משתני נעילה כניסיון שני, נתבונן בפתרון תכנותי. נניח לנו שיש משתנה משותף lock מאותחל 0. הפתרון המוצע בעבור שני תהליכים הוא: תהליך 2תהליך 1 While(true){ … // non critical section while (lock == 1) ; // loop lock = 1; CriticalSection(); lock = 0; …// non critical section } While(true){ … // non critical section while (lock == 1) ; // loop lock = 1; CriticalSection(); lock = 0; …// non critical section } Yair Kurtzman כאשר תהליך רוצה להיכנס לקטע קריטי, הוא בודק תחילה את משתנה המנעול. אם המנעול הוא 0, התהליך משנה אותו -ל1 ונכנס לקטע הקריטי. אם ערך המנעול הוא1, התהליך ימתין עד אשר ערך המנעול ישתנה -ל0. פתרון זה מכיל בכל זאת גורם לבעיית מרוץ. נניח שתהליך 1 קורא את ערך המנעול ורואה שערכו הוא 0. בטרם ינעל את המנעול, מתבצעת החלפת תהליכים. תהליך 2 רואה שערך המנעול הוא 0 ונכנס לקטע הקריטי. כעת אם שוב תתבצע החלפת תהליכים, גם תהליך 1 וגם תהליך 2 יהיו במרוץ.
+                </div>
+            </details>
+        
+
+            <!-- Q10 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 10</span>
+                        <span class="text-sm">הפתרון שהצגנו לעיל אינו פתרון סביר מכיוון שלא מתקיים התנאי של מניעה הדדית. האם קיימים תרחישים שבהם פתרון זה מפר תנאים נוספים שדרשנו מפתרון סביר?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> פתרון התור הבעיה עם השיטה הקודמת הייתה שהבדיקה והעדכון של משתנה הנעילה הופכים לקטע קריטי בפני עצמו, שנוצר בו מרוץ בין שני התהליכים. לכן הפתרון שלהלן אינו מבצע שינוי בערך של משתנה משותף: תהליך 1תהליך 0 While(true){ While(true){ … // non critical section … // non critical section while (turn != 1) while (turn != 0) ; // loop ; // loop CriticalSection_1(); CriticalSection_0(); turn = 0; turn = 1; …// non critical section …// non critical section } } זוהי דוגמה מצוינת לפתרון שמקיים תנאי של מניעה הדדית: שני תהליכים לעולם לא יהיו ביחד בקטע הקריטי. אך פתרון זה איננו פתרון סביר מכיוון שהוא מפר את אחד מארבעת התנאים לקיומו של פתרון סביר.
+                </div>
+            </details>
+        
+
+            <!-- Q11 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 11</span>
+                        <span class="text-sm">איזה תנאי מופר על ידי פתרון התור?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> המשתנה המשותף turn מאותחל -ל0 בהתחלה וערכו משקף את מספר התהליך שתורו להיכנס לקטע קריטי. בתחילה תהליך 0 בודק את turn ונכנס לקטע קריטי. תהליך 1 שבודק את ערך -הturn ומקבל שהוא 0, נכנס ללולאה שדוגמת ללא הפסק אם ערך -ה turn השתנה -ל1. תהליך 1 שדוגם את המשתנה turn נמצא במצב המכונה המתנה פעילה (busy waiting .) המתנה פעילה היא מצב שבו תהליך מקבל את המעבד ומנצל את מלוא הזמן המוקצב , אך לו איננו מתקדם כלל. ברוב המקרים, המתנה זו נעשית ביוזמת התהליך, כדי לחכות לאירוע מסוים. אלא שבמקרה שאירוע זה איננו מתרחש, המתנה זו עלולה להימשך זמן רב (ואז נוצרת תופעת ההרעבה – starvation .) לכן שימוש בהמתנה פעילה אינו רצוי במקרים שבהם לא ניתן לחזות מראש את משך הזמן שבו התהליך צפוי להימצא בהמתנה פעילה. נחזור לבדוק מה קורה כאשר תהליך 0 עוזב את הקטע הקריטי. הוא משנה את turn -ל1 כדי לאפשר לתהליך 1 להיכנס לקטע הקריטי. נשים לב, שתהליך 0 אינו יכול להיכנס לקטע הקריטי עוד כל שלו תהליך 1 ֵשר ִאפ לא זאת ידי על שינוי ערכו של המשתנה turn . פירוש הדבר הוא שאם קיים הבדל בזמן הביצוע של הקטעים הלא הקריטיים של התהליכים, תיתכן הפרה של תנאי 3 של הפתרון הסביר לעיל, כי התהליך שנמצא מחוץ לקטע קריטי יכול למנוע מתהליך אחר להיכנס לקטע הקריטי שלו. הפתרונות של דקר ושל פטרסון -ב1965 הציע מתמטיקאי דני בשם Dekker פתרון סביר לבעיית המרוץ הקריטי. הפתרון שילב במובן מסוים את פתרון התור ופתרון באמצעות משתנה נעילה. הפתרון דורש שני משתני נעילה ומשתנה אחד של התור. משתנים אלו משותפים לשני תהליכים: boolean lock[2]; int turn; lock[0] = lock[1] = FALSE: turn = 1; תהליך 1תהליך 0 while (TRUE){ …// non critical section lock[1] = TRUE; while(lock[0]) == TRUE){ if (turn == 0){ lock[1] = FALSE; while(turn == 0) ; // loop lock[1] = TRUE; } } CriticalSection_1(); turn = 0; lock[1] = FALSE; …// non critical section } while (TRUE){ …// non critical section lock[0] = TRUE; while(lock[1]) == TRUE){ if (turn == 1){ lock[0] = FALSE; while(turn == 1) ; // loop lock[0] = TRUE; } } CriticalSection_0(); turn = 1; lock[0] = FALSE; …// non critical section } Yair Kurtzman -ב1981 הציע Peterson פתרון אלגנטי ופשוט יותר. הפתרון דורש שלושה משתנים משותפים כמו הפתרון של Dekker , אך הוא פשוט יותר להבנה. כדי להיות עקביים לגבי הדרך שבה הצגנו פתרונות קודמים, נציג את פתרון פטרסון בצורה שונה במקצת מזו שמוצגת בספר: boolean interested[2]; int turn; interested [0] = interested [1] = FALSE: turn = 1; תהליך 1תהליך 0 while (TRUE){ …// non critical section interested [1] = TRUE; turn = 1; while(interested [0] == TRUE && turn == 1){ ; // loop } CriticalSection_1(); interested [1] = FALSE; …// non critical section } while (TRUE){ …// non critical section interested [0] = TRUE; turn = 0; while(interested [1] == TRUE && turn == 0){ ; // loop } CriticalSection_0(); interested [0] = FALSE; …// non critical section } תהליכים מצהירים על רצונם להיכנס לקטע קריטי על ידי שינוי תא במערך interested . לכן ברור שאם רק אחד משני תהליכים רוצה להיכנס לקטע קריטי, התהליך נכנס אליו כי התא של מערך interested המתאים לתהליך השני כבוי. כך שתנאי 3 לפתרון סביר מתקיים. נבדוק עתה אם מתקיים התנאי הראשון של המניעה ההדדית. נניח ששני תהליכים עדכנו את תאיהם במערך interested . לאחר ששני התהליכים "הצהירו על רצונם" להיכנס לקטע קריטי, פתרון פטרסון מבטיח שהראשון שייכנס לקטע קריטי יהיה התהליך שיעדכן ראשון את המשתנה turn . כך פתרון פטרסון מקיים תנאי 1. תהליך שמעוניין להיכנס לקטע קריטי נכנס אליו, אלא כן אם כבר יש תהליך אחר שנמצא בקטע קריטי ולכן גם תנאי 4 של הפתרון הסביר מתקיים. ברור שתנאי 2 גם הוא מתקיים. לכן פתרון פטרסון מהווה פתרון סביר לבעיות מרוץ.
+                </div>
+            </details>
+        
+
+            <!-- Q12 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 12</span>
+                        <span class="text-sm">פתרון פטרסון בעבור שני תהליכים מבטיח הגינות בכניסה של תהליכים לקטע קריטי. הביטוי לכך הוא שלאחר עדכון של מערך interested ידי על שני תהליכים, הפתרון מבטיח שהתהליך הראשון שייכנס לקטע קריטי יהיה התהליך שיעדכן ראשון את המשתנה turn . מדוע הטענה נכונה?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> הבהירו זאת לעצמכם ידי על התבוננות בכל התרחישים האפשריים. האם אפשר לטעון להגינות של הפתרון של דקר? TSL ניזכר בכך שאחת הבעיות של השימוש בביטול פסיקות לפתרון של בעיות מרוץ הייתה שביטול פסיקות היה תקף רק לגבי מעבד אחד. כעת נראה מה ניתן לעשות כאשר יש כמה מעבדים. במחשבים בעלי כמה מעבדים, המעבד חייב להציע כמה הוראות שחייבות להיות אטומיות . פירוש הביטוי הוראה אטומית הוא שההוראות מתבצעות כצעד אחד שלא ניתן להפרידו לשלבים. בדרך כלל הוראות כאלה מבוצעות במחזור פקודה ( instruction cycle ) .אחד דוגמה להוראה כזאת היא ההוראה TSL) Test and Set Lock .) ספר הלימוד מדגים את ההוראה בשפת סף מדומה. למען העקביות, אנחנו נציג את הוראת TSL כשגרה אטומית של פסידוקוד. int TSL(int lock){ if (lock == 0){ lock = 1; return 0; } return lock; } lock היא מילה בזיכרון הראשי שמשמשת לנעילה. הוראת TSL בוחנת את תוכנה של lock . אם התוכן הוא 0, ההוראה משנה את תוכן המילה בזיכרון -ל1 ומחזירה ערך ישן, כלומר 0. אם תוכן מילת הנעילה שונה -מ0, TSL מחזירה את ערכה. בארכיטקטורה שיש בה כמה מעבדים שמשתפים גישה לזיכרון ראשי, ביצוע של הוראת TSL נועל את ערוץ הזיכרון ( memory bus ) למשך זמן הביצוע של ההוראה, וזה מאפשר קיום של פתרון לבעיות מרוץ במחשבים כאלה. הפתרון באמצעות הוראת TSL משתמש במילת הזיכרון המשותפת lock ונראה כך: תהליך 2תהליך 1 while(TRUE){ while(TRUE){ … // non critical section … // non critical section while(TSL(lock) != 0) while(TSL(lock) != 0) ; // loop ; // loop CriticalSection_2(); CriticalSection_1(); lock = 0; lock = 0; … // non critical section … // non critical section } } Yair Kurtzman רק אם תהליך אחד רוצה להיכנס לקטע קריטי, ההוראה הראשונה בודקת את ערך מילת הזיכרון lock ומעדכנת אותו בצורה אטומית. אם שני תהליכים מעוניינים להיכנס לקטע קריטי, אז הראשון שייכנס יהיה זה שקרא ראשון -לTSL . לאחר סיום של קטע קריטי תהליך פשוט מציב -בlock ערך 0 ובכך "משחרר" את המנעול. ברור שמתקיימים ארבעת התנאים של פתרון סביר כאשר מדובר על שני תהליכים. אבל הפתרון יכול לגרום להרעבה במקרה של כמה תהליכים. פתרון TSL אינו מסדיר את אופן הכניסה של התהליכים שרצו להיכנס לקטע קריטי ולא יכלו לעשות זאת, מכיוון שהקטע היה תפוס. התהליכים הללו מטופלים על ידי המתזמן כתהליכים מן השורה והמתזמן אינו יודע על "רצונם" להיכנס לקטע קריטי. לכן בהחלט יכול לקרות מצב שבו תהליך ימצא את עצמו מורעב – כלומר לא יצליח להיכנס לקטע קריטי במשך פרק זמן ארוך. לכן הדבר הופך את פתרון -הTSL לפתרון בלתי סביר במקרה של כמה תהליכים. 2.4.4 הרדמה והערה החיסרון המובהק של הפתרונות שראינו בסעיף הקודם הוא בזבוז של זמן עיבוד. זו לא בלבד שההמתנה הפעילה מבזבזת זמן מעבד, אלא שיכולה להיות לה תוצאה בלתי צפויה, כמתואר בדוגמה שלהלן. נניח שקיים במחשב תהליך בעדיפות נמוכה L שנכנס לקטע קריטי. בהיותו בקטע קריטי, נוצר במערכת תהליך בעל עדיפות גבוהה H . מתזמן של מערכת ההפעלה אינו מאפשר לתהליך בעל עדיפות נמוכה לרוץ על CPU עוד כל קיים תהליך בעל עדיפות גבוהה יותר. H מתחיל לרוץ ומנסה גם הוא להיכנס לקטע קריטי, אך אינו מצליח מכיוון שתהליך L נועל אותו. אבל L לעולם לא יצא מהקטע הקריטי מכיוון שמתזמן מערכת ההפעלה לא ייתן לו לרוץ על CPU . במצב זה היפוך עדיפויות לתקופה קצרה היה עוזר לצאת ממצב שנראה מצב קיפאון – כאשר שני תהליכים ממתינים זה לזה בגלל אילוצים כלשהם. בעיית זיהוי מצבים שמצריכים היפוך עדיפויות ידועה גם בשם priority inversion problem . ראינו גם שהפתרון שלמדנו, 7, TSL אינו סביר במקרה של כמה תהליכים. לכן נרצה לקבל פתרון העונה על התנאים האלה: 7 בסוף הפרק הבאנו הרחבה של פתרון פטרסון לכמה תהליכים שאינו סובל מבעיית הרעבה במקרה של כמה תהליכים, כי אם הוא מתאפיין בהמתנה פעילה ואינו יכול להימנע ממצבי קיפאון. • הוא מקיים את ארבעת התנאים של הפתרון הסביר לכמה תהליכים • הוא אינו גורם להמתנה פעילה • הוא מסדיר את אופן הטיפול בתהליכים שרצו להיכנס לקטע קריטי ולא יכלו לעשות זאת מכיוון שהקטע הקריטי היה תפוס • הוא אינו מצריך זיהוי מצבים הדורשים היפוך עדיפויות לשם כך ישמשו אותנו שני פרימיטיבים (primitives ,) קריאות מערכת בשם SLEEP -ו WAKEUP . בכל הפתרונות המוצעים בהמשך, אנו מניחים כי תהליך יכול להשהות את עצמו על ידי קריאת המערכת SLEEP ולהתעורר כאשר תהליך אחר מבצע קריאת מערכת WAKEUP . כדי לדעת איזה תהליך להעיר, קריאת מערכת WAKEUP מקבלת כפרמטר את המזהה של התהליך שאותו צריך להעיר. תהליכים שמבצעים קריאת מערכת SLEEP עוברים למצב חסום. כך אנו מקבלים המתנה רדומה שאיננה מעסיקה את המעבד. מערכת ההפעלה יכולה לנהל של תור תהליכים רדומים וכך להסדיר את אופן כניסתם של תהליכים שרוצים להיכנס לקטע קריטי, להבדיל מפתרון TSL .למשל בעיית צרכן-היצרן עתה נראה כיצד ניתן להתמודד עם מצבי מרוץ בעבור שני תהליכים המשתמשים במאגר עם קיבולת מוגבלת באמצעות הפרימיטיבים SLEEP -וWAKEUP . נתבונן בדוגמה שלהלן. נתונים שני תהליכים. אחד התהליכים קרוי יצרן והוא מכניס פריטים למאגר. התהליך השני קרוי צרכן, והוא מוציא את הפריטים מן המאגר. מכיוון שגודל המאגר מוגבל, הבעיה מתעוררת כאשר היצרן רוצה להכניס פריט למאגר מלא. הפתרון בעבור היצרן הוא להרדים את עצמו, ולהתעורר רק כאשר הצרכן הוציא לפחות פריט אחד. מה קורה כאשר המאגר ריק? אם הצרכן רוצה להוציא פריט אולם מוצא כי המאגר ריק, הוא מרדים את עצמו עד אשר היצרן יכניס פריט לחוצץ ויעירו. כדי לעקוב אחר מספר הפריטים שבמאגר, נזדקק למונה count . נניח כי החוצץ יכול להכיל N .פריטים היצרן בודק אם המונה שווה -לN . זה אם אכן המצב, הוא הולך לישון, ואם – לא הוא מאחסן פריט ומגדיל את המונה בהתאם. היצרן גם דואג לקרוא -ל WAKEUP כדי להעיר את הצרכן כאשר הוא מאחסן את הפריט הראשון, כי במקרה שהמאגר ריק היה והיצרן אחסן פריט חדש, הוא צריך לגרום לצרכן להתעורר כדי לאפשר מחדש עבודה במקביל. הצרכן מצידו הולך לישון כאשר הוא מגלה שהמונה הוא 0. אחרת הוא מפנה פריטים ודואג להעיר את היצרן אם נוצר מקום פנוי במאגר. עיינו בקוד לשני התהליכים באיור 2-27 בספר הלימוד. אנחנו רואים שהפרימיטיבים SLEEP -וWAKEUP שמשמשים לסנכרון בין התהליכים של יצרן וצרכן אכן מונעים את בעיית ההמתנה הפעילה. אך מתברר כי הפתרון של בעיית צרכן-יצרן באיור 2-27 עדיין סובל בכל זאת מבעיית מרוץ. מצב מרוץ יכול לקרות מכיוון שהגישה למשתנה של המונה אינה מבוקרת ולכן עקב המרוץ שנוצר על המשתנה, ייתכן שאחת מקריאות -הWAKEUP .תאבד קראו כיצד זה קורה בספר הלימוד. הדוגמה מלמדת כי גם אנו זקוקים לפעולה פרימיטיבית המסוגלת רק לא להורות לתהליך אחר להתעורר אלא גם לברר אם הדבר אכן קרה. Yair Kurtzman 2.4.5 סמפורים כאן אנו מגיעים לפתרון כללי ואלגנטי מאוד לבעיית הקטע הקריטי. בשנת 1965 הציע Dijkstra להשתמש במשתנה מיוחד, s, שישמש כמונה של מספר קריאות -לWAKEUP שעתידות להתבצע וגם יבדוק אם תהליך אחד התעורר. Dijkstra הציע שתי פעולות, up -וdown , המהוות הכללה של SLEEP -וWAKEUP במובן שתיארנו בפסקה הקודמת. הפעולות up -וdown פועלות על המשתנה המיוחד שמסוגל למנות את מספר -הWAKEUPS :כדלקמן down(s){ if (s==0) place the process on the semaphore queue and move it to the block state; if (s > 0) s--; } up(s){ if (there is at least one process sleeping in the semaphore queue){ wake him up; return; } s++; } המשתנה המיוחד s מכונה "סמפור" (semaphore .) ,למעשה סמפור איננו משתנה רגיל, אלא מנגנון מיוחד המסופק ידי על מערכת הפעלה או שפת תכנות. המנגנון משתמש בתור המנהל את התהליכים הממתינים על הסמפור במצב רדום. כך ניתן לדעת אם תהליך שהיה אמור להתעורר אכן עשה זאת. שימו אם לב: מאתחלים את הסמפור לערך חיובי, הסמפור לא יקבל לעולם ערך שלילי. ערך אתחול הסמפור משמש לקביעת מספר התהליכים שיכולים להיות ערים במקביל באותו הסמפור. הפעולות up -וdown חייבות להיות אטומיות, שאם כן לא עלולים להיווצר מצבי מרוץ בעת עדכון התור של תהליכים הממתינים על הסמפור. פתרון של בעיית צרכן-היצרן באמצעות סמפורים נתבונן תחילה בשימוש הפשוט ביותר בסמפור, ונראה כיצד הוא פותר את בעיית המניעה ההדדית. נאתחל סמפור S בעל ערך 1. הפרוטוקול8 לפתרון הבעיה יהיה: 8 פרוטוקול מגדיר כללי התנהגות של תהליכים, והוא משול לכללי משחק או לכללי טקס שכל המשתתפים במשחק או בטקס חייבים להישמע להם כדי שהמשחק או הטקס יתנהלו כהלכה. תהליך 1תהליך 0 while (TRUE){ while (TRUE){ …// non critical section; …// non critical section; down(S); down(S); critical_section_1(); critical_section_0(); up(S); up(S); …// non critical section; …// non critical section; } } ודאו שהפרוטוקול דלעיל אכן מקיים את ארבעת התנאים של הפתרון הסביר. הפרוטוקול הזה מדגים כיצד, בעזרת תמיכה של מערכת ההפעלה (או שפת תכנות), מקבלים פתרון טוב שאיננו סובל מהמתנה פעילה.
+                </div>
+            </details>
+        
+
+            <!-- Q13 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 13</span>
+                        <span class="text-sm">האם הפתרון דלעיל מתאים למצב של כמה תהליכים?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> סמפורים שהערך שלהם יכול להיות רק 0 או1 נקראים סמפורים בינאריים , והם מספקים מניעה הדדית למספר שרירותי של תהליכים. סמפורים שהערך שלהם יכול להיות גדול -מ1 מכונים לעתים סמפורים כלליים . כאן ראוי לציין שהמימוש של סמפורים אינו מתאים תמיד להגדרה שראינו לעיל. אפשר גם לממש סמפור שיקבל ערכים שליליים או יבצע תוספת לערכו ברווחים שונים -מ1. נאמר כמה מילים על מימוש של סמפורים. סמפורים יכולים להיות מסופקים כקריאות מערכת של מערכת ההפעלה. לחלופין, במערכת הפעלה שאינה תומכת בסמפורים, שפת תכנות יכולה להציע אותם בתנאי שמערכת ההפעלה מציעה שירותים לתקשורת בין תהליכים שהם שווי עוצמה לסמפורים. אם מערכת ההפעלה מספקת את השירותים up -וdown , אזי האטומיות שלהם מובטחת על ידי גרעין מערכת ההפעלה שיכול להשתמש בשיטת מניעת פסיקות או TSL כדי לעדכן את הסמפור. שימו לב שמניעה הדדית לעדכון של סמפור באמצעות מניעת פסיקות או TSL שונה בתכלית ממניעה הדדית לשימוש בפתרונות לבעיות מרוץ כלליות. זאת מכיוון שהעדכון של סמפור דורש הוראות מעטות בלבד ומתבצע במהירות. נראה עתה פתרון לבעיית צרכן-היצרן באמצעות שלושה סמפורים. שניים מהם משמשים לסנכרון, והשלישי משמש להגנה על קטע קריטי. סמפור בשם full מונה את מספר המקומות במאגר שכבר תפוסים על ידי הפריטים. סמפור empty מונה את מספר המקומות הפנויים במאגר. סמפור בינארי mutex משמש למניעה הדדית כדי שהיצרן והצרכן לא ייכנסו למרוץ בעת העדכון של המאגר ושאר הנתונים המשותפים. סמפור full מאותחל -ל0 וסמפור empty מאותחל -לN שהוא מספר המקומות הפנויים במאגר. הסמפור הבינארי שמגן על הקטע הקריטי של שינוי מספר הפריטים מאותחל כמובן -ל1. Yair Kurtzman עיינו בפתרון של בעיית צרכן-יצרן באמצעות סמפורים באיור 2-28 בספר הלימוד. נסכם את יתרונות השימוש בסמפור: • הוא מונע המתנה פעילה. • אין הגבלה (עקרונית) על מספר התהליכים שהוא יכול לשרת. • זהו שירות הניתן ידי על מערכת ההפעלה או שפת תכנות, ויישומו אינו מוטל על המשתמש. • הסמפור מאפשר לפתור בעיות הקשורות לקטע הקריטי ולסנכרון. 2.4.6 מנעולים מנעול (mutex ) הוא משתנה במרחב זיכרון משותף המשמש לניהול הגישה לקטע קריטי, למשל בעבור תהליכונים או בעבור תהליכים שמשתפים אזור בזיכרון.9 בדומה לסמפור בינארי, יש למנעול שני מצבים: "נעול" ו"לא נעול". בניגוד לסמפור בינארי, השימוש במנעולים יעיל יותר כאשר הוא אפשרי, מכיוון שלא נדרש בעבורו מעבר בין רמת המשתמש לרמת הגרעין. 9 מערכות הפעלה מספקות אפשרות לשתף אזורי זיכרון בין תהליכים. נראה בהמשך כיצד הדבר אפשרי -בUnix -ובWindows . נראה לדוגמה כיצד אפשר לממש את המנעול באמצעות הוראת TSL בספריית תהליכונים ברמת המשתמש. כדי להיות עקביים, נשכתב בפסידוקוד מה את שרשום בספר בפסידו שפת סף. void MutexLock(mutex){ while (TSL(mutex) != 0) // lock mutex if is unlocked thread_yield(); // mutex is locked by some thread, schedule another thread } void MutexUnlock(mutex){ mutex = 0; }
+                </div>
+            </details>
+        
+
+            <!-- Q14 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 14</span>
+                        <span class="text-sm">מדוע צריך להשתמש בהוראת TSL?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> תארו תרחיש שבו השימוש בצמד לא אטומי של פעולות יכול לגרום לבעיית מרוץ. עלייה ברמת המקבילות דורשת פתרונות סנכרון יעילים. המתנה פעילה נותנת פתרון מהיר כשזמן ההמתנה קצר, כיוון שאין צורך בקריאות המערכת, אבל כשהוא מתארך, היא גורמת לבזבוז זמן המעבד. לכן כשתהליכים רבים רצים במקביל, יהיה חסכוני יותר --- PDF PAGE 61 (Printed Page 59) --- מדריך למידה • 59 לחסום את התהליך הממתין כשהקטע הקריטי תפוס, ולשחרר אותו כשיתפנה. לא אך תמיד זה ניתן ליישום כי במקרים רבים קשה לחזות את רמת המקבילות. קיים פתרון מעניין בשם futex – מנעול מהיר במרחב המשתמש, שמשלב את יתרונותיהן של שתי הגישות: תהליכון מנסה לתפוס את המנעול בעזרת TSL . במקרה של הצלחה, הוא בודק אם המנעול היה חסום בפניו. אם לא, הוא ממשיך לרוץ. אם הייתה חסימה, ספריית futex אינה מבצעת המתנה פעילה, אלא מעבירה את התהליכון למצב חסום בעזרת קריאת מערכת. כאשר המנעול יתפנה, גרעין המערכת יוציא את התהליכון ממצב חסימה לפי התור. המנגנון מאפשר למעט במספר קריאות המערכת. שימוש ישיר במשתני תנאי (condition variables ) בנוסף למנעולים mutexes קיים מנגנון סנכרון שני: משתני תנאי. משתמשים במנעולים כדי לאפשר או לחסום גישה לקטע קריטי, ומשתני תנאי מאפשרים חסימת תהליכון בגלל תנאי כלשהו שלא מתקיים. כדוגמה פשוטה, ניקח את שוב בעיית צרכנים:-היצרנים תהליכונים יצרנים מכניסים פריטים למאגר וצרכנים מוציאים אותם. אם היצרן מגלה שאין יותר תאים פנויים במאגר, עליו להיחסם עד שתא אחד יהיה זמין. מנעול מאפשר לבצע את הבדיקה בצורה אטומית בלי הפרעות מתהליכונים אחרים, אך לאחר גילוי שהמאגר מלא, היצרן זקוק לדרך להיחסם ולהתעורר מאוחר יותר. הצרכן צריך לנהוג בדרך דומה כשמאגר ריק. זה מה שמשתני תנאי מאפשרים. הפעולות העיקריות במשתני תנאי ( הן cond_wait(cv,mutex -ו (cond_signal(cv . הראשונה חוסמת את התהליכון הקורא ומשחררת את המנעול בצורה אטומית עד שתהליכון אחר מבצע cond_signal . קיימת פעולה נוספת, cond_broadcast , המאפשרת להעיר כל את החסומים. משתני תנאי מאפשרים להמתנה ולחסימה להתבצע בצורה אטומית. משתני תנאים ומנעולים משמשים כמעט תמיד יחד: תהליכון בודק אם הוא יכול לקבל מה את שצריך, ואם לא, ממתין למשתנה תנאי. בסופו של דבר, תהליכון אחר יאותת לזה והוא יוכל להמשיך. הקריאה ל cond_wait רק לא חוסמת את התהליכון הקורא, אלא גם פותחת באופן אטומי את המנעול שהוא מחזיק. מסיבה זו, המנעול הוא אחד הפרמטרים. ראוי גם לציין שלמשתני תנאי (בניגוד לסמפורים) אין "זיכרון". אם אות (signal ) נשלח למשתנה תנאי שאף תהליכון לא ממתין עליו, האות אובד. מתכנתים צריכים להיזהר מאובדן אותות. ראו מימוש מעשי בעזרת הכלים הקיימים בספריית pthreads באיור 2-32 בספר הלימוד. שימו לב לסדר הקריאות לפונקציות הסנכרון. :הערה במערכת Windows לא קיימים משתני תנאי, אבל קיים כלי המתנה אחר: event , שבניגוד למשתנה תנאי, "זוכר" את המצב. מנעולים בתהליכוני POSIX סעיף-תת זה הוא חומר רשות. Yair Kurtzman 2.4.7 מבני פיקוח (monitors ) סמפורים הם כלים רבי עוצמה ורבי תועלת, אך הבעיה בשימוש בהם היא שמספר של רב סמפורים המפוזרים פני על תוכנית הופכים אותה לקשה לניפוי שגיאות. נתבונן למשל בפתרון של צרכן-יצרן שבאיור 2-28 בספר הלימוד, כאשר מוחלפות בו שתי שורות down בקוד של יצרן. נניח שהמאגר מלא לחלוטין. הרצה של הקוד החדש של היצרן תגרום לכך שהיצרן ינעל את הסמפור הבינארי mutex ואז יבצע down על סמפור empty . דבר זה יגרום ליצרן להיכנס למצב חסום עד שהצרכן יפרוק פריט מן המאגר. אבל כשהצרכן מגיע לפרוק פריט, הוא צריך לבקש גישה בלעדית לזמן עדכון המאגר ידי על נעילת mutex , ולכן גם הוא נחסם. מצב שבו שני תהליכים מחכים כל אחד בתורו להתרחשות של אירוע אשר יכול להיגרם מתהליך אחר נקרא מצב קיפאון. מה שמקשה מאוד הוא העובדה כי טעויות, אם ישנן כאלה, אינן ניתנות לשחזור מדויק הואיל והן תלויות בסדר של חילופי התהליכים. מכאן נובעת השאיפה להעביר את הטיפול במניעה הדדית אל מנגנונים משוכללים יותר, שיהיו חסינים מפני שגיאות מקריות זו כגון המתוארת. כך נולד הרעיון להעביר את האחריות ליישום הטכני של פתרון בעיית המניעה ההדדית אל המהדר (הקומפיילר). כל שהמתכנת צריך לעשות במקרה זה הוא להגדיר קטע קוד כקטע קריטי (להעביר את ניהולו למבנה פיקוח), וכך יובטח כי לעולם לא ישהה בקטע זה יותר מתהליך אחד. זו מהותו של הפתרון המוצע בסעיף זה. המבנה של שפת התכנות שהוצע לטיפול במניעה הדדית קרוי מבנה פיקוח (monitor .) מבנה פיקוח הוא ספרייה של שגרות, משתנים ומבני נתונים המוגדרים יחדיו במבנה של שפת תכנות, והיא זאת שמבטיחה שתהליכים הקוראים לשגרות המוגדרות במבנה פיקוח מממשים מניעה הדדית. הקומפיילר מתרגם את הקריאות לפונקציות המוגדרות במבנה פיקוח לקוד שמוגן ידי על פרוטוקול למניעה הדדית. הואיל והקומפיילר זה הוא שמופקד על מימוש המניעה ההדדית, יש פחות סיכוי לטעויות מן הסוג שתיארנו בתחילת הסעיף. אף אך שהמוניטור מספק דרך נוחה להשגת מניעה הדדית, הוא עדיין אינו יכול להיות עוצמה-שווה לסמפורים עוד כל הוא איננו מספק מנגנון לסנכרון בין תהליכים. בבעיית צרכן,-יצרן למשל, פרט למניעה הדדית בגישה אל המאגר, אנו זקוקים גם לאפשרות לספק זמנית-בו עם המניעה ההדדית אפשרות להכתיב לצדדים את המשך פעילותם – להפסיק לייצר בעת שהמאגר מלא או להתחיל לפרוק פריטים כאשר יש לפחות פריט אחד במאגר. הפתרון לבעיות סנכרון שמוצע ידי על מבנה פיקוח הוא האפשרות להגדרה של משתנים מיוחדים הנקראים משתני תנאי (condition variables .) ניתן לשלוט על המשתנים הללו באמצעות שתי פעולות: • פעולת (signal(c מעירה אחד מהתהליכים שהיה חסום ידי על מבנה פיקוח על התנאי c. • פעולת (wait(c גורמת להשהיית תהליך שיוכל להתעורר אחרי ביצוע (signal(c ,בעתיד עוד כל התנאי c לא יתקיים. מבנה פיקוח מבטיח שלאחר הקריאה -לwait , אחד מהתהליכים שהיה חסום בכניסה למבנה פיקוח, יוכל להיכנס אליו. נעיין בפתרון של בעיית צרכן-יצרן באיור 2-35 בספר הלימוד כדי להבהיר את השימוש -בcondition variables . במבנה פיקוח מוגדרות שגרות insert -וremove שמעדכנות את המאגר, ולכן צריכות להיות מוגנות על ידי מניעה הדדית. שני המשתנים full -וempty משמשים לסנכרון בין היצרן לצרכן. המשתנה full מסמל כי "המאגר מלא". המשתנה empty מסמל כי "המאגר ריק". שגרת insert שמופעלת ידי על יצרן מבצעת קריאה -ל (wait(full כאשר מתגלה שאין עוד מקום לאחסון פריטים, והדבר משהה כמובן את תהליך היצרן. שימו כי לב השימוש במבנה פיקוח פוטר את המתכנת מן הצורך לשחרר את הנעילה על קטע קריטי, ולכן היצרן יושהה, אבל לא זה ימנע בעתיד מהיצרן להמשיך לפעול! שגרת (signal (empty מופעלת ידי על היצרן לאחר שזה יצר פריט והכניסו למחסן אשר ריק היה לפני כן. הפעלת השגרה מעירה את הצרכן שהיה רדום עקב המחסור בפריטים במחסן. שימו לב למקום של הפעלת השגרה signal . היצרן מעיר את תהליך הצרכן כאשר סיים לעדכן את המאגר ונמצא בסיומו של קטע קריטי. הדבר מביא אותנו לדיון על האופנים שבהם אפשר לממש את הטיפול של מבנה הפיקוח בתרחיש מורכב שבו הקריאה -לsignal מעירה תהליך שייתכן מאוד שיקרא אף הוא לשגרות של מבנה פיקוח. תרחיש מסוג זה עלול לסבך מאוד את הטיפול במניעה ההדדית. כדי להימנע משני תהליכים פעילים בתוך מבנה פיקוח, אפשר לנקוט גישות אלה: • לתת לתהליך -ש (signal(c העיר אותו לרוץ, תוך כדי השהיה של התהליך שקרא ל­ . signal • לתת לתהליך שקרא -ל (signal(c לסיים את השגרה של מבנה הפיקוח ורק אז להעיר את אחד התהליכים שממתינים על c. • ,לדרוש ברמת התחביר של שפת התכנות, שהקריאה -ל (signal(c תתבצע רק בסוף השגרה של מבנה הפיקוח.
+                </div>
+            </details>
+        
+
+            <!-- Q15 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 15</span>
+                        <span class="text-sm">השוו בין היתרונות והחסרונות של הגישות הללו.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> באיור הבא ניתן לראות שעבור כל condition variable קיים של תור תהליכים שממתינים לאחר שביצעו קריאה -לwait . למעלה נמצא של תור תהליכים שמבקשים לבצע את אחת השגרות של מבנה הפיקוח, ולכן נאלצים להמתין בגלל המניעה ההדדית. התור urgent נועד לתת עדיפות לתהליכים שקיבלו signal פני על תהליכים שעדיין לא נכנסו למבנה פיקוח. הדבר תלוי במימוש ספציפי ואפשר להעביר את התהליכים האלה לתור חיצוני. כדי להמחיש את משמעות המרכיבים של מבנה פיקוח, באיור שלפניכם מופיעים שוב המשתנים של פתרון בעיית צרכן.-היצרן Yair Kurtzman איור 10
+                </div>
+            </details>
+        
+
+            <!-- Q16 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 16</span>
+                        <span class="text-sm">ראינו פתרון של בעיית צרכן-יצרן באמצעות מבנה פיקוח.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> האם הפתרון הזה יפעל גם במקרים האלה: • צרכנים-יצרן • צרכן-יצרנים • צרכנים-יצרנים יש לציין שלהבדיל מסמפורים שמשמשים כמונים (בינריים או כלליים), condition variables אינם "זוכרים" את מצבם (המושג "משתנה" משמש רק במובן שתנאי יכול להשתנות). אם מבוצע (signal(c כאשר אין שום תהליך שממתין על c, אז הסיגנל אובד. כדי שהדבר לא יקרה, הוראת wait מוכרחה לבוא לפני -הsignal . מבני פיקוח מקטינים את הסיכוי לשגיאות שקשורות למניעה הדדית, אך שפות תכנות רבות אינן מספקות מבני פיקוח. ספר הלימוד מציין שברמה של מימוש בשפת תכנות, קל יותר לספק סמפורים מאשר לספק מבני פיקוח. נסכם את הדיון בהבחנה שמבני פיקוח, בדיוק כמו הסמפורים, הם מנגנונים שפועלים בארכיטקטורה של מעבד זיכרון-אחד אחד או כמה זיכרון-מעבדים משותף. למערכות מבוזרות עם ארכיטקטורה של כמה כמה-מעבדים זיכרונות, אנו נזדקק למנגנון אחר של תקשורת בין תהליכים. בסמפורים או במבנה פיקוח לא ניתן להשתמש למשל במערכות מבוזרות שמופעל בהן ניוד של תהליכים לביזור עומסים. (message passing) 2.4.8 העברת הודעות הפתרון המוצע בסעיף זה פועל הן במערכת מבוזרת והן במודל של כמה מעבדים עם זיכרון משותף, ולכן הוא כללי יותר. באופן כללי, השיטה של העברת הודעות מספקת שני פרימיטיבים: send -וreceive , המשמשים לשליחה ולקבלה של הודעות: • השגרה (send (destination, &message שולחת את ההודעה message ליעד נתון. • השגרה (receive (source, &message מקבלת הודעה ממקור נתון. השליחה של הודעות יכולה להיות שליחה שחוסמת את התהליך השולח (עד שתתקבל על ידי היעד) או כזו שאיננה חוסמת (בדומה לכתיבה חוסמת לא או חוסמת לקובץ). כך גם לגבי קבלת הודעות. היעדים יכולים להיות ישירים או עקיפים. מיעון ישיר מחייב להעביר -כdestination מזהה של תהליך. לסוג של כזה העברת הודעות קוראים גם בשם שיטת המפגש (rendezvous ,) זאת מכיוון שתהליכים מקיימים ביניהם מעין שיח בעת המפגש. מיעון עקיף , לעומת זאת, משתמש בתחנת ביניים שאליה מועברות הודעות וממנה מתבצעת משיכתן. לעתים מכנים את תחנת הביניים תיבתדואר (mailbox .) באיור הבא מוצגים מיעון ישיר (למעלה) ומיעון עקיף (למטה). השתמשנו בתצוגה כללית מאוד כאשר התהליכים מתקשרים דרך ערוץ תקשורת שיכול להיות גם צינור (pipe ) של מערכת ההפעלה, אם מדובר על שולח ונמען השוכנים באותו מחשב, וגם ערוץ וירטואלי העובר דרך רשת מחשבים במקרה הכללי, כאשר התהליך המשדר והנמען שוכנים במחשבים שונים. במקרה של מיעון עקיף, תיבת דואר יכולה להיות במחשב של השולח של או הנמען או להיות במחשב שונה לגמרי. איור 11
+                </div>
+            </details>
+        
+
+            <!-- Q17 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 17</span>
+                        <span class="text-sm">מהם היתרונות והחסרונות של שיטת המפגש ושל תיבת דואר Yair Kurtzman מאפיינים של מנגנון העברת ההודעות נבחן היבטים אחדים הקשורים למנגנון העברת ההודעות.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> אפשר לחלק היבטים אלו לשתי קטגוריות: • היבטים הקשורים להעברת הודעות במערכות מבוזרות דרך רשת תקשורת • היבטים הקשורים להעברת הודעות באותה המכונה איננו מעוניינים לסקור היבטים העוסקים ברמה של פרוטוקולי תקשורת כגון בקרת שגיאות או מנגנונים לאימות זיהוי השולח. גם הדיון על מימוש יעיל של העברת הודעות באותה המכונה נמצא מחוץ לתחום שלנו. אנחנו נמשיך לדון דיון עקרוני על גישות מימוש של העברת הודעות ונתייחס לתהליך של העברת הודעות כפרוצדורה נתונה שאיננה חושפת את הסיבוכיות המונחת ביסודה. פתרון בעיית צרכן-יצרן באמצעות העברת הודעות בטרם נעיין בפתרון של בעיית צרכן,-יצרן נראה כיצד אפשר לפתור בעיה של מניעה הדדית באמצעות העברת הודעות בשיטת מיעון עקיף: main(){ message token; SetUpMessageBox(message_box); // create mailbox named message_box PutMessage(message,_box, token); // send token to message_box CreateAndSheduleProcesses(P1, P2); תהליך 1תהליך 0 message msg; while(true){ …// non critical section receive(message_box, msg); CriticalSection_1(); send(message_box, msg); … // non critical section } message msg; while(true){ …// non critical section receive(message_box, msg); CriticalSection_0(); send(message_box, msg); … // non critical section } } פתרון זה משתמש בפרימיטיב receive הגורם לחסימה של התהליך הקורא עד לקבלת ההודעה. כלומר, תהליך שמנסה לקבל הודעה מתיבת דואר ריקה – נחסם. הפתרון מתממש בתיבת דואר שבה מכניסים הודעה שתשמש כאסימון. כל אחד מהתהליכים (p1 -וp2 ) ינסה למשוך הודעה מן התיבה. התהליך שמצליח מקבל לידו אסימון שמאפשר את כניסתו לקטע קריטי. מכיוון שמלכתחילה שידרנו לתיבה רק אסימון אחד, משיכת הודעה על ידי תהליך אחד תגרום לחסימתו של האחר וכך תתממש מניעה הדדית.
+                </div>
+            </details>
+        
+
+            <!-- Q18 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 18</span>
+                        <span class="text-sm">כתבו פרוטוקול למניעה הדדית שמשתמש בהעברת הודעות במיעון ישיר.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> באיור 2-37 מוצג הפתרון של בעיית צרכן-היצרן באמצעות העברת הודעות בשיטת מיעון עקיף. שימו לב שבעיית הסנכרון בין התהליכים נפתרת בפשטות ידי על הגדרה של תיבת דואר המכילה מראש N ,הודעות כאשר N הוא מספר הפריטים שהמאגר יכול להכיל.
+                </div>
+            </details>
+        
+
+            <!-- Q19 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 19</span>
+                        <span class="text-sm">האם הפתרון לבעיית צרכן-יצרן באמצעות העברת הודעות במיעון עקיף, שמוצג באיור 2-37 , יפעל בצורה תקינה גם במקרה של בעיות דומות כגון: • צרכנים-יצרן • צרכנים-יצרנים • יצרנים-יצרנים (barriers) 2.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> 4.9 מחסומים במקרים רבים מתעורר צורך להשהות קבוצה שלמה של תהליכים עד אשר יתקיים תנאי כלשהו. לדוגמה, פעולות על מטריצות גדולות יכולות להיות עתירות חישוב. אם קיימת דרך למקבל את הפעולה ולהריץ את חלקיה על מעבדים שונים, מתעורר צורך לחכות לסיום כל חלקי הפעולה כדי להמשיך לבצע את הפעולה הבאה. זהו הרציונל שעומד מאחורי שימוש במנגנון תקשורת תהליכים שנקרא מחסום . דוגמה אחרת קשורה לייעול של קוד שמבצעים קומפיילרים על ידי שינוי של סדר הפעולות. לעתים יש צורך שבקטעים מסוימים של הקוד הנתון, הקומפיילר לא יבצע ייעול כזה אבל באשר לשאר התוכנית אנו מעוניינים להשתמש בייעול שהקומפיילר מציע. שינוי סדר הפעולות מביא לידי קריאות ו/או עדכונים של אזורי זיכרון. לכן, כדי לאכוף ביצוע סדרתי של הוראות, אפשר לשים מחסומים על העדכון של אזורי זיכרון. בגרעין של Linux קיימים מנגנונים לחסימה של קריאות ו/או כתיבות של אזורי זיכרון. 2.5 תזמון תהליכים 2.5.1 מבוא לתזמון תהליכים 2.5.2 תזמון במערכות אצווה 2.5.3 תזמון במערכות אינטראקטיביות 2.5.4 תזמון במערכות זמן אמת 2.5.5 מדיניות (policy ) ומנגנונים (mechanisms ) 2.5.6 תזמון תהליכונים Yair Kurtzman
+                </div>
+            </details>
+        
+        </div>
+        <div id="questions-scheduling">
+            
+            <!-- Q20 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 20</span>
+                        <span class="text-sm">כמה מן הקריטריונים שמנינו סותרים את זה זה.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> אלגוריתמי תזמון מיישבים סתירות ידי על אלו מציאת פשרה בין הקריטריונים השונים על או ידי בחירה של קריטריונים אחדים והקרבה של אחרים. בעבור זוג כל קריטריונים שיש ביניהם סתירה, חשבו כיצד ניתן ליישבה. 2.5.2 תזמון במערכות אצווה נתבונן כעת בשלושה אלגוריתמים לתזמון לזמן קצר במערכות אצווה. First Come First Served – FCFS FCFS , שלעתים מכונה גם First In First Out) FIFO ,) הוא האלגוריתם הפשוט ביותר. המתזמן מנהל תור של תהליכים מוכנים לריצה. כאשר תהליך שרץ -בCPU מבצע קריאת מערכת שגורמת לחסימה, המתזמן מקצה את CPU לתהליך הבא בתור. כאשר התהליך חוזר ממצב רדום, הוא מוכנס לסוף התור. היתרון של האלגוריתם הוא פשטות המימוש שלו. החיסרון של האלגוריתם הוא זמן השהייה הארוך שלו. כך, למשל, ביצוע תהליכים עתירי קלט/פלט יארך זמן אם רב, במערכת קיימים הרבה תהליכים עתירי חישוב.
+                </div>
+            </details>
+        
+
+            <!-- Q21 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 21</span>
+                        <span class="text-sm">הציעו שיפור פשוט של האלגוריתם המתואר שמתגבר על הבעיה עם תהליכים עתירי I/O.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> Shortest Job First אלגוריתם SJF יכול להתגבר על החיסרון של אלגוריתם FSFC בתנאי שזמני הריצה של התהליכים ידועים מראש ובתנאי שמפעילים אותו על קבוצה של תהליכים שנקבעו מראש. אופן הפעולה: האלגוריתם בוחר לתת זמן CPU לתהליך בעל זמן הריצה הקצר ביותר ומריץ אותו עד לסיום. אלגוריתם תזמון כזה, דהיינו אלגוריתם תזמון שאינו משתמש בהפקעת מעבד, נקרא non-preemptive . --- PDF PAGE 71 (Printed Page 69) --- מדריך למידה • 69 נראה שאופן הפעולה החמדני של האלגוריתם אכן משפר את זמן השהייה. נניח שיש לנו .בהתאמה אם סדר הרצת a, b, c, d בעלי זמני החישוב P1, P2, P3, P4 ארבעה תהליכים התהליכים על ידי אלגוריתם תזמון כלשהו הוא P1, P2, P3, P4 , אזי זמן השהייה של P1 הוא a זמן השהייה של P2 הוא a+b זמן השהייה של P3 הוא a+b+c זמן השהייה של P4 הוא a+b+c+d ולכן זמן השהייה (הממוצע) יהיה 4 (/ 4a+3b+2c+d ). ומכאן ברור שאופן הבחירה של אלגוריתם SJF משיג זמן שהייה מזערי. שימו כי לב הטענה הזאת טומנת בתוכה הנחה נוספת והיא שהזמן המצטבר שהתהליכים P1-P4 בילו בפעולות קלט/פלט היה זהה לכל תהליך. Shortest Remaining Time Next השינוי הבא של אלגוריתם SJF מבטיח שאם זמני הריצה של תהליכים הם ידועים מראש וקבוצת התהליכים שהאלגוריתם המשופר פועל עליה היא קבועה, אזי זמן השהייה יהיה מזערי, ללא הנחות על זמני קלט/פלט. הפתרון הוא פשוט אלגוריתם שמפקיע את המעבד. אלגוריתמים כאלה נקראים preemptive . הפקעת מעבד יכולה להתבצע במקרים האלה: • אם תהליך שהיה במצב חסום הופך להיות מוכן • אם מגיע תהליך חדש שמוכן לריצה בזיכרון • אם תהליך רץ מבצע קריאת מערכת שגורמת להרדמתו במקרים הללו מתזמן המערכת מבצע בדיקה ובוחר לריצה את התהליך בעל הזמן הקטן ביותר שנותר. אלגוריתם זה ידוע בכינוי Shortest Remaining Time Next – SRTN . כמו במקרה של SJF , לאלגוריתם זה דרושה ידיעה מוקדמת של זמן CPU .
+                </div>
+            </details>
+        
+
+            <!-- Q22 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 22</span>
+                        <span class="text-sm">ודאו כי אתם מבינים מדוע SRTN מביאה למזעור של זמן שהייה בעבור קבוצת תהליכים קבועה. רמז: השתמשו בטיעון דומה לזה שהשתמשנו בו במקרה של SJF . האם טיעון זה יהיה תקף גם כאשר קבוצת תהליכים איננה קבוצה קבועה ומגיעים תהליכים חדשים?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> תזמון בשלוש רמות (סעיף זה איננו מופיע בספר הלימוד) בסעיף הקודם דיברנו על תזמון לטווח קצר, ואמרנו שנראה כיצד הדבר משתלב במנגנון תזמון שצריך גם לקבל החלטות לטווח ארוך. ובכן, מנגנון תזמון של מערכת אצווה מופשטת מורכב משלוש רמות: • CPU scheduler – ברמה זו מתבצע תזמון לטווח קצר. תזמון ברמה זו הוא שגורם למעברים בין מצב Ready למצב Running .ולהפך החלטות תזמון ברמה זו מתבצעות Yair Kurtzman בכפוף למדיניות המתזמן. המקרים שבדרך כלל תתבצע בהם הפעלת מתזמן CPU :הם תהליך רץ הקורא לפונקציית מערכת שגורמת להרדמתו; תהליך שהיה במצב רדום וחוזר למצב מוכן בזיכרון; תהליך מוכן לריצה המגיע לזיכרון הראשי. בשאר המקרים, הפעלת המתזמן תלויה במדיניות המתזמן. • memory scheduler – ברמה זו מתבצעות החלטות תזמון שבעקבותיהן תהליכים עוברים ממצב מוכנות לריצה בזיכרון למצב מוכנות לריצה בדיסק ולהפך, או ממצב רדום בזיכרון למצב רדום בדיסק ולהפך. ראו את שוב איור מכונת המצבים המורחבת במדריך למידה זה. תזמון ברמה זו נקרא גם תזמוןלטווחבינוני . החלטות תזמון ברמה זו נועדות לשפר את הניצולת של מרכיבי המערכת. כך, למשל, הבאת חמישה תהליכים לזיכרון, שהזמן המצטבר של ביצוע פעולות הקלט/פלט שלהם הוא חמישית מזמן השהייה שלהם, יכולה להביא לניצולת גבוהה של המעבד ושל התקני הקלט/פלט. מובן שהמידע אשר יכול לשפר את הניצולת של מרכיבי המערכת אינו מצוי בדרך כלל בידי המערכת בתחילת ריצתם של תהליכים. לכן, החלטות תזמון ברמת ביניים מתבצעות בהסתמך על עברם של התהליכים, כך שבסופו של דבר התוצאה מביאה לרוב לשיפור בניצולת. • מכלול הקריטריונים שמסייעים בהחלטות תזמון ברמת הביניים כולל את המדדים האלה: הזמן שתהליך שהה לאחרונה בדיסק או בזיכרון, זמן -הCPU שתהליך צרך לאחרונה, גודל התהליך (המקום שהוא תופס בזיכרון) ושיקולים של אכיפת מדיניות הנובעים מחשיבותם של תהליכים לעומת תהליכים אחרים במערכת. אלה הם מקצת הדברים שיכולים להשפיע על ההחלטה להביא תהליך לזיכרון הראשי או להוציא אותו משם. לדוגמה, אם תהליך נמצא בזיכרון זמן אך רב, התהליך הוא גדול, העברתו לדיסק יכולה לארוך יותר זמן מן הזמן הדרוש לו לסיום. לכן אם קיים ידע מוקדם (למשל, מערכת שמנהלת סטטיסטיקות על הריצות הקודמות של תהליכים אם או תהליך הצהיר לפני הריצה כמה זמן חישוב הוא עומד לצרוך), החלטת התזמון יכולה להיות שונה מזאת שהייתה מתקבלת בהיעדר הידע הזה. • admission scheduler – ברמה זו מתבצעות החלטות תזמון "גסות". התזמון ברמה זו מכונה לעתים תזמוןלטווח ארוך . רמת תזמון לטווח ארוך מאפיינת רק מערכות אצווה. במערכות אצווה, עבודות צריכות להצהיר על כמות משאבי המערכת שדרושה להן. פי על המידע הזה, המערכת בונה תכנון ארוך טווח לניצול משאביה ויכולה להחליט אם לקבל עבודה חדשה. החלטות תזמון אלה אינן מיוצגות באיור מכונת המצבים המורחבת. זאת הסיבה שהמילה שהשתמשנו בה בהקשר לישויות שהמתזמן פועל עליהן לטווח ארוך הייתה "עבודות" ולא "תהליכים". תהליך נוצר רק כאשר המתזמן מחליט לקבל עבודה למערכת; זהו מקור השם admission . scheduler 2.5.3 תזמון במערכות אינטראקטיביות כעת נתבונן באלגוריתמים לתזמון במערכות אינטראקטיביות. להבדיל ממערכות אצווה, מנגנון התזמון של מערכות אינטראקטיביות אינו כולל מתזמן לטווח ארוך, ולכן כל העבודות מתקבלות למערכת ותהליכים חדשים נוצרים בעבורן. האלגוריתמים שנכיר בסעיף זה מתייחסים לתזמון לטווח קצר. את השיקולים לתזמון לטווח בינוני נבחן כאשר נלמד על מנגנוני תזמון של Unix -וWindows . חשוב לציין כי באלגוריתמים שנראה כאן אפשר להשתמש גם בתזמון לטווח קצר במנגנוני אצווה. RR – Round-Robin אלגוריתם הרעיון שעומד ביסודו של אלגוריתם זה הוא פשוט מאוד: מחלקים זמןCPU לאינטרוולים שווים ולכל תהליך שמוכן לריצה מקצים את -הCPU לפרק זמן קצוב. פרק זמן זה מכונה time quantum . לאחר סיום quantum , מפקיעים את -ה CPU ונותנים אותו לתהליך אחר. התהליכים מנוהלים בתור מעגלי ומכאן שם האלגוריתם. חלוקת זמן CPU לאינטרוולים שווים נקראת time slicing . איור 12 ,באיור המשבצות מסמנות תהליכים והחץ מסמן את הקצאת המעבד בעבור תהליך C לזמן קצוב. בסיום הזמן מתבצעת החלפת תהליכים -והCPU יוקצה לתהליך D . תהליכים עשויים שלא לנצל את זמן-הquantum עד תומו, עקב הקריאה לפונקציית מערכת הגורמת להרדמת תהליך. במקרה כזה, התהליך הרדום מּוצא מהתור המעגלי שלRR והחץ עובר לתהליך הבא בתור, לפי כיוון השעון. תהליך שהיה רדום וחזר להיות מוכן מוכנס לסוף התור, כלומר במקום שלפני התהליך המבוצע כעת. כפי שרואים, אלגוריתם RR הוא קל למימוש. מכיוון שהחלפת תהליכים דורשת זמן, קביעת אורך -הquantum היא נושא חשוב מאוד. קביעת "פרוסת זמן" קצרה גורמת לתקורה גבוהה של הזמן המתבזבז על החלפת תהליכים. עם זאת, קביעת פרוסת זמן ארוכה יכולה להביא לזמן תגובה ארוך, דבר הפוגע אנושות בזמן התגובה של תהליכים אינטראקטיביים. לכן, קביעת -הquantum Yair Kurtzman למשך של -הCPU burst שהוא משך הזמן שלוקח לפעולה האינטראקטיבית להסתיים תהיה כנראה בחירה טובה. בעבור פעולות אינטראקטיביות שונות, משך הזמן הזה יכול להיות שונה, ולכן מתעורר הצורך בדיפרנציאציה. לכן נשתמש בריבוי תורים, ונרחיב כך על בהמשך. תזמון עם עדיפויות (קדימויות) כבר ציינו כי האלגוריתם RR אינו מפריד בין תהליכים שזמני הפעולות האינטראקטיביות שלהם שונים. בשיטה של ריבוי תורים נראה פתרון גנרי שלפיו אפשר לבצע דיפרנציאציה. לעומת זאת, בסעיף הזה נראה כיצד אפשר לפתור את בעיית הדיפרנציאציה בשיטה פשוטה של תעדוף תהליכים. הרעיון הבסיסי הוא שכל התהליכים המוכנים לריצה בזיכרון מדורגים לפי עדיפויות. תהליך בעל עדיפות גבוהה על רץ -הCPU עוד כל עדיפותו גבוהה מעדיפותם של שאר התהליכים שמוכנים לריצה. אם התהליך הרץ מבצע קריאת מערכת שגורמת להרדמתו, -הCPU עובר לתהליך בעל העדיפות הגבוהה ביותר שיימצא מוכן לריצה. החלטת תזמון דומה מתבצעת כאשר תהליך שהיה במצב רדום או בדיסק חוזר להיות במצב מוכן בזיכרון. מבחינים בין שיטת מתן עדיפותקבועה ובין שיטת מתן עדיפות משתנה (דינאמית). מתן עדיפות גבוהה בצורה סטאטית יכול להיות מועיל במקרה של תהליכים שדורשים זמן תגובה מהיר מאוד, ובתנאי שלאחר פעולה אינטראקטיבית קצרה מאוד התהליך עובר למצב רדום. אחרת – תהליך בעל עדיפות גבוהה שאיננה משתנה מקבל את -הCPU לתקופה בלתי מוגדרת (עד שיופיע במערכת תהליך בעל עדיפות גבוהה יותר). שאר התהליכים מורעבים. בשיטה השנייה, שינוי עדיפויות מתבצע בצורה דינאמית . לדוגמה, אלגוריתם תזמון יכול להפקיע את -ה CPU כעבור פרק ( זמןquantum ) מסוים כדי למנוע הרעבה. עדיפותו של תהליך תיקבע לפי החלק היחסי של -הquantum שנוצל על ידיו. ככל שהחלק המנוצל יהיה גדול יותר, כך עדיפותו של התהליך תהיה קטנה יותר. כמו בדוגמה הקודמת עם עדיפות סטאטית, בהינתן תהליך שמבלה רוב הזמן במצב רדום אך דורש זמן תגובה מהיר כשהוא מתעורר, האלגוריתם עם מתן העדיפות הדינאמית שתיארנו לעיל יספק זמן תגובה טוב יותר לתהליכים הנמצאים זמן רב במצב רדום. יחד עם זאת, אלגוריתם זה אינו גורם להרעבה של תהליכים אחרים כי מובטח שלאחר שעובר -הquantum מתבצעת הפקעת -הCPU לטובת תהליך אחר. הבעיה בשיטת העדיפויות היא שקשה מאוד להתאים אותה לקשת הרחבה של סוגי השירות שתהליכים דורשים. יתרה מזו, התנהגותם של תהליכים יכולה להשתנות במרוצת הזמן כתוצאה של מעבר לוגי מתקופת חיים (קטע קוד) אחת לתקופת חיים בעלת אופי שונה. לכן הוצעה שיטה גנרית קלה להבנה, וגם קלה למימוש, שמאפשרת ביצוע שינויים עתידיים. שיטה זו משלבת את היתרונות של שיטת מתן עדיפויות ושל שיטת מתן העדיפות המשתנה, ומונעת הרעבה על ידי הקצבת פרקי זמן. זהו הנושא של הסעיף הבא. ריבוי תורים ריבוי תורים משמש פתרון לדיפרנציאציה בין קבוצות תהליכים שונות, כאשר כל התהליכים בקבוצה מצפים לאותו סוג שירות. לכל תור משויכת עדיפות, וסוג השירות שהתהליכים הנמצאים בתור מצפים לו נגזר ממנה. כל לכן התהליכים הנמצאים באותו הם תור בעלי עדיפות שווה. תהליכים יכולים לעבור בין התורים כתוצאה מהחלטת המתזמן. כל אחד מהתורים יכול להיות מנוהל לפי מדיניות שונה. בשלב זה רצוי מאוד לראות כיצד שיטת ריבוי התורים פועלת במערכות Unix ובמערכת Windows , אילו קבוצות של תהליכים בעלי עדיפות זהה מוגדרות על ידי המתזמן, מהי מדיניות הניהול בכל תור וכיצד מתבצע מעבר בין התורים. Shortest Process Next – SPN בסעיף קודם ראינו שאלגוריתם SRTN יכול להביא למזעור של זמן השהייה הכולל בתנאים מסוימים. בין היתר, השימוש באלגוריתם SRTN מציב דרישה של ידיעת זמן ריצה צפוי. זה אולי סביר למערכות אצווה, אך דרישה כזאת במערכת אינטראקטיבית איננה סבירה. תהליכים אינטראקטיביים הם מונחי אירועים (event driven :) דרוש זמן חישוב כדי להגיב על אירוע כלשהו, כגון הקלדת תו במקלדת או קבלת הודעה בערוץ תקשורת. לכן קשה לצפות מראש מה יהיה משך הזמן שיידרש לביצוע פעולה אינטראקטיבית. אחת הגישות שניתן להשתמש בהן היא ניבוי הזמן הדרוש לפעולה הבאה, בהסתמך על ההיסטוריה של התהליך: • נסמן -ב (T(i את הזמן שנדרש בפועל לביצוע הפעולה האינטראקטיבית -הI–ית • נסמן -ב (E(i מה היה משך הזמן המשוער לביצוע הפעולה האינטראקטיבית - הI–ית • ההשערה ההתחלתית על משך הזמן שיידרש לביצוע הפעולה האינטראקטיבית הראשונה צריך להיות נתון, והוא (1) E . הניבוי לזמן הפעולה האינטראקטיבית הבאה מחושב לפי הנוסחה: E(i+1) = (1–a) T(i) + a E(i) כאשר 1 > 0 < a. הנוסחה מבצעת שקלול של זמני הפעולה שהיו בעבר. על ידי בחירת ערכו של a אפשר לייחס חשיבות רבה או פחותה להיסטוריה. למשל, על ידי בחירת 0.5 = a, נקבל את סדרת הניבויים הזאת: E(1) E(2) = 0.5 T(1) + 0.5 E(1) E(3) = 0.5 T(2) + 0.25 T(1) + 0.25 E(1) E(4) = 0.5 T(3) + 0.25 T(2) + 0.125 T(1) + 0.125 E(1) Yair Kurtzman ,כלומר חשיבותם של הזמנים בעבר יורדת בצורה מעריכית. לשיטת ניבוי זו קוראים שיטת המיצוע המעריכי (exponential averaging ) והיא מבוססת גיל על התהליך (aging .) שיטה זו מנסה לספק זמן תגובה מזערי. להבדיל מהניתוח שעשינו במקרה של SRTN , במקרה זה הניתוח איננו פשוט. שיטת SPN יכולה לגרום להרעבה של תהליכים שהפעולה האינטראקטיבית שלהם ארוכה מממוצע של משך זמן הפעולה האינטראקטיבית במערכת. לכן ריבוי תורים יכול לעזור להתגבר על הבעיה.
+                </div>
+            </details>
+        
+
+            <!-- Q23 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 23</span>
+                        <span class="text-sm">כיצד משפיעה בחירת ערכי a ,קטנים במונחים של תהליך בודד שמבצע פעולת חישוב שמשכה חורג מהממוצע המאפיין את התהליך?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> תזמון מובטח גישה שונה בתכלית לתזמון תהליכים היא להבטיח הבטחה לגבי אופי השירות. לדוגמה, בהינתן מספר המשתמשים במערכת, אפשר להבטיח להם שיקבלו כמות שווה של זמן CPU או אפשר לתת הבטחה כזאת ברמה של תהליכים. אופן הפעולה של המתזמן: מערכת ההפעלה מנהלת בטבלת תהליכים רישום של משך הזמן שבו עמד -הCPU לרשות כל אחד מהתהליכים במערכת. בהינתן הבטחה לספק חלוקת זמנים שווה, ובהינתן המידע כמה זמן קיבל כל תהליך ביחס לזמן שהובטח לו, אלגוריתם התזמון יבחר את התהליך בעל היחס הנמוך ביותר ויריץ אותו -בCPU עד שהיחס יעלה על היחס של תהליך אחר במערכת עד (או שהתהליך הרץ יבצע קריאת מערכת שתגרום להרדמתו). lottery scheduling הפעלת שיטת התזמון המובטח יכולה לדרוש תקורה לא קטנה. למשל, במקרה של ההבטחה על חלוקה שווה של זמני CPU , צריך לחשב מחדש את היחס לכל תהליכי המערכת כאשר מגיע למערכת תהליך חדש או כאשר אחד מהתהליכים עוזב את המערכת. שיטת ההגרלה יכולה להפחית את התקורה של חישוב המידות המובטחות ולהביא לתוצאות דומות באופן סטטיסטי. במקרה של חלוקה שווה של זמני CPU , מתזמן ייתן לכל תהליך חדש שנכנס למערכת כרטיס הגרלה המזכה בנתח כלשהו של זמן CPU . החלטות התזמון מתבצעות בפרקי זמן שמשכם נגזר מכמות הכרטיסים המשתתפים בהגרלה או מקריאת מערכת והגעת תהליך חדש. בעת החלטת תזמון מתבצעת הגרלה שבעקבותיה נבחר תהליך שיקבל את -הCPU . כך שלאורך זמן השיטה משיגה חלוקה שווה למדי של זמני העיבוד. השיטה איננה גורמת לתקורה, כי אין צורך לחשב את היחס של שימוש -הCPU בכל החלטת תזמון. צריך רק לעדכן את משך הזמן של הריצה הבאה. עוד יתרון של השיטה הוא שקל לתת ביטוי באמצעותה לחשיבותו של תהליך. תהליכים חשובים יכולים לקבל כמה כרטיסי זכייה, ובכך להגדיל באופן סטטיסטי את זמן- ה CPU המוקצה להם. תהליכים שמשתפים פעולה ביניהם יכולים להעביר כרטיסים זה לזה, והדבר מאפשר פתרונות נוספים לבעיות כמו צרכן-יצרן באמצעות מנגנונים חדשים לתקשורת בין תהליכים. (חומר רשות) Fair-Share Scheduling ביסוד המושג "תזמון בחלוקה הוגנת" עומדת הבחנה חשובה: במערכת מחשב מרובת תהליכים התהליכים אינם ישויות בלתי תלויות זו בזו. בפועל, אפליקציות רבות מאורגנות כאוסף של תהליכים (או תהליכונים) ושיטות התזמון שלמדנו אינן מביאות זאת בחשבון. שיטות תזמון נבחנות פי על קריטריונים מערכתיים, כמו זמן תגובה מינימלי או זמן שהייה מינימלי. אבל קיימת גם פרספקטיבה נוספת, והיא נקודת המבט של המשתמש, שמוטרד בעיקר מהביצועים של קבוצת התהליכים שמהם מורכבת האפליקציה שלו. ,לכן אסטרטגיה של תזמון בחלוקה הוגנת נועדה להביא בחשבון את השתייכותם של תהליכים לקבוצה מסוימת. ההסבר המובא בספר הוא הסבר כללי שמתייחס למחשבה שמאחורי השיטה ואינו מתייחס לאופן המימוש, אבל קיימות גרסאות של Unix ששיטת החלוקה ההוגנת ממומשת בהן. 2.5.4 תזמון במערכות זמן אמת אפשר לסווג מערכות זמן אמת לשתי קטגוריות מופשטות: מערכות שמציבות אילוצים נוקשים על זמני ביצוע ומערכות שהאילוצים בהן גמישים יותר. כך, למערכות מן הסוג הראשון ניתן לשייך מערכות במטוסים, במכוניות וכן הלאה. לסוג השני של מערכות אפשר לשייך מערכות מולטימדיה שמספקות לדוגמה streaming audio . במערכות אלו עמידה-אי בזמנים יכולה להיות נסבלת במידה מסוימת. המשימות במערכות זמן אמת יכולות להיות מחזוריות לא או מחזוריות. משימות מחזוריות מתבצעות עם תקופת מחזור מסוימת, ואילו לגבי המשימות הלא מחזוריות הדבר איננו תקף. קיום של משימות מחזוריות במערכת זמן אמת מציב קריטריון לאפשרות ביצוע תזמון, שהוא בעצם תנאי הכרחי: • נסמן -ב (C(i את מספר יחידות זמן החישוב -בCPU הדרושות למשימה המחזורית i. • נסמן -ב (P(i את מחזוריות המשימה – משך זמן המחזור של המשימה -הi .–ית למשל, אם ניקח דוגמה שבה צריכות להתבצע 4 ,משימות כל משימה דורשת רבע שנייה וכל אחת מהן צריכה להתבצע פעמיים בשנייה, נקבל את הטבלה הזאת: Yair Kurtzman C in seconds P in secondsמשימה 1/4 1/2 A 1/4 1/2 B 1/4 1/2 C 1/4 1/2 D ואז 1/2 * 4 > 1. הקריטריון לאפשרות לתזמן m משימות בעלות המאפיינים (C(i -ו (P(i , כאשר 1 <= i <=m , :הוא 1 = > ( C(1)/P(1) + … + C(m)/P(m , ולפיכך לא ניתן לתזמן.
+                </div>
+            </details>
+        
+
+            <!-- Q24 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 24</span>
+                        <span class="text-sm">איזו הנחה חבויה בנוסחה של קריטריון התזמון?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> תזמון של משימות במערכת זמן אמת יכול להיות סטאטי או דינאמי. תזמון סטאטי קובע תסריט לתזמון כל של המשימות האפשריות ובדרך כלל נמצא במערכות שיש בהן אילוצים נוקשים. תזמון דינאמי אינו מגביל כך כל ומאפשר לתזמן משימות שלא היה קיים לגביהן תכנון מוקדם. 2.5.5 מדיניות (policy ) ומנגנונים (mechanisms ) בסעיף הקודם אמרנו כי האלגוריתמים לתזמון שלמדנו מגדירים יעדים בפרספקטיבה מערכתית, וכתוצאה מכך ייתכן שבמקרים רבים משתמש מקבל שירות שוויוני כאשר היה יכול לקבל שירות טוב יותר, והדבר היה מתאפשר אף בלי פגיעה בשאר המשתמשים. אם מקדישים לכך מחשבה, אפשר להגיע לפשרה בין שיקולים מערכתיים לבין מתן גישה ייחודית. האפשרות הזאת נגזרת מהפרדה של מדיניות ומנגנון, והתפיסה תהיה כי תפקיד מערכת ההפעלה הוא להציע מנגנונים, כאשר דרך השימוש בהם תיקבע ברמת המשתמשים. כדוגמה פשוטה לכך יכול לשמש אלגוריתם RR לתזמון תהליכים, כאשר מערכת ההפעלה יכולה לאפשר לשנות את הפרמטר המשפיע על מדיניותו. ההפרדה בין מנגנון למדיניות במקרה של RR היא מיידית. המנגנון מאפשר להחליף תהליכים בתום -ה quantum . המדיניות נקבעת לפי אורכה של יחידת -הquantum . דוגמה אחרת היא שיטת תזמון בחלוקה הוגנת, כאשר מנגנון התזמון מסופק על ידי מערכת ההפעלה אך המשתמשים יכולים להגדיר מדיניות לגבי קבוצה מסוימת של תהליכים. 2.5.6 תזמון תהליכונים שיטת תזמון תהליכונים היא נושא שמושפע מן המימוש של תהליכונים: ברמת הגרעין, ברמת המשתמש או בשיטות מעורבות. בסעיף 2.2 דנו בהיבטים הקשורים לתזמון .תהליכונים לא נעמיק בנושא מעבר להיבטים שהזכרנו. דיון מסוג זה דורש ניתוח מפורט של מימושים ספציפיים. 2.6 בעיות IPC קלאסיות 2.6.1 בעיית הפילוסופים הסועדים 2.6.2 בעיית כותבים-הקוראים :הערה החומר הרלוונטי בספר הלימוד נמצא במקומות שונים
+                </div>
+            </details>
+        
+        </div>
+        <div id="questions-classic-sync">
+            
+            <!-- Q25 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 25</span>
+                        <span class="text-sm">מהו הפרוטוקול לפתרון בעיית הקטע הקריטי לזוג תהליכים בעזרת סמפור בינארי?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> בסעיף 2.4.5 קבענו שלושה כללים לפתרון הבעיה: • קיים סמפור בינארי S המאותחל למצב 1 = S. • תהליך הנכנס לקטע קריטי מבצע (DOWN(S . • תהליך היוצא מקטע קריטי מבצע (UP(S . שלושת הכללים האלה יוצרים את הפרוטוקול המבוקש. 2.6.1 בעיית הפילוסופים הסועדים זוהי אולי הבעיה המפורסמת ביותר בהקשר זה. פתרון של בעיה זו משמש כמודל שבאמצעותו בוחנים יעילות של מנגנונים חדשים לתקשורת בין תהליכים בסביבה שיש בה היקף מוגבל של משאבים, כמו התקני קלט/פלט. והנה תיאור הבעיה: פילוסופים אחדים יושבים מסביב לשולחן עגול ולפני כל אחד מהם מונחת צלחת ספגטי. כל בין שתי צלחות מונח מקלון. כדי לאכול, פילוסוף צריך לאחוז בשני מקלונים זמנית.-בו חייו של פילוסוף מתחלקים לתקופות שבהן הוא חושב (ואינו רעב); רעב אך אין ברשותו שני מקלונים; אוכל (וברשותו, כאמור, שני מקלונים). כאשר פילוסוף הופך לרעב, הוא מנסה ליטול לידיו שני מקלונים. אם הוא מצליח לקבל את Yair Kurtzman ,המקלונים הוא אוכל. עם סיום סעודתו, הפילוסוף מניח את המקלונים בחזרה בשני הצדדים של צלחתו וחוזר להרהר בבעיות שברומו של עולם. אנו מבקשים למצוא פרוטוקול המבטיח שאף אחד מהפילוסופים לא יגווע ברעב. באיור 6-4 מוצג פתרון שלפיו כל פילוסוף נוטל לידו קודם את המקלון השמאלי ואחריו את המקלון הימני. אם המקלון שהוא מנסה לקחת אינו פנוי, הפילוסוף אינו מחזיר את המקלון שבידו (אם יש כזה), אלא ממשיך בעקשנות לנסות להשיג את המקלון. כל אם אחד מן הפילוסופים לקח מקלון שמאלי, אף אחד מהם לא יצליח להשיג את המקלון הימני, ומכיוון שהפילוסופים משחררים את המקלונים רק בסיום הסעודה כל – אחד מהם יחכה לשכן שמימינו. כך יגוועו כולם ברעב. מצב זה נקרא מצב קיפאון , ואנו ננתח אותו בהרחבה בפרק 6. אילו הפילוסופים היו משחררים את המקלון השמאלי בכל פעם שלא הצליחו להשיג מקלון ימני, המצב היה משתפר פלאים. עם זאת, גם התרחיש הזה אפשרי: פילוסופים לוקחים בזה אחר את זה המקלון השמאלי. כעת הם מנסים כל – אחד בתורו – לקחת את המקלון הימני. הם כמובן נכשלים, ובזה אחר זה משחררים את המקלונים שברשותם. לאחר מכן, הסבב חוזר חלילה. תיאורטית, הסבבים יכולים להימשך לנצח ללא התקדמות של ממש. אם אך הזמנים שבהם הפילוסופים מבקשים לאכול הם מקריים, ההסתברות לכך שהדבר יקרה שוב היא אפסית. לכן, הגרלה מקרית של זמני הארוחות האישיות מהווה פתרון הסתברותי לבעיה. מצב שבו התהליכים רצים אך אין בריצה זו התקדמות של ממש למשך זמן נקרא מצב הרעבה . תיאורטית, מצב הרעבה יכול להימשך זמן בלתי מוגבל. כפי שנראה בהמשך הקורס, ההבדל בין הרעבה לקיפאון הוא שכל התהליכים שנמצאים במצב קיפאון ממתינים לאירוע מאחד מתהליכי הקבוצה. לעומת זאת, תהליכים במצב הרעבה אינם מקבלים משאב כלשהו (בלי קשר לקבוצה נתונה) לאורך תקופת זמן שיכולה תיאורטית להימשך לנצח, וכתוצאה מכך הם אינם מסוגלים להתקדם במידה משמעותית.
+                </div>
+            </details>
+        
+
+            <!-- Q26 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 26</span>
+                        <span class="text-sm">האם תהליך השוהה בלולאה אינסופית נמצא במצב של הרעבה?</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> האם תהליך השוהה בלולאה אינסופית נמצא במצב של קיפאון? איור 2-47 מציג פתרון דטרמיניסטי, שונה מהפתרון ההסתברותי שראינו.
+                </div>
+            </details>
+        
+
+            <!-- Q27 -->
+            <details class="bg-slate-50 border border-slate-200 rounded-xl p-5 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-slate-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 27</span>
+                        <span class="text-sm">כתבו את פתרון בעיית הפילוסופים הסועדים באמצעות מבנה פיקוח.</span>
+                    </span>
+                    <span class="text-slate-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-slate-200/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">הסבר / פתרון:</strong> 2.6.2 בעיית כותבים-הקוראים בעיה ידועה נוספת שיכולה לשמש מודל שבאמצעותו בוחנים יעילות של מנגנונים חדשים בעבור בסיסי נתונים היא בעיית כותבים.-הקוראים כמו במקרה הקודם, ערכו הלימודי של המודל אולי גדול יותר מערכו המעשי כמודל. --- PDF PAGE 81 (Printed Page 79) --- מדריך למידה • 79 תיאור הבעיה: כמה תהליכים מעדכנים קובץ משותף שמשמש כבסיס נתונים. הכללים האלה צריכים להתקיים: • מספר בלתי מוגבל של תהליכים רשאים לקרוא מתוך הקובץ במקביל. • כאשר מתבצע עדכון של הקובץ, רק התהליך המעדכן רשאי לגשת לקובץ. לא תותר גישה של קוראים של או כותבים אחרים. את ראו הפתרון המוצג באיור 2-29 וודאו כי אתם מבינים מדוע הפתרון נותן העדפה לקוראים. כעת נראה פתרון אשר נותן העדפה לכותבים. כאשר יש לפחות תהליך אחד שמעוניין לעדכן את בסיס הנתונים, הפתרון מונע גישה אל הקובץ מכל הקוראים. פתרון זה מתאים במקרים שבהם חשוב שהקוראים יקבלו מבסיס הנתונים מידע מעודכן ככל האפשר. semaphore rsem = 1; semaphore wsem = 1; semaphore mutex_rc = 1; semaphore mutex_wc = 1; semaphore other_readers = 1; int rc = 0; int wc = 0; void reader(void){ while(true){ down(other_readers); down(rsem); down(mutex_rc); rc++; if(rc == 1) down(wsem); up(mutex_rc); up(rsem); up((other_readers); read_data_base(); down(mutex_rc); rc--; if (rc==0) up(wsem); up((mutex_rc); } } void writer(){ while(true){ down(mutex_wc); Yair Kurtzman wc++; if(wc == 1) down(rsem); up(mutex_wc); down(wsem); write_data_base(); up(wsem); down(mutex_wc); wc--; if(wc == 0) up(rsem); up(mutex_wc); } } המשתנים rc -וwc מחזיקים את מספר הקוראים ואת מספר הכותבים המעוניינים לקרוא מקובץ או לכתוב לקובץ, בהתאמה. הסמפורים הבינאריים mutex_rc -ו mutexwc משמשים להגנה על הגישה למונים rc -וwc , .בהתאמה הסמפור rsem מונע מכל הקוראים לגשת לבסיס נתונים יש עוד כל לפחות תהליך כותב אחד. הסמפור wsem נועד לממש מניעה הדדית בעת עדכון של בסיס הנתונים. הסמפור האחרון other_readers נועד למנוע מכל הקוראים, פרט לקורא הנוכחי, לגשת לקובץ יש עוד כל תהליך שמעוניין לעדכן את בסיס הנתונים. כעת נעיין במקרים האלה: • כאשר רק יש תהליכים קוראים, אכן הערך של rc מנוהל כהלכה באמצעות מניעה הדדית. • כאשר רק יש תהליכים כותבים, יש מניעה הדדית על עדכון הערך של wc ועל הגישה לעדכון של בסיס נתונים. • כאשר קיימים תהליכים קוראים ומגיעים תהליכים כותבים, התהליך הקורא הנוכחי מסוגל להעביר את שאר התהליכים הקוראים להמתנה בסמפור other_readers . בדקו את שאר התרחישים, כתרגיל. • כאשר קיימים תהליכים כותבים ומגיעים תהליכים קוראים, הם אינם יכולים להיכנס הם כי ימתינו בסמפור rsem . המעדכן האחרון שמסיים את פעולתו מבצע (up(rsem כדי לאפשר לקוראים לקרוא לאחר שאין עוד שום כותב. בדקו את שאר התרחישים, כתרגיל. סעיפים שאינם מופיעים בספר הלימוד
+                </div>
+            </details>
+        
+        </div>
+    </div>
+
+    <!-- Questions Modal Overlay -->
+    <div id="questions-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white border border-slate-200 w-full max-w-2xl mx-4 rounded-2xl shadow-2xl flex flex-col max-h-[80vh] transform scale-95 transition-all duration-300">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 id="modal-title" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <span>❓</span>
+                    <span id="modal-section-name">שאלות מנחות ללימוד</span>
+                </h3>
+                <button onclick="closeQuestionsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer text-lg font-bold">&times;</button>
+            </div>
+            <!-- Body -->
+            <div id="modal-body" class="p-6 overflow-y-auto space-y-4"></div>
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                <button onclick="closeQuestionsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-bold transition-all active:scale-95 cursor-pointer">סגור</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
