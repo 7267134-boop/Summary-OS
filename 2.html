@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכות הפעלה - פרק 2: מעבד ותהליכים</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- MathJax for Formula Rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .pattern-bg {
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        /* Custom scrollbar for visual appeal */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        /* Code block styling */
+        pre { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; }
+        .token-keyword { color: #f472b6; } /* pink-400 */
+        .token-comment { color: #34d399; } /* emerald-400 */
+        .token-function { color: #7dd3fc; } /* sky-300 */
+        .token-type { color: #fbbf24; } /* amber-400 */
+    </style>
+</head>
+<body class="pattern-bg antialiased min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+
+    <main class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
+        
+        <!-- Header Section -->
+        <header class="bg-indigo-600 text-white p-8 md:p-12 text-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <svg class="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4 relative z-10">מערכות הפעלה - פרק 2</h1>
+            <p class="text-lg md:text-xl font-light text-indigo-100 relative z-10 max-w-2xl mx-auto leading-relaxed">
+                כדי להבין לעומק את האופן שבו מערכת ההפעלה מנהלת את העבודה שלה, נצלול צעד אחר צעד לסיכום מקיף של פרק 2 במלואו (סעיפים 2.0 עד 2.7) במדריך הלמידה. נתמקד לא רק ב"מה" קורה, אלא גם ב"למה" ו"איך" הדברים פועלים מתחת לפני השטח.
+            </p>
+        </header>
+
+        <div class="p-8 md:p-12 space-y-16">
+
+            <!-- 2.0 CPU Section -->
+            <section aria-labelledby="cpu-architecture">
+                <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-200 pb-4">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-lg">2.0</span>
+                    <h2 id="cpu-architecture" class="text-2xl font-bold text-slate-800">חזרה על מבנה המעבד (CPU)</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-8 text-lg leading-relaxed">
+                    לפני שמבינים תהליכים, חשוב להבין את החומרה שמריצה אותם. המעבד משתמש בזיכרון קטן ומהיר מאוד שנקרא "אוגרים" (Registers) כדי לנהל את פעולתו.
+                </p>
+
+                <!-- Control Registers -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-8">
+                    <h3 class="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <svg class="w-6 h-6 ml-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                        אוגרי בקרה (Control Registers)
+                    </h3>
+                    <p class="text-slate-600 mb-6">אלו אוגרים שקופים לרוב למשתמש, והם מנהלים את מצב המעבד.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- PC -->
+                        <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="font-bold text-indigo-600 text-lg mb-2">PC</div>
+                            <div class="text-sm text-slate-500 font-semibold mb-2">Program Counter</div>
+                            <p class="text-slate-700 text-sm">שומר את הכתובת של פקודת המכונה הבאה שצריכה להתבצע.</p>
+                        </div>
+                        <!-- IR -->
+                        <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="font-bold text-indigo-600 text-lg mb-2">IR</div>
+                            <div class="text-sm text-slate-500 font-semibold mb-2">Instruction Register</div>
+                            <p class="text-slate-700 text-sm">מחזיק את הפקודה הנוכחית שהמעבד מבצע כעת.</p>
+                        </div>
+                        <!-- PSW -->
+                        <div class="bg-white p-5 rounded-lg border border-indigo-200 bg-indigo-50/30 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="font-bold text-indigo-700 text-lg mb-2">PSW</div>
+                            <div class="text-sm text-indigo-500 font-semibold mb-2">Program Status Word</div>
+                            <p class="text-slate-700 text-sm">אוגר קריטי השומר את מצב המעבד (למשל, האם אנו ב"מצב משתמש" מוגבל או ב"מצב מיוחס" של מערכת ההפעלה), וכן מידע על חריגות כמו חלוקה באפס.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stack & Interrupts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-6">
+                        <h4 class="font-bold text-emerald-800 text-lg mb-3 flex items-center">
+                            <span class="text-2xl ml-2">📚</span> קריאה לשגרות (Function Calls)
+                        </h4>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            כאשר תוכנית קוראת לפונקציה, היא משתמשת ב"מחסנית" (Stack) בזיכרון כדי להעביר פרמטרים ולשמור את כתובת החזרה. כל קריאה יוצרת "מסגרת" (Stack Frame) במחסנית, וכך המעבד יודע לאן לחזור כשהפונקציה מסתיימת.
+                        </p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-6">
+                        <h4 class="font-bold text-amber-800 text-lg mb-3 flex items-center">
+                            <span class="text-2xl ml-2">⚡</span> פסיקות חומרה (Interrupts)
+                        </h4>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            מנגנון קריטי לניצול יעיל של המעבד. במקום שהמעבד ימתין ללא מעש בזמן שרכיב איטי (כמו דיסק) מביא נתונים, המעבד עובר להריץ תוכנית אחרת. כשהדיסק מסיים, הוא שולח "פסיקה" (אות חשמלי) למעבד. המעבד עוצר הכל, שומר את ה-PSW וה-PC הנוכחיים, ומפעיל "שגרה לטיפול בפסיקות" של מערכת ההפעלה.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2.1 Processes Section -->
+            <section aria-labelledby="processes-intro">
+                <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-200 pb-4">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-lg">2.1</span>
+                    <h2 id="processes-intro" class="text-2xl font-bold text-slate-800">מבוא לתהליכים (Processes)</h2>
+                </div>
+
+                <p class="text-slate-700 text-lg mb-8 leading-relaxed">
+                    כדי לאפשר למחשב בעל מעבד יחיד להריץ (לכאורה) עשרות תוכניות במקביל, מערכת ההפעלה משתמשת ב"מקביליות מדומה". היא מחליפה את התהליכים שרצים על המעבד במהירות עצומה, כך שנוצרת אשליה שכולם רצים יחד.
+                </p>
+
+                <!-- 2.1.1 Process Model -->
+                <article class="mb-10">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.1.1 מודל התהליכים</h3>
+                    <p class="text-slate-700 mb-4">
+                        חשוב לעשות אבחנה מוחלטת: תוכנית (Program) היא רק קוד סטטי ששמור בדיסק, בעוד תהליך (Process) הוא תוכנית <strong class="text-indigo-600 bg-indigo-50 px-1 rounded">בריצה</strong>.
+                    </p>
+                    
+                    <!-- Analogy Box -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-r-4 border-indigo-500 p-6 rounded-l-xl shadow-sm">
+                        <h4 class="font-bold text-indigo-900 mb-2 flex items-center">
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            האנלוגיה המושלמת
+                        </h4>
+                        <p class="text-slate-700 leading-relaxed">
+                            התוכנית היא <strong>"מתכון לאפיית עוגה"</strong>, המעבד הוא ה<strong>"אופה"</strong>, והתהליך הוא <strong>"פעולת האפייה עצמה"</strong>. אם האופה מפסיק ללוש כדי לענות לטלפון (החלפת הקשר / פסיקה), הוא יכול לחזור ללוש מאוחר יותר מאותה נקודה, בתנאי שהוא זוכר באיזה שלב הוא עצר (הקשר התהליך).
+                        </p>
+                    </div>
+                </article>
+
+                <!-- 2.1.2 & 2.1.3 Creation and Termination (Grid) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    
+                    <!-- Creation -->
+                    <article class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">2.1.2 יצירת תהליכים</h3>
+                        <p class="text-sm text-slate-500 mb-4">תהליכים חדשים נוצרים במערכת הפעלה במספר מצבים מרכזיים:</p>
+                        <ol class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 bg-indigo-100 text-indigo-600 rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm ml-3 mt-0.5">1</span>
+                                <div>
+                                    <strong class="text-slate-800 block">אתחול המערכת:</strong>
+                                    <span class="text-slate-600 text-sm">יצירת תהליכי רקע (Daemons) של מערכת ההפעלה (כמו שרת אינטרנט או ניהול הדפסות).</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 bg-indigo-100 text-indigo-600 rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm ml-3 mt-0.5">2</span>
+                                <div>
+                                    <strong class="text-slate-800 block">תהליך יוצר תהליך:</strong>
+                                    <span class="text-slate-600 text-sm">תוכנית יכולה לשכפל את עצמה או ליצור תהליכי בן כדי לנצל ריבוי מעבדים או לשפר מודולריות.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 bg-indigo-100 text-indigo-600 rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm ml-3 mt-0.5">3</span>
+                                <div>
+                                    <strong class="text-slate-800 block">עבודות אצווה (Batch):</strong>
+                                    <span class="text-slate-600 text-sm">מערכת ההפעלה מקבלת רשימת משימות ויוצרת תהליך עבור כל משימה לפי הסדר.</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </article>
+
+                    <!-- Termination -->
+                    <article class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">2.1.3 סיום תהליכים</h3>
+                        <p class="text-sm text-slate-500 mb-4">מאחר שתהליכים צורכים משאבים מוגבלים (זיכרון, מעבד), הם חייבים להסתיים. סיום יכול להיות:</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-emerald-500 ml-3 mt-1"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></span>
+                                <div>
+                                    <strong class="text-slate-800 block">רגיל מתוכנן:</strong>
+                                    <span class="text-slate-600 text-sm">התוכנית סיימה את עבודתה בהצלחה ומשחררת משאבים.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-amber-500 ml-3 mt-1"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></span>
+                                <div>
+                                    <strong class="text-slate-800 block">שגיאה צפויה:</strong>
+                                    <span class="text-slate-600 text-sm">התוכנית גילתה בעיה (כמו קובץ חסר) ויצאה בצורה מסודרת.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-red-500 ml-3 mt-1"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg></span>
+                                <div>
+                                    <strong class="text-slate-800 block">שגיאה פטאלית (Crash):</strong>
+                                    <span class="text-slate-600 text-sm">התוכנית ביצעה פעולה אסורה (כמו חלוקה באפס) ומערכת ההפעלה קוטעת אותה.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-purple-500 ml-3 mt-1"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></span>
+                                <div>
+                                    <strong class="text-slate-800 block">הריגה (Kill):</strong>
+                                    <span class="text-slate-600 text-sm">תהליך בעל הרשאות מתאימות פוקד על מערכת ההפעלה לסיים תהליך אחר.</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </article>
+
+                </div>
+
+                <!-- 2.1.4 Hierarchy -->
+                <article class="mb-10 bg-slate-100 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">2.1.4 היררכיה של תהליכים</h3>
+                    <p class="text-slate-700">
+                        תהליכים אינם "צפים" בחלל ריק, אלא מאורגנים במבנה היררכי (עץ של תהליכי-אב ותהליכי-בן), ולמבנה זה יש חוקים הקובעים כיצד תהליכים קשורים זה לזה.
+                    </p>
+                </article>
+
+                <!-- 2.1.5 State Machine -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.1.5 מכונת המצבים (State Machine)</h3>
+                    <p class="text-slate-700 mb-6">
+                        כדי לנהל את המעברים המהירים, מערכת ההפעלה מתייחסת לכל תהליך כנמצא באחד ממצבים מוגדרים מראש. תרשים של מודל שלושת המצבים הבסיסי:
+                    </p>
+
+                    <!-- Responsive visual diagram recreating the ASCII art -->
+                    <div class="bg-slate-800 text-white p-6 rounded-xl overflow-x-auto shadow-inner mb-6 direction-ltr flex flex-col items-center justify-center font-mono text-sm relative min-w-max">
+                        
+                        <!-- Event 2 -->
+                        <div class="text-indigo-300 mb-1 text-center pr-12 text-xs md:text-sm">
+                            (2. המתזמן בחר תהליך אחר)
+                        </div>
+                        
+                        <!-- Top Row (Running <-> Ready) -->
+                        <div class="flex items-center justify-center w-full max-w-lg mb-8 relative">
+                            <!-- Running Box -->
+                            <div class="border-2 border-emerald-400 bg-emerald-900/30 text-emerald-300 px-4 py-2 rounded shadow-lg text-center font-bold">
+                                [ רץ / Running ]
+                            </div>
+                            
+                            <!-- Arrow Top Right to Left (Event 2) -->
+                            <div class="absolute left-1/2 -top-1 w-48 border-t border-dashed border-indigo-400 transform -translate-x-1/2"></div>
+                            <div class="absolute left-[calc(50%-6rem)] -top-[7px] text-indigo-400">◄</div>
+                            
+                            <!-- Spacing -->
+                            <div class="w-24"></div>
+                            
+                            <!-- Ready Box -->
+                            <div class="border-2 border-sky-400 bg-sky-900/30 text-sky-300 px-4 py-2 rounded shadow-lg text-center font-bold">
+                                [ מוכן / Ready ]
+                            </div>
+                        </div>
+
+                        <!-- Bottom Row (Blocked) -->
+                        <div class="flex flex-col items-center justify-center w-full max-w-lg relative">
+                            
+                            <!-- Blocked Box -->
+                            <div class="border-2 border-rose-400 bg-rose-900/30 text-rose-300 px-4 py-2 rounded shadow-lg text-center font-bold z-10">
+                                [ חסום / Blocked ]
+                            </div>
+
+                            <!-- Arrow Running -> Blocked (Event 1) -->
+                            <div class="absolute -left-2 md:left-8 -top-16 h-20 w-8 border-l border-b border-dashed border-rose-400 rounded-bl z-0"></div>
+                            <div class="absolute -left-[14px] md:left-[26px] -top-16 text-rose-400 transform -rotate-90">▲</div>
+                            <div class="absolute -left-12 md:left-[-20px] top-6 text-rose-300 text-xs text-right w-24">
+                                (1. מחכה לקלט)
+                            </div>
+
+                            <!-- Arrow Blocked -> Ready (Event 4) -->
+                            <div class="absolute right-0 md:right-10 -top-16 h-20 w-8 border-r border-b border-dashed border-sky-400 rounded-br z-0"></div>
+                            <div class="absolute right-[25px] md:right-[65px] -top-16 text-sky-400 transform -rotate-90">▲</div>
+                            <div class="absolute -right-16 md:right-[-30px] top-6 text-sky-300 text-xs text-left w-32">
+                                (4. הקלט התקבל)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-emerald-50 p-4 rounded-lg border-b-4 border-emerald-500">
+                            <strong class="text-emerald-800 block mb-1">רץ (Running)</strong>
+                            <span class="text-sm text-slate-700">התהליך שולט כרגע במעבד ומבצע פקודות.</span>
+                        </div>
+                        <div class="bg-rose-50 p-4 rounded-lg border-b-4 border-rose-500">
+                            <strong class="text-rose-800 block mb-1">חסום (Blocked)</strong>
+                            <span class="text-sm text-slate-700">התהליך לא יכול להמשיך לרוץ כי הוא ממתין למשהו (למשל, שקובץ ייקרא מהדיסק).</span>
+                        </div>
+                        <div class="bg-sky-50 p-4 rounded-lg border-b-4 border-sky-500">
+                            <strong class="text-sky-800 block mb-1">מוכן (Ready)</strong>
+                            <span class="text-sm text-slate-700">התהליך יכול לרוץ טכנית, אבל הוא ממתין בתור עד ש"מתזמן התהליכים" יקצה לו את המעבד.</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 p-5 rounded-lg border-r-4 border-slate-400">
+                        <strong class="text-slate-800 block mb-2">מכונת המצבים המשוכללת:</strong>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            כדי לייעל את המערכת, נוספו מצבים נוספים כמו "חדש", "סיום", ובעיקר "חסום בדיסק" ו"מוכן בדיסק". כאשר הזיכרון הראשי (RAM) מתמלא, מערכת ההפעלה מבצעת פינוי זיכרון על ידי החלפה (Swapping) של דפי תהליך שאינם בשימוש רציף אל הזיכרון המשני (Disk) (קובץ החלפה / Swap), כדי לפנות מקום לתהליכים שחייבים לרוץ כעת.
+                        </p>
+                    </div>
+                </article>
+
+                <!-- 2.1.6 Implementation -->
+                <article class="mb-10">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.1.6 יישום תהליכים</h3>
+                    <p class="text-slate-700 leading-relaxed mb-4">
+                        כיצד מערכת ההפעלה עוקבת אחרי כל זה? באמצעות מבנה נתונים קריטי הנקרא <strong class="text-indigo-600 bg-indigo-50 px-1 rounded">טבלת תהליכים (Process Table)</strong>.
+                    </p>
+                    <p class="text-slate-700 leading-relaxed">
+                        כל שורה בטבלה זו מייצגת תהליך אחד ומכילה את כל המידע הדרוש כדי לשחזר את פעולתו לאחר שהושהה (ערכי האוגרים, מצב זיכרון, קבצים פתוחים וכו'). כדי שהמערכת תוכל לעצור תהליך אחד ולהפעיל אחר, היא חייבת לעדכן ולשמור באדיקות את טבלת התהליכים הזו.
+                    </p>
+                </article>
+
+                <!-- 2.1.7 Multiprogramming Model -->
+                <article class="bg-indigo-900 text-white rounded-2xl p-8 shadow-lg relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 opacity-10">
+                        <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-indigo-100 mb-4 relative z-10">2.1.7 מודל לריבוי תוכניות</h3>
+                    <p class="text-indigo-50 mb-6 relative z-10 leading-relaxed">
+                        מדוע אנו רוצים כמה שיותר תהליכים בזיכרון? כי תהליכים מבלים חלק ניכר מזמנם בהמתנה לקלט/פלט (I/O). אם יש רק תהליך אחד, המעבד ימתין ללא מעש.
+                    </p>
+                    
+                    <div class="bg-white/10 backdrop-blur-sm border border-indigo-400/30 rounded-xl p-6 mb-6 relative z-10">
+                        <p class="text-indigo-50 mb-4">קיימת נוסחה פשוטה שממחישה זאת:</p>
+                        <ul class="list-disc list-inside space-y-2 text-indigo-100 mb-4">
+                            <li>אם תהליך ממתין לקלט/פלט אחוז <span class="font-bold text-white bg-indigo-800/50 px-2 rounded">$p$</span> מהזמן.</li>
+                            <li>ויש <span class="font-bold text-white bg-indigo-800/50 px-2 rounded">$n$</span> תהליכים בזיכרון.</li>
+                            <li>ההסתברות ש*כולם* ימתינו יחד היא <span class="font-bold text-white bg-indigo-800/50 px-2 rounded">$p^n$</span>.</li>
+                        </ul>
+                        <p class="text-lg font-semibold text-white mt-4 border-t border-indigo-400/30 pt-4">
+                            לכן, ניצולת המעבד היא: <span class="text-2xl ml-2 bg-indigo-600 px-3 py-1 rounded shadow-inner">$1 - p^n$</span>
+                        </p>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <h4 class="font-bold text-indigo-200 mb-2">נקודת השבירה (Thrashing)</h4>
+                        <p class="text-indigo-100 text-sm leading-relaxed">
+                            אולם, ישנה נקודת שבירה. בהתחלה, ככל שמוסיפים תהליכים, יעילות המעבד עולה ליניארית. אבל מקום מסוים, כשהמערכת עמוסה מדי (נקודה B בגרף שלומדים בהקשר זה), הזיכרון הראשי מתמלא. מערכת ההפעלה מתחילה להשקיע את רוב זמנה בהעתקת תהליכים בין הזיכרון לדיסק במקום להריץ אותם, והיעילות קורסת. <em>ממש כמו כביש מהיר שמתמלא ביותר מדי מכוניות והופך לפקק תנועה אחד גדול.</em>
+                        </p>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 2.2 Threads Section -->
+            <section aria-labelledby="threads-intro">
+                <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-200 pb-4">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-lg">2.2</span>
+                    <h2 id="threads-intro" class="text-2xl font-bold text-slate-800">תהליכונים (Threads)</h2>
+                </div>
+
+                <p class="text-slate-700 text-lg mb-8 leading-relaxed">
+                    כאן נבין כיצד התפתח מודל התהליכים כדי לפתור בעיות מורכבות של ביצועים ומקביליות בתוך אותה תוכנית, ומה קורה למעשה ברמת החומרה ומערכת ההפעלה כאשר תהליכונים פועלים.
+                </p>
+
+                <!-- 2.2.1-2.2.2 Intro & Model -->
+                <article class="mb-10">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.2.1–2.2.2 מבוא ומודל</h3>
+                    <p class="text-slate-700 mb-6">
+                        במודל הקלאסי שראינו בסעיף הקודם, כל תהליך הכיל חוט ביצוע יחיד (Single thread of execution). פירוש הדבר היה שלתהליך יש מרחב כתובות אחד בזיכרון, ומעבד אחד שמריץ את הפקודות שלו בזו אחר זו.<br>
+                        מודל התהליכונים <strong class="text-indigo-600">מפריד בין שני מושגים</strong> שהיו בלתי תלויים בעבר:
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-2 h-full bg-slate-400"></div>
+                            <h4 class="font-bold text-slate-800 text-lg mb-2">📦 התהליך (Process)</h4>
+                            <span class="text-sm font-semibold text-slate-500 uppercase tracking-wider block mb-2">הקצאת משאבים</span>
+                            <p class="text-slate-700 text-sm">
+                                קבוצה של מרחב זיכרון (כתובות), קבצים פתוחים, הרשאות ומשאבים אחרים.
+                            </p>
+                        </div>
+                        <div class="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-2 h-full bg-indigo-500"></div>
+                            <h4 class="font-bold text-indigo-900 text-lg mb-2">🧵 התהליכון (Thread)</h4>
+                            <span class="text-sm font-semibold text-indigo-500 uppercase tracking-wider block mb-2">חוט ביצוע</span>
+                            <p class="text-slate-700 text-sm">
+                                יחידת הריצה הממשית בעלת "אישיות" עצמאית: מחסנית פרטית (Stack), מונה פקודות (PC), ואוגרים (Registers) משלה.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 text-blue-900 p-4 rounded-lg text-sm border border-blue-100 flex items-start">
+                        <svg class="w-6 h-6 text-blue-500 ml-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p>
+                            במערכת מודרנית, תהליך אחד יכול להכיל מספר תהליכונים. <strong>כולם חולקים בדיוק את אותו מרחב זיכרון</strong> (הקוד, הנתונים הגלובליים והערמה - Heap) ואת אותם קבצים פתוחים.
+                        </p>
+                    </div>
+                </article>
+
+                <!-- Why Threads? -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">מדוע אנו זקוקים לתהליכונים?</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2">מקביליות באפליקציה</h4>
+                            <p class="text-sm text-slate-600">
+                                <strong>דוגמת מעבד התמלילים (Word):</strong> תהליכון אחד מקשיב למקלדת ומציג אותיות, שני בודק איות ברקע, ושלישי שומר לדיסק. ללא תהליכונים, בזמן השמירה (פעולה איטית) התוכנה הייתה קופאת ולא ניתן היה להקליד.
+                            </p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2">משקל קל (Lightweight)</h4>
+                            <p class="text-sm text-slate-600">
+                                יצירה והשמדה של תהליכון מהירות <strong>פי 10 עד פי 100</strong> מיצירת תהליך חדש, מכיוון שאין צורך להקצות מרחב כתובות חדש או לעדכן טבלאות זיכרון מורכבות (Page Tables).
+                            </p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2">שיתוף מידע פשוט</h4>
+                            <p class="text-sm text-slate-600">
+                                מכיוון שהם חולקים את אותו הזיכרון, תהליכונים מתקשרים פשוט על ידי קריאה וכתיבה למשתנים גלובליים, ללא צורך במנגנוני תקשורת מורכבים ואיטיים של מערכת ההפעלה (IPC).
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.2.3 POSIX Threads -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.2.3 תהליכוני POSIX (Pthreads)</h3>
+                    <p class="text-slate-700 mb-6">
+                        בימים הראשונים של מערכות ההפעלה, לכל יצרן הייתה דרך משלו ליצור ולנהל תהליכונים, מה שיצר חוסר תאימות קיצוני. כדי לפתור זאת, ארגון <strong>IEEE</strong> הגדיר תקן אחיד בשם <strong>POSIX</strong> (סעיף 1003.1c), והמימוש הסטנדרטי שלו בשפת C נקרא <strong>Pthreads</strong>. זהו ממשק (API) המגדיר עשרות קריאות פונקציה לניהול תהליכונים.
+                    </p>
+                    
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-6 shadow-sm">
+                        <strong class="text-indigo-900 block mb-2">המודל המנטלי (עץ משפחה):</strong>
+                        <p class="text-sm text-slate-700">
+                            ישנו תהליכון אב המייצר (בורא) תהליכוני בן, והם פועלים במקביל במרחב המשותף עד לנקודת סנכרון (לרוב, כאשר האב ממתין לתוצאות החישוב של הבן כדי להמשיך).
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm hover:border-indigo-300 transition-colors">
+                            <code class="block font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded mb-2 w-fit">pthread_create</code>
+                            <p class="text-sm text-slate-700">הפקודה שיוצרת תהליכון חדש. מקבלת כפרמטר פונקציה, והתהליכון החדש מתחיל את מחזור חייו בהרצת פונקציה זו.</p>
+                        </div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm hover:border-indigo-300 transition-colors">
+                            <code class="block font-bold text-rose-700 bg-rose-50 px-2 py-1 rounded mb-2 w-fit">pthread_exit</code>
+                            <p class="text-sm text-slate-700">תהליכון שסיים את עבודתו קורא לפקודה זו כדי לסיים את מחזור חייו (Terminate) באופן מסודר ולשחרר את המחסנית שלו.</p>
+                        </div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm hover:border-indigo-300 transition-colors">
+                            <code class="block font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded mb-2 w-fit">pthread_join</code>
+                            <p class="text-sm text-slate-700">נקודת הסנכרון הקריטית. תהליכון שקורא לפקודה מושהה (נחסם) עד שתהליכון המטרה יבצע <code>exit</code>. חיוני לקבלת תוצאות חישוב.</p>
+                        </div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm hover:border-indigo-300 transition-colors">
+                            <code class="block font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2 w-fit">pthread_yield</code>
+                            <p class="text-sm text-slate-700">מנגנון אדיבות וולונטרי: התהליכון מוותר מרצונו על שארית קוונטום הזמן שלו במעבד ומאפשר לתהליכונים אחרים לרוץ, מבלי להיחסם.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.2.4 Implementation -->
+                <article class="mb-12">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">2.2.4 מימוש תהליכונים (2.2.4–2.2.6)</h3>
+                        <p class="text-slate-700">
+                            זוהי סוגיה מרכזית: <strong>מי מכיר בקיומם של התהליכונים?</strong> קיימות שתי גישות קיצוניות וגישת ביניים, שלכל אחת מהן השלכה קריטית על הארכיטקטורה והביצועים.
+                        </p>
+                    </div>
+
+                    <!-- Comparison Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        
+                        <!-- User Space Threads -->
+                        <div class="bg-white border-2 border-slate-200 rounded-xl overflow-hidden flex flex-col">
+                            <div class="bg-slate-100 p-4 border-b border-slate-200">
+                                <h4 class="font-bold text-slate-800 text-lg">2.2.4 מימוש במרחב המשתמש</h4>
+                                <span class="text-xs text-slate-500 font-mono">User-Space Threads</span>
+                            </div>
+                            <div class="p-6 flex-grow">
+                                <p class="text-sm text-slate-700 mb-4">
+                                    הגרעין (Kernel) אינו מודע לתהליכונים ורואה תהליך קלאסי יחיד. ניהול התהליכונים מתבצע בתוכנית עצמה באמצעות ספריית קוד (Runtime Library) המחזיקה "טבלת תהליכונים פרטית" ומבצעת את התזמון בעצמה.
+                                </p>
+                                <div class="space-y-4">
+                                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                        <strong class="text-emerald-800 text-sm block mb-1">✅ היתרון העצום: מהירות</strong>
+                                        <p class="text-xs text-slate-600">
+                                            החלפת ההקשר (Context Switch) היא אופטימלית ובעלת תקורה מערכתית מזערית (Low Overhead). המעבד לא עובר ל"מצב מיוחס" (ללא קריאת Trap), אין פסיקות חומרה. הכל קורה במרחב המשתמש על ידי החלפת אוגר ה-PC והמחסנית בלבד.
+                                        </p>
+                                    </div>
+                                    <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                                        <strong class="text-red-800 text-sm block mb-1">❌ חיסרון ארכיטקטוני (Architectural Drawback): סכנת חסימת המערכת</strong>
+                                        <p class="text-xs text-slate-600">
+                                            אם תהליכון מבצע קריאת מערכת חוסמת (כמו <code>read</code> מקובץ), מערכת ההפעלה חוסמת את התהליך <strong>כולו</strong>. כלל התהליכונים החולקים את אותו מרחב כתובות מושהים ונכנסים למצב חסום (Blocked State). בנוסף, הגרעין לא יכול לחלק אותם בין ליבות שונות (Multi-core).
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kernel Space Threads -->
+                        <div class="bg-white border-2 border-slate-200 rounded-xl overflow-hidden flex flex-col">
+                            <div class="bg-slate-800 text-white p-4 border-b border-slate-900">
+                                <h4 class="font-bold text-white text-lg">2.2.5 מימוש במרחב הגרעין</h4>
+                                <span class="text-xs text-slate-400 font-mono">Kernel-Space Threads</span>
+                            </div>
+                            <div class="p-6 flex-grow">
+                                <p class="text-sm text-slate-700 mb-4">
+                                    מערכת ההפעלה מכירה ומנהלת את התהליכונים ישירות. טבלת התהליכונים נמצאת בגרעין, והמתזמן (Scheduler) של מערכת ההפעלה בוחר תהליכונים להרצה (ולא רק תהליכים).
+                                </p>
+                                <div class="space-y-4">
+                                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                        <strong class="text-emerald-800 text-sm block mb-1">✅ היתרון: עצמאות וריבוי ליבות</strong>
+                                        <p class="text-xs text-slate-600">
+                                            פתרון מלא לבעיית החסימה. אם תהליכון אחד נחסם בגלל קלט/פלט, הגרעין מזהה זאת ומעלה תהליכון אחר מאותו התהליך. בנוסף, המערכת מנצלת ריבוי ליבות (Multi-core) להרצתם במקביל.
+                                        </p>
+                                    </div>
+                                    <div class="bg-amber-50 p-3 rounded-lg border border-amber-100">
+                                        <strong class="text-amber-800 text-sm block mb-1">⚠️ החיסרון: תקורה (Overhead)</strong>
+                                        <p class="text-xs text-slate-600">
+                                            כל פעולה (יצירה, השמדה, החלפת הקשר) דורשת קריאת מערכת (Trap) ומעבר יקר למרחב הליבה, מה שגורר עלות ביצועים משמעותית ביחס למימוש במרחב המשתמש.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Scheduler Activations -->
+                    <div class="bg-purple-50 border border-purple-200 rounded-xl p-6">
+                        <h4 class="font-bold text-purple-900 text-lg mb-2">2.2.6 הפעלת מתזמן (Scheduler Activations)</h4>
+                        <p class="text-sm text-slate-700 mb-3">
+                            מודל מורכב שפותח כדי ליהנות ממשני העולמות (מהירות המשתמש מול חסינות מחסימות בגרעין). הגרעין מקצה לתהליך "מעבדים וירטואליים", וספריית המשתמש מנהלת עליהם את התהליכונים.
+                        </p>
+                        <div class="bg-white p-3 rounded border border-purple-100 flex items-start">
+                            <span class="text-xl ml-3">💡</span>
+                            <p class="text-sm text-slate-700">
+                                <strong class="text-purple-700">החידוש - מנגנון ה-Upcall:</strong> במקום להקפיא את התהליך כשמתרחשת חסימה, הגרעין מבצע "קריאה מלמטה למעלה" ומעיר את ספריית המשתמש בנקודת כניסה מיוחדת, כדי שתבחר תהליכון אחר שירוץ על המעבד הירטואלי שהתפנה.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.2.7 Challenges -->
+                <article class="bg-rose-50 border border-rose-200 rounded-xl p-8 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 opacity-10">
+                        <svg class="w-32 h-32 text-rose-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22M12 6l7.5 13h-15M11 10h2v5h-2m0 2h2v2h-2"/></svg>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-rose-900 mb-4 relative z-10 flex items-center">
+                        2.2.7 אתגרים והתאמות קוד במעבר למקביליות
+                    </h3>
+                    <p class="text-slate-800 mb-6 relative z-10">
+                        מעבר לעבודה עם תהליכונים אינו פשוט, מכיוון שרוב קוד התוכנה ההיסטורי נכתב מתוך הנחה שיש רק חוט ביצוע אחד. הפעלתו בסביבה מרובת תהליכונים חושפת סכנות תאימות חמורות:
+                    </p>
+
+                    <div class="space-y-6 relative z-10">
+                        <!-- Problem 1 -->
+                        <div class="bg-white/80 p-5 rounded-lg border border-rose-100">
+                            <h4 class="font-bold text-rose-800 mb-2 border-b border-rose-100 pb-2">1. משתנים גלובליים משותפים (לדוגמה <code>errno</code> ב-C)</h4>
+                            <p class="text-sm text-slate-700 mb-3">
+                                אם תהליכון א' נכשל בפעולה, המערכת מעדכנת את <code>errno</code> עם קוד השגיאה. <strong>מצב מרוץ:</strong> לפני שתהליכון א' מספיק לקרוא את השגיאה, המעבד מתחלף ותהליכון ב' מבצע פעולה שמצליחה ומאפסת את <code>errno</code>. תהליכון א' יחזור ויקרא מידע שגוי.
+                            </p>
+                            <p class="text-sm font-semibold text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded inline-block">
+                                🔧 הפתרון: יצירת משתנים פרטיים לכל תהליכון (Thread-Local Storage).
+                            </p>
+                        </div>
+                        
+                        <!-- Problem 2 -->
+                        <div class="bg-white/80 p-5 rounded-lg border border-rose-100">
+                            <h4 class="font-bold text-rose-800 mb-2 border-b border-rose-100 pb-2">2. פונקציות שאינן ניתנות לכניסה חוזרת (Non-Reentrant)</h4>
+                            <p class="text-sm text-slate-700 mb-3">
+                                פונקציות ספריה רבות משתמשות בבופר סטטי פנימי בזיכרון להחזרת תשובה. אם שני תהליכונים קוראים לאותה פונקציה במקביל, הם ידרסו זה לזה את הנתונים בבופר המשותף.
+                            </p>
+                            <p class="text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded inline-block">
+                                🔧 הפתרון: שכתוב לפונקציות Thread-Safe (למשל גרסאות עם סיומת מיוחדת כמו <code>gethostbyname_r</code> שמקבלות בופר חיצוני).
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 2.3 IPC Section -->
+            <section aria-labelledby="ipc-intro">
+                <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-200 pb-4">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-lg">2.3</span>
+                    <h2 id="ipc-intro" class="text-2xl font-bold text-slate-800">תקשורת בין תהליכים (IPC)</h2>
+                </div>
+
+                <p class="text-slate-700 text-lg mb-8 leading-relaxed">
+                    כשאנו מדברים על מערכת הפעלה מודרנית, תהליכים אינם פועלים בבידוד מוחלט. הם צריכים לעבוד יחד, להחליף מידע ולתאם פעולות (הדבר נכון באותה מידה גם לגבי תהליכונים החולקים מרחב זיכרון). בסעיף זה נבין את האתגרים הלוגיים והחומרתיים העמוקים ביותר שנוצרים כאשר מנסים לגרום לשני גופים עצמאיים לעבוד על אותו משאב מבלי להרוס אחד לשני את המידע.
+                </p>
+
+                <!-- 2.3.1 Race Conditions -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.3.1 בעיית תנאי המרוץ (Race Conditions)</h3>
+                    <p class="text-slate-700 mb-4">
+                        כדי שתהליכים ישתפו פעולה, הם חייבים לעיתים קרובות לחלוק משאב משותף: זיכרון, קובץ בדיסק או משתנה גלובלי. כאן נולדת הסכנה הגדולה ביותר.
+                    </p>
+                    
+                    <div class="bg-rose-50 border-r-4 border-rose-500 rounded-l-xl p-6 shadow-sm mb-6">
+                        <strong class="text-rose-900 block mb-2 text-lg">תנאי מרוץ (Race Condition):</strong>
+                        <p class="text-rose-800 leading-relaxed">
+                            מצב שבו שני תהליכים (או יותר) קוראים וכותבים לאותו זיכרון משותף, והתוצאה הסופית של הפעולה <strong class="underline decoration-rose-400">תלויה לחלוטין בסדר ההרצה המדויק</strong> של הפקודות על ידי המעבד (מי הגיע ראשון ומי שני).
+                        </p>
+                    </div>
+
+                    <!-- Spooler Example Timeline -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h4 class="font-bold text-slate-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 ml-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            דוגמה קלאסית: ספריית ההדפסה (Print Spooler)
+                        </h4>
+                        <p class="text-sm text-slate-600 mb-4">
+                            תהליך רוצה להדפיס. הוא מכניס את שם הקובץ למערך משותף בזיכרון במיקום הפנוי הבא, ומעדכן משתנה גלובלי בשם <code class="bg-slate-100 px-1 rounded text-pink-600">next_free_slot</code>.
+                        </p>
+                        
+                        <div class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent pr-4 md:pr-0">
+                            <!-- Step 1 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-sky-500 text-white font-bold text-xs shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">1</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] bg-sky-50 p-4 rounded border border-sky-100 shadow-sm mr-4 md:mr-0">
+                                    <strong class="text-sky-800 block text-sm">תהליך א' קורא</strong>
+                                    <span class="text-slate-600 text-xs">קורא את <code>next_free_slot</code> ורואה שהמקום הפנוי הוא <strong>7</strong>.</span>
+                                </div>
+                            </div>
+                            <!-- Step 2 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-amber-500 text-white font-bold text-xs shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">2</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] bg-amber-50 p-4 rounded border border-amber-100 shadow-sm mr-4 md:mr-0">
+                                    <strong class="text-amber-800 block text-sm">פסיקת שעון (Context Switch)</strong>
+                                    <span class="text-slate-600 text-xs">לפני כתיבת הקובץ, פוקע זמן הריצה (Quantum). המעבד עובר לתהליך ב'.</span>
+                                </div>
+                            </div>
+                            <!-- Step 3 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-indigo-500 text-white font-bold text-xs shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">3</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] bg-indigo-50 p-4 rounded border border-indigo-100 shadow-sm mr-4 md:mr-0">
+                                    <strong class="text-indigo-800 block text-sm">תהליך ב' משלים פעולה</strong>
+                                    <span class="text-slate-600 text-xs">קורא מיקום פנוי (7), כותב את הקובץ שלו במיקום 7, ומקדם את המשתנה ל-<strong>8</strong>.</span>
+                                </div>
+                            </div>
+                            <!-- Step 4 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-red-500 text-white font-bold text-xs shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">4</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] bg-red-50 p-4 rounded border border-red-200 shadow-sm mr-4 md:mr-0">
+                                    <strong class="text-red-800 block text-sm">פגיעה חמורה בשלמות הנתונים (Data Inconsistency)</strong>
+                                    <span class="text-slate-700 text-xs">תהליך א' חוזר לרוץ מהנקודה שבה עצר. הוא כותב את הקובץ שלו למיקום 7. <strong class="text-red-600">פגיעה חמורה בשלמות הנתונים עקב השחתת מידע ודריסת זיכרון בסדר הרצה בלתי-דטרמיניסטי.</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.3.2 Critical Regions & Mutual Exclusion -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.3.2 קטעים קריטיים ומניעה הדדית</h3>
+                    <p class="text-slate-700 mb-6 leading-relaxed">
+                        הפתרון הלוגי הוא למנוע מיותר מתהליך אחד לגשת למשאב המשותף באותו זמן. הגנה זו נקראת <strong>מניעה הדדית (Mutual Exclusion)</strong>. כל תוכנית מחולקת תיאורטית לשני חלקים:
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div class="bg-rose-50 border border-rose-200 p-4 rounded-lg flex items-start">
+                            <span class="text-2xl ml-3">⚠️</span>
+                            <div>
+                                <strong class="text-rose-800 block">הקטע הקריטי (Critical Region)</strong>
+                                <span class="text-sm text-slate-700">חלק הקוד שבו מתבצעת גישה ישירה למשאב המשותף (קריאה/כתיבה). כאן סכנת הדריסה מתרחשת.</span>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-lg flex items-start">
+                            <span class="text-2xl ml-3">✅</span>
+                            <div>
+                                <strong class="text-emerald-800 block">הקטע הלא-קריטי (Non-Critical)</strong>
+                                <span class="text-sm text-slate-700">שאר הקוד של התוכנית (חישובים פנימיים, לוגיקה פרטית). תהליכים יכולים לשהות כאן במקביל ללא חשש.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-slate-800 mb-4">4 התנאים לפתרון נכון למניעה הדדית:</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center">
+                            <div class="w-8 h-8 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg ml-3 shrink-0">1</div>
+                            <span class="text-sm text-slate-700"><strong>מניעה הדדית מוחלטת:</strong> אין שני תהליכים שיכולים לשהות בקטע הקריטי שלהם בו-זמנית.</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center">
+                            <div class="w-8 h-8 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg ml-3 shrink-0">2</div>
+                            <span class="text-sm text-slate-700"><strong>אי-תלות בחומרה:</strong> אסור להניח הנחות לגבי מהירות המעבדים או מספר הליבות במערכת.</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center">
+                            <div class="w-8 h-8 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg ml-3 shrink-0">3</div>
+                            <span class="text-sm text-slate-700"><strong>אי-חסימה מבחוץ:</strong> תהליך בקטע הלא-קריטי שלו, אסור לו לחסום כניסת תהליך אחר לקטע הקריטי.</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-center">
+                            <div class="w-8 h-8 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg ml-3 shrink-0">4</div>
+                            <span class="text-sm text-slate-700"><strong>זמן המתנה סופי (No Starvation):</strong> תהליך לא ימתין לנצח, הוא חייב לקבל אישור כניסה תוך זמן חסום.</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.3.3 Busy Waiting Solutions + Peterson Code -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">2.3.3 ניסיונות לפתרון בעזרת "המתנה פעילה" (Busy Waiting)</h3>
+                    <p class="text-slate-700 mb-6">
+                        נבחן את הדרכים השונות שהוצעו לאורך השנים כדי לממש מניעה הדדית, ונבין מדוע חלקן נכשלו וכיצד החומרה נחלצה לעזרה.
+                    </p>
+
+                    <div class="space-y-6">
+                        <!-- A. Interrupts -->
+                        <div class="bg-white border-r-4 border-slate-400 p-5 rounded-l-lg shadow-sm">
+                            <h4 class="font-bold text-slate-800 text-lg flex items-center mb-2">
+                                א. השבתת פסיקות (Disabling Interrupts)
+                            </h4>
+                            <p class="text-sm text-slate-700 mb-2">
+                                תהליך מריץ פקודת חומרה המכבה פסיקות (<code>cli</code>) בכניסה ומדליק (<code>sti</code>) ביציאה. המעבד לא יכול לבצע Context Switch.
+                            </p>
+                            <div class="bg-slate-50 p-3 rounded text-sm text-slate-600 border border-slate-200">
+                                <strong class="text-red-600 block">למה זה רע?</strong>
+                                1. מסוכן למשתמש (לולאה אינסופית = המחשב קופא לנצח).<br>
+                                2. <strong class="text-slate-800">נכשל בריבוי ליבות (Multi-core):</strong> השבתה בליבה אחת לא מונעת מליבה אחרת לגשת לאותו זיכרון.
+                            </div>
+                        </div>
+
+                        <!-- B. Lock Variables -->
+                        <div class="bg-white border-r-4 border-red-400 p-5 rounded-l-lg shadow-sm">
+                            <h4 class="font-bold text-slate-800 text-lg flex items-center mb-2">
+                                ב. משתני נעילה (Lock Variables) – פתרון תוכנה
+                            </h4>
+                            <p class="text-sm text-slate-700 mb-2">
+                                משתנה תוכנה משותף <code>lock</code>. אם 0, הקטע פנוי. תהליך משנה ל-1 ונכנס, ומאפס ביציאה.
+                            </p>
+                            <div class="bg-red-50 p-3 rounded text-sm text-red-800 border border-red-100">
+                                <strong>❌ כישלון:</strong> סובל מתנאי המרוץ עצמו! שני תהליכים קוראים 0 יחד, שניהם כותבים 1 ושניהם נכנסים במקביל.
+                            </div>
+                        </div>
+
+                        <!-- C. Strict Alternation -->
+                        <div class="bg-white border-r-4 border-amber-400 p-5 rounded-l-lg shadow-sm">
+                            <h4 class="font-bold text-slate-800 text-lg flex items-center mb-2">
+                                ג. התחלפות קפדנית (Strict Alternation)
+                            </h4>
+                            <p class="text-sm text-slate-700 mb-2">
+                                משתנה <code>turn</code> מציין של מי התור. תהליך מחכה בלולאה עד שהתור שלו מגיע.
+                            </p>
+                            <div class="bg-amber-50 p-3 rounded text-sm text-amber-900 border border-amber-100 mb-2">
+                                <strong>⚠️ כישלון ארכיטקטוני (הפרת תנאי 3):</strong> תהליך 1 עושה חישוב ארוך מחוץ לקטע הקריטי, בזמן שהתור הוא שלו (<code>turn=1</code>). תהליך 0 רוצה להיכנס שוב אך נחסם בלולאה בגלל תהליך 1 שבכלל לא משתמש במשאב. תהליך מחוץ לקטע הקריטי חוסם תהליך אחר!
+                            </div>
+                        </div>
+
+                        <!-- D. Peterson -->
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl overflow-hidden shadow-sm">
+                            <div class="p-5 border-b border-emerald-200">
+                                <h4 class="font-bold text-emerald-900 text-lg flex items-center mb-3">
+                                    ד. הפתרון של פיטרסון (Peterson's Algorithm - 1981)
+                                </h4>
+                                <p class="text-sm text-slate-700 mb-3">
+                                    פיטרסון שילב בין רעיון "משתנה התור" (<code>turn</code>) לבין רעיון "הצהרת הכוונות" (<code>interested</code>). האלגוריתם משתמש במערך בוליאני המציין מי מהתהליכים מעוניין להיכנס לקטע הקריטי, ובמשתנה התור המכריע התנגשויות.
+                                </p>
+                                <p class="text-sm font-semibold text-emerald-800 bg-emerald-100/50 p-3 rounded border border-emerald-200">
+                                    💡 הרעיון הגאוני הוא <strong>האדיבות</strong>: תהליך שמצהיר על כוונתו להיכנס, <em>מיד מעביר את התור</em> (<code>turn</code>) לתהליך השני. אם שניהם מנסים להיכנס יחד, האחרון שמעביר את התור הוא זה שייתקע בלולאת ההמתנה הפעילה.
+                                </p>
+                            </div>
+                            <div dir="ltr" class="text-left bg-slate-800 text-slate-200 p-5 text-sm overflow-x-auto shadow-inner rounded-b-xl">
+<pre><code><span class="token-keyword">#define</span> FALSE <span class="token-function">0</span>
+<span class="token-keyword">#define</span> TRUE <span class="token-function">1</span>
+<span class="token-keyword">#define</span> N <span class="token-function">2</span> <span class="token-comment">// מספר התהליכים</span>
+
+<span class="token-keyword">int</span> turn; <span class="token-comment">// משתנה המגדיר של מי התור כעת</span>
+<span class="token-keyword">int</span> interested[N] = {FALSE, FALSE}; <span class="token-comment">// מערך הבעת עניין</span>
+
+<span class="token-keyword">void</span> <span class="token-function">enter_region</span>(<span class="token-keyword">int</span> process) {
+    <span class="token-keyword">int</span> other;
+    other = <span class="token-function">1</span> - process; <span class="token-comment">// זהות התהליך השני</span>
+    
+    interested[process] = TRUE; <span class="token-comment">// הבעת עניין להיכנס</span>
+    turn = process; <span class="token-comment">// אדיבות: קביעת התור לתהליך הנוכחי</span>
+    
+    <span class="token-comment">// המתנה פעילה (Busy Waiting):</span>
+    <span class="token-comment">// "כל עוד אני מעוניין, והתור הוא שלי, והשני גם מעוניין - אני אחכה"</span>
+    <span class="token-keyword">while</span> (turn == process && interested[other] == TRUE) ; 
+}
+
+<span class="token-keyword">void</span> <span class="token-function">leave_region</span>(<span class="token-keyword">int</span> process) {
+    interested[process] = FALSE; <span class="token-comment">// יציאה וביטול העניין</span>
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- E. TSL -->
+                        <div class="bg-slate-800 text-white border-r-4 border-indigo-500 p-5 rounded-l-lg shadow-md relative overflow-hidden">
+                            <h4 class="font-bold text-indigo-300 text-lg flex items-center mb-2 relative z-10">
+                                ה. פתרון חומרתי: פקודת TSL (Test and Set Lock)
+                            </h4>
+                            <p class="text-sm text-slate-300 mb-3 relative z-10">
+                                פקודת מכונה אטומית (בלתי ניתנת לחלוקה) ברמת החומרה: <code>TSL RX, LOCK</code>. הבדיקה והכתיבה מתבצעות כפעולה אחת (מקפיא את אפיק הזיכרון - Memory Bus), ולכן תנאי המרוץ נמנע. (עדיין קיימת המתנה פעילה - Spinlock).
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.3.4 Priority Inversion -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.3.4 בעיית העדיפות ההפוכה (Priority Inversion) והמעבר לחסימה</h3>
+                    <div class="bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-200 rounded-xl p-6 shadow-sm mb-6">
+                        <strong class="text-rose-900 block mb-3 text-lg">תרחיש המבוי הסתום (Deadlock) של ההמתנה הפעילה:</strong>
+                        <ul class="space-y-2 text-sm text-slate-800 list-disc list-inside">
+                            <li>תהליך חלש (<strong class="text-blue-600">L</strong>) נכנס לקטע הקריטי ותופס נעילה.</li>
+                            <li>תהליך חזק (<strong class="text-red-600">H</strong>) עולה למעבד ומקפיא את <strong class="text-blue-600">L</strong>.</li>
+                            <li><strong class="text-red-600">H</strong> מנסה להיכנס, מגלה שנעול, ונכנס ללולאת המתנה פעילה.</li>
+                            <li><strong class="text-red-600 bg-red-100 px-1 rounded">המלכודת:</strong> מכיוון ש-<strong class="text-red-600">H</strong> זולל את המעבד בעדיפותו, המתזמן לעולם לא יחזיר את המעבד ל-<strong class="text-blue-600">L</strong>. המערכת קפאה לנצח!</li>
+                        </ul>
+                    </div>
+                    <div class="bg-indigo-50 border-r-4 border-indigo-500 p-5 rounded-l-lg">
+                        <h4 class="font-bold text-indigo-900 mb-2">הפתרון: מנגנוני Sleep ו-Wakeup (חסימה במקום המתנה)</h4>
+                        <p class="text-sm text-slate-700">
+                            עברנו למנגנון של <strong>חסימה (Blocking)</strong>. במקום לרוץ בלולאה (Spin), תהליך מבצע <code>sleep()</code> שעוצר אותו ומעביר אותו למצב Blocked ללא צריכת מעבד. כשהמשאב משתחרר, מבוצע <code>wakeup()</code> כדי להעירו. אך פתרון זה הוביל לבעיה אנושה חדשה...
+                        </p>
+                    </div>
+                </article>
+
+                <!-- 2.3.5 Semaphores & Lost Wakeup -->
+                <article class="mb-12 relative overflow-hidden bg-white border border-rose-200 rounded-2xl shadow-lg">
+                    <div class="relative z-10 p-8">
+                        <h3 class="text-2xl font-bold text-rose-900 mb-4 border-b border-rose-100 pb-4">2.3.5 בעיית היצרן-צרכן וסמפורים (Semaphores)</h3>
+                        <p class="text-slate-800 mb-6">
+                            מודל היצרן-צרכן ממחיש את הצורך ב-Sleep/Wakeup. תהליך מייצר נתונים לבאפר מוגבל, ותהליך אחר צורך. אם מלא - היצרן נרדם. אם ריק - הצרכן נרדם. הבעיה נוצרת כי משתנה מונה הפריטים לא מוגן.
+                        </p>
+                        
+                        <div class="bg-rose-100 text-rose-900 p-5 rounded-xl border border-rose-300 shadow-inner mb-8">
+                            <h4 class="font-bold text-lg mb-3 flex items-center">
+                                <svg class="w-6 h-6 ml-2 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                הכשל הקטלני: פסיקת ההשכמה האבודה (Lost Wakeup)
+                            </h4>
+                            <p class="text-sm mb-4">
+                                הצרכן קורא שהבאפר ריק ומחליט לישון. <strong>רגע לפני ה-sleep:</strong> המתזמן מעלה את היצרן. היצרן מייצר פריט ושולח אות <code>wakeup</code> לצרכן. <strong class="text-rose-700 bg-rose-200/50 p-1 rounded">האסון:</strong> הצרכן עדיין לא ישן טכנית! אות ההשכמה הולך לאיבוד. כשהצרכן יחזור לרוץ הוא יבצע את ה-sleep ויישן לנצח.
+                            </p>
+                        </div>
+
+                        <!-- Semaphores Solution -->
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-xl overflow-hidden">
+                            <div class="p-6 border-b border-indigo-200">
+                                <h4 class="font-bold text-indigo-900 text-xl mb-3">הפתרון (1965): סמפורים של דייקסטרה</h4>
+                                <p class="text-sm text-slate-700 mb-4">
+                                    הסמפור הוא משתנה שלם שיכול <strong>לספור את מספר "ההשכמות" שנשמרו לעתיד</strong> ובכך למנוע מהן ללכת לאיבוד. לסמפור שתי פעולות בלתי-ניתנות-לחלוקה (אטומיות) הנתמכות על ידי מערכת ההפעלה:
+                                </p>
+                                <ul class="space-y-2 text-sm text-slate-800 mb-4">
+                                    <li class="bg-white p-3 rounded shadow-sm border border-indigo-100">
+                                        <strong class="text-rose-600 font-bold">Down (Wait / P):</strong> בודק אם הסמפור גדול מ-0. אם כן, מוריד אותו ב-1 וממשיך. אם 0, התהליך <strong>נרדם מבלי לצרוך מעבד (Blocked)</strong> עד שיעירו אותו.
+                                    </li>
+                                    <li class="bg-white p-3 rounded shadow-sm border border-indigo-100">
+                                        <strong class="text-emerald-600 font-bold">Up (Signal / V):</strong> מעלה את ערך הסמפור ב-1. אם יש תהליכים ישנים הממתינים לו, המערכת תבחר אחד ותעיר אותו (מעבר ל-Ready).
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Semaphore Code -->
+                            <div dir="ltr" class="text-left bg-slate-800 text-slate-200 p-6 text-sm overflow-x-auto shadow-inner rounded-b-xl">
+<pre><code><span class="token-keyword">#define</span> N <span class="token-function">100</span> <span class="token-comment">// גודל המאגר (Buffer)</span>
+<span class="token-keyword">typedef</span> <span class="token-keyword">int</span> semaphore;
+
+semaphore mutex = <span class="token-function">1</span>; <span class="token-comment">// שומר על מניעה הדדית (גישה בלעדית למאגר)</span>
+semaphore empty = N; <span class="token-comment">// סופר כמה מקומות פנויים יש במאגר</span>
+semaphore full = <span class="token-function">0</span>;  <span class="token-comment">// סופר כמה מקומות מלאים יש במאגר</span>
+
+<span class="token-keyword">void</span> <span class="token-function">producer</span>(<span class="token-keyword">void</span>) {
+    <span class="token-keyword">int</span> item;
+    <span class="token-keyword">while</span> (TRUE) {
+        item = <span class="token-function">produce_item</span>(); <span class="token-comment">// ייצור פריט חדש</span>
+        
+        <span class="token-function">down</span>(&empty); <span class="token-comment">// מקטין פנויים (אם 0, נרדם עד שיהיה מקום)</span>
+        <span class="token-function">down</span>(&mutex); <span class="token-comment">// כניסה לקטע הקריטי</span>
+        
+        <span class="token-function">insert_item</span>(item); <span class="token-comment">// הכנסת הפריט למאגר</span>
+        
+        <span class="token-function">up</span>(&mutex);   <span class="token-comment">// יציאה מהקטע הקריטי</span>
+        <span class="token-function">up</span>(&full);    <span class="token-comment">// מגדיל מלאים (ומעיר צרכן אם ישן)</span>
+    }
+}
+
+<span class="token-keyword">void</span> <span class="token-function">consumer</span>(<span class="token-keyword">void</span>) {
+    <span class="token-keyword">int</span> item;
+    <span class="token-keyword">while</span> (TRUE) {
+        <span class="token-function">down</span>(&full);  <span class="token-comment">// מקטין מלאים (אם 0, נרדם כי אין מה לצרוך)</span>
+        <span class="token-function">down</span>(&mutex); <span class="token-comment">// כניסה לקטע הקריטי</span>
+        
+        item = <span class="token-function">remove_item</span>(); <span class="token-comment">// הוצאת פריט</span>
+        
+        <span class="token-function">up</span>(&mutex);   <span class="token-comment">// יציאה מהקטע הקריטי</span>
+        <span class="token-function">up</span>(&empty);   <span class="token-comment">// מגדיל פנויים (ומעיר יצרן אם ישן)</span>
+        
+        <span class="token-function">consume_item</span>(item); <span class="token-comment">// טיפול בפריט</span>
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.3.6 to 2.3.8 Missing IPC Methods -->
+                <article class="mb-12">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- 2.3.6 Mutexes -->
+                        <div class="bg-white border-t-4 border-indigo-400 rounded-lg p-5 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">2.3.6 מנעולים (Mutexes)</h3>
+                            <p class="text-sm text-slate-700 mb-3">
+                                מנעול (Mutex) הוא גרסה מפושטת של סמפור <strong>שאינה סופרת</strong>, אלא מנהלת מצב בינארי בלבד: נעול (0) או פתוח (1). הוא משמש נטו להגנה על קטע קריטי ללא ספירת משאבים.
+                            </p>
+                            <p class="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
+                                <strong>היתרון במרחב המשתמש:</strong> קל לממש בעזרת TSL, אך בניגוד להמתנה פעילה, המנעול קורא לפונקציית <code>thread_yield()</code> שמוותרת מרצון על המעבד לתהליכון אחר, וחוסכת משאבים למערכת.
+                            </p>
+                        </div>
+
+                        <!-- 2.3.7 Monitors -->
+                        <div class="bg-white border-t-4 border-emerald-400 rounded-lg p-5 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">2.3.7 מבני פיקוח (Monitors)</h3>
+                            <p class="text-sm text-slate-700 mb-3">
+                                מבנה ב<strong>שפה עילית</strong> (כמו Java/C#) שמאגד משתנים ופונקציות. הקומפיילר עצמו מייצר את נעילות ה-Mutex ומבטיח אטומטיות, מה שמונע טעויות אנוש של מתכנתים ששוכחים לעשות Up/Down.
+                            </p>
+                            <p class="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
+                                כדי להמתין לאירועים בתוך המוניטור, משתמשים במשתני תנאי (Condition Variables) עם פקודות בטוחות <code>Wait(c)</code> ו-<code>Signal(c)</code>.
+                            </p>
+                        </div>
+
+                        <!-- 2.3.8 Message Passing -->
+                        <div class="bg-white border-t-4 border-amber-400 rounded-lg p-5 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">2.3.8 העברת הודעות (Message Passing)</h3>
+                            <p class="text-sm text-slate-700 mb-3">
+                                סמפורים דורשים <em>זיכרון משותף</em>. במערכות מבוזרות (רשת מחשבים), משתמשים בהעברת הודעות: <code>send(dest, &msg)</code> ו-<code>receive(src, &msg)</code>.
+                            </p>
+                            <p class="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
+                                <strong>אתגרי רשת:</strong> מנגנון זה חייב לטפל בבעיות תקשורת כמו הודעות שאובדות (מוסיפים אישורים - ACKs), בעיות אבטחה וזיהוי כפילויות.
+                            </p>
+                        </div>
+
+                    </div>
+                </article>
+
+                <!-- 2.3.9 Barriers -->
+                <article class="mb-12 bg-slate-50 border border-slate-200 rounded-2xl p-8 relative overflow-hidden shadow-sm">
+                    <div class="absolute -left-6 -top-6 opacity-5">
+                        <svg class="w-40 h-40 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 relative z-10">2.3.9 מחסומים (Barriers)</h3>
+                    <p class="text-slate-700 mb-6 relative z-10 leading-relaxed">
+                        בעוד שסמפורים ומנעולים נועדו לאפשר גישה בלעדית למשאב אחד, <strong>מחסומים</strong> נועדו לפתור את הבעיה ההפוכה: סנכרון של <strong>קבוצה שלמה של תהליכונים</strong> שעובדים יחד על משימה שלבית.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                        <div class="bg-white p-5 rounded-lg border border-slate-200">
+                            <strong class="text-slate-800 block mb-2 text-lg">🏕️ המודל המנטלי</strong>
+                            <p class="text-sm text-slate-600">
+                                טיול שנתי: המדריך מציב "מחסום" בסוף המסלול. מי שמגיע למאהל, מחכה. <strong>אף אחד לא מתחיל את המסלול של מחר עד שאחרון המטיילים יגיע.</strong>
+                            </p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg border border-slate-200">
+                            <strong class="text-slate-800 block mb-2 text-lg">⚙️ מנגנון ושימוש</strong>
+                            <p class="text-sm text-slate-600">
+                                פונקציית המחסום (למשל <code>pthread_barrier_wait</code>) חוסמת את התהליכון שמגיע אליה. המערכת משחררת את כולם יחד <strong>רק כאשר</strong> התהליכון ה-$N$ (האחרון) מגיע. אידיאלי לחישובים מקביליים שלביים (מטריצות/סימולציות).
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 2.4 Scheduling Section -->
+            <section aria-labelledby="scheduling-intro">
+                
+                <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-200 pb-4">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-lg">2.4</span>
+                    <h2 id="scheduling-intro" class="text-2xl font-bold text-slate-800">תזמון תהליכים (Process Scheduling)</h2>
+                </div>
+                
+                <p class="text-slate-700 text-lg mb-8 leading-relaxed">
+                    הגענו אל <strong>"מוח קבלת ההחלטות"</strong> של מערכת ההפעלה. נבין כיצד מערכת ההפעלה מחליטה מי ירוץ, מתי, ולכמה זמן מתוך תור המוכנים (Ready).
+                </p>
+
+                <!-- 2.4.1 Intro to Scheduling & 3 Levels -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.4.1 רמות תזמון במערכת מורכבת</h3>
+                    <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm mb-6">
+                        <p class="text-slate-700 leading-relaxed text-sm">
+                            במערכת מרובת תהליכים (Multiprogramming), יש בדרך כלל יותר תהליכים מוכנים ממעבדים פנויים. <strong>מתזמן התהליכים (Scheduler)</strong> מחלק את הזמן. קיימות שלוש רמות:
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-slate-200">
+                        <!-- Short Term -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-sky-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] bg-sky-50 p-5 rounded-xl border border-sky-200 shadow-sm mr-4 md:mr-0">
+                                <strong class="text-sky-900 block text-lg mb-1">תזמון לטווח קצר (CPU Scheduler)</strong>
+                                <p class="text-slate-700 text-sm">התדיר והמהיר ביותר. מעברים בין Ready ל-Running על המעבד הפיזי.</p>
+                            </div>
+                        </div>
+
+                        <!-- Medium Term -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-amber-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] bg-amber-50 p-5 rounded-xl border border-amber-200 shadow-sm mr-4 md:mr-0">
+                                <strong class="text-amber-900 block text-lg mb-1">תזמון לטווח בינוני (Memory/Swap)</strong>
+                                <p class="text-slate-700 text-sm">קובע אילו תהליכים "ייזרקו" לדיסק (Swap Out) ואילו יוחזרו לזיכרון הראשי (Swap In).</p>
+                            </div>
+                        </div>
+
+                        <!-- Long Term -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-600 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] bg-slate-50 p-5 rounded-xl border border-slate-300 shadow-sm mr-4 md:mr-0">
+                                <strong class="text-slate-900 block text-lg mb-1">תזמון לטווח ארוך (Admission)</strong>
+                                <p class="text-slate-700 text-sm">החלטות מקרו: האם תהליך חדש רשאי בכלל להיכנס למערכת ולהתחרות על משאבים.</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Criteria by System Type -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">קריטריונים ומדדים: מה מנסים למקסם?</h3>
+                    <p class="text-slate-700 mb-6">
+                        אלגוריתם מושלם לשרת יהיה קטסטרופלי לבקרת טיסה. לכן המדדים משתנים:
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Batch -->
+                        <div class="bg-white border-2 border-slate-200 rounded-xl p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-800 mb-2">מערכות אצווה (Batch)</h4>
+                            <ul class="space-y-2">
+                                <li class="bg-blue-50 p-2 rounded text-xs border border-blue-100"><strong class="text-blue-800 block">תפוקה (Throughput)</strong> מקסום כמות משימות ליחידת זמן.</li>
+                                <li class="bg-blue-50 p-2 rounded text-xs border border-blue-100"><strong class="text-blue-800 block">ניצולת מעבד</strong> 100% עבודה.</li>
+                            </ul>
+                        </div>
+                        <!-- Interactive -->
+                        <div class="bg-white border-2 border-slate-200 rounded-xl p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-800 mb-2">מערכות אינטראקטיביות</h4>
+                            <ul class="space-y-2">
+                                <li class="bg-emerald-50 p-2 rounded text-xs border border-emerald-100"><strong class="text-emerald-800 block">זמן תגובה (Response)</strong> מזעור הזמן מרגע לחיצה לתגובה.</li>
+                                <li class="bg-emerald-50 p-2 rounded text-xs border border-emerald-100"><strong class="text-emerald-800 block">מידתיות</strong> בקשה פשוטה = תגובה מהירה.</li>
+                            </ul>
+                        </div>
+                        <!-- Real Time -->
+                        <div class="bg-white border-2 border-slate-200 rounded-xl p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-800 mb-2">מערכות זמן אמת</h4>
+                            <ul class="space-y-2">
+                                <li class="bg-rose-50 p-2 rounded text-xs border border-rose-100"><strong class="text-rose-800 block">עמידה בזמנים (Deadlines)</strong> פספוס = אסון.</li>
+                                <li class="bg-rose-50 p-2 rounded text-xs border border-rose-100"><strong class="text-rose-800 block">ניתנות לחיזוי</strong> ידיעה מראש מתי תסתיים המשימה.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.4 Scheduling Algorithms Detailing -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6">פירוט אלגוריתמי תזמון מערכתיים</h3>
+                    
+                    <div class="space-y-8">
+                        <!-- 2.4.2 Batch Algorithms -->
+                        <div class="bg-blue-50/30 border border-blue-100 rounded-xl p-6">
+                            <h4 class="font-bold text-blue-900 text-lg mb-4 flex items-center border-b border-blue-200 pb-2">
+                                <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm mr-2 ml-2">2.4.2</span>
+                                אלגוריתמים למערכות אצווה (Batch Systems)
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white p-4 rounded-lg border border-blue-200 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                    <strong class="text-blue-800 block text-lg mb-1">FCFS</strong>
+                                    <span class="text-xs text-slate-500 font-mono block mb-2">First-Come, First-Served</span>
+                                    <p class="text-sm text-slate-700 mb-2">תור FIFO פשוט. הראשון שמבקש מקבל את המעבד ללא הפקעה (Non-preemptive).</p>
+                                    <p class="text-xs text-slate-600 bg-blue-50 p-2 rounded"><strong class="text-rose-600">הכשל (אפקט השיירה - Convoy Effect):</strong> חישוב ארוך אחד יחסום אחריו עשרות תהליכים קצרים. המעבד מנוצל, אך ה-I/O מושבת.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg border border-blue-200 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                    <strong class="text-blue-800 block text-lg mb-1">SJF</strong>
+                                    <span class="text-xs text-slate-500 font-mono block mb-2">Shortest Job First</span>
+                                    <p class="text-sm text-slate-700 mb-2">בוחר את המשימה שזמן הריצה הכולל שלה הוא <strong>הקצר ביותר</strong>.</p>
+                                    <p class="text-xs text-slate-600 bg-blue-50 p-2 rounded"><strong class="text-emerald-600">היתרון:</strong> מביא לזמן ההמתנה הממוצע הקצר ביותר מתמטית.<br><strong class="text-slate-800 mt-1 block">החיסרון:</strong> דורש להיות נביא - לא יודעים כמה זמן תהליך ירוץ.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg border border-blue-200 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                    <strong class="text-blue-800 block text-lg mb-1">SRTN</strong>
+                                    <span class="text-xs text-slate-500 font-mono block mb-2">Shortest Remaining Time Next</span>
+                                    <p class="text-sm text-slate-700">הגרסה ה<strong>מופקעת (Preemptive)</strong> של SJF. תהליך חדש שזמן הריצה שלו קצר מהזמן ש<em>נותר</em> לתהליך הרץ, יפקיע ממנו את המעבד.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2.4.3 Interactive Algorithms -->
+                        <div class="bg-emerald-50/30 border border-emerald-100 rounded-xl p-6">
+                            <h4 class="font-bold text-emerald-900 text-lg mb-4 flex items-center border-b border-emerald-200 pb-2">
+                                <span class="bg-emerald-600 text-white px-2 py-1 rounded text-sm mr-2 ml-2">2.4.3</span>
+                                אלגוריתמים למערכות אינטראקטיביות (Interactive Systems)
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Round Robin Expanded -->
+                                <div class="bg-white p-5 rounded-lg border border-emerald-200 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                    <strong class="text-emerald-800 block text-lg mb-2">Round Robin (RR)</strong>
+                                    <p class="text-sm text-slate-700 mb-3">
+                                        האלגוריתם ההוגן והנפוץ ביותר. חלוקת זמן מחזורית מבוססת הפקעה. כל תהליך מקבל "קוונטום". אם לא סיים, הוא נזרק לסוף התור.
+                                    </p>
+                                    <div class="text-xs text-slate-700 bg-emerald-50 p-3 rounded border border-emerald-100">
+                                        <strong class="text-emerald-900 block mb-1">דילמת ה"קוונטום":</strong>
+                                        <ul class="list-disc list-inside space-y-1">
+                                            <li><strong>קצר מדי (למשל 4ms):</strong> המערכת תבזבז המון זמן כוח מעבד על החלפות הקשר (Overhead) במקום על עבודה.</li>
+                                            <li><strong>ארוך מדי (למשל 100ms):</strong> המערכת תרגיש "תקועה" ואיטית למשתמש, כמו ב-FCFS. <br><em>פשרה מקובלת: 20-50ms.</em></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Priority Expanded -->
+                                <div class="bg-white p-5 rounded-lg border border-emerald-200 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                    <strong class="text-emerald-800 block text-lg mb-2">Priority Scheduling (תעדוף)</strong>
+                                    <p class="text-sm text-slate-700 mb-3">
+                                        לא כל התהליכים שווים. בוחרים תמיד את המשימה בעלת העדיפות הגבוהה ביותר (מערכת ההפעלה מעל אפליקציות שולחן עבודה).
+                                    </p>
+                                    <div class="text-xs text-slate-700 bg-emerald-50 p-3 rounded border border-emerald-100">
+                                        <strong class="text-rose-700 block mb-1">הבעיה: הרעבה (Starvation)</strong> תהליכים בעדיפות נמוכה לעולם לא יקבלו מעבד אם תמיד יגיעו משימות חשובות יותר.<br><br>
+                                        <strong class="text-emerald-700 block mb-1">הפתרון: הזדקנות (Aging)</strong> המערכת מגדילה בהדרגה את עדיפות התהליך ככל שהוא ממתין יותר, עד שהוא "מנצח" ונכנס למעבד.
+                                    </div>
+                                </div>
+                                <!-- SPN Expanded -->
+                                <div class="bg-white p-5 rounded-lg border border-emerald-200 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                    <strong class="text-emerald-800 block text-lg mb-2">SPN (Shortest Process Next)</strong>
+                                    <p class="text-sm text-slate-700 mb-3">
+                                        הבאת יתרון ה-SJF למערכת אינטראקטיבית. מכיוון שאין דרך לדעת מראש כמה זמן ייקח החישוב הבא של המשתמש, אנו מבצעים <strong>חיזוי פסיכולוגי/מתמטי</strong>.
+                                    </p>
+                                    <div class="text-xs text-slate-700 bg-emerald-50 p-3 rounded border border-emerald-100">
+                                        מודדים זמנים היסטוריים ובעזרת <strong>ממוצע נע מעריכי</strong> מנחשים את זמן הריצה הבא (משקל רב להתנהגות העכשווית, ומשקל הולך ופוחת להיסטוריה הרחוקה).
+                                    </div>
+                                </div>
+                                <!-- Lottery -->
+                                <div class="bg-white p-5 rounded-lg border border-emerald-200 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                    <strong class="text-emerald-800 block text-lg mb-2">Lottery Scheduling (כרטיסי הגרלה)</strong>
+                                    <p class="text-sm text-slate-700 mb-3">
+                                        אלגוריתם אלגנטי של תעדוף יחסי. המערכת מחלקת "כרטיסים". הגרלה אקראית קובעת מי יקבל את הקוונטום הבא. (למשל, כמות כפולה של כרטיסים = פי 2 זמן מעבד).
+                                    </p>
+                                    <div class="text-xs text-emerald-800 bg-emerald-50 p-3 rounded border border-emerald-100 font-bold">
+                                        היתרון העצום: לעולם אין הרעבה. לכל תהליך שמחזיק כרטיס אחד יש הסתברות שאינה אפס להיבחר.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2.4.4 Real Time Algorithms -->
+                        <div class="bg-rose-50/30 border border-rose-100 rounded-xl p-6">
+                            <h4 class="font-bold text-rose-900 text-lg mb-4 flex items-center border-b border-rose-200 pb-2">
+                                <span class="bg-rose-600 text-white px-2 py-1 rounded text-sm mr-2 ml-2">2.4.4</span>
+                                תזמון במערכות זמן אמת (Real-Time Systems)
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg border border-rose-200 shadow-sm">
+                                    <strong class="text-rose-800 block mb-1">Hard Real-Time (זמן אמת קשיח)</strong>
+                                    <p class="text-sm text-slate-700">אי-עמידה ביעד הזמן (Deadline) שקולה <strong>לכישלון טוטאלי ולאסון מערכת</strong> (מערכות נשק, בקרת טיסה, כריות אוויר). זמני הריצה מובטחים ברמה המתמטית הוכחתית.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg border border-rose-200 shadow-sm">
+                                    <strong class="text-rose-800 block mb-1">Soft Real-Time (זמן אמת רך)</strong>
+                                    <p class="text-sm text-slate-700">אי-עמידה ביעד תגרור "גליץ'" ו<strong>ירידה באיכות השירות</strong> בלבד (כגון הזרמת וידאו ביוטיוב או מערכת שמע). המערכת שורדת איחורים מזדמנים ומתאוששת.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.4.5 Policy vs Mechanism -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.4.5 מדיניות מול מנגנונים (Policy vs. Mechanism)</h3>
+                    <p class="text-slate-700 mb-6">
+                        הפרדה ארכיטקטונית חשובה במערכות הפעלה היא ההפרדה בין המנגנון לבין המדיניות. הפרדה זו מאפשרת <strong>גמישות</strong> – ניתן לתת לתהליך מנהל (במרחב המשתמש) לקבוע את המדיניות (למשל, לשנות עדיפויות), בעוד הגרעין ימשיך לבצע את המנגנון בבטחה.
+                    </p>
+
+                    <div class="flex flex-col md:flex-row bg-slate-50 rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                        <!-- Mechanism -->
+                        <div class="md:w-1/2 p-6 border-b md:border-b-0 md:border-l border-slate-200 relative">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-slate-500"></div>
+                            <h4 class="font-bold text-slate-800 text-lg mb-2 flex items-center">
+                                <span class="text-2xl ml-2">⚙️</span> המנגנון (Mechanism)
+                            </h4>
+                            <strong class="text-indigo-600 block mb-3 text-sm">עונה על השאלה: "איך עושים את זה טכנית?"</strong>
+                            <p class="text-slate-700 text-sm">
+                                זהו הקוד שאחראי על ביצוע החלפת ההקשר (Context Switch) בפועל, שמירת האוגרים, קביעת הפסיקות וכדומה.
+                                <span class="block mt-2 font-semibold text-slate-800">מיקום: נמצא עמוק בתוך הגרעין (Kernel).</span>
+                            </p>
+                        </div>
+                        
+                        <!-- Policy -->
+                        <div class="md:w-1/2 p-6 relative">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-indigo-500"></div>
+                            <h4 class="font-bold text-slate-800 text-lg mb-2 flex items-center">
+                                <span class="text-2xl ml-2">🧠</span> המדיניות (Policy)
+                            </h4>
+                            <strong class="text-indigo-600 block mb-3 text-sm">עונה על השאלה: "את מי כדאי לבחור עכשיו?"</strong>
+                            <p class="text-slate-700 text-sm">
+                                זהו האלגוריתם או כללי ההעדפה עצמם (למשל, ההחלטה שתהליכי מערכת חשובים יותר מתהליכי משתמש, ולכן יקבלו עדיפות).
+                                <span class="block mt-2 font-semibold text-slate-800">מיקום: יכול להיות בגרעין או במרחב המשתמש.</span>
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2.4.6 Thread Scheduling -->
+                <article>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.4.6 תזמון תהליכונים (Thread Scheduling)</h3>
+                    <p class="text-slate-700 mb-6">
+                        המתזמן מתנהג אחרת לחלוטין בהתאם למיקום התהליכונים ומידת המודעות של הגרעין לקיומם.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- User-Level Threads -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h4 class="font-bold text-slate-800 text-lg mb-3 pb-2 border-b border-slate-100">תהליכונים במרחב המשתמש<br><span class="text-sm text-slate-500 font-mono">(User-Level Threads)</span></h4>
+                            <p class="text-sm text-slate-700 leading-relaxed mb-4">
+                                מערכת ההפעלה מתזמנת רק את התהליך הגדול ומעניקה לו קוונטום (למשל 50ms). לגרעין אין שום מושג על המתרחש בפנים.
+                            </p>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                הספרייה (Runtime) שבתוך התהליך מתזמנת את התהליכונים הפנימיים שלה בתוך חלון ה-50ms הללו.
+                            </p>
+                            <div class="mt-4 p-3 bg-slate-50 rounded border border-slate-100 text-xs text-slate-600">
+                                <strong>השורה התחתונה:</strong> החלפת ההקשר מהירה ביותר (ללא פניה לגרעין), אך תהליכון אחד חוסם (I/O) ישבית את חלון הזמן כולו.
+                            </div>
+                        </div>
+
+                        <!-- Kernel-Level Threads -->
+                        <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200 shadow-sm">
+                            <h4 class="font-bold text-indigo-900 text-lg mb-3 pb-2 border-b border-indigo-200">תהליכונים במרחב הגרעין<br><span class="text-sm text-indigo-600 font-mono">(Kernel-Level Threads)</span></h4>
+                            <p class="text-sm text-slate-800 leading-relaxed mb-4">
+                                הגרעין מכיר ומתזמן ישירות כל תהליכון אינדיבידואלי, בדיוק כפי שהוא מתזמן תהליכים נפרדים.
+                            </p>
+                            <p class="text-sm text-slate-800 leading-relaxed">
+                                יכול ליישם <strong>מדיניות עדיפויות גלובלית</strong> (כגון שילוב תהליכונים מתהליכים שונים במקביל או ריצה על מעבדים שונים).
+                            </p>
+                            <div class="mt-4 p-3 bg-white/60 rounded border border-indigo-100 text-xs text-slate-700">
+                                <strong>השורה התחתונה:</strong> מונע את סכנת החסימה הכוללת, אך תקורת הביצוע יקרה בגלל ביצוע החלפת הקשר מלאה דרך פסיקות מערכת.
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 2.5 Classic Synchronization Problems Section -->
+            <section aria-labelledby="classic-sync-intro">
+                
+                <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-200 pb-4 mt-8">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-lg">2.5</span>
+                    <h2 id="classic-sync-intro" class="text-2xl font-bold text-slate-800">בעיות סנכרון קלאסיות</h2>
+                </div>
+
+                <p class="text-slate-700 text-lg mb-8 leading-relaxed">
+                    שתי הבעיות הללו – <strong>בעיית הפילוסופים הסועדים</strong> ו<strong>בעיית הקוראים והכותבים</strong> – הן אבני הבוחן הקלאסיות ביותר במערכות הפעלה. הן מודלים מופשטים שמייצגים בעיות אמיתיות במסדי נתונים.
+                </p>
+
+                <!-- 2.5.1 Dining Philosophers -->
+                <article class="mb-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.5.1 בעיית הפילוסופים הסועדים (The Dining Philosophers)</h3>
+                    <p class="text-slate-700 mb-6">
+                        בעיה זו הוגדרה ע"י דייקסטרה כדי להמחיש את האתגרים של הקצאת משאבים מוגבלים, כאשר <strong>כל תהליך זקוק ליותר ממשאב יחיד</strong> כדי לבצע את עבודתו.
+                    </p>
+
+                    <!-- Mental Model -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center md:items-start gap-6 shadow-sm">
+                        <div class="w-24 h-24 bg-white rounded-full border-4 border-slate-200 shadow-inner flex items-center justify-center shrink-0 text-4xl">
+                            🍽️
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-2">המודל המנטלי והתרחיש</h4>
+                            <p class="text-sm text-slate-700 mb-3">
+                                5 פילוסופים סביב שולחן עגול. הם חושבים (Thinking) או אוכלים (Eating). במרכז קערת אורז, ובין כל שני פילוסופים מונח <strong>מקל אכילה</strong> (Chopstick) אחד. (סה"כ 5 פילוסופים ו-5 מקלות).
+                            </p>
+                            <div class="bg-indigo-50 border-r-4 border-indigo-400 p-3 rounded-l text-sm text-slate-700">
+                                <strong class="text-indigo-800 block mb-1">החוקים הפיזיקליים:</strong>
+                                <ul class="list-disc list-inside">
+                                    <li>פילוסוף זקוק ל-2 מקלות במקביל (ימינו ושמאלו) כדי לאכול.</li>
+                                    <li>ניתן להרים רק מקל אחד בכל פעם, ואסור לקחת מקל שביד של שכן.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deadlock Trap -->
+                    <div class="bg-rose-50 border border-rose-200 rounded-xl p-6 mb-8 shadow-sm relative overflow-hidden">
+                        <div class="absolute -left-6 -top-6 opacity-10">
+                            <svg class="w-32 h-32 text-rose-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                        </div>
+                        <h4 class="font-bold text-rose-900 text-lg mb-3 relative z-10 flex items-center">
+                            הכשל המרכזי: המלכודת של המבוי הסתום (Deadlock)
+                        </h4>
+                        <p class="text-sm text-slate-800 mb-4 relative z-10">
+                            פתרון נאיבי: <em>"תרים שמאל, ואז ימין"</em> יוביל לקריסה בתרחיש הבא:
+                        </p>
+                        <ol class="space-y-3 relative z-10">
+                            <li class="flex items-start">
+                                <span class="bg-rose-200 text-rose-800 font-bold w-6 h-6 rounded-full flex items-center justify-center text-xs ml-3 shrink-0 mt-0.5">1</span>
+                                <span class="text-sm text-slate-800">כולם הופכים לרעבים <strong>בדיוק באותו הזמן</strong>.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-rose-200 text-rose-800 font-bold w-6 h-6 rounded-full flex items-center justify-center text-xs ml-3 shrink-0 mt-0.5">2</span>
+                                <span class="text-sm text-slate-800">כולם מושיטים יד שמאל. לכל 5 המקלות יש בעלים.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-rose-200 text-rose-800 font-bold w-6 h-6 rounded-full flex items-center justify-center text-xs ml-3 shrink-0 mt-0.5">3</span>
+                                <span class="text-sm text-slate-800">כעת מנסים להרים ימין. <strong>אך המקל מימין הוא מקל שמאל של השכן!</strong></span>
+                            </li>
+                        </ol>
+                        <div class="mt-4 p-3 bg-rose-100 text-rose-900 rounded font-semibold text-center text-sm relative z-10 shadow-inner">
+                            תוצאה: כולם תקועים לנצח במצב חסום (Blocked) עקב "המתנה מעגלית".
+                        </div>
+                    </div>
+
+                    <!-- Solutions -->
+                    <h4 class="font-bold text-slate-800 mb-4">פתרונות מקובלים</h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white border-2 border-emerald-200 rounded-xl p-5 shadow-sm">
+                            <strong class="text-emerald-800 block mb-2 text-lg">1. הפתרון האסימטרי (שבירת המעגליות)</strong>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                קביעת חוק שונה לפילוסוף אחד. פילוסופים 1-4 ירימו קודם שמאל ואז ימין, ואילו פילוסוף 5 ירים <strong>קודם ימין ואז שמאל</strong>. זה מבטיח שלפחות אחד יצליח.
+                            </p>
+                        </div>
+                        <div class="bg-white border-2 border-emerald-200 rounded-xl p-5 shadow-sm">
+                            <strong class="text-emerald-800 block mb-2 text-lg">2. פתרון המצבים והסמפורים</strong>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                מנהלים מערך מצבים. פילוסוף עובר ל-<code>EATING</code> <strong>רק אם</strong> שני שכניו אינם אוכלים. הבדיקה מוגנת ב-Mutex גלובלי (אטומית).
+                            </p>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- 2.5.2 Readers Writers + CODE -->
+                <article class="mb-12 mt-12">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.5.2 בעיית הקוראים והכותבים (Readers-Writers)</h3>
+                    <p class="text-slate-700 mb-6">
+                        מודלת בעיה קלאסית של מסד נתונים המייצגת ניגוד אינטרסים בניהול גישה (שונה מיצרן-צרכן).
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div class="bg-sky-50 border border-sky-200 rounded-xl p-5 shadow-sm">
+                            <strong class="text-sky-900 block mb-2 text-lg">📖 קוראים (Readers)</strong>
+                            <p class="text-sm text-slate-700"><strong>מספר בלתי מוגבל</strong> של קוראים יכולים לקרוא מהקובץ בו זמנית (כי הם לא משנים אותו).</p>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
+                            <strong class="text-amber-900 block mb-2 text-lg">✍️ כותבים (Writers)</strong>
+                            <p class="text-sm text-slate-700">אם כותב מתעדכן - הוא חייב <strong>גישה בלעדית לחלוטין!</strong> אסור לאף קורא או כותב אחר להימצא יחד איתו.</p>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-slate-800 mb-4">גרסה א': פתרון המעדיף קוראים (Readers Preference)</h4>
+                    
+                    <div class="bg-white border-2 border-slate-200 rounded-xl overflow-hidden shadow-sm mb-6">
+                        <div class="bg-slate-100 border-b border-slate-200 p-4">
+                            <p class="text-sm text-slate-700">
+                                ברגע שקורא משיג גישה, כל קורא נוסף רשאי להיכנס מיד. הכותב ימתין לריקון מוחלט. מנגנון זה משתמש במונה <code>rc</code> שננעל ע"י <code>mutex</code> ובמנעול מסד <code>db</code>.
+                            </p>
+                        </div>
+                        <div dir="ltr" class="text-left bg-slate-800 text-slate-200 p-5 text-sm overflow-x-auto">
+<pre><code><span class="token-keyword">typedef</span> <span class="token-keyword">int</span> semaphore;
+semaphore mutex = <span class="token-function">1</span>; <span class="token-comment">// מנעול להגנה על המשתנה rc</span>
+semaphore db = <span class="token-function">1</span>;    <span class="token-comment">// מנעול להגנה על מסד הנתונים עצמו</span>
+<span class="token-keyword">int</span> rc = <span class="token-function">0</span>;          <span class="token-comment">// מונה קוראים (read count)</span>
+
+<span class="token-keyword">void</span> <span class="token-function">reader</span>(<span class="token-keyword">void</span>) {
+    <span class="token-keyword">while</span> (TRUE) {
+        <span class="token-function">down</span>(&mutex); <span class="token-comment">// הגנה על המונה</span>
+        rc = rc + <span class="token-function">1</span>;  <span class="token-comment">// קורא חדש נכנס</span>
+        <span class="token-keyword">if</span> (rc == <span class="token-function">1</span>) <span class="token-function">down</span>(&db); <span class="token-comment">// הקורא הראשון נועל את מסד הנתונים לכותבים!</span>
+        <span class="token-function">up</span>(&mutex);
+        
+        <span class="token-function">read_data_base</span>(); <span class="token-comment">// ביצוע הקריאה (המונים יכולים לקרוא כאן במקביל)</span>
+        
+        <span class="token-function">down</span>(&mutex);
+        rc = rc - <span class="token-function">1</span>;  <span class="token-comment">// קורא יוצא</span>
+        <span class="token-keyword">if</span> (rc == <span class="token-function">0</span>) <span class="token-function">up</span>(&db); <span class="token-comment">// אם אני הקורא האחרון, שחרר את המסד לכותבים</span>
+        <span class="token-function">up</span>(&mutex);
+        
+        <span class="token-function">use_data_read</span>();
+    }
+}
+
+<span class="token-keyword">void</span> <span class="token-function">writer</span>(<span class="token-keyword">void</span>) {
+    <span class="token-keyword">while</span> (TRUE) {
+        <span class="token-function">create_data</span>();
+        <span class="token-function">down</span>(&db); <span class="token-comment">// חכה שכל הקוראים ייצאו, ונעל את המסד</span>
+        <span class="token-function">write_data_base</span>(); <span class="token-comment">// עדכון המידע בצורה בלעדית</span>
+        <span class="token-function">up</span>(&db);   <span class="token-comment">// שחרור המסד</span>
+    }
+}</code></pre>
+                        </div>
+                        <div class="bg-rose-50 text-rose-800 p-4 border-t border-rose-200 text-sm font-bold flex items-center">
+                            <span class="text-xl ml-3">⚠️ הבעיה המובנית: הרעבת כותבים (Starvation).</span>
+                            אם קוראים ממשיכים להיכנס בזה אחר זה, המונה <code>rc</code> לעולם לא יגיע ל-0, והכותב ימתין לנצח מחוץ לשער ה-<code>db</code>.
+                        </div>
+                    </div>
+
+                    <!-- Summary Table -->
+                    <h4 class="font-bold text-slate-800 mb-4">סיכום ההבדלים והדגשים לבחינה</h4>
+                    <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
+                        <table class="w-full text-sm text-right text-slate-700">
+                            <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 rounded-tr-xl">מאפיין</th>
+                                    <th scope="col" class="px-6 py-4">בעיית הפילוסופים הסועדים</th>
+                                    <th scope="col" class="px-6 py-4 rounded-tl-xl">בעיית הקוראים והכותבים</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-bold text-slate-900 bg-slate-50/50">האתגר המרכזי</th>
+                                    <td class="px-6 py-4">חלוקת מספר משאבים נפרדים וניהול סכנת המתנה מעגלית.</td>
+                                    <td class="px-6 py-4">איזון בין שיתוף משאב במקביל (קריאה) לבין גישה בלעדית (כתיבה).</td>
+                                </tr>
+                                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-bold text-slate-900 bg-slate-50/50">הסכנה העיקרית</th>
+                                    <td class="px-6 py-4"><span class="text-rose-600 font-bold">מבוי סתום (Deadlock)</span></td>
+                                    <td class="px-6 py-4"><span class="text-amber-600 font-bold">הרעבה (Starvation)</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-bold text-slate-900 bg-slate-50/50">מימוש טיפוסי</th>
+                                    <td class="px-6 py-4">אסימטריה או ניהול מצבי תהליך.</td>
+                                    <td class="px-6 py-4">מוני קוראים ונעילת משאב ראשון/אחרון.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Exam Tip -->
+                    <div class="bg-gradient-to-r from-yellow-50 to-amber-100 border-r-4 border-amber-500 rounded-l-xl p-6 shadow-md">
+                        <h4 class="font-bold text-amber-900 text-lg flex items-center mb-2">
+                            <svg class="w-6 h-6 ml-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            טיפ זהב לבחינה
+                        </h4>
+                        <p class="text-slate-800 text-sm leading-relaxed">
+                            עליך להיות מסוגל להראות סדר הרצה מתחלף (Context Switches) שמוביל ל-Deadlock אצל הפילוסופים, או להוכיח שכותב וקורא נכנסו יחד (קריאה מלוכלכת) בגלל מימוש לקוי של בעיית הקוראים והכותבים. עקוב תמיד אחרי ערכי הסמפורים שורה אחר שורה!
+                        </p>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 2.6 Glossary Section -->
+            <section aria-labelledby="glossary-intro">
+                <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-200 pb-4">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-lg">סוף פרק 2</span>
+                    <h2 id="glossary-intro" class="text-2xl font-bold text-slate-800">רשימת מושגים מסכמת (Glossary)</h2>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm p-6">
+                    <dl class="space-y-6">
+                        <!-- Process -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">תהליך (Process)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                תוכנית הנמצאת במצב ריצה, הכוללת את הקוד שלה, זיכרון, ערכי אוגרים ומשאבים פתוחים.
+                            </dd>
+                        </div>
+                        <!-- Thread -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">תהליכון (Thread)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                "חוט ביצוע". יחידת הריצה הבסיסית ביותר בתוך תהליך. חולק זיכרון עם תהליכונים אחרים באותו תהליך אך מחזיק מחסנית (Stack) ואוגרים פרטיים.
+                            </dd>
+                        </div>
+                        <!-- Race Condition -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">מצב מרוץ (Race Condition)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                תרחיש שבו מספר תהליכים מנסים לקרוא ולכתוב לנתון משותף בו זמנית, והתוצאה הסופית תלויה בסדר ההרצה האקראי של המעבד.
+                            </dd>
+                        </div>
+                        <!-- Critical Region -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">קטע קריטי (Critical Region)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                קטע קוד בתוכנית שבו מתבצעת הגישה לזיכרון או המשאב המשותף, ושבו עלול להתרחש מצב מרוץ.
+                            </dd>
+                        </div>
+                        <!-- Mutual Exclusion -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">מניעה הדדית (Mutual Exclusion)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                דרישת התכנון לפיה אם תהליך אחד נמצא בקטע הקריטי שלו, אף תהליך אחר לא מורשה להיכנס לקטע הקריטי שלו באותו הזמן.
+                            </dd>
+                        </div>
+                        <!-- Busy Waiting -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">המתנה פעילה (Busy Waiting)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                מצב שבו תהליך ממתין לאירוע על ידי סריקה רציפה שלו בלולאה, תוך בזבוז זמן מעבד (לרוב בעזרת משתנה נעילה - Spinlock).
+                            </dd>
+                        </div>
+                        <!-- Context Switch -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">החלפת הקשר (Context Switch)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                הפעולה שמבצעת מערכת ההפעלה כדי לעצור תהליך אחד, לשמור את מצבו, ולטעון מצב של תהליך אחר כדי שירוץ על המעבד.
+                            </dd>
+                        </div>
+                        <!-- Semaphore -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">סמפור (Semaphore)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                משתנה שלם המאפשר סנכרון תהליכים ומניעת המתנה פעילה. מספק פעולות אטומיות (Wait/Signal) החוסמות תהליכים בהמתנה למשאבים במקום לבזבז זמן מעבד.
+                            </dd>
+                        </div>
+                        <!-- Mutex -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">מנעול (Mutex)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                סמפור בינארי המשמש באופן בלעדי להבטחת מניעה הדדית בקטעים קריטיים, מספק מצבי נעול/פתוח פשוטים.
+                            </dd>
+                        </div>
+                        <!-- Monitor -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">מוניטור (Monitor)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                מבנה שפה עילית לאגד משתנים ושגרות יחד, מונע אוטומטית כניסה בו זמנית של תהליכונים (קומפיילר מיישם מנעולים) - מקטין שגיאות אנוש.
+                            </dd>
+                        </div>
+                        <!-- Lost Wakeup -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">השכמה אבודה (Lost Wakeup)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                באג בסנכרון שבו אות השכמה נשלח אל תהליך שעדיין לא הספיק להירדם, מה שגורם לאות ללכת לאיבוד ולתהליך לישון לנצח.
+                            </dd>
+                        </div>
+                        <!-- Starvation -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">קיפוח / הרעבה (Starvation)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                מצב בו תהליך לא מת לעולם, אך גם לעולם אינו מקבל את המשאבים או זמן המעבד לו הוא זקוק כדי להתקדם, בשל מדיניות התזמון.
+                            </dd>
+                        </div>
+                        <!-- Convoy Effect -->
+                        <div>
+                            <dt class="text-lg font-bold text-slate-900 mb-1">אפקט השיירה (Convoy Effect)</dt>
+                            <dd class="bg-white p-4 rounded-lg border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                                בעיית תזמון (אופיינית לאלגוריתם FCFS) בה תהליך אחד כבד וארוך חוסם את המעבד למשך זמן רב, וגורם לתהליכים רבים וקצרים להמתין אחריו ב"שיירה".
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </section>
+
+        </div>
+        
+        <!-- Footer -->
+        <footer class="bg-slate-100 border-t border-slate-200 p-6 text-center text-slate-500 text-sm">
+            נוצר ע"י מנוע Gem 3 - עיצוב פדגוגי בעל ייצוג מלא (Zero-Loss Fidelity).
+        </footer>
+
+    </main>
+</body>
+</html>
