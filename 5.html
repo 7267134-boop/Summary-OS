@@ -3,24 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>פרק 5: קלט/פלט (I/O)</title>
+    <title>מערכות הפעלה - פרק 5: קלט/פלט (I/O)</title>
+    <!-- Google Fonts Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb', // Blue-600
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        codebg: '#1e293b',
+                        highlight: '#60a5fa'
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- MathJax -->
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800&display=swap');
-        body { font-family: 'Heebo', sans-serif; }
+        body { background-color: #f8fafc; }
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .tab-content.active { display: block; opacity: 1; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        pre { direction: ltr; text-align: left; background-color: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .nav-group { margin-top: 1.5rem; padding-right: 0.5rem; }
+        .nav-group-title { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .nav-btn { display: block; width: 100%; text-align: right; padding: 0.85rem 1rem 0.85rem 3rem; border-radius: 0.5rem; color: #cbd5e1; transition: all 0.2s; margin-bottom: 0.25rem; font-size: 0.95rem; }
+        .nav-btn:hover { background-color: #1e293b; color: #fff; padding-right: 1.5rem; }
+        .nav-btn.active-nav { background-color: #2563eb; color: #fff; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); border-right: 4px solid #3b82f6; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark-scroll::-webkit-scrollbar-track { background: #020617; }
+        .dark-scroll::-webkit-scrollbar-thumb { background: #334155; }
+        aside { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .sidebar-collapsed aside { width: 0 !important; min-width: 0 !important; opacity: 0 !important; pointer-events: none !important; }
+        #sidebar-toggle-btn { transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s; }
+        body:not(.sidebar-collapsed) #sidebar-toggle-btn { right: 21rem; }
+        body.sidebar-collapsed #sidebar-toggle-btn { right: 1rem; }
+        .nav-btn-prev, .nav-btn-next { transition: all 0.2s ease-in-out; }
+        .nav-btn-prev:hover { transform: translateX(2px); }
+        .nav-btn-next:hover { transform: translateX(-2px); }
+        #questions-modal { transition: opacity 0.3s ease-in-out; }
+        #questions-modal .transform { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen p-4 md:p-8">
+<body class="text-slate-800 antialiased min-h-screen flex selection:bg-blue-200 selection:text-blue-900">
 
-    <main class="max-w-4xl mx-auto space-y-8">
-        
-        <!-- כותרת ראשית -->
-        <header class="bg-blue-600 text-white p-8 rounded-2xl shadow-lg relative overflow-hidden">
-            <div class="absolute -right-10 -top-10 bg-white/10 w-40 h-40 rounded-full blur-2xl"></div>
-            <h1 class="text-4xl font-extrabold relative z-10">פרק 5: קלט/פלט (I/O)</h1>
-        </header>
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleSidebar()"></div>
 
-        <!-- 5.0 מבוא -->
+    <!-- Toggle Button -->
+    <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="fixed top-6 right-84 z-50 bg-white text-slate-700 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-slate-50 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all group lg:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-80 min-w-[20rem] bg-dark text-slate-300 flex flex-col h-screen sticky top-0 border-l border-slate-800 shadow-2xl z-50">
+        <!-- Header -->
+        <div class="p-8 border-b border-slate-800/80 bg-darker/50 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <h1 class="text-3xl font-black text-white tracking-tight mb-2 relative z-10">פרק 5</h1>
+            <p class="text-blue-400 font-medium text-sm relative z-10">קלט/פלט (I/O)</p>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto p-6 space-y-1 dark-scroll">
+            <div class="nav-group">
+                <div class="nav-group-title">חומרה ותוכנה</div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('intro')" id="btn-intro" class="nav-btn active-nav"><span>📖 5.0 מבוא</span></button>
+                <button onclick="showQuestions('intro', 'מבוא לקלט/פלט', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('hardware')" id="btn-hardware" class="nav-btn"><span>🔌 5.1 עקרונות חומרה</span></button>
+                <button onclick="showQuestions('hardware', 'עקרונות חומרה', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('software')" id="btn-software" class="nav-btn"><span>💻 5.2 עקרונות תוכנה</span></button>
+                <button onclick="showQuestions('software', 'עקרונות תוכנה', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('layers')" id="btn-layers" class="nav-btn"><span>📚 5.3 שכבות תוכנה</span></button>
+                <button onclick="showQuestions('layers', 'שכבות תוכנה', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('disks')" id="btn-disks" class="nav-btn"><span>💿 5.4 דיסקים</span></button>
+                <button onclick="showQuestions('disks', 'דיסקים', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">סיכום ותרגול</div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('glossary-concepts')" id="btn-glossary-concepts" class="nav-btn"><span>📋 5.5 רשימת מושגים</span></button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('glossary-questions')" id="btn-glossary-questions" class="nav-btn"><span>❓ 5.6 שאלות פתורות</span></button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-slate-800/80 bg-darker/30 text-center">
+            <p class="text-xs text-slate-500 font-medium">מערכות הפעלה (20594)</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-x-hidden min-h-screen bg-slate-50/50 relative">
+        <!-- Floating Header Background -->
+        <div class="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-blue-100/50 to-transparent -z-10 pointer-events-none"></div>
+
+        <div class="max-w-5xl mx-auto p-8 lg:p-12 pb-24">
+            
+            <header class="mb-12 bg-white p-8 rounded-2xl shadow-sm border border-slate-200/60 relative overflow-hidden">
+                <div class="absolute -left-10 -top-10 bg-blue-50 w-40 h-40 rounded-full blur-3xl opacity-60"></div>
+                <h2 id="main-title" class="text-4xl font-black text-slate-900 tracking-tight relative z-10 flex items-center gap-4">
+                    <span class="bg-blue-600 text-white px-4 py-2 rounded-xl text-2xl shadow-md">5</span>
+                    <span>קלט/פלט (I/O)</span>
+                </h2>
+                <p class="text-slate-500 mt-4 font-medium text-lg relative z-10 ml-16 leading-relaxed">סיכום מלא של מבנה החומרה, ניהול פסיקות, DMA, מבנה התוכנה השכבתית ואלגוריתמי תזמון דיסקים.</p>
+            </header>
+
+            <div id="content-area" class="relative min-h-[60vh]">
+
+                <div id="tab-intro" class="tab-content active">
+<!-- 5.0 מבוא -->
+
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold text-slate-900 mb-4 border-b-2 border-blue-100 pb-2">מבוא לניהול קלט/פלט</h2>
             <p class="text-lg leading-relaxed mb-6">
@@ -48,7 +188,12 @@
             </div>
         </section>
 
-        <!-- 5.1 עקרונות חומרה -->
+        
+                </div>
+
+                <div id="tab-hardware" class="tab-content ">
+<!-- 5.1 עקרונות חומרה -->
+
         <section class="space-y-6">
             <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.1 עקרונות חומרת קלט/פלט (5.1.1 - 5.1.5)</h2>
             <p class="text-lg px-2 text-slate-700">
@@ -215,7 +360,12 @@
 
         </section>
 
-        <!-- 5.2 עקרונות תוכנה -->
+        
+                </div>
+
+                <div id="tab-software" class="tab-content ">
+<!-- 5.2 עקרונות תוכנה -->
+
         <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
             <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.2 עקרונות תוכנת קלט/פלט</h2>
             <p class="text-lg px-2 text-slate-700 leading-relaxed">
@@ -349,7 +499,12 @@
             </article>
         </section>
 
-        <!-- 5.3 שכבות תוכנה -->
+        
+                </div>
+
+                <div id="tab-layers" class="tab-content ">
+<!-- 5.3 שכבות תוכנה -->
+
         <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
             <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.3 חלוקה לשכבות – תוכנת קלט/פלט</h2>
             <p class="text-lg px-2 text-slate-700 leading-relaxed">
@@ -462,7 +617,12 @@
 
         </section>
 
-        <!-- 5.4 דיסקים -->
+        
+                </div>
+
+                <div id="tab-disks" class="tab-content ">
+<!-- 5.4 דיסקים -->
+
         <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
             <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.4 דיסקים (Disks)</h2>
             
@@ -617,7 +777,12 @@
 
         </section>
 
-        <!-- 5.5 רשימת מושגים -->
+        
+                </div>
+
+                <div id="tab-glossary-concepts" class="tab-content ">
+<!-- 5.5 רשימת מושגים -->
+
         <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
             <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.5 רשימת מושגים מסכמת</h2>
             <p class="text-lg px-2 text-slate-700 leading-relaxed mb-4">
@@ -697,7 +862,12 @@
             </div>
         </section>
 
-        <!-- 5.6 שאלות פתורות -->
+        
+                </div>
+
+                <div id="tab-glossary-questions" class="tab-content ">
+<!-- 5.6 שאלות פתורות -->
+
         <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
             <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.6 בעיות פתורות ושאלות לחזרה</h2>
             
@@ -831,7 +1001,341 @@
             </div>
         </section>
 
+    
+                </div>
+
+
+            </div>
+        </div>
+    
+        <!-- Questions Modal -->
+        <div id="questions-modal" class="fixed inset-0 z-[100] flex items-center justify-center opacity-0 pointer-events-none" dir="rtl">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeQuestionsModal()"></div>
+            <div class="transform scale-95 transition-all relative w-full max-w-2xl mx-4">
+                <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 id="modal-title" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span>💡</span>
+                            <span id="modal-section-name">שאלות מנחות</span>
+                        </h3>
+                        <button onclick="closeQuestionsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer text-lg font-bold">&times;</button>
+                    </div>
+                    <div id="modal-body" class="p-6 max-h-[70vh] overflow-y-auto">
+                        <!-- Content injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repository of Guide Questions -->
+        <div id="questions-repo" class="hidden">
+            
+            <div id="questions-intro">
+                <div class="text-slate-500 text-center py-8">אין שאלות מנחות לסעיף זה.</div>
+            </div>
+            
+            <div id="questions-hardware">
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>מה ההבדל המרכזי בין התקני בלוקים להתקני תווים?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p><strong>התקני בלוקים</strong> שומרים נתונים בגושים בעלי גודל קבוע וכתובת, ומאפשרים גישה אקראית לכל בלוק (למשל דיסק קשיח). לעומת זאת, <strong>התקני תווים</strong> מעבירים זרם רציף של בתים ללא בלוקים או חיפוש אקראי, כמו מקלדת או עכבר.</p>
+                        </div>
+                    </details>
+                    
+                    <!-- Q2 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 2</span>
+                                <span>מהו תפקידו של ה-DMA ואיזו בעיה הוא פותר?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p>ה-<strong>DMA</strong> (Direct Memory Access) מיועד לשחרר את המעבד מניהול ידני של העברת בלוקים גדולים של נתונים. במקום שהמעבד יעביר בית-בית (שיטת PIO), ה-DMA פונה ישירות לזיכרון הראשי ומעביר את כל הבלוק. החיסרון היחיד הוא שהוא עשוי לגנוב למעבד מחזורי שעון ("Cycle Stealing") כי הם חולקים את אותו אפיק נתונים (Bus).</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            
+            <div id="questions-software">
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>מהי המטרה החשובה ביותר של תוכנת הקלט/פלט?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p>המטרה המרכזית היא <strong>אי-תלות בהתקן (Device Independence)</strong>. תוכנית שקוראת או כותבת קבצים צריכה לעשות זאת בצורה אחידה, בלי לדעת אם הנתונים נמצאים על דיסק קשיח, SSD או כונן רשת מקומי. מערכת ההפעלה יוצרת "הפשטה" לפעולות.</p>
+                        </div>
+                    </details>
+
+                    <!-- Q2 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 2</span>
+                                <span>מהו Spooling ומדוע הוא נחוץ בהתקנים ייעודיים?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p><strong>Spooling</strong> הוא מנגנון יצירת תור וירטואלי להתקן שלא יכול לטפל בכמה משימות במקביל (Dedicated Device), כגון מדפסת. במקום שתהליך אחד ינעל את המדפסת לעצמו (מה שעלול להוביל לקיפאון - Deadlock), כל תהליך כותב קובץ לספריית ה-Spooling, ומנגנון (Daemon) מיוחד מדפיס את הקבצים בתור, אחד אחרי השני.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            
+            <div id="questions-layers">
+                <div class="space-y-4">
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>באילו ארבע שכבות מחולקת תוכנת הקלט/פלט?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-1">
+                            <p>1. <strong>פסיקות חומרה (Interrupt Handlers)</strong> - השכבה התחתונה ביותר שקרובה לחומרה ומטפלת באותות.</p>
+                            <p>2. <strong>מנהלי התקנים (Device Drivers)</strong> - הקוד הספציפי שמתקשר ישירות לאוגרים של ההתקן (פקודות קריאה/כתיבה).</p>
+                            <p>3. <strong>תוכנת I/O בלתי תלויה בהתקן</strong> - שייכת למערכת ההפעלה. מטפלת בהגנה, שמות, Caching, ו-Spooling.</p>
+                            <p>4. <strong>ספריות תוכנה במרחב משתמש</strong> - השכבה העליונה (למשל פונקציית `printf` ב-C).</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            
+            <div id="questions-disks">
+                <div class="space-y-4">
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>אילו אלגוריתמים קיימים לתזמון זרוע הדיסק ומה ההבדלים ביניהם?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-2">
+                            <p><strong>FCFS (First-Come, First-Served):</strong> משרת את הבקשות לפי סדר הגעתן. פשוט אך לא יעיל מכיוון שהוא מייצר תנועות ארוכות ומיותרות של ראש הדיסק הלוך ושוב.</p>
+                            <p><strong>SSTF (Shortest Seek Time First):</strong> בוחר תמיד את הבקשה הקרובה ביותר למיקום הנוכחי של הראש. מהיר בהרבה, אך חיסרון משמעותי הוא סיכון ל"הרעבה" (Starvation) של בקשות שנמצאות בקצוות הדיסק.</p>
+                            <p><strong>SCAN (אלגוריתם מעלית):</strong> הזרוע נעה לכיוון אחד בלבד (למשל פנימה), משרתת את כל הבקשות בדרכה עד לקצה הדיסק, ואז משנה כיוון (החוצה) ומשרתת בקשות בחזור. מונע הרעבה באופן הוגן.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+        </div>
+
     </main>
 
+    <!-- JavaScript -->
+    <script>
+        const tabs = [
+            'intro', 'hardware', 'software', 'layers', 
+            'disks', 'glossary-concepts', 'glossary-questions'
+        ];
+
+        
+        function showQuestions(tabId, sectionName, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const modal = document.getElementById('questions-modal');
+            const modalBody = document.getElementById('modal-body');
+            const modalSectionName = document.getElementById('modal-section-name');
+            const repo = document.getElementById('questions-' + tabId);
+
+            if (repo) {
+                let html = repo.innerHTML.trim();
+                if (!html) {
+                    html = '<div class="text-slate-500 text-center py-8">אין שאלות מנחות זמינות לסעיף זה.</div>';
+                }
+
+                modalBody.innerHTML = html;
+                modalSectionName.textContent = 'שאלות מנחות ללימוד - ' + sectionName;
+
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.querySelector('.transform').classList.remove('scale-95');
+                
+                // Process MathJax in the newly injected content
+                if (window.MathJax) {
+                    MathJax.typesetPromise([modalBody]).catch((err) => console.log(err.message));
+                }
+            }
+        }
+
+        function closeQuestionsModal() {
+            const modal = document.getElementById('questions-modal');
+            if (modal) {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.querySelector('.transform').classList.add('scale-95');
+            }
+        }
+
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show selected tab
+            const selectedTab = document.getElementById(`tab-${tabId}`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            // Update navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active-nav');
+            });
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active-nav');
+            }
+
+            // Scroll to top of content
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // On mobile, close sidebar after selection
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('sidebar-collapsed');
+                document.getElementById('mobile-overlay').classList.add('hidden');
+                document.getElementById('mobile-overlay').classList.remove('opacity-100');
+                document.getElementById('mobile-overlay').classList.add('opacity-0');
+            }
+        }
+
+        function toggleSidebar() {
+            const body = document.body;
+            const overlay = document.getElementById('mobile-overlay');
+            
+            body.classList.toggle('sidebar-collapsed');
+            
+            if (body.classList.contains('sidebar-collapsed')) {
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            } else {
+                overlay.classList.remove('hidden');
+                // Trigger reflow
+                void overlay.offsetWidth;
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+            }
+        }
+
+        function navigateTab(direction) {
+            const activeBtn = document.querySelector('.nav-btn.active-nav');
+            if (!activeBtn) return;
+            
+            const currentTabId = activeBtn.id.replace('btn-', '');
+            const currentIndex = tabs.indexOf(currentTabId);
+            
+            let newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < tabs.length) {
+                showTab(tabs[newIndex]);
+            }
+        }
+
+        
+        // Navigation generation logic
+        window.addEventListener('load', () => {
+            const tabs_elements = [];
+            const seenIds = new Set();
+            document.querySelectorAll('.tab-content').forEach(el => {
+                const id = el.id;
+                if (id && !seenIds.has(id)) {
+                    seenIds.add(id);
+                    tabs_elements.push(el);
+                }
+            });
+
+            tabs_elements.forEach((tab, index) => {
+                const navContainer = document.createElement('div');
+                navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
+
+                // Previous Button
+                if (index > 0) {
+                    const prevTabId = tabs_elements[index - 1].id.replace('tab-', '');
+                    const prevBtn = document.createElement('button');
+                    prevBtn.onclick = () => showTab(prevTabId);
+                    prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    prevBtn.innerHTML = `
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>הקודם</span>
+                    `;
+                    navContainer.appendChild(prevBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
+
+                // Next Button
+                if (index < tabs_elements.length - 1) {
+                    const nextTabId = tabs_elements[index + 1].id.replace('tab-', '');
+                    const nextBtn = document.createElement('button');
+                    nextBtn.onclick = () => showTab(nextTabId);
+                    nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    nextBtn.innerHTML = `
+                        <span>הבא</span>
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    `;
+                    navContainer.appendChild(nextBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
+
+                tab.appendChild(navContainer);
+            });
+        });
+
+        // Initialize: Handle mobile view on load
+        window.addEventListener('load', () => {
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+            
+            // Fix MathJax rendering issues inside details tags
+            document.querySelectorAll('details').forEach(details => {
+                details.addEventListener('toggle', (e) => {
+                    if (details.open && window.MathJax) {
+                        MathJax.typesetPromise([details]).catch((err) => console.log(err.message));
+                    }
+                });
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                document.body.classList.remove('sidebar-collapsed');
+                document.getElementById('mobile-overlay').classList.add('hidden');
+            } else if (!document.getElementById('mobile-overlay').classList.contains('opacity-100')) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        });
+    </script>
 </body>
 </html>
