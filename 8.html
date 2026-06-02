@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרק 8: מערכות מרובות מעבדים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap');
+        body {
+            font-family: 'Heebo', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased leading-relaxed">
+
+    <div class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        
+        <!-- Header Section -->
+        <header class="bg-indigo-900 text-white rounded-2xl p-8 mb-10 shadow-lg">
+            <h1 class="text-4xl font-extrabold mb-4">פרק 8: מערכות מרובות מעבדים</h1>
+            <p class="text-lg text-indigo-100 max-w-3xl">
+                פרק זה עוסק במערכות הכוללות יותר ממעבד אחד (או יותר מליבה אחת), ובאתגרים הניצבים בפני מערכת ההפעלה בניהול מערכות אלו.
+            </p>
+        </header>
+
+        <!-- 8.1 Intro -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-indigo-600 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">8.1 ריבוי מעבדים</h2>
+            </div>
+            <p class="text-slate-700 bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                סעיף זה מהווה הקדמה לנושא ריבוי המעבדים ובוחן את החומרה ואת סוגי מערכות ההפעלה התומכות בה.
+            </p>
+        </section>
+
+        <!-- 8.1.1 Hardware -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-blue-500 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">8.1.1 חומרת ריבוי ליבות</h2>
+            </div>
+            <p class="text-slate-700 mb-6">סעיף זה מתמקד במאפיינים הפיזיים והארכיטקטוניים של מעבדים מרובי ליבות:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Point 1 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-blue-700">1. גישה לזיכרון</h3>
+                    <p class="text-sm text-slate-600 mb-3">אף על פי שבמערכות אלו לכל המעבדים יש יכולת לגשת לכל מרחב הזיכרון, קיימות שתי צורות מימוש עיקריות:</p>
+                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
+                        <li><strong>UMA (Uniform Memory Access):</strong> גישה אחידה לזיכרון.</li>
+                        <li><strong>NUMA (Non-Uniform Memory Access):</strong> גישה לא אחידה לזיכרון.</li>
+                    </ul>
+                </article>
+
+                <!-- Point 2 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-blue-700">2. בעיית עקביות המטמון (Cache Coherence)</h3>
+                    <p class="text-sm text-slate-700 mb-2">זהו אתגר קריטי. כאשר ליבה אחת משנה ערך של משתנה משותף (למשל, תהליכונים שונים על ליבות שונות משתפים נתונים), השינוי חייב להיות "נראה" גם לליבות האחרות.</p>
+                    <p class="text-sm text-slate-600 bg-blue-50 p-2 rounded">לרוב קיים במעבד מנגנון חומרתי שמבטיח זאת. במידה ואין, המתכנת חייב להביא זאת בחשבון, שכן אלגוריתמים מסוימים (כמו פתרון פטרסון) לא יעבדו תקין בלעדיו.</p>
+                </article>
+
+                <!-- Point 3 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-blue-700">3. סוגי שבבים מרובי ליבות</h3>
+                    <ul class="space-y-3 text-sm text-slate-700">
+                        <li><strong class="text-slate-900 block">שבב רב-ליבתי (Multicore chip):</strong> מכיל לרוב 4-16 ליבות. מבחינת המתכנת, אין כמעט הבדל בינו למערכת מרובת מעבדים נפרדים. כולן ניגשות לכל הזיכרון (לרוב ישירות). לעיתים יש מטמון פרטי ולעיתים משותף.</li>
+                        <li><strong class="text-slate-900 block">שבב מרובה ליבות (Manycore chip):</strong> מכילים כמות עצומה של ליבות (עשרות עד אלפים). מאפשרים ביצוע מקבילי המעניק מהירות רבה לחישובים מורכבים.</li>
+                    </ul>
+                </article>
+
+                <!-- Point 4 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-blue-700">4. חלוקת העבודה בין הליבות</h3>
+                    <p class="text-sm text-slate-600 mb-3">קיימות שתי גישות:</p>
+                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-2">
+                        <li><strong>הומוגנית:</strong> כל הליבות זהות לחלוטין ויכולות למלא כל תפקיד או להריץ כל קוד באותה יעילות.</li>
+                        <li><strong>הטרוגנית:</strong> הליבות שונות ויש להן תכונות שונות, מה שהופך ליבות מסוימות למתאימות יותר לתפקידים ספציפיים.</li>
+                    </ul>
+                </article>
+
+                <!-- Point 5 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-blue-700">5. ריבוי תהליכונים חומרתי (Hyper-threading)</h3>
+                    <p class="text-sm text-slate-700 mb-2">טכנולוגיה המאפשרת לכל ליבה בודדת להריץ כמה תהליכונים (Threads) כמעט במקביל.</p>
+                    <p class="text-sm text-slate-600 mb-2">חלק מהמשאבים משוכפלים (למשל, קבוצת אוגרים נפרדת), ומשאבים אחרים (מטמון, יחידת ביצוע) משותפים לכל התהליכונים באותה ליבה.</p>
+                    <div class="bg-yellow-50 text-yellow-800 text-xs p-2 rounded font-medium">
+                        חשוב: טכניקה זו אינה מכפילה את כוח העיבוד כמו הוספת ליבה פיזית, ולרוב מוסיפה לתפוקה מקסימום של כ-30%.
+                    </div>
+                </article>
+
+                <!-- Point 6 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-blue-700">6. תכנות עם ריבוי ליבות</h3>
+                    <p class="text-sm text-slate-700 mb-3">החומרה ומערכת ההפעלה <strong>אינן</strong> מסוגלות לקחת קוד סדרתי רגיל ולפצל אותו באופן קסום לביצוע מקבילי.</p>
+                    <p class="text-sm text-slate-600">האחריות לכתוב קוד המאפשר ביצוע מקבילי (ע"י חלוקה לתהליכים/תהליכונים) מוטלת כולה על המתכנת. ישנן שפות וספריות המציעות כלים להקלת יצירת מבנה מקבילי.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- 8.1.2 OS Types -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-emerald-500 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">8.1.2 סוגי מערכות הפעלה לריבוי מעבדים</h2>
+            </div>
+            <p class="text-slate-700 mb-6">כאשר מתכננים מערכת מחשב הכוללת מספר מעבדים (או מספר רב של ליבות), השאלה המרכזית היא כיצד ננהל את החומרה. נתמקד ב-3 מודלים המתאימים למעבדים פיזיים נפרדים ולמעבדים מרובי ליבות (Multicore).</p>
+            
+            <div class="space-y-6">
+                <!-- Model 1 -->
+                <div class="bg-white rounded-xl shadow-sm border-l-4 border-l-slate-400 p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">1. לכל מעבד מערכת הפעלה משלו <span class="text-sm font-normal text-slate-500">(Each CPU has its own OS)</span></h3>
+                    <p class="text-slate-600 mb-4">זוהי הדרך הפשוטה והנאיבית ביותר לגשת לבעיה.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-900">איך זה עובד?</h4>
+                            <p class="text-sm text-slate-700">הזיכרון הראשי מחולק מראש (סטטית) למספר מחיצות כשווה למספר המעבדים. כל מעבד מקבל מחיצה פרטית ובה נטען עותק שלם ופרטי של מ"ה. כל מעבד מתפקד כמחשב עצמאי לחלוטין.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-900">אופטימיזציה אפשרית</h4>
+                            <p class="text-sm text-slate-700">במקום לטעון את קוד מ"ה שוב ושוב (בזבוז RAM), המעבדים יכולים לשתף עותק יחיד של קוד המערכת (לקריאה בלבד), אך כל אחד מחזיק עותק פרטי של מבני הנתונים (Data).</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-red-50 text-red-800 p-3 rounded-lg text-sm">
+                        <strong class="block mb-1">החיסרון:</strong> בשל הכפילות וחוסר היכולת לשתף עומסים בצורה חכמה (תהליך לא יכול לעבור ממעבד עמוס לפנוי), גישה זו אינה נפוצה כיום.
+                    </div>
+                </div>
+
+                <!-- Model 2 -->
+                <div class="bg-white rounded-xl shadow-sm border-l-4 border-l-orange-500 p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">2. מבנה מוביל-נגרר <span class="text-sm font-normal text-slate-500">(Master-Slave / Leader-Follower)</span></h3>
+                    <p class="text-slate-600 mb-4">מודל המנסה לפתור את בעיית הכפילות על ידי יצירת היררכיה ברורה בין המעבדים.</p>
+                    
+                    <h4 class="font-bold text-sm text-slate-900 mb-1">איך זה עובד? וטיפול בקריאות מערכת</h4>
+                    <p class="text-sm text-slate-700 mb-4">
+                        קיים עותק יחיד בלבד של מ"ה בזיכרון. אך <strong>רק מעבד אחד ספציפי (CPU 1 - המוביל)</strong> מורשה להריץ את קוד המערכת. שאר המעבדים (הנגררים) מריצים אך ורק תוכניות משתמש. 
+                        כאשר תהליך בנגרר זקוק לשירות ממערכת ההפעלה (System Call, קלט/פלט), הוא מעביר את הבקשה ל-CPU 1, שמבצע את העבודה ומחזיר תשובה. (CPU 1 יכול גם להריץ תהליכי משתמש בזמנו הפנוי).
+                    </p>
+                    
+                    <div class="bg-orange-50 text-orange-900 p-4 rounded-lg text-sm border border-orange-200">
+                        <div class="font-bold text-orange-800 flex items-center gap-2 mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            החיסרון הארכיטקטוני המרכזי: צוואר בקבוק (Bottleneck)
+                        </div>
+                        <p>המודל הופך את CPU 1 לצוואר בקבוק עצום. ככל שנוסיף מעבדים, כך ייווצר עומס כבד יותר על המעבד המוביל, והנגררים ייאלצו להמתין בתור זמן רב לפעולות פשוטות. מודל זה גרוע מאוד למערכות עם מעבדים רבים.</p>
+                    </div>
+                </div>
+
+                <!-- Model 3 -->
+                <div class="bg-white rounded-xl shadow-sm border-l-4 border-l-emerald-500 p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">3. ריבוי מעבדים סימטרי <span class="text-sm font-normal text-slate-500">(Symmetric Multiprocessing - SMP)</span></h3>
+                    <p class="text-slate-600 mb-4">זהו הפתרון המודרני, המורכב והנפוץ ביותר כיום (Windows, Linux, macOS).</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-900 mb-1">איך זה עובד?</h4>
+                            <p class="text-sm text-slate-700">קיים עותק יחיד של מ"ה בזיכרון, אך כל אחד מהמעבדים יכול להריץ את קוד מערכת ההפעלה. <strong>אין מעבד 'מנהל' (Master) יחיד – לכל המעבדים גישה שוויונית למערכת ההפעלה.</strong></p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-900 mb-1">האתגר: מרוץ וסנכרון</h4>
+                            <p class="text-sm text-slate-700">אם כולם יכולים להריץ מ"ה בו-זמנית, <strong>עלול להיווצר חוסר עקביות בנתונים (תנאי מרוץ - Race Condition)</strong> (למשל, שני מעבדים מעדכנים יחד טבלת תהליכים).</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6">
+                        <h4 class="font-bold text-slate-900 mb-2">הפתרון: פיצול למנעולים</h4>
+                        <p class="text-sm text-slate-700">מהנדסי המערכת מפצלים את הקוד לאזורים קריטיים עצמאיים. (למשל: מעבד א' במתזמן, מעבד ב' במערכת הקבצים, מעבד ג' בפסיקת רשת - פעולות לא תלויות). כל אזור קריטי מוגן על ידי <strong>מנעול (Lock)</strong> נפרד. רק מעבד אחד בכל פעם יכול להחזיק במנעול המסוים.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-3 border-b pb-2">הקושי ההנדסי ב-SMP (תכנון מערך המנעולים):</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-blue-50 p-3 rounded text-sm text-blue-900">
+                                <strong>מקביליות מול סדר:</strong> יש לפצל את המערכת לחלקים קטנים כדי לאפשר עבודה מקבילית מקסימלית (ולא לנעול את כל הזיכרון בבת אחת).
+                            </div>
+                            <div class="bg-red-50 p-3 rounded text-sm text-red-900">
+                                <strong>סכנת הקיפאון (Deadlock):</strong> שימוש בהרבה מנעולים חושף אותנו לקיפאון. אם מעבד א' נועל זיכרון ומבקש קבצים, ומעבד ב' נועל קבצים ומבקש זיכרון – שניהם ימתינו לנצח והמחשב יקפא. יש לתכנן בקפידה את סדר תפיסת המנעולים.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8.1.3 Synchronization -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-purple-500 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">8.1.3 סנכרון עם ריבוי מעבדים</h2>
+            </div>
+            
+            <p class="text-slate-700 text-lg mb-6 leading-relaxed">
+                במודל ה-SMP, האתגר המרכזי הוא להבטיח שמעבדים לא "ידרסו" אחד את עבודתו של השני. כדי למנוע תקלות, המעבדים חייבים להסתנכרן ביניהם. אולם, שיטות הסנכרון הפשוטות של מעבד בודד מאבדות את כוחן:
+            </p>
+
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8 border border-slate-200">
+                <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                    <h3 class="font-bold text-lg text-slate-800">מדוע אי אפשר פשוט לחסום פסיקות?</h3>
+                </div>
+                <div class="p-6 grid md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <h4 class="font-bold text-indigo-700 mb-2">במעבד בודד (Uniprocessor)</h4>
+                        <p class="text-slate-600">מערכת ההפעלה מבטיחה מניעה הדדית (Mutual Exclusion) בקלות: כניסה לקטע קריטי מלווה בהשבתת פסיקות (Disable Interrupts). <strong>המעבד חוסם קבלת פסיקות חומרה (Disables Interrupts)</strong>, אין מתזמן, ואף תהליך לא מפקיע את המעבד עד סיום הפעולה.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-red-600 mb-2">בריבוי מעבדים</h4>
+                        <p class="text-slate-600">פקודת השבתת הפסיקות משפיעה <strong>רק על המעבד הספציפי שביצע אותה</strong>. שאר המעבדים ממשיכים לפעול כרגיל ויכולים לגשת במקביל לאותם נתונים בזיכרון המשותף. מסקנה: אי אפשר להסתמך על חסימת פסיקות לסנכרון אמיתי.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TSL & Hardware Locks -->
+            <div class="space-y-6">
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold text-indigo-900 mb-3">הפתרון: מנעולי חומרה (TSL) ונעילת אפיק הזיכרון</h3>
+                    <p class="text-slate-700 mb-4">כדי להשיג סנכרון אמיתי, חייבים לציית לפרוטוקול מנעולים הנשען על <strong>הוראות מכונה מיוחדות אטומיות</strong> (רציפות ולא ניתנות לחלוקה), כמו הוראת <strong class="text-indigo-600">TSL (Test and Set Lock)</strong>.</p>
+                    
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-5 mt-4">
+                        <h4 class="font-bold text-red-800 mb-3 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            הסכנה הקריטית ברמת החומרה - התרחיש הגרוע ביותר
+                        </h4>
+                        <p class="text-sm text-red-900 mb-3">מדוע TSL חייבת להיות מושלמת? נדמיין את התרחיש הבא (כאשר המניעה ההדדית נכשלת):</p>
+                        <ol class="list-decimal list-inside space-y-2 text-sm text-red-900 bg-white/60 p-4 rounded font-medium">
+                            <li>מילת הזיכרון שמשמשת כמנעול שווה כעת ל-0 (המנעול פתוח).</li>
+                            <li>מעבד 1 קורא את המילה (פעולת Test) ומקבל 0.</li>
+                            <li><strong>בדיוק באותו שבריר שנייה</strong> (לפני שמעבד 1 כותב 1), מעבד 2 קורא גם הוא את המילה ומקבל 0.</li>
+                            <li>כעת מעבד 1 כותב 1 לתוך המנעול, ומיד אחריו מעבד 2 כותב גם הוא 1.</li>
+                        </ol>
+                        <p class="text-sm font-bold text-red-900 mt-3">התוצאה הקטלנית: שני המעבדים קיבלו ערך 0, בטוחים שזכו במנעול, ושניהם ייכנסו לקטע הקריטי יחד!</p>
+                    </div>
+                </article>
+
+                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold text-emerald-800 mb-3">איך החומרה מונעת את הכישלון הזה? (Bus Locking)</h3>
+                    <p class="text-slate-700 mb-4">כדי ש-TSL תהיה באמת אטומית, היא נעזרת בנעילת אפיק:</p>
+                    <div class="flex flex-col space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">1</span>
+                            <p class="text-slate-700">מעבד 1 מבצע הוראת TSL, ושולח פקודה אלקטרונית ש<strong>נועלת פיזית את אפיק הזיכרון הראשי (System Bus)</strong>.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">2</span>
+                            <p class="text-slate-700">בזמן שהאפיק נעול, <strong>אף מעבד אחר אינו יכול לגשת לזיכרון הראשי</strong>.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">3</span>
+                            <p class="text-slate-700">מעבד 1 מבצע את הקריאה והכתיבה של המנעול בשלווה.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">4</span>
+                            <p class="text-slate-700">רק לאחר שסיים, מעבד 1 משחרר את האפיק ומאפשר גישה לאחרים.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="bg-slate-800 text-white p-6 rounded-xl shadow-md border-b-4 border-b-purple-500">
+                    <h3 class="text-xl font-bold text-purple-300 mb-3">המחיר של מנעולי ספין (Spinlocks) ובעיית תעבורת האפיק</h3>
+                    <p class="text-slate-200 mb-4">
+                        מנעולים המבוססים על TSL נקראים Spinlocks ופועלים על המתנה פעילה. מעבד שמנסה לתפוס מנעול תפוס נכנס ללולאה ודוגם את המנעול בקצב מהיר. הדבר יוצר בעיית ביצועים כפולה:
+                    </p>
+                    <ul class="list-disc list-inside text-slate-300 space-y-2 mb-4">
+                        <li><strong>בזבוז זמן עיבוד:</strong> המעבד הממתין מסתובב סביב עצמו באפס מעשה.</li>
+                        <li><strong>עומס על אפיק הזיכרון (Bus Contention):</strong> כל דגימה בלולאה מייצרת תעבורה על האפיק הפיזי.</li>
+                    </ul>
+                    <p class="text-slate-300 text-sm bg-slate-700 p-4 rounded-lg">
+                        האפיק הופך עמוס, מה שמאט את כל המעבדים האחרים שמנסים לבצע עבודה שגרתית. (אמנם מעבדים יוכלו אולי להמשיך להריץ פקודות ממטמון L1/L2 פנימי, אך כל גישה ל-RAM תיתקע בפקק).<br><br>
+                        <strong class="text-white">לכן:</strong> חובה לתכנן את המנעולים כך שזמן השהייה בהם (הזמן בו המנעול מוחזק) יהיה קצר ככל האפשר, כדי למזער המתנה ופגיעה בביצועי המערכת.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <!-- 8.1.4 Scheduling -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-cyan-500 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">8.1.4 תזמון במערכות ריבוי מעבדים</h2>
+            </div>
+            
+            <p class="text-slate-700 text-lg mb-6 leading-relaxed bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                במערכות בעלות מספר מעבדים (או מספר ליבות), החלטות התזמון של מערכת ההפעלה הופכות למורכבות בהרבה מאשר במחשב בעל מעבד יחיד. סעיף זה סוקר מספר גישות ומושגים מרכזיים להתמודדות עם אתגר התזמון בסביבה מרובת מעבדים:
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Concept 1 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-cyan-500 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-cyan-900">1. זיקת מטמון (Cache Affinity)</h3>
+                    <p class="text-sm text-slate-700 mb-3">כאשר תהליכון רץ על מעבד מסוים, זיכרון המטמון (Cache) של אותו מעבד מתמלא בנתונים ובהוראות הרלוונטיים אליו.</p>
+                    <div class="space-y-2 mb-3">
+                        <div class="bg-cyan-50 p-2 rounded text-sm text-cyan-800">
+                            <strong>מטמון "חם":</strong> אם התהליכון יושהה ויחזור לרוץ על <em>אותו</em> מעבד, חלק מהמידע שלו עדיין במטמון, מה שיאפשר לו לרוץ ביעילות.
+                        </div>
+                        <div class="bg-slate-100 p-2 rounded text-sm text-slate-600">
+                            <strong>מטמון "קר":</strong> העברתו למעבד אחר תדרוש הבאת הנתונים מחדש מהזיכרון הראשי האיטי יותר.
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-700">לכן, מתזמנים מודרניים משתדלים לשמור על "זיקת מטמון" ולהחזיר תהליכון לאותו מעבד. <strong>אך נדרש איזון:</strong> אם למעבד מסוים אין תהליכונים, המתזמן יעדיף לקחת תהליכון ממעבד אחר (Load Balancing) מאשר להשאיר את המעבד בטל.</p>
+                </article>
+
+                <!-- Concept 2 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-blue-500 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-blue-900">2. שיתוף מרחבי (Space Sharing)</h3>
+                    <p class="text-sm text-slate-700 mb-3">מיועד למצבים שבהם קיימת קבוצת תהליכונים הקשורים זה לזה ומרבים לתקשר ביניהם. יש יתרון שיפעלו בו-זמנית.</p>
+                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 mb-4">
+                        <li>המתזמן בודק אם יש מספיק מעבדים פנויים בכמות התואמת למספר התהליכונים.</li>
+                        <li><strong>אם יש:</strong> כל תהליכון יקבל מעבד ייעודי משלו שישמש אותו ברציפות עד שיסיים.</li>
+                        <li><strong>אם אין:</strong> אף תהליכון לא יופעל עד שיתפנו משאבים.</li>
+                    </ul>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded text-sm flex flex-col gap-2">
+                        <span class="text-emerald-700"><strong>יתרון:</strong> ביטול התקורה של החלפות הקשר (Context Switches).</span>
+                        <span class="text-rose-700"><strong>חיסרון:</strong> בזבוז זמן: אם תהליכון נחסם (למשל, קלט/פלט), המעבד שלו נותר בטל עד שיתעורר.</span>
+                    </div>
+                </article>
+
+                <!-- Concept 3 -->
+                <article class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-indigo-500 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-3 text-indigo-900">3. תזמון כנופיות (Gang Scheduling)</h3>
+                    <p class="text-sm text-slate-700 mb-3">פותר את זמני ההמתנה המבוזבזים כשעובדים באופן עצמאי. (למשל, A0 שולח הודעה ל-A1 ונאלץ להמתין כי A1 טרם קיבל זמן מעבד).</p>
+                    <p class="text-sm font-bold text-slate-800 mb-2">שלושת העקרונות:</p>
+                    <ol class="list-decimal list-inside text-sm text-slate-700 space-y-1 mb-4 bg-indigo-50 p-3 rounded">
+                        <li>קבוצת תהליכונים קשורים מתוזמנת כיחידה אחת ("כנופייה").</li>
+                        <li>כל חברי הכנופייה רצים בבת אחת על גבי מעבדים שונים.</li>
+                        <li>כל החברים מתחילים ומסיימים את יחידות הזמן (קוונטות) שלהם ביחד.</li>
+                    </ol>
+                    <p class="text-sm text-slate-700">
+                        המעבדים מתוזמנים סינכרונית. אם חבר נחסם, המעבד שלו נותר בטל עד סיום הקוונטה. הרעיון: <strong>הבטחת זמינות הדדית</strong> – כולם רצים באותו הזמן, לתקשורת מהירה ונטולת חסימות.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <!-- 8.5 Summary -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-slate-800 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">8.5 סיכום: מערכות מרובות מעבדים</h2>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-8 border border-slate-200">
+                <p class="text-slate-700 text-lg mb-6 border-b border-slate-100 pb-4">
+                    ניתן להאיץ מערכות מחשב ולשפר את מהירותן על ידי שימוש במספר מעבדים, אשר לרוב חולקים זיכרון ראשי (RAM) משותף. מערכות אלו, המורכבות משני מעבדים או יותר, או מעבדים המורכבים בעצמם ממספר ליבות, מציגות אתגרים ואפשרויות שונות של ארכיטקטורה וניהול.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="flex gap-4">
+                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">1</div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">אפשרויות חיבור (Hardware Topologies)</h3>
+                            <p class="text-sm text-slate-600">המעבדים או הליבות יכולים להיות מחוברים ביניהם במספר תצורות: באמצעות אפיק (Bus), מתג צולב (Crossbar Switch), או רשת מיתוג רב-שלבית.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">2</div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">תצורות מערכת הפעלה</h3>
+                            <p class="text-sm text-slate-600">שירותי מ"ה ניתנים בדרכים שונות: לכל מעבד מערכת משלו, ריבוי מעבדים סימטרי (SMP) שבו עותק אחד משרת את כולם, או מערכת אסימטרית (Master-Slave).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">3</div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">סנכרון מול משאבים משותפים</h3>
+                            <p class="text-sm text-slate-600">נעשה שימוש במנעולים להבטחת סנכרון. במקרה שמנעול תפוס, המעבד יכול לבצע המתנה פעילה (Busy Waiting) או החלפת הקשר (Context Switch).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">4</div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">תזמון תהליכים</h3>
+                            <p class="text-sm text-slate-600">אפשרויות התזמון במערכות אלו כוללות שיתוף זמן (Timesharing), שיתוף מרחב (Space Sharing), ותזמון כנופיות (Gang Scheduling).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8.6.2 Review Questions -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-amber-500 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">שאלות לחזרה ויישום</h2>
+            </div>
+            <p class="text-slate-700 mb-6">בחלק זה, נבחן את ההבנה של התנהגות החומרה ומנגנוני הסנכרון בסביבה מרובת ליבות.</p>
+            
+            <div class="space-y-6">
+                <!-- Question 1 -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-amber-50 p-5 border-b border-amber-100">
+                        <h3 class="font-bold text-amber-900 text-lg flex items-start gap-2">
+                            <span class="bg-amber-200 text-amber-800 rounded px-2 py-0.5 text-sm mt-0.5">שאלה 1</span>
+                            מה קורה בדיוק בזמן שבו כל ארבע הליבות במעבד מנסות לגשת לאותה כתובת זיכרון באותו הזמן?
+                        </h3>
+                    </div>
+                    <div class="p-6 text-slate-700 text-sm space-y-3 leading-relaxed">
+                        <p>
+                            כאשר מספר ליבות מנסות לגשת לאותה כתובת פיזית בדיוק באותו שבריר שנייה (מחזור שעון), החומרה נכנסת לפעולה למניעת התנגשות (Memory Contention). 
+                            אפיק הזיכרון או בקר הזיכרון מבצעים <strong>סריאליזציה (סידור טורי)</strong> של הבקשות. כלומר, הבקשות יסודרו בתור ויטופלו בזו אחר זו, ולא במקביל.
+                        </p>
+                        <p>
+                            בנוסף, אם לפחות ליבה אחת מנסה <strong>לכתוב</strong> לכתובת זו, פרוטוקולי עקביות מטמון (Cache Coherence Protocols, כגון MESI) בחומרה ידאגו להודיע לשאר הליבות שהעותק ששמור אצלן בזיכרון המטמון המקומי (L1/L2) אינו עדכני עוד ויש לפסול אותו (Invalidate), כדי להבטיח שאף ליבה לא תעבוד עם מידע "מלוכלך" או מיושן.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-amber-50 p-5 border-b border-amber-100">
+                        <h3 class="font-bold text-amber-900 text-lg flex items-start gap-2">
+                            <span class="bg-amber-200 text-amber-800 rounded px-2 py-0.5 text-sm mt-0.5">שאלה 2</span>
+                            האם ניתן לממש סנכרון בין כמה ליבות בעזרת פקודת SWP המבצעת החלפה בצורה אטומית?
+                        </h3>
+                    </div>
+                    <div class="p-6 text-slate-700 text-sm space-y-3 leading-relaxed">
+                        <p>
+                            <strong>כן, בהחלט.</strong> פקודת SWP (Swap) או פקודות דומות כמו XCHG, מאפשרות להחליף ערך של אוגר במעבד עם ערך בכתובת זיכרון – כפעולה אטומית אחת שלא ניתנת להפרעה.
+                        </p>
+                        <p>
+                            השימוש זהה לפקודת TSL: הליבה רושמת באוגר שלה את הערך '1' ("נעול"), ואז מבצעת SWP עם מילת המנעול בזיכרון המשותף. 
+                        </p>
+                        <ul class="list-disc list-inside bg-slate-50 p-3 rounded">
+                            <li>אם הערך שחזר לאוגר הוא <strong>'0'</strong>: הליבה "זכתה" במנעול ונכנסת לקטע הקריטי.</li>
+                            <li>אם חזר <strong>'1'</strong>: ליבה אחרת מחזיקה במנעול, והליבה תיכנס להמתנה פעילה (Spinlock) או תוותר על המעבד (Context Switch).</li>
+                        </ul>
+                        <p>מכיוון שההחלפה אטומית (תוך כדי נעילת האפיק), אין סכנה שתי ליבות יקראו '0' באותו הזמן.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8.6.3 Glossary -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-rose-500 w-2 h-8 rounded-full"></div>
+                <h2 class="text-2xl font-bold text-slate-900">רשימת מושגים מסכמת</h2>
+            </div>
+            <p class="text-slate-700 mb-6">ריכוז המושגים המרכזיים שהוזכרו בפרק בנוגע למערכות מרובות מעבדים וליבות, להבטחת הבנת הארכיטקטורה והתזמון:</p>
+            
+            <dl class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">מערכת מרובת מעבדים (Multiprocessor System)</dt>
+                    <dd class="text-sm text-slate-600">מערכת מחשב המכילה שני מעבדים או יותר העובדים יחד כדי להגדיל את תפוקת המערכת וביצועיה.</dd>
+                </div>
+                
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">ליבות / ריבוי ליבות (Cores / Multi-core)</dt>
+                    <dd class="text-sm text-slate-600">מעבדים עצמאיים הבנויים יחד על אותו מצע פיזי (Die) של שבב סיליקון בודד.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">זיכרון ראשי משותף (Shared Memory)</dt>
+                    <dd class="text-sm text-slate-600">ארכיטקטורה שבה כל המעבדים או הליבות במערכת חולקים את אותו מרחב זיכרון RAM וניגשים אליו.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">אפיק (Bus)</dt>
+                    <dd class="text-sm text-slate-600">ערוץ תקשורת משותף המחבר בין המעבדים לזיכרון הראשי.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">מתג צולב (Crossbar Switch)</dt>
+                    <dd class="text-sm text-slate-600">רשת חיבורים בחומרה המאפשרת למספר מעבדים לגשת למספר יחידות זיכרון בו-זמנית, ללא צוואר הבקבוק של אפיק בודד.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">רשת מיתוג רב-שלבית (Multistage Network)</dt>
+                    <dd class="text-sm text-slate-600">ארכיטקטורת רשת מורכבת יותר לחיבור מעבדים לזיכרון במערכות גדולות מאוד.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">ריבוי מעבדים סימטרי (SMP)</dt>
+                    <dd class="text-sm text-slate-600">תצורת מ"ה שבה קיים רק עותק אחד של מ"ה בזיכרון, והוא משרת את כל המעבדים בצורה שווה.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">מוביל-נגרר (Master-Slave)</dt>
+                    <dd class="text-sm text-slate-600">תצורה אסימטרית שבה מעבד אחד מוגדר כ"מוביל" ומריץ את כל מ"ה, בעוד שאר המעבדים מריצים יישומי משתמש בלבד.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">המתנה פעילה (Busy Waiting / Spinlock)</dt>
+                    <dd class="text-sm text-slate-600">מצב שבו מעבד המנסה להשיג מנעול תפוס נשאר בלולאה רציפה ודוגם את המנעול שוב ושוב עד שיתפנה.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">החלפת הקשר (Context Switch)</dt>
+                    <dd class="text-sm text-slate-600">כאשר מנעול לא זמין, המעבד מפסיק את התהליך הנוכחי, שומר מצב, ועובר להריץ תהליך אחר מהתור (במקום ספין).</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">סנכרון ומנעולים (Sync & Locks)</dt>
+                    <dd class="text-sm text-slate-600">מנגנונים להגנה על מבני נתונים של מ"ה מפני גישה בו-זמנית ודורסנית של מספר מעבדים.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">שיתוף מרחב (Space Sharing)</dt>
+                    <dd class="text-sm text-slate-600">חלוקת המעבדים הפנויים והקצאת קבוצת מעבדים שלמה לטובת משימה בודדת הדורשת מקביליות.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">שיתוף זמן (Timesharing)</dt>
+                    <dd class="text-sm text-slate-600">חלוקת משאבי המעבדים על פני ציר הזמן ע"י "פרוסות זמן" לתהליכים שונים.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">תזמון כנופיות (Gang Scheduling)</dt>
+                    <dd class="text-sm text-slate-600">תזמון שבו כל התהליכונים של תהליך מתחילים לרוץ יחד, באותו הזמן, למניעת המתנה למידע מתהליכון רדום.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">זיקה למעבד (Processor Affinity / זיקת מטמון - Cache Affinity)</dt>
+                    <dd class="text-sm text-slate-600">העדפה להריץ תהליך על הליבה שבה רץ קודם לכן, כדי לנצל נתונים שכבר נטענו למטמון (Cache) שלה.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">UMA (Uniform Memory Access)</dt>
+                    <dd class="text-sm text-slate-600">ארכיטקטורת זיכרון שבה זמן הגישה של כל מעבד לכל תא בזיכרון הראשי הוא זהה ואחיד.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">NUMA (Non-Uniform Memory Access)</dt>
+                    <dd class="text-sm text-slate-600">ארכיטקטורת זיכרון שבה לכל מעבד יש זיכרון מקומי הנגיש לו במהירות, אך גישה לזיכרון המשויך למעבד אחר דורשת זמן רב יותר.</dd>
+                </div>
+
+                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                    <dt class="font-bold text-rose-900 mb-1">ריבוי תהליכונים חומרתי (Hyper-threading)</dt>
+                    <dd class="text-sm text-slate-600">טכנולוגיה המאפשרת לליבה פיזית בודדת להריץ מספר תהליכונים בו-זמנית על ידי שכפול חלק ממשאבי הליבה (כמו אוגרים) ושיתוף יחידות הביצוע.</dd>
+                </div>
+            </dl>
+        </section>
+
+    </div>
+
+</body>
+</html>

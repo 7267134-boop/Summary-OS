@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פרק 4: מערכות קבצים</title>
+
     <!-- Google Fonts Heebo -->
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -14,12 +17,12 @@
             theme: {
                 extend: {
                     colors: {
-                        racket: '#2563eb', // Blue-600 file system theme
+                        racket: '#0284c7', // Sky-600 memory theme
                         primary: '#2563eb', // Blue-600
                         dark: '#0f172a',
                         darker: '#020617',
                         codebg: '#1e293b',
-                        highlight: '#60a5fa'
+                        highlight: '#38bdf8'
                     },
                     fontFamily: {
                         sans: ['Heebo', 'sans-serif'],
@@ -29,6 +32,7 @@
             }
         }
     </script>
+
     <!-- MathJax for rendering math symbols -->
     <script>
         MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
@@ -117,11 +121,58 @@
         }
 
         .nav-btn.active-nav {
-            background-color: #2563eb; /* Blue-600 */
+            background-color: #0284c7;
             color: #fff;
             font-weight: 600;
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.2);
+            border-right: 4px solid #38bdf8;
+        }
+
+        .thought-box {
+            background: #fdf4ff;
+            border-right: 4px solid #d946ef;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .tip-box {
+            background: #fffbeb;
+            border-right: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .grammar-box {
+            background: #eff6ff;
             border-right: 4px solid #3b82f6;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', monospace;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .concept-box {
+            background: #f0fdf4;
+            border-right: 4px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .deep-dive {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-right: 4px solid #64748b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
         }
 
         ::-webkit-scrollbar {
@@ -188,17 +239,102 @@
         .nav-btn-next:hover {
             transform: translateX(-2px);
         }
-    
+
         /* Modal transitions */
         #questions-modal {
             transition: opacity 0.3s ease-in-out;
         }
+
         #questions-modal .transform {
             transition: transform 0.3s ease-in-out;
         }
 
+
+        /* 3D Flashcards */
+        .flashcard-scene {
+            perspective: 1000px;
+            cursor: pointer;
+            min-height: 180px;
+        }
+
+        .flashcard-card {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard-scene.flipped .flashcard-card {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .flashcard-front {
+            background-color: #ffffff;
+            color: #1e293b;
+            border-top: 4px solid #2563eb;
+        }
+
+        .flashcard-back {
+            background-color: #f8fafc;
+            color: #334155;
+            transform: rotateY(180deg);
+            border-top: 4px solid #94a3b8;
+        }
+
+        .flashcard-scene.flat-mode {
+            min-height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-card {
+            transform: none !important;
+            transform-style: flat;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .flashcard-scene.flat-mode .flashcard-face {
+            position: static;
+            backface-visibility: visible;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-front {
+            background-color: #eff6ff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-back {
+            transform: none;
+            background-color: #ffffff;
+            padding: 0.85rem 1.25rem;
+        }
     </style>
 </head>
+
 <body class="text-slate-800 h-screen flex overflow-hidden">
 
     <!-- Sidebar Navigation -->
@@ -258,24 +394,20 @@
                 </button>
             </div>
                 <div class="relative group/nav mb-1">
-                <button onclick="showTab('glossary')" id="btn-glossary" class="nav-btn">
+                <button onclick="showTab('glossary-concepts')" id="btn-glossary-concepts" class="nav-btn">
                     <span>📖 מילון מושגים מסכם</span>
                 </button>
             </div>
                 <hr class="border-slate-800 my-4 opacity-50">
-                <button onclick="showTab('practice')" id="btn-practice" class="nav-btn">
+                <button onclick="showTab('glossary-questions')" id="btn-glossary-questions" class="nav-btn">
                     <span>❓ שאלות חזרה ותרגול</span>
                 </button>
             </div>
         </div>
     </aside>
-
     <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto scroll-smooth bg-white relative">
-        <div class="max-w-5xl mx-auto p-10 lg:p-16 pb-32">
-            
-            <!-- Tab 1: intro -->
-            <div id="intro" class="tab-content active">
+    <main class="flex-1 overflow-y-auto p-12 relative" id="main-content">
+<div id="intro" class="tab-content active">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
                         סעיף 4.1
@@ -588,6 +720,153 @@
             </section>
         </div>
 
+        
+        <!-- Simulator 4.1: The Seek Time Race -->
+        <div class="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-sm mt-8 mb-8">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                <h4 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    סימולטור 4.1: מרוץ הגישה (Seek Time Race)
+                </h4>
+                <span class="text-xs bg-slate-200 text-slate-800 px-2 py-1 rounded font-mono">Sim 4.1</span>
+            </div>
+            
+            <div class="p-6">
+                <div class="flex flex-col items-center mb-6">
+                    <p class="text-slate-600 text-sm mb-4 text-center">המחשה פיזית של ההבדל בין גישה סדרתית לגישה אקראית. נסה לקרוא את בלוק הנתונים הרחוק.</p>
+                    <button onclick="startSim1Race()" id="sim1-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded-full shadow transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        קרא את הבלוק ה-10,000
+                    </button>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Tape (Sequential) -->
+                    <div class="bg-slate-100 p-4 rounded-xl border-2 border-slate-300 relative overflow-hidden flex flex-col items-center">
+                        <h5 class="font-bold text-slate-700 mb-2">סרט מגנטי (גישה סדרתית)</h5>
+                        <div class="text-xs text-slate-500 mb-4 font-mono h-4" id="sim1-tape-timer">זמן: 0ms</div>
+                        
+                        <!-- Tape visuals -->
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-12 h-12 rounded-full border-4 border-slate-700 flex items-center justify-center animate-[spin_3s_linear_infinite]" id="sim1-spool1" style="animation-play-state: paused;">
+                                <div class="w-2 h-2 bg-slate-700 rounded-full"></div>
+                            </div>
+                            <div class="w-48 h-2 bg-slate-800 relative overflow-hidden">
+                                <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_10px,#475569_10px,#475569_20px)] opacity-50" id="sim1-tape-strip"></div>
+                                <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-red-500 -translate-x-1/2 z-10"></div>
+                            </div>
+                            <div class="w-12 h-12 rounded-full border-4 border-slate-700 flex items-center justify-center animate-[spin_3s_linear_infinite]" id="sim1-spool2" style="animation-play-state: paused;">
+                                <div class="w-2 h-2 bg-slate-700 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-bold text-blue-600 font-mono" id="sim1-tape-block">בלוק נוכחי: 0</div>
+                        <p class="text-xs text-slate-500 text-center mt-2 h-8">ראש הקריאה חייב לחלוף פיזית על פני כל 9,999 הבלוקים הקודמים.</p>
+                    </div>
+                    
+                    <!-- Disk (Random) -->
+                    <div class="bg-slate-100 p-4 rounded-xl border-2 border-slate-300 relative overflow-hidden flex flex-col items-center">
+                        <h5 class="font-bold text-slate-700 mb-2">דיסק מגנטי (גישה אקראית)</h5>
+                        <div class="text-xs text-slate-500 mb-4 font-mono h-4" id="sim1-disk-timer">זמן: 0ms</div>
+                        
+                        <!-- Disk visuals -->
+                        <div class="relative w-32 h-32 mb-2">
+                            <!-- Platter -->
+                            <div class="absolute inset-0 rounded-full border-4 border-slate-400 bg-slate-300 shadow-inner flex items-center justify-center">
+                                <div class="w-8 h-8 bg-slate-200 rounded-full border border-slate-400"></div>
+                                <div class="absolute inset-2 rounded-full border border-slate-400/50"></div>
+                                <div class="absolute inset-6 rounded-full border border-slate-400/50"></div>
+                                <div class="absolute inset-10 rounded-full border border-slate-400/50"></div>
+                                <!-- Target Block -->
+                                <div class="absolute w-2 h-2 bg-emerald-500 rounded-full top-4 right-8 shadow-[0_0_8px_#10b981] opacity-50" id="sim1-disk-target"></div>
+                            </div>
+                            <!-- Read Head (Arm) -->
+                            <div class="absolute top-1/2 -right-4 w-16 h-2 bg-slate-600 origin-right transition-transform duration-300 ease-out transform -rotate-45" id="sim1-disk-arm">
+                                <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-red-500 rounded-full z-10 border border-slate-800"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-sm font-bold text-emerald-600 font-mono" id="sim1-disk-block">בלוק נוכחי: 0</div>
+                        <p class="text-xs text-slate-500 text-center mt-2 h-8">המחט מבצעת דילוג (Seek) ומגיעה לצילינדר כמעט מיידית.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let sim1Running = false;
+            let sim1TapeInterval;
+            
+            function startSim1Race() {
+                if(sim1Running) return;
+                sim1Running = true;
+                
+                const btn = document.getElementById('sim1-btn');
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                
+                // Reset
+                document.getElementById('sim1-spool1').style.animationPlayState = 'running';
+                document.getElementById('sim1-spool2').style.animationPlayState = 'running';
+                
+                let tapeBlock = 0;
+                let tapeTime = 0;
+                const tapeTimerEl = document.getElementById('sim1-tape-timer');
+                const tapeBlockEl = document.getElementById('sim1-tape-block');
+                const stripEl = document.getElementById('sim1-tape-strip');
+                
+                // Disk Animation
+                const diskArm = document.getElementById('sim1-disk-arm');
+                const diskTimerEl = document.getElementById('sim1-disk-timer');
+                const diskBlockEl = document.getElementById('sim1-disk-block');
+                const diskTarget = document.getElementById('sim1-disk-target');
+                
+                diskTimerEl.textContent = 'זמן: מחפש...';
+                diskBlockEl.textContent = 'מבצע דילוג (Seek)...';
+                diskTarget.classList.add('animate-pulse', 'opacity-100');
+                
+                // Disk finishes in 300ms
+                setTimeout(() => {
+                    diskArm.style.transform = 'rotate(-15deg)'; // Move arm inward
+                    setTimeout(() => {
+                        diskTimerEl.innerHTML = '<span class="text-emerald-600 font-bold">זמן: 8ms</span>';
+                        diskBlockEl.textContent = 'בלוק נוכחי: 10,000';
+                        diskTarget.style.boxShadow = '0 0 15px #10b981';
+                    }, 100);
+                }, 100);
+                
+                // Tape Animation
+                let bgPos = 0;
+                sim1TapeInterval = setInterval(() => {
+                    tapeTime += 50;
+                    tapeBlock += 156; // speed up
+                    bgPos -= 5;
+                    
+                    if(tapeBlock >= 10000) {
+                        tapeBlock = 10000;
+                        clearInterval(sim1TapeInterval);
+                        document.getElementById('sim1-spool1').style.animationPlayState = 'paused';
+                        document.getElementById('sim1-spool2').style.animationPlayState = 'paused';
+                        tapeTimerEl.innerHTML = `<span class="text-blue-600 font-bold">זמן: ${tapeTime}ms</span>`;
+                        
+                        setTimeout(() => {
+                            sim1Running = false;
+                            btn.disabled = false;
+                            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                            diskArm.style.transform = 'rotate(-45deg)';
+                            diskTarget.classList.remove('animate-pulse', 'opacity-100');
+                            diskTarget.style.boxShadow = 'none';
+                        }, 2000);
+                    } else {
+                        tapeTimerEl.textContent = `זמן: ${tapeTime}ms`;
+                    }
+                    
+                    tapeBlockEl.textContent = `בלוק נוכחי: ${Math.floor(tapeBlock)}`;
+                    stripEl.style.backgroundPosition = `${bgPos}px 0`;
+                    
+                }, 50);
+            }
+        </script>
+
         <!-- 4.1.6 Operations -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-blue-600 text-white px-6 py-4">
@@ -724,7 +1003,9 @@
             </div>
 
             <!-- Tab 2: directories -->
-            <div id="directories" class="tab-content">
+            
+
+<div id="directories" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
                         סעיף 4.2
@@ -849,6 +1130,139 @@
             </div>
         </section>
 
+        
+                    <!-- Simulator 4.4: Path Resolver -->
+                    <div class="mt-8 bg-slate-50 border-2 border-indigo-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-indigo-50 px-6 py-4 border-b border-indigo-200 flex justify-between items-center">
+                            <h4 class="text-lg font-bold text-indigo-900 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                                סימולטור 4.4: פענוח נתיבים
+                            </h4>
+                            <span class="text-xs bg-indigo-200 text-indigo-800 px-2 py-1 rounded font-mono">Sim 4.4</span>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="grid lg:grid-cols-2 gap-8">
+                                <!-- Tree Visualization -->
+                                <div>
+                                    <h5 class="font-bold text-slate-700 mb-4 text-sm uppercase tracking-wider">עץ המדריכים</h5>
+                                    <div class="bg-white border border-slate-200 p-4 rounded-xl font-mono text-sm" id="sim4-tree">
+                                        <div class="flex items-center gap-2 mb-2 p-1 rounded transition-colors" id="node-root">
+                                            <span class="text-indigo-500 font-bold">/ (root)</span>
+                                        </div>
+                                        <div class="ml-6 border-l-2 border-slate-200 pl-4 space-y-2 relative">
+                                            <!-- usr -->
+                                            <div class="flex items-center gap-2 p-1 rounded transition-colors" id="node-usr">
+                                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                                                <span>usr</span>
+                                            </div>
+                                            <div class="ml-6 border-l-2 border-slate-200 pl-4 space-y-2">
+                                                <div class="flex items-center gap-2 p-1 rounded transition-colors" id="node-ast">
+                                                    <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                                                    <span>ast</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- var -->
+                                            <div class="flex items-center gap-2 p-1 rounded transition-colors" id="node-var">
+                                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                                                <span>var</span>
+                                            </div>
+                                            
+                                            <!-- home (Current Directory) -->
+                                            <div class="flex items-center gap-2 p-1 rounded transition-colors bg-indigo-50 border border-indigo-200" id="node-home">
+                                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                                                <span>home <span class="text-xs text-indigo-500 font-sans font-bold bg-indigo-100 px-1 rounded ml-1">Current Dir (cwd)</span></span>
+                                            </div>
+                                            <div class="ml-6 border-l-2 border-slate-200 pl-4 space-y-2">
+                                                <div class="flex items-center gap-2 p-1 rounded transition-colors" id="node-user1">
+                                                    <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                                                    <span>user1</span>
+                                                </div>
+                                                <div class="ml-6 border-l-2 border-slate-200 pl-4 space-y-2">
+                                                    <div class="flex items-center gap-2 p-1 rounded transition-colors" id="node-fileA">
+                                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                        <span>docs.txt</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Interaction -->
+                                <div class="flex flex-col">
+                                    <h5 class="font-bold text-slate-700 mb-4 text-sm uppercase tracking-wider">בקשת פענוח</h5>
+                                    
+                                    <div class="bg-white border border-slate-200 p-5 rounded-xl mb-4">
+                                        <label class="block text-sm text-slate-600 mb-2">בחר נתיב לפענוח (מנקודת המבט של Current Dir):</label>
+                                        <div class="flex flex-wrap gap-2 mb-4">
+                                            <button onclick="sim4Resolve('/usr/ast')" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 px-3 py-1 rounded font-mono text-sm transition-colors text-blue-700">/usr/ast</button>
+                                            <button onclick="sim4Resolve('user1/docs.txt')" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 px-3 py-1 rounded font-mono text-sm transition-colors text-purple-700">user1/docs.txt</button>
+                                            <button onclick="sim4Resolve('../var')" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 px-3 py-1 rounded font-mono text-sm transition-colors text-purple-700">../var</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bg-slate-800 rounded-xl p-5 flex-1 shadow-inner text-white flex flex-col">
+                                        <div class="text-xs text-slate-400 mb-2 font-mono border-b border-slate-700 pb-2">Console Output:</div>
+                                        <div id="sim4-output" class="font-mono text-sm space-y-2 flex-1">
+                                            <div class="text-slate-500">Waiting for input...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        const sim4Nodes = ['root', 'usr', 'ast', 'var', 'home', 'user1', 'fileA'];
+                        let sim4Running = false;
+                        
+                        async function sim4Resolve(path) {
+                            if(sim4Running) return;
+                            sim4Running = true;
+                            
+                            const out = document.getElementById('sim4-output');
+                            out.innerHTML = `<div class="text-yellow-400">> Resolving: ${path}</div>`;
+                            
+                            // Reset highlights
+                            sim4Nodes.forEach(n => {
+                                const el = document.getElementById(`node-${n}`);
+                                if(n !== 'home') el.className = 'flex items-center gap-2 p-1 rounded transition-colors';
+                                else el.className = 'flex items-center gap-2 p-1 rounded transition-colors bg-indigo-50 border border-indigo-200';
+                            });
+                            
+                            const isAbs = path.startsWith('/');
+                            out.innerHTML += `<div class="text-slate-300">Type: ${isAbs ? '<span class="text-blue-400">Absolute</span> (starts with /)' : '<span class="text-purple-400">Relative</span> (no leading /)'}</div>`;
+                            
+                            const steps = [];
+                            if(path === '/usr/ast') {
+                                steps.push({n: 'root', msg: 'Start at root directory.'});
+                                steps.push({n: 'usr', msg: 'Read root dir, find i-node for "usr", move to "usr".'});
+                                steps.push({n: 'ast', msg: 'Read "usr" dir, find i-node for "ast", move to "ast". (Done)'});
+                            } else if (path === 'user1/docs.txt') {
+                                steps.push({n: 'home', msg: 'Start at Current Working Dir (/home).'});
+                                steps.push({n: 'user1', msg: 'Read "home" dir, find i-node for "user1", move to "user1".'});
+                                steps.push({n: 'fileA', msg: 'Read "user1" dir, find i-node for "docs.txt", Target reached.'});
+                            } else if (path === '../var') {
+                                steps.push({n: 'home', msg: 'Start at Current Working Dir (/home).'});
+                                steps.push({n: 'root', msg: 'Read ".." (parent of home), which leads to root.'});
+                                steps.push({n: 'var', msg: 'Read root dir, find i-node for "var", Target reached.'});
+                            }
+                            
+                            for(let i=0; i<steps.length; i++) {
+                                await new Promise(r => setTimeout(r, 800));
+                                const el = document.getElementById(`node-${steps[i].n}`);
+                                el.classList.add('bg-yellow-200', 'text-slate-900', 'font-bold');
+                                out.innerHTML += `<div><span class="text-emerald-400">Step ${i+1}:</span> ${steps[i].msg}</div>`;
+                            }
+                            
+                            await new Promise(r => setTimeout(r, 500));
+                            out.innerHTML += `<div class="text-green-400 font-bold mt-2">Resolution Complete!</div>`;
+                            sim4Running = false;
+                        }
+                    </script>
+
         <!-- 4.2.4 Directory Operations -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-indigo-600 text-white px-6 py-4">
@@ -908,7 +1322,9 @@
             </div>
 
             <!-- Tab 3: implementation -->
-            <div id="implementation" class="tab-content">
+            
+
+<div id="implementation" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
                         סעיף 4.3
@@ -1112,7 +1528,156 @@
                 </div>
             </div>
 
-            <!-- 4.3.3 Implementing Directories -->
+            
+            
+                    
+
+            <!-- Simulator 4.2: The i-node Architect -->
+            <div class="bg-white border-2 border-blue-200 rounded-2xl overflow-hidden shadow-sm mt-8 mb-12">
+                <div class="bg-blue-50 px-6 py-4 border-b border-blue-200 flex justify-between items-center">
+                    <h4 class="text-lg font-bold text-blue-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        סימולטור 4.2: ארכיטקט ה-i-node
+                    </h4>
+                    <span class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">Sim 4.2</span>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-slate-600 text-sm mb-6 text-center">הזן גודל קובץ כדי לראות באילו רמות הצבעה המערכת נדרשת להשתמש (בהנחה שגודל בלוק הוא 4KB ומצביע שוקל 4 בתים - כלומר בלוק יכול להכיל 1024 מצביעים).</p>
+                    
+                    <div class="flex justify-center mb-8">
+                        <div class="flex items-center gap-4 bg-slate-100 p-2 rounded-xl border border-slate-300">
+                            <input type="range" id="sim2-slider" min="1" max="1000000" value="10" class="w-64 accent-blue-600" oninput="updateSim2(this.value)">
+                            <div class="w-32 text-center font-bold text-slate-800 font-mono" id="sim2-size-display">40 KB</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-4 gap-4" id="sim2-levels">
+                        <!-- Direct -->
+                        <div class="bg-slate-50 border-2 border-emerald-400 rounded-lg p-4 text-center transition-all duration-300 transform scale-100 opacity-100" id="sim2-direct">
+                            <h5 class="font-bold text-emerald-700 text-sm mb-1">מצביעים ישירים</h5>
+                            <div class="text-[10px] text-slate-500 mb-2">12 בלוקים (עד 48KB)</div>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500 w-full" id="sim2-bar-direct"></div>
+                            </div>
+                            <div class="mt-2 text-xs font-mono text-emerald-600 font-bold" id="sim2-val-direct">10 בלוקים</div>
+                        </div>
+                        
+                        <!-- Single -->
+                        <div class="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 text-center transition-all duration-300 opacity-50 grayscale" id="sim2-single">
+                            <h5 class="font-bold text-amber-600 text-sm mb-1">עקיף יחיד (Single)</h5>
+                            <div class="text-[10px] text-slate-500 mb-2">1,024 בלוקים (עד 4MB)</div>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-amber-500 w-0" id="sim2-bar-single"></div>
+                            </div>
+                            <div class="mt-2 text-xs font-mono text-amber-600 font-bold" id="sim2-val-single">0 בלוקים</div>
+                        </div>
+                        
+                        <!-- Double -->
+                        <div class="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 text-center transition-all duration-300 opacity-50 grayscale" id="sim2-double">
+                            <h5 class="font-bold text-orange-600 text-sm mb-1">עקיף כפול (Double)</h5>
+                            <div class="text-[10px] text-slate-500 mb-2">1M בלוקים (עד 4GB)</div>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-orange-500 w-0" id="sim2-bar-double"></div>
+                            </div>
+                            <div class="mt-2 text-xs font-mono text-orange-600 font-bold" id="sim2-val-double">0 בלוקים</div>
+                        </div>
+                        
+                        <!-- Triple -->
+                        <div class="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 text-center transition-all duration-300 opacity-50 grayscale" id="sim2-triple">
+                            <h5 class="font-bold text-red-600 text-sm mb-1">עקיף משולש (Triple)</h5>
+                            <div class="text-[10px] text-slate-500 mb-2">1G בלוקים (עד 4TB)</div>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-red-500 w-0" id="sim2-bar-triple"></div>
+                            </div>
+                            <div class="mt-2 text-xs font-mono text-red-600 font-bold" id="sim2-val-triple">0 בלוקים</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-slate-800 text-white p-4 rounded-xl text-center shadow-inner">
+                        <div class="text-sm text-slate-400 mb-1">תקורה (Overhead) הנדרשת למצביעים:</div>
+                        <div class="font-bold text-lg font-mono text-blue-300" id="sim2-overhead">0 בלוקים (0KB)</div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function formatBytes(kbytes) {
+                    if(kbytes < 1024) return kbytes + ' KB';
+                    if(kbytes < 1024*1024) return (kbytes/1024).toFixed(2) + ' MB';
+                    return (kbytes/(1024*1024)).toFixed(2) + ' GB';
+                }
+                
+                function updateSim2(blocks) {
+                    blocks = parseInt(blocks);
+                    const kbytes = blocks * 4;
+                    document.getElementById('sim2-size-display').textContent = formatBytes(kbytes);
+                    
+                    let direct = 0, single = 0, double = 0, triple = 0;
+                    let overhead = 0; // blocks used for pointers
+                    let remaining = blocks;
+                    
+                    // Direct
+                    if(remaining > 0) {
+                        direct = Math.min(12, remaining);
+                        remaining -= direct;
+                    }
+                    
+                    // Single
+                    if(remaining > 0) {
+                        single = Math.min(1024, remaining);
+                        remaining -= single;
+                        overhead += 1; // 1 block for pointers
+                    }
+                    
+                    // Double
+                    if(remaining > 0) {
+                        double = Math.min(1024*1024, remaining);
+                        remaining -= double;
+                        overhead += 1; // 1 double indirect block
+                        overhead += Math.ceil(double / 1024); // blocks for single indirect
+                    }
+                    
+                    // Triple
+                    if(remaining > 0) {
+                        triple = Math.min(1024*1024*1024, remaining);
+                        overhead += 1; // 1 triple indirect block
+                        overhead += Math.ceil(triple / (1024*1024)); // double blocks
+                        overhead += Math.ceil(triple / 1024); // single blocks
+                    }
+                    
+                    // Update UI
+                    const setLevel = (id, val, max, colorClass, isActive) => {
+                        const el = document.getElementById(`sim2-${id}`);
+                        const bar = document.getElementById(`sim2-bar-${id}`);
+                        const text = document.getElementById(`sim2-val-${id}`);
+                        
+                        text.textContent = val.toLocaleString() + ' בלוקים';
+                        const pct = max > 0 ? (val / max) * 100 : 0;
+                        bar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+                        
+                        if(isActive) {
+                            el.classList.remove('opacity-50', 'grayscale', 'border-slate-200');
+                            el.classList.add(`border-${colorClass}-400`, 'scale-105', 'shadow-md');
+                        } else {
+                            el.classList.add('opacity-50', 'grayscale', 'border-slate-200');
+                            el.classList.remove(`border-${colorClass}-400`, 'scale-105', 'shadow-md');
+                        }
+                    };
+                    
+                    setLevel('direct', direct, 12, 'emerald', direct > 0);
+                    setLevel('single', single, 1024, 'amber', single > 0);
+                    setLevel('double', double, 1024*1024, 'orange', double > 0);
+                    setLevel('triple', triple, 1024*1024*1024, 'red', triple > 0);
+                    
+                    document.getElementById('sim2-overhead').textContent = `${overhead.toLocaleString()} בלוקים (${(overhead*4).toLocaleString()}KB)`;
+                }
+                
+                // Initialize
+                document.addEventListener('DOMContentLoaded', () => updateSim2(10));
+            </script>
+
+        <!-- 4.3.3 Implementing Directories -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-12">
                 <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span class="text-slate-400 font-mono text-sm">4.3.3</span> מימוש מדריכים (Implementing Directories)
@@ -1182,65 +1747,209 @@
                     </div>
                 </div>
 
-                <!-- Simulation Toggle -->
-                <div class="bg-slate-900 rounded-xl p-6 shadow-inner text-white">
-                    <h4 class="text-center text-sm text-slate-400 mb-4 uppercase tracking-widest">סימולטור קישורים</h4>
-                    <div class="flex justify-center gap-4 mb-8">
-                        <button onclick="toggleLinkSim('hard')" id="btn-hard" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg font-bold transition-colors border-2 border-purple-400 ring-2 ring-purple-600 ring-offset-2 ring-offset-slate-900">קישור קשיח (Hard)</button>
-                        <button onclick="toggleLinkSim('soft')" id="btn-soft" class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg font-bold transition-colors border-2 border-transparent">קישור סמלי (Soft)</button>
-                    </div>
-
-                    <!-- Hard Link Sim -->
-                    <div id="sim-hard" class="flex flex-col items-center justify-center space-y-4 animate-fade-in">
-                        <div class="flex items-center gap-12">
-                            <div class="text-center">
-                                <div class="bg-slate-700 px-4 py-2 rounded font-mono text-sm border border-slate-600">/dir1/fileA.txt</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-slate-700 px-4 py-2 rounded font-mono text-sm border border-slate-600">/dir2/fileB.txt</div>
-                            </div>
-                        </div>
-                        <div class="flex gap-16 relative h-12 w-full justify-center">
-                            <svg class="absolute w-24 h-12 left-[calc(50%-4rem)] top-0 text-purple-400" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 0 Q 30 20 80 40 L 90 45" /><polygon fill="currentColor" points="90,45 80,45 85,35" /></svg>
-                            <svg class="absolute w-24 h-12 right-[calc(50%-4rem)] top-0 text-purple-400 transform -scale-x-100" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 0 Q 30 20 80 40 L 90 45" /><polygon fill="currentColor" points="90,45 80,45 85,35" /></svg>
-                        </div>
-                        <div class="bg-purple-900 border-2 border-purple-500 rounded-lg p-4 text-center z-10 shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                            <div class="font-bold text-purple-200">i-node #1045</div>
-                            <div class="text-xs text-purple-300 mt-1">Link Count: <span class="bg-purple-950 px-2 py-0.5 rounded text-white font-mono">2</span></div>
-                            <div class="mt-2 text-[10px] text-purple-400 border-t border-purple-700 pt-1">Data Blocks: [40, 41, 42]</div>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-4 text-center max-w-md">שני הקבצים שווי זכויות ומצביעים פיזית לאותו i-node. המערכת שומרת מונה (Link Count) כדי לדעת מתי למחוק באמת.</p>
-                    </div>
-
-                    <!-- Soft Link Sim -->
-                    <div id="sim-soft" class="hidden flex flex-col items-center justify-center space-y-4 animate-fade-in">
-                        <div class="flex items-center gap-12 w-full justify-center relative">
-                            <div class="text-center flex flex-col items-center">
-                                <div class="bg-slate-700 px-4 py-2 rounded font-mono text-sm border border-slate-600 mb-2">/dir2/shortcut.txt</div>
-                                <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                <div class="bg-cyan-900 border border-cyan-500 rounded-lg p-3 text-center mt-2 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-                                    <div class="font-bold text-cyan-200 text-xs mb-1">i-node #2088</div>
-                                    <div class="text-[10px] text-cyan-100 bg-cyan-950 p-1 rounded font-mono">DATA: "/dir1/fileA.txt"</div>
-                                </div>
-                            </div>
-
-                            <svg class="w-16 h-8 text-cyan-500 border-b-2 border-dashed border-cyan-500 mx-4" fill="none" viewBox="0 0 24 24"></svg>
-
-                            <div class="text-center flex flex-col items-center">
-                                <div class="bg-slate-700 px-4 py-2 rounded font-mono text-sm border border-slate-600 mb-2 text-slate-400">/dir1/fileA.txt</div>
-                                <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                <div class="bg-slate-800 border border-slate-600 rounded-lg p-3 text-center mt-2">
-                                    <div class="font-bold text-slate-400 text-xs mb-1">i-node #1045</div>
-                                    <div class="text-[10px] text-slate-500 border-t border-slate-700 pt-1">Data Blocks: [40..42]</div>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-6 text-center max-w-md">הקישור הסמלי (שמאל) הוא קובץ נפרד לחלוטין עם i-node משלו. התוכן שלו הוא רק נתיב הטקסט שמוביל לקובץ המקורי.</p>
-                    </div>
-                </div>
+                
             </div>
 
-            <!-- 4.3.5 & 4.3.6 Advanced FS -->
+            
+                <!-- Simulator 4.5: The Dangling Pointer Trap -->
+                <div class="bg-slate-900 rounded-xl p-6 shadow-inner text-white border-2 border-slate-700 mt-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="text-lg text-slate-300 font-bold uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            סימולטור 4.5: ארגז החול של הקישורים
+                        </h4>
+                        <span class="text-xs bg-slate-800 text-purple-300 px-2 py-1 rounded font-mono border border-slate-700">Sim 4.5</span>
+                    </div>
+
+                    <div class="text-sm text-slate-400 mb-6 text-center max-w-2xl mx-auto">
+                        בחר סוג קישור וראה מה קורה כשאתה מנסה "למחוק" את קובץ המקור. האם המידע באמת אובד?
+                    </div>
+
+                    <div class="flex justify-center gap-4 mb-8">
+                        <button onclick="setSim5Mode('hard')" id="sim5-btn-hard" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg font-bold transition-colors border-2 border-purple-400 ring-2 ring-purple-600 ring-offset-2 ring-offset-slate-900">קישור קשיח (Hard Link)</button>
+                        <button onclick="setSim5Mode('soft')" id="sim5-btn-soft" class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg font-bold transition-colors border-2 border-transparent">קישור סמלי (Soft Link)</button>
+                    </div>
+
+                    <!-- Hard Link Workspace -->
+                    <div id="sim5-hard-ws" class="flex flex-col items-center animate-fade-in relative">
+                        <div class="flex justify-center gap-12 w-full mb-8">
+                            <!-- File A -->
+                            <div class="flex flex-col items-center" id="sim5-hard-fileA-container">
+                                <div class="bg-slate-800 border border-slate-600 p-3 rounded-lg text-center w-32 relative group">
+                                    <div class="font-mono text-sm text-blue-300 mb-2 truncate" title="fileA.txt">fileA.txt</div>
+                                    <button onclick="sim5Delete('hard', 'fileA')" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-400 text-white w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">✕</button>
+                                </div>
+                                <div class="w-1 h-8 bg-purple-500 my-2" id="sim5-hard-lineA"></div>
+                            </div>
+                            
+                            <!-- File B (Link) -->
+                            <div class="flex flex-col items-center" id="sim5-hard-fileB-container">
+                                <div class="bg-slate-800 border border-slate-600 p-3 rounded-lg text-center w-32 relative group">
+                                    <div class="font-mono text-sm text-purple-300 mb-2 truncate" title="fileB.txt">fileB.txt</div>
+                                    <button onclick="sim5Delete('hard', 'fileB')" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-400 text-white w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">✕</button>
+                                </div>
+                                <div class="w-1 h-8 bg-purple-500 my-2" id="sim5-hard-lineB"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- i-node -->
+                        <div id="sim5-hard-inode" class="bg-purple-900 border-2 border-purple-500 rounded-xl p-4 text-center shadow-[0_0_20px_rgba(168,85,247,0.4)] w-64 transition-all duration-500">
+                            <div class="font-bold text-white text-lg mb-2">i-node #1045</div>
+                            <div class="flex justify-between items-center bg-purple-950 p-2 rounded mb-3">
+                                <span class="text-xs text-purple-300">Link Count:</span>
+                                <span class="font-mono font-bold text-lg text-white bg-purple-800 px-3 rounded" id="sim5-hard-count">2</span>
+                            </div>
+                            <div class="text-sm bg-purple-800 p-3 rounded border border-purple-600 text-purple-100" id="sim5-hard-data">
+                                DATA: "Top Secret!"
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 text-sm text-emerald-400 h-6 font-bold" id="sim5-hard-msg">שני הקבצים מצביעים ישירות לאותו i-node.</div>
+                        <button onclick="sim5Reset('hard')" class="mt-4 text-xs text-slate-400 hover:text-white underline">אפס סימולציה</button>
+                    </div>
+
+                    <!-- Soft Link Workspace -->
+                    <div id="sim5-soft-ws" class="hidden flex flex-col items-center animate-fade-in relative">
+                        <div class="flex justify-center gap-12 w-full mb-8">
+                            <!-- Shortcut (Link) -->
+                            <div class="flex flex-col items-center" id="sim5-soft-shortcut-container">
+                                <div class="bg-slate-800 border border-slate-600 p-3 rounded-lg text-center w-32 relative">
+                                    <div class="font-mono text-sm text-cyan-300 mb-2 truncate" title="shortcut.txt">shortcut.txt</div>
+                                </div>
+                                <div class="w-1 h-4 bg-cyan-600 my-1"></div>
+                                <div class="bg-cyan-900 border border-cyan-500 rounded p-2 text-center text-xs w-28">
+                                    <div class="text-cyan-200 font-bold mb-1">i-node #2088</div>
+                                    <div class="font-mono text-[9px] text-cyan-100 bg-cyan-950 p-1">"fileA.txt"</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Arrow pointing from shortcut to target -->
+                            <div class="flex items-center absolute top-6" style="left: calc(50% - 1.5rem);">
+                                <svg class="w-12 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="sim5-soft-arrow"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </div>
+                            
+                            <!-- Target File A -->
+                            <div class="flex flex-col items-center" id="sim5-soft-target-container">
+                                <div class="bg-slate-800 border border-slate-600 p-3 rounded-lg text-center w-32 relative group" id="sim5-soft-target-box">
+                                    <div class="font-mono text-sm text-blue-300 mb-2 truncate" title="fileA.txt">fileA.txt</div>
+                                    <button onclick="sim5Delete('soft', 'fileA')" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-400 text-white w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">✕</button>
+                                </div>
+                                <div class="w-1 h-4 bg-slate-600 my-1" id="sim5-soft-lineTarget"></div>
+                                <div class="bg-slate-800 border border-slate-600 rounded p-2 text-center text-xs w-28 transition-all duration-500" id="sim5-soft-inode">
+                                    <div class="text-slate-300 font-bold mb-1">i-node #1045</div>
+                                    <div class="font-mono text-[9px] text-slate-400 bg-slate-900 p-1">"Top Secret!"</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2 text-sm text-cyan-400 h-6 font-bold" id="sim5-soft-msg">הקישור הסמלי רק שומר את מחרוזת השם של קובץ היעד.</div>
+                        <button onclick="sim5Reset('soft')" class="mt-4 text-xs text-slate-400 hover:text-white underline">אפס סימולציה</button>
+                    </div>
+                </div>
+
+                <script>
+                    let sim5State = {
+                        hard: { count: 2, a: true, b: true },
+                        soft: { targetExists: true }
+                    };
+
+                    function setSim5Mode(mode) {
+                        const btnHard = document.getElementById('sim5-btn-hard');
+                        const btnSoft = document.getElementById('sim5-btn-soft');
+                        const wsHard = document.getElementById('sim5-hard-ws');
+                        const wsSoft = document.getElementById('sim5-soft-ws');
+                        
+                        if(mode === 'hard') {
+                            btnHard.className = 'bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg font-bold transition-colors border-2 border-purple-400 ring-2 ring-purple-600 ring-offset-2 ring-offset-slate-900';
+                            btnSoft.className = 'bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg font-bold transition-colors border-2 border-transparent';
+                            wsHard.classList.remove('hidden');
+                            wsSoft.classList.add('hidden');
+                        } else {
+                            btnSoft.className = 'bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-bold transition-colors border-2 border-cyan-400 ring-2 ring-cyan-600 ring-offset-2 ring-offset-slate-900';
+                            btnHard.className = 'bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg font-bold transition-colors border-2 border-transparent';
+                            wsSoft.classList.remove('hidden');
+                            wsHard.classList.add('hidden');
+                        }
+                    }
+
+                    function sim5Delete(mode, file) {
+                        if(mode === 'hard') {
+                            if(file === 'fileA' && sim5State.hard.a) {
+                                sim5State.hard.a = false;
+                                document.getElementById('sim5-hard-fileA-container').style.opacity = '0.2';
+                                sim5State.hard.count--;
+                                document.getElementById('sim5-hard-msg').textContent = 'fileA הוסר. ה-Link Count יורד ל-1, אך המידע נשאר כי fileB עדיין מצביע אליו!';
+                            } else if(file === 'fileB' && sim5State.hard.b) {
+                                sim5State.hard.b = false;
+                                document.getElementById('sim5-hard-fileB-container').style.opacity = '0.2';
+                                sim5State.hard.count--;
+                                document.getElementById('sim5-hard-msg').textContent = 'fileB הוסר. ה-Link Count יורד, אבל המידע נשאר כל עוד יש עוד מצביעים.';
+                            }
+                            
+                            document.getElementById('sim5-hard-count').textContent = sim5State.hard.count;
+                            
+                            if(sim5State.hard.count === 0) {
+                                document.getElementById('sim5-hard-inode').classList.add('opacity-30', 'grayscale');
+                                document.getElementById('sim5-hard-data').textContent = "DELETED";
+                                document.getElementById('sim5-hard-data').classList.add('bg-red-900', 'text-red-200');
+                                document.getElementById('sim5-hard-msg').textContent = 'Link Count הוא 0. כעת ה-i-node והמידע הפיזי נמחקו סופית!';
+                                document.getElementById('sim5-hard-msg').className = 'mt-6 text-sm text-red-400 h-6 font-bold';
+                            }
+                        } else if(mode === 'soft') {
+                            if(file === 'fileA' && sim5State.soft.targetExists) {
+                                sim5State.soft.targetExists = false;
+                                document.getElementById('sim5-soft-target-box').style.opacity = '0.2';
+                                document.getElementById('sim5-soft-lineTarget').style.opacity = '0.2';
+                                
+                                const inode = document.getElementById('sim5-soft-inode');
+                                inode.classList.add('opacity-30', 'grayscale');
+                                inode.querySelector('div:last-child').textContent = "DELETED";
+                                inode.querySelector('div:last-child').classList.add('bg-red-900', 'text-red-200');
+                                
+                                document.getElementById('sim5-soft-arrow').classList.add('text-red-500', 'animate-pulse');
+                                document.getElementById('sim5-soft-msg').textContent = 'קובץ המקור נמחק פיזית. הקישור הסמלי הפך ל"שבור" (Dangling Pointer) ומצביע לחלל ריק!';
+                                document.getElementById('sim5-soft-msg').className = 'mt-2 text-sm text-red-400 h-6 font-bold';
+                            }
+                        }
+                    }
+
+                    function sim5Reset(mode) {
+                        if(mode === 'hard') {
+                            sim5State.hard = { count: 2, a: true, b: true };
+                            document.getElementById('sim5-hard-fileA-container').style.opacity = '1';
+                            document.getElementById('sim5-hard-fileB-container').style.opacity = '1';
+                            document.getElementById('sim5-hard-count').textContent = '2';
+                            
+                            const inode = document.getElementById('sim5-hard-inode');
+                            inode.classList.remove('opacity-30', 'grayscale');
+                            
+                            const data = document.getElementById('sim5-hard-data');
+                            data.textContent = 'DATA: "Top Secret!"';
+                            data.classList.remove('bg-red-900', 'text-red-200');
+                            
+                            document.getElementById('sim5-hard-msg').textContent = 'שני הקבצים מצביעים ישירות לאותו i-node.';
+                            document.getElementById('sim5-hard-msg').className = 'mt-6 text-sm text-emerald-400 h-6 font-bold';
+                        } else {
+                            sim5State.soft = { targetExists: true };
+                            document.getElementById('sim5-soft-target-box').style.opacity = '1';
+                            document.getElementById('sim5-soft-lineTarget').style.opacity = '1';
+                            
+                            const inode = document.getElementById('sim5-soft-inode');
+                            inode.classList.remove('opacity-30', 'grayscale');
+                            inode.querySelector('div:last-child').textContent = '"Top Secret!"';
+                            inode.querySelector('div:last-child').classList.remove('bg-red-900', 'text-red-200');
+                            
+                            const arrow = document.getElementById('sim5-soft-arrow');
+                            arrow.classList.remove('text-red-500', 'animate-pulse');
+                            arrow.classList.add('text-cyan-500');
+                            
+                            document.getElementById('sim5-soft-msg').textContent = 'הקישור הסמלי רק שומר את מחרוזת השם של קובץ היעד.';
+                            document.getElementById('sim5-soft-msg').className = 'mt-2 text-sm text-cyan-400 h-6 font-bold';
+                        }
+                    }
+                </script>
+
+        <!-- 4.3.5 & 4.3.6 Advanced FS -->
             <div class="grid lg:grid-cols-2 gap-8">
                 <!-- LFS -->
                 <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
@@ -1302,7 +2011,9 @@
             </div>
 
             <!-- Tab 4: management -->
-            <div id="management" class="tab-content">
+            
+
+<div id="management" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
                         סעיף 4.4
@@ -1370,6 +2081,131 @@
                             </ul>
                         </div>
                     </div>
+
+<!-- Simulator 4.3: Storage Allocation Race -->
+                    <div class="mt-8 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-lg">
+                        <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                            <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                                סימולטור 4.3: דילמת גודל הבלוק
+                            </h4>
+                            <span class="text-xs bg-slate-800 text-teal-300 px-2 py-1 rounded font-mono border border-teal-900">Sim 4.3</span>
+                        </div>
+                        
+                        <div class="p-6">
+                            <p class="text-slate-400 text-sm mb-6 text-center">בחר גודל קובץ לשמירה (למשל, הודעת טקסט קטנה או תמונה גדולה), וראה כיצד מערכות עם גודל בלוק שונה שומרות אותו במונחי בזבוז (קיטוע פנימי) ומהירות (כמות הבלוקים הנקראים).</p>
+                            
+                            <div class="flex justify-center mb-8 gap-4">
+                                <button onclick="sim3Store(1)" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded transition-colors text-sm border border-slate-500">קובץ קטנטן (1KB)</button>
+                                <button onclick="sim3Store(12)" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded transition-colors text-sm border border-slate-500">קובץ קטן (12KB)</button>
+                                <button onclick="sim3Store(35)" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded transition-colors text-sm border border-slate-500">קובץ בינוני (35KB)</button>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <!-- Small Block Size -->
+                                <div class="bg-slate-800 p-5 rounded-xl border border-slate-600">
+                                    <h5 class="font-bold text-white mb-2 text-center">מערכת עם בלוקים של 4KB</h5>
+                                    <p class="text-xs text-slate-400 text-center mb-4 h-8">מצוין לקבצים קטנים, אך קבצים גדולים דורשים המון הצבעות (איטיות).</p>
+                                    <div class="grid grid-cols-4 gap-2 mb-4" id="sim3-grid-4k">
+                                        <!-- Blocks generated via JS -->
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono text-slate-300 bg-slate-900 p-2 rounded">
+                                        <span id="sim3-stat-4k-blocks">בלוקים בשימוש: 0</span>
+                                        <span id="sim3-stat-4k-waste" class="text-red-400">שטח מבוזבז: 0KB</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Large Block Size -->
+                                <div class="bg-slate-800 p-5 rounded-xl border border-slate-600">
+                                    <h5 class="font-bold text-white mb-2 text-center">מערכת עם בלוקים של 16KB</h5>
+                                    <p class="text-xs text-slate-400 text-center mb-4 h-8">מהיר מאוד לקבצים גדולים, אך מבזבז שטח יקר עבור קבצים קטנים (Internal Fragmentation).</p>
+                                    <div class="grid grid-cols-4 gap-2 mb-4" id="sim3-grid-16k">
+                                        <!-- Blocks generated via JS -->
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono text-slate-300 bg-slate-900 p-2 rounded">
+                                        <span id="sim3-stat-16k-blocks">בלוקים בשימוש: 0</span>
+                                        <span id="sim3-stat-16k-waste" class="text-red-400">שטח מבוזבז: 0KB</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        function initSim3Grid(containerId, blockSizeStr, count) {
+                            const grid = document.getElementById(containerId);
+                            grid.innerHTML = '';
+                            for(let i=0; i<count; i++) {
+                                const div = document.createElement('div');
+                                div.className = 'bg-slate-700 h-10 rounded border border-slate-600 relative overflow-hidden transition-all duration-300';
+                                div.id = `${containerId}-blk-${i}`;
+                                
+                                const label = document.createElement('div');
+                                label.className = 'absolute inset-0 flex justify-center items-center text-[10px] text-slate-500 font-mono z-10 font-bold';
+                                label.textContent = blockSizeStr;
+                                
+                                const fill = document.createElement('div');
+                                fill.className = 'absolute bottom-0 left-0 right-0 bg-teal-500 h-0 transition-all duration-500 ease-out opacity-80';
+                                fill.id = `${containerId}-fill-${i}`;
+                                
+                                div.appendChild(fill);
+                                div.appendChild(label);
+                                grid.appendChild(div);
+                            }
+                        }
+                        
+                        function sim3Store(fileSizeKB) {
+                            // Reset and fill 4KB system
+                            const blocks4k = Math.ceil(fileSizeKB / 4);
+                            const waste4k = (blocks4k * 4) - fileSizeKB;
+                            
+                            // 12 blocks total shown
+                            for(let i=0; i<12; i++) {
+                                const fill = document.getElementById(`sim3-grid-4k-fill-${i}`);
+                                if(i < blocks4k) {
+                                    if(i === blocks4k - 1) { // last block might be partially full
+                                        const rem = fileSizeKB % 4;
+                                        const pct = rem === 0 ? 100 : (rem / 4) * 100;
+                                        fill.style.height = `${pct}%`;
+                                    } else {
+                                        fill.style.height = '100%';
+                                    }
+                                } else {
+                                    fill.style.height = '0%';
+                                }
+                            }
+                            document.getElementById('sim3-stat-4k-blocks').textContent = `בלוקים בשימוש: ${blocks4k}`;
+                            document.getElementById('sim3-stat-4k-waste').textContent = `שטח מבוזבז: ${waste4k}KB`;
+                            
+                            // Reset and fill 16KB system
+                            const blocks16k = Math.ceil(fileSizeKB / 16);
+                            const waste16k = (blocks16k * 16) - fileSizeKB;
+                            
+                            // 4 blocks total shown (equivalent to 16 blocks of 4K)
+                            for(let i=0; i<4; i++) {
+                                const fill = document.getElementById(`sim3-grid-16k-fill-${i}`);
+                                if(i < blocks16k) {
+                                    if(i === blocks16k - 1) {
+                                        const rem = fileSizeKB % 16;
+                                        const pct = rem === 0 ? 100 : (rem / 16) * 100;
+                                        fill.style.height = `${pct}%`;
+                                    } else {
+                                        fill.style.height = '100%';
+                                    }
+                                } else {
+                                    fill.style.height = '0%';
+                                }
+                            }
+                            document.getElementById('sim3-stat-16k-blocks').textContent = `בלוקים בשימוש: ${blocks16k}`;
+                            document.getElementById('sim3-stat-16k-waste').textContent = `שטח מבוזבז: ${waste16k}KB`;
+                        }
+                        
+                        document.addEventListener('DOMContentLoaded', () => {
+                            initSim3Grid('sim3-grid-4k', '4KB', 12);
+                            initSim3Grid('sim3-grid-16k', '16KB', 4);
+                            setTimeout(() => sim3Store(12), 500); // initial load
+                        });
+                    </script>
                 </div>
             </div>
 
@@ -1534,7 +2370,9 @@
             </div>
 
             <!-- Tab 5: examples -->
-            <div id="examples" class="tab-content">
+            
+
+<div id="examples" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
                         סעיף 4.5
@@ -1673,99 +2511,33 @@
             </div>
 
             <!-- Tab 6: glossary -->
-            <div id="glossary" class="tab-content">
-                <header class="mb-12 border-b pb-6">
-                    <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
-                        מילון מונחים
-                    </div>
-                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים מסכם – פרק 4</h2>
-                    <p class="text-xl text-slate-600 leading-relaxed">
-                        ריכוז והגדרת המונחים המרכזיים של פרק 4 במערכות קבצים.
-                    </p>
-                </header>
-                <div class="space-y-12">
-                    
-        <!-- Glossary Section -->
-        <section class="mt-16 border-t-[6px] border-amber-500 pt-12" id="glossary">
-            <h2 class="text-3xl font-black mb-6 flex items-center gap-3 text-slate-900">
-                <span class="bg-amber-500 text-white rounded px-3 py-1 text-2xl font-mono">חלק א'</span>
-                רשימת מושגים מסכמת – פרק 4
-            </h2>
-            <p class="text-lg text-slate-700 mb-8">
-                ריכוז המונחים המרכזיים של פרק 4 במערכות קבצים, מוסברים בקצרה ובאופן ממוקד:
-            </p>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">קובץ (File)</h4>
-                    <p class="text-sm text-slate-600">יחידת מידע לוגית לאחסון נתונים על גבי מדיה חיצונית (כמו דיסק). קבצים הם מבנים לוגיים, ולכן הם מנוהלים וממומשים כול כולם בתוכנה (ע"י מערכת ההפעלה) ולא בחומרה.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">ספרייה / מדריך (Directory)</h4>
-                    <p class="text-sm text-slate-600">קובץ מערכת מיוחד שמטרתו לארגן את הקבצים במבנה היררכי. כל ספרייה היא למעשה קובץ המכיל רשומות (Entries) שמצביעות על קבצים ותת-ספריות השייכים אליה.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">קובץ מיוחד תווי (Character Special)</h4>
-                    <p class="text-sm text-slate-600">קובץ מערכת פנימי המדמה התקן חומרה העובד בזרם תווים טורי (כמו מקלדת או מדפסת). המערכת לא שומרת נתונים אלו במטמון אלא מעבירה אותם לאלתר להתקן.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">קובץ מיוחד בלוקים (Block Special)</h4>
-                    <p class="text-sm text-slate-600">קובץ מערכת פנימי המדמה התקן חומרה הקורא וכותב מידע בגושים (כמו דיסק קשיח). קבצים אלו מנוהלים מול התקני האחסון לרוב דרך זיכרון מטמון.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">קישור קשיח (Hard Link)</h4>
-                    <p class="text-sm text-slate-600">יצירת רשומת ספרייה חדשה שמצביעה פיזית לאותו קובץ נתונים מדויק (אותו i-node ב-UNIX) כמו המקור. לא ניתן להבדיל בין הקישור למקור (שניהם שווי זכויות).</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">קישור סמלי / רך (Symbolic Link)</h4>
-                    <p class="text-sm text-slate-600">קובץ מיוחד שתוכנו הוא פשוט "נתיב טקסטואלי" לקובץ אחר. מחיקת המקור תותיר קישור שבור (Dangling link) שיחזיר שגיאה בגישה אליו.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">מכסות דיסק (Disk Quotas)</h4>
-                    <p class="text-sm text-slate-600">מנגנון המאפשר למנהל המערכת להגביל בצורה קשיחה את כמות הבלוקים הפיזיים ואת מספר ה-i-nodes (כמות קבצים) שמשתמש ספציפי רשאי לייצר.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">טבלת FAT</h4>
-                    <p class="text-sm text-slate-600">שיטת ניהול מקום (MS-DOS) שבה השרשור של כל הבלוקים השייכים לקובץ נשמר בתוך טבלה מרכזית יחידה הנמצאת כל העת בזיכרון הראשי (RAM).</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">צומת אינדקס (i-node)</h4>
-                    <p class="text-sm text-slate-600">מבנה נתונים המשמש ב-UNIX לניהול קובץ בודד. מכיל את כל המטא-נתונים ומערך מצביעים היררכי (ישירים ועקיפים) לבלוקים הפיזיים בדיסק.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">אמינות מ. קבצים (Reliability)</h4>
-                    <p class="text-sm text-slate-600">יכולת המערכת להתמודד עם פגמים פיזיים או לוגיים בדיסק, ולמנוע אובדן או שיבוש של מידע חשוב (מושג לרוב ע"י גיבויים, ושכפול הסופר-בלוק).</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">עקביות מ. קבצים (Consistency)</h4>
-                    <p class="text-sm text-slate-600">התאמה מוחלטת בין טבלאות הניהול (כמו מפת בלוקים פנויים) למצב הפיזי של הבלוקים בדיסק בפועל. חוסר עקביות קורה לרוב בקריסת מחשב באמצע כתיבה.</p>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border-r-4 border-r-amber-400 p-5 border-y border-l border-slate-200">
-                    <h4 class="font-bold text-amber-900 mb-2">מטמון הבלוקים (Buffer Cache)</h4>
-                    <p class="text-sm text-slate-600 mb-2">שמירת העתקי בלוקים פעילים ב-RAM להורדת פניות לדיסק.</p>
-                    <ul class="text-xs text-slate-700 space-y-1">
-                        <li><strong>Write-Through:</strong> בלוק שמשתנה נכתב מיד גם לדיסק. מעולה לאמינות, אך איטי.</li>
-                        <li><strong>Non-Write-Through:</strong> נכתב לדיסק רק כשצריך לפנות מקום/ביוזמה. מהיר, אך חשוף לאובדן מידע בהפסקת חשמל.</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-                </div>
-            </div>
             
-            <!-- Tab 4: practice -->
-            <div id="practice" class="tab-content">
+
+<div id="glossary-concepts" class="tab-content">
+    <header class="mb-12 border-b pb-6">
+        <div class="inline-block px-4 py-1 bg-amber-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">מילון מונחים</div>
+        <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים מסכם – פרק 4</h2>
+        <p class="text-xl text-slate-600 leading-relaxed">ריכוז מושגי המפתח מפרק מערכות קבצים, מחולק למצב למידה והכנה למבחן.</p>
+    </header>
+
+    <div class="flex justify-center mb-6">
+        <div class="inline-flex bg-slate-200 p-1 rounded-lg">
+            <button onclick="setFlashcardMode('study')" id="flashcard-mode-study" class="bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95">מצב למידה (רשימה)</button>
+            <button onclick="setFlashcardMode('test')" id="flashcard-mode-test" class="bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">מצב מבחן (כרטיסיות)</button>
+        </div>
+    </div>
+
+    <div id="flashcard-stats-container" class="hidden max-w-2xl mx-auto mb-6 bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center shadow-sm">
+        <div class="text-slate-600 text-sm font-medium">התקדמות בחשיפת המושגים:</div>
+        <div class="flex items-center gap-4">
+            <div class="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-1 rounded-md">נחשפו: <span id="flashcard-opened-count" class="text-blue-600">0</span> מתוך <span id="flashcard-total-count">0</span></div>
+            <button onclick="resetFlashcards()" class="text-xs bg-red-100 hover:bg-red-200 text-red-600 font-bold py-1.5 px-3 rounded-md transition-colors shadow-sm">אפס התקדמות</button>
+        </div>
+    </div>
+
+    <div id="flashcard-deck" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</div>
+<div id="glossary-questions" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-emerald-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
                         תרגול וסיכום
@@ -1920,224 +2692,9 @@
             </div>
 
         </div>
+    
     </main>
-
-
-
-
-    <!-- Interactive Scripts for the UI -->
-    <script>
-        function toggleLinkSim(type) {
-            // Setup buttons
-            const btnHard = document.getElementById('btn-hard');
-            const btnSoft = document.getElementById('btn-soft');
-            
-            // Setup views
-            const simHard = document.getElementById('sim-hard');
-            const simSoft = document.getElementById('sim-soft');
-
-            if (type === 'hard') {
-                btnHard.className = "bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg font-bold transition-colors border-2 border-purple-400 ring-2 ring-purple-600 ring-offset-2 ring-offset-slate-900";
-                btnSoft.className = "bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg font-bold transition-colors border-2 border-transparent";
-                simHard.classList.remove('hidden');
-                simSoft.classList.add('hidden');
-            } else {
-                btnSoft.className = "bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-bold transition-colors border-2 border-cyan-400 ring-2 ring-cyan-600 ring-offset-2 ring-offset-slate-900";
-                btnHard.className = "bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg font-bold transition-colors border-2 border-transparent";
-                simSoft.classList.remove('hidden');
-                simHard.classList.add('hidden');
-            }
-        }
-
-        {
-            // === TABS & SIDEBAR CONTROLS ===
-            
-            // Modal Functions for Sidebar Q&A Triggers
-            function showQuestions(tabId, sectionName, event) {
-                if (event) event.stopPropagation();
-
-                const repo = document.getElementById('questions-' + tabId);
-                const modal = document.getElementById('questions-modal');
-                const modalBody = document.getElementById('modal-body');
-                const modalSectionName = document.getElementById('modal-section-name');
-
-                if (!repo || !modal || !modalBody || !modalSectionName) return;
-
-                let html = repo.innerHTML.trim();
-                if (!html) {
-                    html = '<div class="text-slate-500 text-center py-8">אין שאלות מנחות ליחידה זו.</div>';
-                }
-
-                modalBody.innerHTML = html;
-                modalSectionName.textContent = 'שאלות מנחות - ' + sectionName;
-
-                modal.classList.remove('opacity-0', 'pointer-events-none');
-                modal.querySelector('.transform').classList.remove('scale-95');
-                modal.querySelector('.transform').classList.add('scale-100');
-
-                // Reprocess MathJax
-                if (window.MathJax && MathJax.typesetPromise) {
-                    MathJax.typesetPromise([modalBody]).catch(function(err) { console.log(err.message); });
-                }
-            }
-
-            function closeQuestionsModal() {
-                const modal = document.getElementById('questions-modal');
-                if (!modal) return;
-                modal.classList.add('opacity-0', 'pointer-events-none');
-                const inner = modal.querySelector('.transform');
-                if (inner) {
-                    inner.classList.remove('scale-100');
-                    inner.classList.add('scale-95');
-                }
-            }
-
-            window.showQuestions = showQuestions;
-            window.closeQuestionsModal = closeQuestionsModal;
-
-function showTab(tabId) {
-                // hide all tabs, deactivate all nav buttons
-                document.querySelectorAll('.tab-content').forEach(el => {
-                    el.classList.remove('active');
-                });
-                document.querySelectorAll('.nav-btn').forEach(el => {
-                    el.classList.remove('active-nav');
-                });
-                // show selected tab, activate matching button
-                const activeTab = document.getElementById(tabId);
-                if (activeTab) {
-                    activeTab.classList.add('active');
-                    const mainArea = document.querySelector('main');
-                    if (mainArea) mainArea.scrollTop = 0;
-                }
-                const activeBtn = document.getElementById('btn-' + tabId);
-                if (activeBtn) {
-                    activeBtn.classList.add('active-nav');
-                }
-                // Save current tab in localStorage
-                localStorage.setItem('activeTab_ch4', tabId);
-                window.location.hash = tabId;
-            }
-
-            function toggleSidebar() {
-                document.body.classList.toggle('sidebar-collapsed');
-                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-                localStorage.setItem('sidebarCollapsed', isCollapsed);
-                updateToggleBtnIcon(isCollapsed);
-            }
-
-            function updateToggleBtnIcon(isCollapsed) {
-                const icon = document.getElementById('sidebar-toggle-icon');
-                if (!icon) return;
-                if (isCollapsed) {
-                    // Show << (chevron left to open/expand in RTL)
-                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7M19 19l-7-7 7-7" />';
-                } else {
-                    // Show >> (chevron right to close/collapse in RTL)
-                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />';
-                }
-            }
-
-            // === DOCUMENT INITIALIZATION ===
-            document.addEventListener("DOMContentLoaded", () => {
-                // Close modal on click outside or Escape
-                const qModal = document.getElementById('questions-modal');
-                if (qModal) {
-                    qModal.addEventListener('click', function(e) {
-                        if (e.target === qModal) closeQuestionsModal();
-                    });
-                }
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') closeQuestionsModal();
-                });
-
-                // 1. Create and inject sidebar toggle button
-                const toggleBtn = document.createElement('button');
-                toggleBtn.id = 'sidebar-toggle-btn';
-                toggleBtn.className = 'fixed top-6 p-2 rounded-lg bg-white/80 backdrop-blur-md hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-md z-30 flex items-center justify-center w-10 h-10 transition-all duration-300 active:scale-95 cursor-pointer';
-                toggleBtn.title = 'הצג/הסתר תפריט ניווט';
-                toggleBtn.onclick = toggleSidebar;
-                toggleBtn.innerHTML = '<svg id="sidebar-toggle-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"></svg>';
-                document.body.appendChild(toggleBtn);
-
-                // 2. Load sidebar collapsed state from localStorage
-                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-                if (isCollapsed) {
-                    document.body.classList.add('sidebar-collapsed');
-                }
-                updateToggleBtnIcon(isCollapsed);
-
-                // 3. Setup tabs hash routing or load from localStorage
-                const hashTab = window.location.hash ? window.location.hash.substring(1) : null;
-                const savedTab = localStorage.getItem('activeTab_ch4');
-                const defaultTab = 'intro';
-                const finalTab = hashTab || savedTab || defaultTab;
-                showTab(finalTab);
-
-                // 4. Inject navigation buttons at the bottom of each tab
-                const tabs = [];
-                const seenIds = new Set();
-                document.querySelectorAll('.tab-content').forEach(el => {
-                    const id = el.id;
-                    if (id && !seenIds.has(id)) {
-                        seenIds.add(id);
-                        tabs.push(el);
-                    }
-                });
-
-                tabs.forEach((tab, index) => {
-                    const navContainer = document.createElement('div');
-                    navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
-
-                    // Previous Button
-                    if (index > 0) {
-                        const prevTabId = tabs[index - 1].id;
-                        const prevBtn = document.createElement('button');
-                        prevBtn.onclick = () => showTab(prevTabId);
-                        prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
-                        prevBtn.innerHTML = `
-                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                            </svg>
-                            <span>הקודם</span>
-                        `;
-                        navContainer.appendChild(prevBtn);
-                    } else {
-                        const placeholder = document.createElement('div');
-                        placeholder.className = 'w-10 invisible';
-                        navContainer.appendChild(placeholder);
-                    }
-
-                    // Next Button
-                    if (index < tabs.length - 1) {
-                        const nextTabId = tabs[index + 1].id;
-                        const nextBtn = document.createElement('button');
-                        nextBtn.onclick = () => showTab(nextTabId);
-                        nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
-                        nextBtn.innerHTML = `
-                            <span>הבא</span>
-                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                        `;
-                        navContainer.appendChild(nextBtn);
-                    } else {
-                        const placeholder = document.createElement('div');
-                        placeholder.className = 'w-10 invisible';
-                        navContainer.appendChild(placeholder);
-                    }
-
-                    tab.appendChild(navContainer);
-                });
-            });
-
-            // Expose required methods to window
-            window.showTab = showTab;
-            window.toggleSidebar = toggleSidebar;
-        }
-    </script>
-
-    <!-- Repository of Guide Questions -->
+<!-- Repository of Guide Questions -->
     <div id="questions-repo" class="hidden">
         <div id="questions-intro"></div>
         <div id="questions-directories">
@@ -2428,6 +2985,367 @@ function showTab(tabId) {
             </div>
         </div>
     </div>
+    <!-- Interactive Scripts for the UI -->
+    <script>
+// 1.8 Flashcard Deck State & Logic
+        let flashcardMode = 'study'; // 'study' or 'test'
+        let flashcardActiveCategory = 'הכל';
+        let openedFlashcards = new Set();
 
+        const flashcardData = [
+  {
+    "term": "קובץ (File)",
+    "definition": "יחידת מידע לוגית לאחסון נתונים על גבי מדיה חיצונית (כמו דיסק). קבצים הם מבנים לוגיים, ולכן הם מנוהלים וממומשים כול כולם בתוכנה (ע\"י מערכת ההפעלה) ולא בחומרה.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "ספרייה / מדריך (Directory)",
+    "definition": "קובץ מערכת מיוחד שמטרתו לארגן את הקבצים במבנה היררכי. כל ספרייה היא למעשה קובץ המכיל רשומות (Entries) שמצביעות על קבצים ותת-ספריות השייכים אליה.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "קובץ מיוחד תווי (Character Special)",
+    "definition": "קובץ מערכת פנימי המדמה התקן חומרה העובד בזרם תווים טורי (כמו מקלדת או מדפסת). המערכת לא שומרת נתונים אלו במטמון אלא מעבירה אותם לאלתר להתקן.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "קובץ מיוחד בלוקים (Block Special)",
+    "definition": "קובץ מערכת פנימי המדמה התקן חומרה הקורא וכותב מידע בגושים (כמו דיסק קשיח). קבצים אלו מנוהלים מול התקני האחסון לרוב דרך זיכרון מטמון.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "קישור קשיח (Hard Link)",
+    "definition": "יצירת רשומת ספרייה חדשה שמצביעה פיזית לאותו קובץ נתונים מדויק (אותו i-node ב-UNIX) כמו המקור. לא ניתן להבדיל בין הקישור למקור (שניהם שווי זכויות).",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "קישור סמלי / רך (Symbolic Link)",
+    "definition": "קובץ מיוחד שתוכנו הוא פשוט \"נתיב טקסטואלי\" לקובץ אחר. מחיקת המקור תותיר קישור שבור (Dangling link) שיחזיר שגיאה בגישה אליו.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "מכסות דיסק (Disk Quotas)",
+    "definition": "מנגנון המאפשר למנהל המערכת להגביל בצורה קשיחה את כמות הבלוקים הפיזיים ואת מספר ה-i-nodes (כמות קבצים) שמשתמש ספציפי רשאי לייצר.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "טבלת FAT",
+    "definition": "שיטת ניהול מקום (MS-DOS) שבה השרשור של כל הבלוקים השייכים לקובץ נשמר בתוך טבלה מרכזית יחידה הנמצאת כל העת בזיכרון הראשי (RAM).",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "צומת אינדקס (i-node)",
+    "definition": "מבנה נתונים המשמש ב-UNIX לניהול קובץ בודד. מכיל את כל המטא-נתונים ומערך מצביעים היררכי (ישירים ועקיפים) לבלוקים הפיזיים בדיסק.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "אמינות מ. קבצים (Reliability)",
+    "definition": "יכולת המערכת להתמודד עם פגמים פיזיים או לוגיים בדיסק, ולמנוע אובדן או שיבוש של מידע חשוב (מושג לרוב ע\"י גיבויים, ושכפול הסופר-בלוק).",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "עקביות מ. קבצים (Consistency)",
+    "definition": "התאמה מוחלטת בין טבלאות הניהול (כמו מפת בלוקים פנויים) למצב הפיזי של הבלוקים בדיסק בפועל. חוסר עקביות קורה לרוב בקריסת מחשב באמצע כתיבה.",
+    "category": "מושגים במערכות קבצים"
+  },
+  {
+    "term": "מטמון הבלוקים (Buffer Cache)",
+    "definition": "שמירת העתקי בלוקים פעילים ב-RAM להורדת פניות לדיסק.<br><ul class=\\'list-disc pr-5 mt-2\\'><li><strong>Write-Through:</strong> בלוק שמשתנה נכתב מיד גם לדיסק. מעולה לאמינות, אך איטי.</li><li><strong>Non-Write-Through:</strong> נכתב לדיסק רק כשצריך לפנות מקום/ביוזמה. מהיר, אך חשוף לאובדן מידע בהפסקת חשמל.</li></ul>",
+    "category": "מושגים במערכות קבצים"
+  }
+];
+
+        function initFlashcards() {
+            renderFlashcards();
+        }
+
+        function setFlashcardMode(mode) {
+            flashcardMode = mode;
+            const btnStudy = document.getElementById("flashcard-mode-study");
+            const btnTest = document.getElementById("flashcard-mode-test");
+            const statsEl = document.getElementById("flashcard-stats-container");
+            if (!btnStudy || !btnTest) return;
+
+            if (mode === 'study') {
+                btnStudy.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                btnTest.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                statsEl.classList.add("hidden");
+            } else {
+                btnStudy.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                btnTest.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                statsEl.classList.remove("hidden");
+            }
+            renderFlashcards();
+        }
+
+        function renderFlashcards() {
+            const deck = document.getElementById("flashcard-deck");
+            if (!deck) return;
+            deck.innerHTML = "";
+            const filteredData = flashcardData;
+
+            const totalEl = document.getElementById("flashcard-total-count");
+            if (totalEl) totalEl.textContent = filteredData.length;
+
+            let openedFiltered = 0;
+            filteredData.forEach(item => {
+                if (openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            const openedEl = document.getElementById("flashcard-opened-count");
+            if (openedEl) openedEl.textContent = openedFiltered;
+
+            filteredData.forEach((item, index) => {
+                const cardScene = document.createElement("div");
+
+                if (flashcardMode === 'study') {
+                    cardScene.className = "flashcard-scene flat-mode";
+                    cardScene.innerHTML = `
+                            <div class="flashcard-card">
+                                <div class="flashcard-face flashcard-front">
+                                    <div>
+                                        <h4 class="text-sm font-black text-slate-800 leading-tight">${item.term}</h4>
+                                    </div>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <p class="text-xs text-slate-600 leading-relaxed">${item.definition}</p>
+                                </div>
+                            </div>
+                        `;
+                } else {
+                    const isFlipped = openedFlashcards.has(item.term);
+                    cardScene.className = isFlipped ? "flashcard-scene flipped" : "flashcard-scene";
+                    cardScene.onclick = () => toggleFlashcard(cardScene, item.term);
+
+                    cardScene.innerHTML = `
+                            <div class="flashcard-card">
+                                <div class="flashcard-face flashcard-front flex flex-col justify-center items-center text-center">
+                                    <h4 class="text-lg font-black text-slate-800 leading-tight mt-1">${item.term}</h4>
+                                    <div class="text-[10px] text-slate-400 font-bold mt-4 animate-pulse">לחיצה לחשיפה ❓</div>
+                                </div>
+                                <div class="flashcard-face flashcard-back flex flex-col justify-between font-sans">
+                                    <div class="overflow-y-auto pr-1">
+                                        <h5 class="text-sm font-black text-slate-700 leading-tight mt-1">${item.term}</h5>
+                                        <p class="text-[12px] text-slate-600 leading-relaxed mt-2" dir="rtl">${item.definition}</p>
+                                    </div>
+                                    <div class="text-[9px] text-blue-500 font-bold border-t pt-1.5 border-slate-200 flex items-center justify-between select-none">
+                                        <span>נחשף</span>
+                                        <span>✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                }
+                deck.appendChild(cardScene);
+            });
+        }
+
+        function toggleFlashcard(el, term) {
+            if (flashcardMode === 'study') return;
+            if (openedFlashcards.has(term)) {
+                openedFlashcards.delete(term);
+                el.classList.remove("flipped");
+            } else {
+                openedFlashcards.add(term);
+                el.classList.add("flipped");
+            }
+            let openedFiltered = 0;
+            flashcardData.forEach(item => {
+                if (openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            document.getElementById("flashcard-opened-count").textContent = openedFiltered;
+        }
+
+        function resetFlashcards() {
+            openedFlashcards.clear();
+            renderFlashcards();
+        }
+
+
+        function showQuestions(tabId, sectionName, event) {
+                if (event) event.stopPropagation();
+
+                const repo = document.getElementById('questions-' + tabId);
+                const modal = document.getElementById('questions-modal');
+                const modalBody = document.getElementById('modal-body');
+                const modalSectionName = document.getElementById('modal-section-name');
+
+                if (!repo || !modal || !modalBody || !modalSectionName) return;
+
+                let html = repo.innerHTML.trim();
+                if (!html) {
+                    html = '<div class="text-slate-500 text-center py-8">אין שאלות מנחות ליחידה זו.</div>';
+                }
+
+                modalBody.innerHTML = html;
+                modalSectionName.textContent = 'שאלות מנחות - ' + sectionName;
+
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+
+                // Reprocess MathJax
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise([modalBody]).catch(function(err) { console.log(err.message);     initFlashcards();
+            });
+                }
+        }
+
+            function closeQuestionsModal() {
+                const modal = document.getElementById('questions-modal');
+                if (!modal) return;
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                const inner = modal.querySelector('.transform');
+                if (inner) {
+                    inner.classList.remove('scale-100');
+                    inner.classList.add('scale-95');
+                }
+        }
+
+            window.showQuestions = showQuestions;
+            window.closeQuestionsModal = closeQuestionsModal;
+
+function showTab(tabId) {
+                // hide all tabs, deactivate all nav buttons
+                document.querySelectorAll('.tab-content').forEach(el => {
+                    el.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-btn').forEach(el => {
+                    el.classList.remove('active-nav');
+                });
+                // show selected tab, activate matching button
+                const activeTab = document.getElementById(tabId);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                    const mainArea = document.querySelector('main');
+                    if (mainArea) mainArea.scrollTop = 0;
+                }
+            const activeBtn = document.getElementById('btn-' + tabId);
+                if (activeBtn) {
+                    activeBtn.classList.add('active-nav');
+                }
+            // Save current tab in localStorage
+                localStorage.setItem('activeTab_ch4', tabId);
+                window.location.hash = tabId;
+            }
+
+            function toggleSidebar() {
+                document.body.classList.toggle('sidebar-collapsed');
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+                updateToggleBtnIcon(isCollapsed);
+            }
+
+            function updateToggleBtnIcon(isCollapsed) {
+                const icon = document.getElementById('sidebar-toggle-icon');
+                if (!icon) return;
+                if (isCollapsed) {
+                    // Show << (chevron left to open/expand in RTL)
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7M19 19l-7-7 7-7" />';
+                } else {
+                    // Show >> (chevron right to close/collapse in RTL)
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />';
+                }
+        }
+
+            // === DOCUMENT INITIALIZATION ===
+            document.addEventListener("DOMContentLoaded", () => {
+                // Close modal on click outside or Escape
+                const qModal = document.getElementById('questions-modal');
+                if (qModal) {
+                    qModal.addEventListener('click', function(e) {
+                        if (e.target === qModal) closeQuestionsModal();
+                    });
+                }
+            document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') closeQuestionsModal();
+                });
+
+                // 1. Create and inject sidebar toggle button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.id = 'sidebar-toggle-btn';
+                toggleBtn.className = 'fixed top-6 p-2 rounded-lg bg-white/80 backdrop-blur-md hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-md z-30 flex items-center justify-center w-10 h-10 transition-all duration-300 active:scale-95 cursor-pointer';
+                toggleBtn.title = 'הצג/הסתר תפריט ניווט';
+                toggleBtn.onclick = toggleSidebar;
+                toggleBtn.innerHTML = '<svg id="sidebar-toggle-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"></svg>';
+                document.body.appendChild(toggleBtn);
+
+                // 2. Load sidebar collapsed state from localStorage
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    document.body.classList.add('sidebar-collapsed');
+                }
+            updateToggleBtnIcon(isCollapsed);
+
+                // 3. Setup tabs hash routing or load from localStorage
+                const hashTab = window.location.hash ? window.location.hash.substring(1) : null;
+                const savedTab = localStorage.getItem('activeTab_ch4');
+                const defaultTab = 'intro';
+                const finalTab = hashTab || savedTab || defaultTab;
+                showTab(finalTab);
+
+                // 4. Inject navigation buttons at the bottom of each tab
+                const tabs = [];
+                const seenIds = new Set();
+                document.querySelectorAll('.tab-content').forEach(el => {
+                    const id = el.id;
+                    if (id && !seenIds.has(id)) {
+                        seenIds.add(id);
+                        tabs.push(el);
+                    }
+            });
+
+                tabs.forEach((tab, index) => {
+                    const navContainer = document.createElement('div');
+                    navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
+
+                    // Previous Button
+                    if (index > 0) {
+                        const prevTabId = tabs[index - 1].id;
+                        const prevBtn = document.createElement('button');
+                        prevBtn.onclick = () => showTab(prevTabId);
+                        prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                        prevBtn.innerHTML = `
+                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span>הקודם</span>
+                        `;
+                        navContainer.appendChild(prevBtn);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'w-10 invisible';
+                        navContainer.appendChild(placeholder);
+                    }
+
+                    // Next Button
+                    if (index < tabs.length - 1) {
+                        const nextTabId = tabs[index + 1].id;
+                        const nextBtn = document.createElement('button');
+                        nextBtn.onclick = () => showTab(nextTabId);
+                        nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                        nextBtn.innerHTML = `
+                            <span>הבא</span>
+                            <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        `;
+                        navContainer.appendChild(nextBtn);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'w-10 invisible';
+                        navContainer.appendChild(placeholder);
+                    }
+
+                    tab.appendChild(navContainer);
+                });
+            });
+
+            initFlashcards();
+
+            // Expose required methods to window
+            window.showTab = showTab;
+            window.toggleSidebar = toggleSidebar;
+        
+    </script>
 </body>
 </html>
