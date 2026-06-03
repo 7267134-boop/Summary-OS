@@ -1,0 +1,2954 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכות הפעלה - פרק 5: קלט/פלט (I/O)</title>
+    <!-- Google Fonts Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb', // Blue-600
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        codebg: '#1e293b',
+                        highlight: '#60a5fa'
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- MathJax -->
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        body { background-color: #f8fafc; }
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .tab-content.active { display: block; opacity: 1; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        pre { direction: ltr; text-align: left; background-color: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .nav-group { margin-top: 1.5rem; padding-right: 0.5rem; }
+        .nav-group-title { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .nav-btn { display: block; width: 100%; text-align: right; padding: 0.85rem 1rem 0.85rem 3rem; border-radius: 0.5rem; color: #cbd5e1; transition: all 0.2s; margin-bottom: 0.25rem; font-size: 0.95rem; }
+        .nav-btn:hover { background-color: #1e293b; color: #fff; padding-right: 1.5rem; }
+        .nav-btn.active-nav { background-color: #2563eb; color: #fff; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); border-right: 4px solid #3b82f6; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark-scroll::-webkit-scrollbar-track { background: #020617; }
+        .dark-scroll::-webkit-scrollbar-thumb { background: #334155; }
+        aside { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .sidebar-collapsed aside { width: 0 !important; min-width: 0 !important; opacity: 0 !important; pointer-events: none !important; }
+        #sidebar-toggle-btn { transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s; }
+        body:not(.sidebar-collapsed) #sidebar-toggle-btn { right: 21rem; }
+        body.sidebar-collapsed #sidebar-toggle-btn { right: 1rem; }
+        .nav-btn-prev, .nav-btn-next { transition: all 0.2s ease-in-out; }
+        .nav-btn-prev:hover { transform: translateX(2px); }
+        .nav-btn-next:hover { transform: translateX(-2px); }
+        #questions-modal { transition: opacity 0.3s ease-in-out; }
+        #questions-modal .transform { transition: transform 0.3s ease-in-out; }
+
+        /* 3D Flashcards */
+        .flashcard-scene {
+            perspective: 1000px;
+            cursor: pointer;
+            min-height: 180px;
+        }
+
+        .flashcard-card {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard-scene.flipped .flashcard-card {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .flashcard-front {
+            background-color: #ffffff;
+            color: #1e293b;
+            border-top: 4px solid #2563eb;
+        }
+
+        .flashcard-back {
+            background-color: #f8fafc;
+            color: #334155;
+            transform: rotateY(180deg);
+            border-top: 4px solid #94a3b8;
+        }
+
+        .flashcard-scene.flat-mode {
+            min-height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-card {
+            transform: none !important;
+            transform-style: flat;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .flashcard-scene.flat-mode .flashcard-face {
+            position: static;
+            backface-visibility: visible;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-front {
+            background-color: #eff6ff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-back {
+            transform: none;
+            background-color: #ffffff;
+            padding: 0.85rem 1.25rem;
+        }
+
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex selection:bg-blue-200 selection:text-blue-900">
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleSidebar()"></div>
+
+    <!-- Toggle Button -->
+    <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="fixed top-6 right-84 z-50 bg-white text-slate-700 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-slate-50 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all group lg:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-80 min-w-[20rem] bg-dark text-slate-300 flex flex-col h-screen sticky top-0 border-l border-slate-800 shadow-2xl z-50">
+        <!-- Header -->
+        <div class="p-8 border-b border-slate-800/80 bg-darker/50 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <h1 class="text-3xl font-black text-white tracking-tight mb-2 relative z-10">פרק 5</h1>
+            <p class="text-blue-400 font-medium text-sm relative z-10">קלט/פלט (I/O)</p>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto p-6 space-y-1 dark-scroll">
+            <div class="nav-group">
+                <div class="nav-group-title">חומרה ותוכנה</div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('intro')" id="btn-intro" class="nav-btn active-nav"><span>📖 5.0 מבוא</span></button>
+                <button onclick="showQuestions('intro', 'מבוא לקלט/פלט', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('hardware')" id="btn-hardware" class="nav-btn"><span>🔌 5.1 עקרונות חומרה</span></button>
+                <button onclick="showQuestions('hardware', 'עקרונות חומרה', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('software')" id="btn-software" class="nav-btn"><span>💻 5.2 עקרונות תוכנה</span></button>
+                <button onclick="showQuestions('software', 'עקרונות תוכנה', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('layers')" id="btn-layers" class="nav-btn"><span>📚 5.3 שכבות תוכנה</span></button>
+                <button onclick="showQuestions('layers', 'שכבות תוכנה', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('disks')" id="btn-disks" class="nav-btn"><span>💿 5.4 דיסקים</span></button>
+                <button onclick="showQuestions('disks', 'דיסקים', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('clocks')" id="btn-clocks" class="nav-btn"><span>⏱️ 5.5 שעונים וקוצבי זמן</span></button>
+                <button onclick="showQuestions('clocks', 'שעונים וקוצבי זמן', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-500 group-hover/nav:text-red-400 hover:text-red-300 hover:bg-red-900/50 flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות ללימוד">
+                    ?
+                </button>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">סיכום ותרגול</div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('glossary-concepts')" id="btn-glossary-concepts" class="nav-btn"><span>📋 5.6 רשימת מושגים</span></button>
+                </div>
+                <div class="relative group group/nav">
+                    <button onclick="showTab('glossary-questions')" id="btn-glossary-questions" class="nav-btn"><span>❓ 5.7 שאלות פתורות</span></button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-slate-800/80 bg-darker/30 text-center">
+            <p class="text-xs text-slate-500 font-medium">מערכות הפעלה (20594)</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-x-hidden min-h-screen bg-slate-50/50 relative">
+        <!-- Floating Header Background -->
+        <div class="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-blue-100/50 to-transparent -z-10 pointer-events-none"></div>
+
+        <div class="max-w-5xl mx-auto p-8 lg:p-12 pb-24">
+            
+            <header class="mb-12 bg-white p-8 rounded-2xl shadow-sm border border-slate-200/60 relative overflow-hidden">
+                <div class="absolute -left-10 -top-10 bg-blue-50 w-40 h-40 rounded-full blur-3xl opacity-60"></div>
+                <h2 id="main-title" class="text-4xl font-black text-slate-900 tracking-tight relative z-10 flex items-center gap-4">
+                    <span class="bg-blue-600 text-white px-4 py-2 rounded-xl text-2xl shadow-md">5</span>
+                    <span>קלט/פלט (I/O)</span>
+                </h2>
+                <p class="text-slate-500 mt-4 font-medium text-lg relative z-10 ml-16 leading-relaxed">סיכום מלא של מבנה החומרה, ניהול פסיקות, DMA, מבנה התוכנה השכבתית ואלגוריתמי תזמון דיסקים.</p>
+            </header>
+
+            <div id="content-area" class="relative min-h-[60vh]">
+
+                <div id="tab-intro" class="tab-content active">
+<!-- 5.0 מבוא -->
+
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 border-b-2 border-blue-100 pb-2">מבוא לניהול קלט/פלט</h2>
+            <p class="text-lg leading-relaxed mb-6">
+                אחד התפקידים המרכזיים והמורכבים ביותר של מערכת ההפעלה הוא ניהול כל התקני הקלט והפלט (I/O) המחוברים למחשב.
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg">
+                    <h3 class="font-bold text-red-700 flex items-center gap-2 mb-2">
+                        <span class="text-xl">⚠️</span> האתגר
+                    </h3>
+                    <p class="text-red-900 leading-relaxed">
+                        המערכת צריכה להתמודד עם מגוון עצום של התקנים (מסכים, מקלדות, דיסקים, כרטיסי רשת) הפועלים במהירויות שונות לחלוטין ובשיטות העברת נתונים שונות.
+                    </p>
+                </div>
+                
+                <div class="bg-green-50 border-r-4 border-green-500 p-4 rounded-l-lg">
+                    <h3 class="font-bold text-green-700 flex items-center gap-2 mb-2">
+                        <span class="text-xl">🎯</span> המטרה
+                    </h3>
+                    <p class="text-green-900 leading-relaxed">
+                        מערכת ההפעלה צריכה לשלוח פקודות להתקנים, לטפל בשגיאות קריאה/כתיבה, לנהל את הפסיקות (Interrupts), וליצור שכבת הפשטה (Abstraction) כך שהמתכנת והמשתמש יוכלו לעבוד עם התקנים שונים דרך ממשק אחיד ופשוט, מבלי להכיר את פרטי החומרה הספציפיים.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        
+                </div>
+
+                <div id="tab-hardware" class="tab-content ">
+<!-- 5.1 עקרונות חומרה -->
+
+        <section class="space-y-6">
+            <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.1 עקרונות חומרת קלט/פלט (5.1.1 - 5.1.5)</h2>
+            <p class="text-lg px-2 text-slate-700">
+                לפני שמערכת ההפעלה כותבת שורת קוד אחת לניהול התקן, היא חייבת להבין איך החומרה עצמה בנויה ומתקשרת.
+            </p>
+
+            <!-- 5.1.1 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.1.1 התקני קלט/פלט (I/O Devices)</h3>
+                <p class="mb-4 text-slate-700">כדי לא ללכת לאיבוד מול אלפי סוגי התקנים, מערכת ההפעלה מחלקת את רובם המוחלט לשתי משפחות עיקריות, בהתאם לאופן שבו הם בולעים או פולטים מידע:</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col h-full">
+                        <h4 class="font-bold text-lg text-slate-800 mb-3 border-b pb-2">📦 התקני בלוקים (Block Devices)</h4>
+                        <p class="text-slate-700 mb-4 flex-grow">התקנים אלו מאחסנים ומעבירים את המידע בגושים בעלי גודל קבוע שנקראים "בלוקים" (לרוב 512 עד 4096 בתים). לכל בלוק כזה יש כתובת עצמאית משלו.</p>
+                        <div class="bg-blue-50 border-r-4 border-blue-500 p-3 rounded-lg">
+                            <strong class="text-blue-800 block mb-1">התכונה הקריטית: גישה אקראית (Random Access)</strong>
+                            <p class="text-blue-900 text-sm leading-relaxed">מערכת ההפעלה יכולה לגשת לכל בלוק בדיסק ולקרוא או לכתוב אותו באופן בלתי תלוי לחלוטין בבלוקים האחרים. הדיסק הקשיח (HDD) וכונני ה-SSD הם הדוגמאות הקלאסיות.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col h-full">
+                        <h4 class="font-bold text-lg text-slate-800 mb-3 border-b pb-2">〰️ התקני תווים (Character Devices)</h4>
+                        <p class="text-slate-700 mb-4 flex-grow">התקנים אלו לא יודעים מה זה בלוקים או כתובות. הם פשוט שולחים או מקבלים זרם רציף של תווים (Bytes), אחד אחרי השני.</p>
+                        <div class="bg-indigo-50 border-r-4 border-indigo-500 p-3 rounded-lg">
+                            <strong class="text-indigo-800 block mb-1">התכונה הקריטית: חוסר יכולת לדלג (No Seek)</strong>
+                            <p class="text-indigo-900 text-sm leading-relaxed">אי אפשר לבקש מהמקלדת "תקראי שוב את התו ה-15 שהוקלד", המידע פשוט זורם פנימה או החוצה בזמן אמת. מקלדות, עכברים, מדפסות וכרטיסי רשת שייכים למשפחה זו.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-amber-50 p-4 rounded-xl border border-amber-200 flex items-start gap-4 shadow-sm">
+                    <span class="text-3xl">⏱️</span>
+                    <div>
+                        <strong class="text-amber-900 block text-lg mb-1">חריג: שעונים וקוצבי זמן (Clocks & Timers)</strong>
+                        <p class="text-amber-800 text-sm leading-relaxed">
+                            חריג בולט לחלוקה זו הוא השעון. שעונים אינם מייצרים זרם של תווים ואינם מאחסנים בלוקים, אלא תפקידם היחיד הוא לחולל פסיקות חומרה במרווחי זמן קבועים.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5.1.2 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.1.2 בקרי התקנים (Device Controllers)</h3>
+                <p class="mb-4 text-slate-700">המעבד (CPU) של המחשב הוא מוח אנליטי שמבין אפסים ואחדים. הוא לא יודע (ולא מעוניין לדעת) איך לסובב מנוע של דיסק קשיח או איך לפרש תנודות מתח אנלוגיות מכבל רשת. לכן, כל התקן חומרה מורכב משני חלקים נפרדים:</p>
+                
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-slate-100 p-4 rounded-lg border border-slate-200">
+                        <strong class="text-slate-800 flex items-center gap-2 mb-2">⚙️ החלק המכני/הפיזי</strong>
+                        <p class="text-slate-600 text-sm">ההתקן עצמו מולו מתבצעת הפעולה הפיזית (העדשה, המנוע, הלייזר, כבל הרשת).</p>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200 shadow-sm">
+                        <strong class="text-indigo-800 flex items-center gap-2 mb-2">🧠 החלק האלקטרוני (הבקר - Controller)</strong>
+                        <p class="text-indigo-900 text-sm">זהו שבב חכם היושב בין החלק המכני לבין לוח האם, ומתפקד כ"מנהל העבודה" של ההתקן.</p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50/50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <p class="text-slate-700 leading-relaxed">
+                        מערכת ההפעלה מתקשרת <strong>רק</strong> עם הבקר, דרך אוגרי בקרה (Registers). היא כותבת לאוגר פקודה (כמו "קרא נתונים"), והבקר מתרגם זאת לפעולות פיזיות. בנוסף, הבקר מכיל חוצץ פנימי (Buffer): הוא קורא את האותות החשמליים מההתקן, מרכיב מהם בלוק נתונים דיגיטלי, בודק שגיאות, ורק אז מעביר חבילה נקייה למערכת ההפעלה.
+                    </p>
+                </div>
+            </article>
+
+            <!-- 5.1.3 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.1.3 שיטות מיעון של התקני קלט/פלט</h3>
+                <p class="mb-5 text-slate-700">איך המעבד בדיוק שולח את הפקודות לאותם אוגרי בקרה של ההתקן?</p>
+                
+                <div class="space-y-4 mb-6 text-slate-700">
+                    <p><strong>בעבר:</strong> לאוגרים אלו היו "מספרי יציאה" (I/O Ports) ייעודיים, והמתכנתים נאלצו להשתמש בפקודות שפת מכונה מיוחדות כדי לדבר איתם.</p>
+                    <p><strong>כיום (Memory-Mapped I/O):</strong> הגישה השולטת כיום. מערכת ההפעלה לוקחת את כל אוגרי הבקרה של ההתקנים ומקצה להם כתובות רגילות בזיכרון הראשי (RAM). כאשר המעבד כותב לכתובת הזיכרון הזו, החומרה מנתבת את המידע ישירות להתקן.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-emerald-50 border-r-4 border-emerald-500 p-4 rounded-l-lg">
+                        <h4 class="font-bold text-emerald-800 mb-2 flex items-center gap-2"><span>🛡️</span> היתרון העצום: הגנה וקלות תכנות</h4>
+                        <p class="text-emerald-900 leading-relaxed text-sm">
+                            מאחר שההתקן נראה כמו סתם עוד מקום בזיכרון, מערכת ההפעלה פשוט <strong>לא ממפה</strong> את הכתובות הללו בטבלת הדפים של תוכניות משתמש (User Programs). כך מובטח שאף תוכנית לא תוכל לשלוט בחומרה ולעקוף את מערכת ההפעלה, ללא צורך במנגנוני אבטחה מורכבים.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg">
+                        <h4 class="font-bold text-red-800 mb-2 flex items-center gap-2"><span>⚠️</span> החיסרון: בעיות עם זיכרון המטמון (Caching)</h4>
+                        <p class="text-red-900 leading-relaxed text-sm">
+                            המעבד רגיל לשמור נתוני זיכרון ב-Cache המהיר שלו. אם המעבד יבדוק פעם שנייה את אוגר ה"סטטוס" של המדפסת (כדי לראות אם סיימה), הוא עלול לקרוא את המידע הישן מה-Cache במקום את המצב העדכני מהחומרה. לכן, מערכת ההפעלה חייבת להגדיר כתובות אלו במפורש ככאלו ש<strong>"אסור לשמור במטמון"</strong>.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5.1.4 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.1.4 גישה ישירה לזיכרון (DMA - Direct Memory Access)</h3>
+                
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
+                    <h4 class="font-bold text-slate-800 mb-2 text-lg">מדוע אנו זקוקים ל-DMA?</h4>
+                    <p class="text-slate-700 leading-relaxed mb-3">
+                        דמיינו שהמערכת רוצה לקרוא בלוק של 4,000 בתים מהדיסק. אם המעבד יעשה זאת בעצמו (שיטה הנקראת PIO), הוא ייאלץ לעשות לולאה: לקרוא בית מהבקר, לכתוב אותו לזיכרון, לקרוא בית שני, לכתוב לזיכרון וכו'. 
+                    </p>
+                    <p class="bg-red-100 text-red-800 px-3 py-2 rounded-lg font-semibold inline-block">
+                        בזמן הזה, המעבד "קפוא" ואינו יכול להריץ שום תוכנית אחרת. זהו בזבוז אדיר של משאב יקר!
+                    </p>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="font-bold text-slate-800 mb-3">הפתרון: מנגנון הפעולה של DMA</h4>
+                    <p class="text-slate-700 mb-4">ה-DMA הוא שבב ייעודי שיושב על לוח האם ותפקידו לשנע נתונים באופן עצמאי:</p>
+                    <ol class="space-y-4 list-decimal list-inside bg-white p-2 marker:text-blue-600 marker:font-bold">
+                        <li class="pl-2 border-b border-slate-100 pb-2">המעבד שולח ל-DMA פקודה קצרה: <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded italic">"קרא 4,000 בתים מדיסק X לכתובת זיכרון Y, ותודיע לי כשסיימת"</span>.</li>
+                        <li class="pl-2 border-b border-slate-100 pb-2">המעבד חוזר מיד להריץ תוכניות אחרות בזמן שה-DMA עובד.</li>
+                        <li class="pl-2 border-b border-slate-100 pb-2">ה-DMA מנהל את העברת הבלוקים בעצמו <strong>ישירות</strong> מהדיסק לזיכרון הראשי (RAM).</li>
+                        <li class="pl-2">כשהוא מסיים, ה-DMA שולח <strong>פסיקה (Interrupt)</strong> למעבד כדי להכריז: "המשימה בוצעה".</li>
+                    </ol>
+                </div>
+
+                <div class="bg-orange-50 border-r-4 border-orange-400 p-4 rounded-l-lg">
+                    <h4 class="font-bold text-orange-800 mb-1 flex items-center gap-2">
+                        <span>⏱️</span> החיסרון הקטן: גנבת מחזורים (Cycle Stealing)
+                    </h4>
+                    <p class="text-orange-900 leading-relaxed text-sm">
+                        מאחר שה-DMA והמעבד משתמשים באותו "כביש" (System Bus) כדי לגשת לזיכרון הראשי, לעיתים ה-DMA מקבל עדיפות ו"גונב" למעבד מחזור שעון (Clock Cycle), מה שגורם למעבד להמתין שבריר שנייה. 
+                        <strong>למרות זאת</strong>, העבודה המקבילית הופכת את ה-DMA לקריטי וחסכוני ביותר בביצועי המחשב הכוללים.
+                    </p>
+                </div>
+            
+                <!-- Simulator 5.1: PIO vs DMA -->
+                <div class="mt-6 bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-xl border border-slate-800 relative overflow-hidden" dir="rtl">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span>🚀</span> סימולטור 5.1: מרוץ השליחים (The DMA Offloader)
+                        </h4>
+                        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-mono">Interactive Simulation</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mb-6 leading-relaxed">
+                        השוו בין שתי הדרכים להעברת נתונים מהחומרה לזיכרון: בשיטת PIO המעבד מבצע את ההעברה בעצמו, ובשיטת DMA בקר ייעודי מבצע זאת ומאפשר למעבד להמשיך לחשב.
+                    </p>
+
+                    <div class="grid md:grid-cols-4 gap-6 mb-6">
+                        <!-- Sidebar Controls -->
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between md:col-span-1">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-2">בחר שיטה:</label>
+                                    <div class="space-y-2">
+                                        <button id="sim51-mode-pio" onclick="setSim51Mode('pio')" class="w-full py-2 px-3 rounded-lg text-xs font-bold transition-all border border-blue-500/30 bg-blue-650/20 text-blue-400">Programmed I/O (PIO)</button>
+                                        <button id="sim51-mode-dma" onclick="setSim51Mode('dma')" class="w-full py-2 px-3 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">Direct Memory Access (DMA)</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button id="sim51-start-btn" onclick="startSim51()" class="w-full py-2.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all text-xs flex items-center justify-center gap-1 shadow-md shadow-blue-900/30">
+                                        <span>▶️</span> הרץ העברה
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 space-y-1 font-mono">
+                                <div>ניצולת מעבד: <span id="sim51-cpu-util" class="font-bold text-red-400">0%</span></div>
+                                <div>הועברו: <span id="sim51-bytes-val" class="font-mono">0</span> / 1024 בתים</div>
+                            </div>
+                        </div>
+
+                        <!-- Simulation Screen -->
+                        <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 md:col-span-3 relative min-h-[220px] flex flex-col justify-between overflow-hidden">
+                            <!-- Node Layout -->
+                            <div class="grid grid-cols-3 gap-2 relative z-10 text-center mt-2">
+                                <!-- Device -->
+                                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                                    <div class="text-xl">💿</div>
+                                    <div class="text-xs font-bold text-white mt-1">בקר הדיסק</div>
+                                    <div class="text-[9px] text-slate-500 font-mono mt-1 uppercase" id="sim51-dev-status">IDLE</div>
+                                </div>
+
+                                <!-- CPU / DMA (Middle) -->
+                                <div class="flex flex-col gap-2 justify-center">
+                                    <div id="sim51-cpu-box" class="bg-slate-900 p-3 rounded-lg border border-slate-800 transition-all">
+                                        <div class="text-xl" id="sim51-cpu-emoji">💻</div>
+                                        <div class="text-xs font-bold text-white mt-1">מעבד (CPU)</div>
+                                    </div>
+                                    <div id="sim51-dma-box" class="bg-slate-900 p-2 rounded-lg border border-slate-800 opacity-30 transition-all">
+                                        <div class="text-xs text-slate-400">🧠 DMA</div>
+                                    </div>
+                                </div>
+
+                                <!-- RAM -->
+                                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                                    <div class="text-xl">💾</div>
+                                    <div class="text-xs font-bold text-white mt-1">זיכרון (RAM)</div>
+                                    <div class="text-[9px] text-slate-500 font-mono mt-1 uppercase" id="sim51-ram-status">WAITING</div>
+                                </div>
+                            </div>
+
+                            <!-- Particle elements container -->
+                            <div id="sim51-particles-container" class="absolute inset-0 pointer-events-none overflow-hidden z-20"></div>
+
+                            <!-- CPU Activity Console / Log -->
+                            <div class="bg-slate-900/90 border border-slate-800/80 rounded-lg p-2.5 mt-4 font-mono text-[10px] text-slate-350 relative z-10 h-16 overflow-hidden flex flex-col justify-end">
+                                <div class="text-[9px] text-slate-500 border-b border-slate-800 pb-1 mb-1 flex justify-between">
+                                    <span>יומן פעילות מעבד:</span>
+                                    <span id="sim51-task-desc" class="text-blue-400">Idle</span>
+                                </div>
+                                <div id="sim51-log-lines" class="space-y-0.5">
+                                    <div class="text-slate-500">&gt; System ready for transfer.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+
+            <!-- 5.1.5 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.1.5 חזרה נוספת על פסיקות חומרה</h3>
+                <p class="mb-5 text-slate-700">הפסיקות הוזכרו רבות, אך בסעיף זה אנו צוללים למנגנון הפנימי שלהן. הפסיקה היא "קריאת ההשכמה" שהחומרה שולחת למעבד כדי לקבל תשומת לב.</p>
+                
+                <div class="mb-6">
+                    <h4 class="font-bold text-slate-800 mb-3">איך זה קורה פיזית?</h4>
+                    <ul class="space-y-3">
+                        <li class="flex gap-3">
+                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">1</span>
+                            <p class="text-slate-700 pt-1">בקר ההתקן (או ה-DMA) שולח אות חשמלי לרכיב שנקרא <strong>בקר פסיקות (Interrupt Controller)</strong>.</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">2</span>
+                            <p class="text-slate-700 pt-1">בקר הפסיקות בודק אם אין פסיקות דחופות יותר, ומעביר את הבקשה למעבד.</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">3</span>
+                            <p class="text-slate-700 pt-1">המעבד עוצר את מה שהוא עושה, שומר את מצבו הנוכחי (Program Counter ו-PSW) אל המחסנית כדי שלא ישכח היכן עצר.</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">4</span>
+                            <p class="text-slate-700 pt-1">המעבד משתמש במספר הפסיקה כאינדקס לטבלת <strong>וקטור הפסיקות (Interrupt Vector)</strong> בזיכרון, שם הוא מוצא את הכתובת של קוד מערכת ההפעלה שמיועד לטפל בהתקן הספציפי הזה (ISR).</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-purple-50 p-5 rounded-xl border border-purple-200 shadow-inner">
+                    <strong class="text-purple-800 block mb-2 text-lg">⚠️ האתגר המודרני: פסיקות לא-מדויקות</strong>
+                    <p class="text-purple-900 leading-relaxed text-sm">
+                        במעבדים ישנים, פסיקות היו "מדויקות" (Precise) – המעבד סיים פקודה אחת ועבר לבדוק פסיקות. 
+                        כיום, מעבדים עובדים בשיטת ה-<strong>Pipeline</strong> ומריצים עשרות פקודות בשלבים שונים במקביל. קבלת פסיקה גורמת לפסיקה לא-מדויקת (Imprecise Interrupt), מצב שבו פקודות מסוימות כבר בוצעו, אחרות נקטעו באמצע, ואחרות רק התחילו. מערכת ההפעלה נדרשת לעבודה קשה ומסובכת של "ניקוי" המצב לפני שהיא יכולה להמשיך לטפל בפסיקה בבטחה.
+                    </p>
+                </div>
+            </article>
+
+        </section>
+
+        
+                </div>
+
+                <div id="tab-software" class="tab-content ">
+<!-- 5.2 עקרונות תוכנה -->
+
+        <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
+            <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.2 עקרונות תוכנת קלט/פלט</h2>
+            <p class="text-lg px-2 text-slate-700 leading-relaxed">
+                אחרי שבסעיף 5.1 הבנו את "הברזלים" – החומרה של הקלט/פלט – אנו עוברים בפרק 5.2 לדבר על התוכנה. החומרה היא אמנם חזקה, אך היא מסובכת, נוקשה ורוויה בשגיאות. תפקידה של תוכנת הקלט/פלט הוא לקחת את הכאוס המכני הזה, להסתיר אותו, ולהגיש למשתמש ולמתכנת סביבת עבודה חלקה ונוחה.
+            </p>
+            
+            <div class="bg-blue-50 border-r-4 border-blue-500 p-4 rounded-lg shadow-sm mx-2">
+                <strong class="text-blue-800 text-lg flex items-center gap-2 mb-2">💡 מילת המפתח: הפשטה (Abstraction)</strong>
+                <p class="text-blue-900 leading-relaxed">
+                    מתכנת שכותב אפליקציה לא צריך לדעת (ולא רוצה לדעת) באילו פקודות חשמליות להשתמש כדי לסובב את המנוע של הדיסק הקשיח. הוא רק רוצה לכתוב פקודה פשוטה כמו <code class="bg-blue-100 px-1 rounded font-mono">read()</code>. התוכנה היא זו שלוקחת את הפקודה הכללית הזו ומתרגמת אותה לפעולות המדויקות שהחומרה הספציפית דורשת.
+                </p>
+            </div>
+
+            <!-- 5.2.1 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.2.1 מטרות תוכנת הקלט/פלט</h3>
+                <p class="mb-5 text-slate-700">מערכות הפעלה מודרניות תוכננו לעמוד בשישה יעדים מרכזיים כדי לספק את אותה הפשטה:</p>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <strong class="text-indigo-700 block mb-2">1. אי-תלות בהתקן (Device Independence)</strong>
+                        <p class="text-slate-600 text-sm">המטרה החשובה ביותר. תוכנית שקוראת קובץ צריכה לעבוד בדיוק באותו אופן, בין אם הקובץ נמצא על דיסק קשיח, כונן USB, תקליטור או שרת מרוחק. הממשק נשאר זהה.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <strong class="text-indigo-700 block mb-2">2. שמות אחידים (Uniform Naming)</strong>
+                        <p class="text-slate-600 text-sm">שמות קבצים והתקנים חייבים להיות מבוססים על נתיבים פשוטים (כמו <code class="text-xs bg-slate-200 px-1 rounded">/dev/printer</code> ביוניקס), ללא קשר לחיבור הפיזי או לכתובת החומרה.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <strong class="text-indigo-700 block mb-2">3. טיפול בשגיאות (Error Handling)</strong>
+                        <p class="text-slate-600 text-sm">טיפול קרוב ככל האפשר לחומרה. הבקר מנסה לתקן -> הדרייבר מנסה שוב -> רק בשגיאה קריטית הבעיה מטפסת ומוצגת למשתמש.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <strong class="text-indigo-700 block mb-2">4. סינכרוני (חוסם) מול אסינכרוני</strong>
+                        <p class="text-slate-600 text-sm">חומרה היא אסינכרונית, אך למתכנת קל לכתוב קוד סינכרוני. המערכת עושה "קסם": חוסמת את התוכנית הלוגית בזמן ההמתנה, מריצה תוכניות אחרות, ומעירה אותה כשהפסיקה מגיעה.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <strong class="text-indigo-700 block mb-2">5. שימוש בחוצצים (Buffering)</strong>
+                        <p class="text-slate-600 text-sm">גישור על פערי מהירויות בין התקנים (למשל רשת לדיסק). המערכת אוגרת נתונים בזיכרון הראשי ומשחררת אותם בקצב שההתקן האיטי יכול "לבלוע".</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <strong class="text-indigo-700 block mb-2">6. התקנים שיתופיים מול בלעדיים</strong>
+                        <p class="text-slate-600 text-sm">דיסק הוא שיתופי (ניתן לגשת למספר קבצים יחד). מדפסת היא בלעדית (חייבת ניהול תור כדי למנוע דף מעורבב). התוכנה מנהלת הרשאות אלו.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5.2.2 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.2.2 קלט/פלט באמצעות המעבד הראשי</h3>
+                <p class="mb-4 text-slate-700">איך התוכנה מוציאה נתונים מההתקן? לאורך ההיסטוריה התפתחו 3 גישות. הראשונה והפרימיטיבית ביותר היא הקלט/פלט המתוכנת, שבו המעבד עושה את הכל.</p>
+                
+                <div class="mb-6">
+                    <strong class="text-slate-800 block mb-2">המנגנון (איך זה עובד?):</strong>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-700 bg-slate-50 p-4 rounded-lg">
+                        <li>המעבד כותב אות (למשל 'H') לאוגר המדפסת.</li>
+                        <li>למדפסת לוקח זמן להדפיס. בזמן הזה, המעבד נכנס ללולאה ששואלת: <span class="italic text-slate-500">"סיימת? סיימת? סיימת?"</span>.</li>
+                        <li>כשאוגר הסטטוס מסמן "סיימתי", המעבד שולח את האות הבאה ('E') וחוזר ללולאה.</li>
+                    </ol>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-emerald-50 border-r-4 border-emerald-500 p-4 rounded-lg">
+                        <strong class="text-emerald-800 block mb-1">היתרון ✅</strong>
+                        <p class="text-emerald-900 text-sm">השיטה הפשוטה ביותר למימוש. הכל מנוהל באמצעות קוד תוכנה בסיסי ולולאה פשוטה, ללא צורך בחומרת פסיקות או DMA.</p>
+                    </div>
+                    <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-lg">
+                        <strong class="text-red-800 block mb-1">החיסרון הקטלני: המתנה פעילה (Polling) ❌</strong>
+                        <p class="text-red-900 text-sm">המעבד מהיר פי מיליונים מהמדפסת. המעבד מנצל 100% מעוצמתו כדי להריץ לולאת סרק (Busy Waiting). המחשב <strong>משותק לחלוטין</strong> למשימות אחרות עד סיום פעולת ה-I/O.</p>
+                    </div>
+                </div>
+
+                <p class="mt-4 text-slate-600 text-sm italic border-t pt-2 text-center">
+                    כדי להמחיש בצורה ויזואלית כיצד גישת ה"קלט/פלט המתוכנת" משתקת את המעבד לעומת המשימות האחרות שהוא היה יכול לבצע, וכדי לפתור את בעיית ה"שיתוק" הזו – מהנדסי המחשבים הבינו שחייבים לשנות את צורת התקשורת להתראות יזומות מההתקן.
+                </p>
+            </article>
+
+            <!-- 5.2.3 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.2.3 קלט/פלט מונחה אירועים</h3>
+                <p class="mb-4 text-slate-700">הרעיון: לעבור ממודל של המתנה סינכרונית למודל אסינכרוני. במקום שהמעבד ישאל, ההתקן יודיע.</p>
+                
+                <div class="bg-orange-50 border border-orange-200 p-4 rounded-xl mb-6 shadow-sm">
+                    <strong class="text-orange-800 flex items-center gap-2 mb-2">🍔 אנלוגיית המסעדה</strong>
+                    <p class="text-orange-900 text-sm leading-relaxed">
+                        במקום לעמוד מול הדלפק ולשאול כל שנייה "האם המנה שלי מוכנה?" (Polling), אתה מקבל זמזם והולך לשבת ולקרוא ספר. כשהמנה מוכנה, הזמזם רוטט (פסיקה).
+                    </p>
+                </div>
+
+                <div class="mb-6">
+                    <strong class="text-slate-800 block mb-2">איך המנגנון פועל?</strong>
+                    <ul class="space-y-3 text-slate-700">
+                        <li class="bg-slate-50 p-3 rounded border border-slate-100">1. המעבד מעתיק את האות 'H' לאוגר הנתונים של המדפסת.</li>
+                        <li class="bg-blue-50 p-3 rounded border border-blue-100"><strong class="text-blue-800">2. החלפת הקשר (Context Switch):</strong> המערכת חוסמת את התהליך המדפיס. המעבד מתפנה ב-100% להריץ תוכנית אחרת (כמו דפדפן).</li>
+                        <li class="bg-slate-50 p-3 rounded border border-slate-100">3. כשהמדפסת מסיימת להדפיס 'H', היא שולחת אות חשמלי למעבד – <strong>פסיקה (Interrupt)</strong>.</li>
+                        <li class="bg-slate-50 p-3 rounded border border-slate-100">4. המעבד עוצר את הדפדפן, קופץ לשגרת הטיפול (ISR), מעביר למדפסת 'E', וחוזר לדפדפן.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg">
+                    <strong class="text-red-800 flex items-center gap-2 mb-1">🛑 סופת פסיקות (Interrupt Storm) - למה זה לא מספיק?</strong>
+                    <p class="text-red-900 text-sm leading-relaxed">
+                        השיטה מצוינת להתקנים איטיים, אך קטסטרופלית למהירים. דיסק קשיח מעביר נתונים בקצב אדיר. על כל בית בודד הוא ייצר פסיקה. המעבד יבזבז את כל זמנו על שמירת מצבים ותקורות (Overhead) של מעברים למצב ליבה (Kernel Mode), ולא יצליח לקדם שום עבודה אמיתית.
+                    </p>
+                </div>
+            </article>
+
+            <!-- 5.2.4 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.2.4 גישה ישירה לזיכרון (I/O Using DMA)</h3>
+                <p class="mb-4 text-slate-700">כדי לפתור את התקורה של פסיקות בודדות, מכניסים את ה-DMA. המטרה: לעבור לעבוד בבלוקים שלמים במקום באותיות בודדות.</p>
+                
+                <div class="mb-6 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <ol class="list-decimal list-inside space-y-3 text-slate-700 font-medium">
+                        <li>מערכת ההפעלה אוספת נתונים (למשל חוצץ של 1,000 תווים) בזיכרון הראשי.</li>
+                        <li>המעבד שולח פקודה ל-DMA: <span class="bg-white px-2 py-1 rounded text-blue-700 shadow-sm border">"הנה הכתובות, יש לך 1,000 תווים, צא לדרך"</span>.</li>
+                        <li>התהליך נחסם והמעבד חופשי <strong>לחלוטין</strong>. ה-DMA קורא אות, ממתין למדפסת, ושולח את הבאה.</li>
+                        <li class="text-emerald-700 font-bold">רק כשה-DMA מסיים את כל ה-1,000 תווים, הוא שולח פסיקה <u>אחת ויחידה</u> למעבד.</li>
+                    </ol>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-emerald-50 border-r-4 border-emerald-500 p-4 rounded-lg">
+                        <strong class="text-emerald-800 block mb-1">היתרון העצום 🚀</strong>
+                        <p class="text-emerald-900 text-sm">הפחתת הפסיקות מ-1,000 לפסיקה אחת בודדת. המעבד נקי מהפרעות ומנוצל באופן אופטימלי.</p>
+                    </div>
+                    <div class="bg-slate-100 border-r-4 border-slate-400 p-4 rounded-lg">
+                        <strong class="text-slate-700 block mb-1">האותיות הקטנות (חסרונות) 🔍</strong>
+                        <p class="text-slate-600 text-sm">מעבר ל"גנבת מחזורים" (Cycle Stealing), בקר ה-DMA איטי מהמעבד הראשי. עבור התקן איטי מאוד, לפעמים יעיל יותר שהמעבד יעשה "פולינג מתוחכם" מאשר לבזבז זמן על הגדרת ה-DMA. אך ברוב המוחלט של המקרים, ה-DMA הוא רכיב אינטגרלי והכרחי בארכיטקטורה המודרנית המאפשר את יעילות המערכת.</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        
+                </div>
+
+                <div id="tab-layers" class="tab-content ">
+<!-- 5.3 שכבות תוכנה -->
+
+        <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
+            <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.3 חלוקה לשכבות – תוכנת קלט/פלט</h2>
+            <p class="text-lg px-2 text-slate-700 leading-relaxed">
+                <span class="italic text-slate-500">כדי לראות בעין את ההבדל הקריטי בתקורת הפסיקות בין שתי הגישות, ולאחר שהבנו את המטרות הכלליות של התוכנה, נראה כעת כיצד המערכת משיגה אותן בפועל:</span><br>
+                תוכנת הקלט/פלט בנויה בארכיטקטורה היררכית של שכבות, כמו בצל. כל שכבה מסתירה את הפרטים המלוכלכים של השכבה שמתחתיה. המודל מחלק את המערכת לארבע שכבות מרכזיות משורש החומרה ועד למרחב המשתמש.
+            </p>
+
+            <!-- 5.3.1 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.3.1 מנהל הפסיקות</h3>
+                <p class="mb-4 text-slate-700">השכבה הנמוכה ביותר (הכי קרובה לחומרה). תפקידה להסתיר את הפסיקות האסינכרוניות עמוק בתוך הליבה.</p>
+                
+                <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-100">
+                    <strong class="text-indigo-900 block mb-3 text-lg">מהלך האירועים מבחינת התוכנה:</strong>
+                    <ul class="space-y-4">
+                        <li class="flex gap-3">
+                            <span class="bg-indigo-200 text-indigo-900 px-2 py-1 rounded font-bold text-sm h-fit">א'</span>
+                            <p class="text-indigo-900 text-sm pt-1">תהליך מבקש נתונים, מפעיל קריאת מערכת חוסמת (למשל <code class="bg-white px-1 rounded">Down</code> על סמפור), ונרדם.</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-indigo-200 text-indigo-900 px-2 py-1 rounded font-bold text-sm h-fit">ב'</span>
+                            <p class="text-indigo-900 text-sm pt-1">החומרה מסיימת לקרוא ומחוללת פסיקה. מטפל הפסיקות (ISR) מתעורר: שומר את אוגרי התהליך שהופרע, קורא את סטטוס ההתקן (הצלחה/שגיאה).</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-indigo-200 text-indigo-900 px-2 py-1 rounded font-bold text-sm h-fit">ג'</span>
+                            <p class="text-indigo-900 text-sm pt-1">ה-ISR משחרר את התהליך שהמתין (פעולת <code class="bg-white px-1 rounded">Up</code> לסמפור). התהליך חוזר ל"מוכן לריצה". מבחינת התהליך – הוא פשוט נרדם והתעורר עם נתונים מוכנים, שום דבר לא קטע אותו.</p>
+                        </li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- 5.3.2 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.3.2 מתאמי התקנים (Device Drivers)</h3>
+                <p class="mb-4 text-slate-700">כל יצרן חומרה (Intel, Nvidia) מייצר בקרים שונים עם פקודות שונות. מתאם ההתקן הוא "המתורגמן הרשמי" שמקבל פקודה סטנדרטית ממערכת ההפעלה (כמו <code>Read Block</code>) ומתרגם אותה לפעולות חשמליות מול אוגרי הבקר.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-red-50 border border-red-200 p-5 rounded-xl shadow-inner relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-6xl opacity-10">☠️</div>
+                        <strong class="text-red-800 block mb-2 text-lg relative z-10">הסכנה בשיטה המסורתית (Kernel Space)</strong>
+                        <p class="text-red-900 text-sm leading-relaxed relative z-10">
+                            במערכות כמו Windows/Linux, מתאמי ההתקנים רצים בתוך מרחב הליבה עם הרשאות מוחלטות. מאחר שהם נכתבים ע"י צד-שלישי ולעיתים בחופזה, באג פשוט במתאם התקן גורם לקריסה מיידית של <strong>כל</strong> המערכת (הגורם מס' 1 למסך המוות הכחול - BSOD).
+                        </p>
+                    </div>
+                    
+                    <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-xl shadow-inner relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-6xl opacity-10">🛡️</div>
+                        <strong class="text-emerald-800 block mb-2 text-lg relative z-10">הפתרון המודרני (Micro-kernel / User Space)</strong>
+                        <p class="text-emerald-900 text-sm leading-relaxed relative z-10">
+                            מערכות מתקדמות (כמו MINIX) מוציאות את מתאמי ההתקנים למרחב המשתמש, שם הם רצים כתהליך רגיל. אם מתאם התקן קורס בגלל באג, התהליך מת ומאותחל מחדש בשקיפות, ללא כל פגיעה ביציבות מערכת ההפעלה.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5.3.3 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.3.3 תוכנת קלט/פלט המשוחררת מאילוצי חומרה</h3>
+                <p class="mb-4 text-slate-700">במקום שכל חברת חומרה תכתוב קוד ניהול כללי למתאם ההתקן שלה, מערכת ההפעלה מרכזת את המשימות הכלליות בשכבה אחידה שיושבת מעל מתאמי ההתקנים.</p>
+                
+                <ul class="grid sm:grid-cols-2 gap-4">
+                    <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <strong class="text-slate-800 block mb-1">1. ממשק אחיד ושמות 🏷️</strong>
+                        <span class="text-slate-600 text-sm">מיפוי התקנים כקבצים (כמו <code class="bg-slate-200 px-1 rounded">/dev/audio</code>) וניתוב הבקשות (קריאה/כתיבה) למתאם ההתקן המתאים.</span>
+                    </li>
+                    <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <strong class="text-slate-800 block mb-1">2. אבטחה (Protection) 🔒</strong>
+                        <span class="text-slate-600 text-sm">וידוא שלתהליך המבקש יש הרשאות גישה לחומרה הספציפית בטרם העברת הבקשה למתאם ההתקן.</span>
+                    </li>
+                    <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <strong class="text-slate-800 block mb-1">3. חוצצים (Buffering) 📥</strong>
+                        <span class="text-slate-600 text-sm">הקצאת זיכרון ביניים כדי להחליק את פערי המהירויות בין ההתקנים לבין המעבד והזיכרון.</span>
+                    </li>
+                    <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <strong class="text-slate-800 block mb-1">4. ניהול שגיאות 🚨</strong>
+                        <span class="text-slate-600 text-sm">קבלת שגיאות שלא נפתרו ע"י מתאם ההתקן, והחלטה כיצד להגיב (הקריסת תהליך או הצגת הודעה "אין נייר").</span>
+                    </li>
+                    <li class="bg-slate-50 p-4 rounded-lg border border-slate-200 sm:col-span-2">
+                        <strong class="text-slate-800 block mb-1">5. הקצאת התקנים ייעודיים (Dedicated Devices) 🎯</strong>
+                        <span class="text-slate-600 text-sm">מערכת ההפעלה חייבת לנהל רישום ולנעול התקנים שאינם יכולים לשרת מספר תהליכים במקביל (כמו צורב תקליטורים או מצלמה), כדי למנוע מצב ששני תהליכים שולחים אליהם פקודות בו-זמנית.</span>
+                    </li>
+                </ul>
+            
+                <!-- Simulator 5.4: Double Buffering -->
+                <div class="mt-6 bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-xl border border-slate-800 relative overflow-hidden" dir="rtl">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span>📥</span> סימולטור 5.4: פינג-פונג החוצצים (Buffer Overlap Logic)
+                        </h4>
+                        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-mono">Double Buffering Demo</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mb-6 leading-relaxed">
+                        השוו בין שימוש בחוצץ יחיד (Single Buffer) לחוצץ כפול (Double Buffer) בעת קבלת זרם נתונים מהרשת והצגתו בנגן המדיה.
+                    </p>
+
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <!-- Controls -->
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between md:col-span-1">
+                            <div class="space-y-4">
+                                <div>
+                                    <button id="sim54-start-btn" onclick="startSim54()" class="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-500 transition-all text-xs flex items-center justify-center gap-1 shadow-md shadow-emerald-950/30">
+                                        <span>▶️</span> הרץ הדמיה
+                                    </button>
+                                </div>
+                                <div>
+                                    <button id="sim54-reset-btn" onclick="resetSim54()" class="w-full py-2 rounded-lg bg-slate-800 text-slate-300 font-bold hover:bg-slate-750 transition-all text-xs border border-slate-700">
+                                        <span>🔄</span> אפס
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 space-y-2 font-mono">
+                                <div>
+                                    <span class="text-amber-400 font-bold">חד-חוצץ:</span>
+                                    <div class="pl-1">קיפאונות: <span id="sim54-single-freezes" class="font-bold text-red-400">0</span></div>
+                                </div>
+                                <div>
+                                    <span class="text-emerald-400 font-bold">דו-חוצץ:</span>
+                                    <div class="pl-1">קיפאונות: <span id="sim54-double-freezes" class="font-bold text-green-400">0</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buffers Visualizer (Double Panels) -->
+                        <div class="md:col-span-3 grid md:grid-cols-2 gap-4">
+                            <!-- Single Buffer Panel -->
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 relative">
+                                <h5 class="text-xs font-bold text-amber-400 mb-3 border-b border-slate-800 pb-1 flex justify-between">
+                                    <span>נגן א': חוצץ יחיד (Single Buffer)</span>
+                                    <span id="sim54-single-status" class="text-[9px] bg-amber-500/20 text-amber-400 px-1 rounded font-mono">IDLE</span>
+                                </h5>
+
+                                <div class="space-y-4">
+                                    <!-- Screen -->
+                                    <div class="h-24 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-800/80 relative overflow-hidden">
+                                        <div id="sim54-single-player" class="w-8 h-8 rounded-full border-4 border-amber-500 border-t-transparent animate-spin hidden"></div>
+                                        <div id="sim54-single-play-icon" class="text-2xl text-slate-500">⏸️</div>
+                                        <div id="sim54-single-playback-bar" class="absolute bottom-0 right-0 left-0 h-1 bg-amber-500 transition-all duration-100" style="width: 0%;"></div>
+                                        <span id="sim54-single-screen-txt" class="absolute text-[10px] text-slate-400 font-mono bottom-2 left-2">0% played</span>
+                                    </div>
+
+                                    <!-- Buffer Box -->
+                                    <div>
+                                        <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+                                            <span>חוצץ אחיד (RAM):</span>
+                                            <span id="sim54-single-buf-val">0%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-900 h-6 rounded-md border border-slate-800 overflow-hidden relative">
+                                            <div id="sim54-single-buf-fill" class="h-full bg-amber-500/30 border-l border-amber-500 transition-all duration-100" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Double Buffer Panel -->
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 relative">
+                                <h5 class="text-xs font-bold text-emerald-400 mb-3 border-b border-slate-800 pb-1 flex justify-between">
+                                    <span>נגן ב': חוצץ כפול (Double Buffer)</span>
+                                    <span id="sim54-double-status" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1 rounded font-mono">IDLE</span>
+                                </h5>
+
+                                <div class="space-y-4">
+                                    <!-- Screen -->
+                                    <div class="h-24 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-800/80 relative overflow-hidden">
+                                        <div id="sim54-double-player" class="w-8 h-8 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin hidden"></div>
+                                        <div id="sim54-double-play-icon" class="text-2xl text-slate-500">⏸️</div>
+                                        <div id="sim54-double-playback-bar" class="absolute bottom-0 right-0 left-0 h-1 bg-emerald-500 transition-all duration-100" style="width: 0%;"></div>
+                                        <span id="sim54-double-screen-txt" class="absolute text-[10px] text-slate-400 font-mono bottom-2 left-2">0% played</span>
+                                    </div>
+
+                                    <!-- Two Buffers -->
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <div class="flex justify-between text-[8px] text-slate-400 mb-0.5">
+                                                <span>חוצץ א' (Active):</span>
+                                                <span id="sim54-bufA-val">0%</span>
+                                            </div>
+                                            <div id="sim54-bufA-box" class="w-full bg-slate-900 h-4 rounded border border-slate-800 overflow-hidden relative">
+                                                <div id="sim54-bufA-fill" class="h-full bg-emerald-500/30 border-l border-emerald-500 transition-all duration-100" style="width: 0%;"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-[8px] text-slate-400 mb-0.5">
+                                                <span>חוצץ ב' (Standby):</span>
+                                                <span id="sim54-bufB-val">0%</span>
+                                            </div>
+                                            <div id="sim54-bufB-box" class="w-full bg-slate-900 h-4 rounded border border-slate-800 overflow-hidden relative">
+                                                <div id="sim54-bufB-fill" class="h-full bg-slate-500/20 border-l border-slate-500 transition-all duration-100" style="width: 0%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+
+            <!-- 5.3.4 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.3.4 תוכנת קלט/פלט ברמת תהליכי המשתמשים</h3>
+                <p class="mb-4 text-slate-700">חלק נכבד מניהול ה-I/O רץ כקוד רגיל במרחב המשתמש, מחוץ לליבה (Kernel).</p>
+
+                <div class="space-y-6">
+                    <div>
+                        <strong class="text-blue-800 block text-lg mb-2 border-b pb-1">ספריות פונקציות (Library Procedures)</strong>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            כשמתכנת קורא ל- <code class="bg-slate-800 text-green-400 px-2 py-1 rounded font-mono text-xs">printf("Hello %s", name)</code>, הוא לא פונה ישירות לליבה. זוהי פונקציית ספרייה במרחב המשתמש שעושה "עבודת הכנה" (עיצוב ושיבוץ משתנים). רק כשהמחרוזת הסופית מוכנה, היא קוראת לפקודת המערכת האמיתית (<code class="bg-slate-200 px-1 rounded">write</code>) אל תוך הליבה. זה חוסך זמן ביצוע יקר למערכת ההפעלה.
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                        <strong class="text-blue-900 block text-lg mb-2 flex items-center gap-2">🖨️ מנגנון ה-Spooling (הדפסה בתור)</strong>
+                        <p class="text-blue-900 text-sm mb-3">
+                            הפתרון האלגנטי להתקנים בלעדיים כמו מדפסת (שאסור לנעול אותם או לקבל פקודות סותרות).
+                        </p>
+                        <ul class="space-y-2 text-sm text-blue-800 border-t border-blue-200 pt-3">
+                            <li><strong class="font-bold">התהליך:</strong> תוכניות שרוצות להדפיס כותבות את הפלט לקובץ זמני ב"ספריית המתנה" (Spooling Directory) וממשיכות לעבוד. מבחינתן, ההדפסה הסתיימה.</li>
+                            <li><strong class="font-bold">הדיימון (Daemon):</strong> תהליך מערכת מיוחד שרץ ברקע במרחב המשתמש. הוא ה<strong>יחיד</strong> שמורשה לפתוח את המדפסת. הוא לוקח קבצים מתור ההמתנה ומדפיס אותם אחד-אחד בסדר מופתי, מבלי שאף תוכנית תיחסם.</li>
+                        </ul>
+                    </div>
+                </div>
+            
+                <!-- Simulator 5.2: System Call Plinko -->
+                <div class="mt-6 bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-xl border border-slate-800 relative overflow-hidden" dir="rtl">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span>🎯</span> סימולטור 5.2: מכונת הפינבול של הפקודות (System Call Plinko)
+                        </h4>
+                        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-mono">I/O Layers Drop</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mb-6 leading-relaxed">
+                        בחרו פעולת קלט/פלט והריצו אותה כדי לראות את כדור הנתונים עובר דרך ארבע שכבות התוכנה והחומרה של המערכת.
+                    </p>
+
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <!-- Controls -->
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between md:col-span-1">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-2">סוג פעולת I/O:</label>
+                                    <select id="sim52-op-select" class="w-full bg-slate-800 border border-slate-700 text-slate-350 rounded-lg p-2 text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none">
+                                        <option value="write-disk">💾 כתיבת קובץ לדיסק</option>
+                                        <option value="print-doc">🖨️ הדפסת מסמך טקסט</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <button id="sim52-start-btn" onclick="startSim52()" class="w-full py-2.5 rounded-lg bg-purple-600 text-white font-bold hover:bg-purple-500 transition-all text-xs flex items-center justify-center gap-1 shadow-md shadow-purple-900/30">
+                                        <span>🔮</span> שחרר פקודה (Drop)
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-800 text-[10px] text-slate-400 leading-relaxed font-mono">
+                                <div>מצב נוכחי: <span id="sim52-state-txt" class="text-purple-400 font-bold">READY</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Plinko Visualizer & Description Panel -->
+                        <div class="md:col-span-3 grid md:grid-cols-5 gap-4">
+                            <!-- Plinko board -->
+                            <div class="md:col-span-2 bg-slate-950 rounded-xl p-3 border border-slate-800 relative flex flex-col justify-between h-[280px]">
+                                <!-- Layer 1 (User Space) -->
+                                <div id="sim52-layer-1" class="border border-purple-500/20 bg-purple-500/5 rounded p-2 text-center text-[10px] transition-all relative">
+                                    <span class="font-bold text-purple-400">1. מרחב משתמש (User Space)</span>
+                                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center text-[8px] text-white z-10 font-sans shadow font-bold">1</div>
+                                </div>
+
+                                <!-- Connector arrow -->
+                                <div class="text-center text-slate-600 text-xs my-0.5">▼</div>
+
+                                <!-- Layer 2 (OS Independent) -->
+                                <div id="sim52-layer-2" class="border border-blue-500/20 bg-blue-500/5 rounded p-2 text-center text-[10px] transition-all relative">
+                                    <span class="font-bold text-blue-400">2. שכבת מע"פ עצמאית (OS Level)</span>
+                                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-[8px] text-white z-10 font-sans shadow font-bold">2</div>
+                                </div>
+
+                                <!-- Connector arrow -->
+                                <div class="text-center text-slate-600 text-xs my-0.5">▼</div>
+
+                                <!-- Layer 3 (Driver) -->
+                                <div id="sim52-layer-3" class="border border-emerald-500/20 bg-emerald-500/5 rounded p-2 text-center text-[10px] transition-all relative">
+                                    <span class="font-bold text-emerald-400">3. מנהל התקן (Driver)</span>
+                                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-[8px] text-white z-10 font-sans shadow font-bold">3</div>
+                                </div>
+
+                                <!-- Connector arrow -->
+                                <div class="text-center text-slate-600 text-xs my-0.5">▼</div>
+
+                                <!-- Layer 4 (Hardware) -->
+                                <div id="sim52-layer-4" class="border border-amber-500/20 bg-amber-500/5 rounded p-2 text-center text-[10px] transition-all relative">
+                                    <span class="font-bold text-amber-400">4. בקר וחומרה פיזית (Hardware)</span>
+                                </div>
+
+                                <!-- Ball element -->
+                                <div id="sim52-ball" class="absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-yellow-400 shadow-lg shadow-yellow-500/50 flex items-center justify-center text-[10px] text-slate-950 font-bold transition-all duration-500 pointer-events-none opacity-0" style="top: 10px;">💾</div>
+                            </div>
+
+                            <!-- Description Panel -->
+                            <div class="md:col-span-3 bg-slate-950 rounded-xl p-4 border border-slate-800 flex flex-col justify-between min-h-[280px]">
+                                <div>
+                                    <h5 class="text-xs font-bold text-slate-400 mb-2 border-b border-slate-800 pb-2 flex items-center gap-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-purple-500" id="sim52-info-dot"></span>
+                                        <span id="sim52-info-title">שכבה נוכחית</span>
+                                    </h5>
+                                    <p id="sim52-info-desc" class="text-xs text-slate-350 leading-relaxed font-sans min-h-[140px]">
+                                        לחצו על "שחרר פקודה" כדי להתחיל את הדמיית מעבר המידע בשכבות.
+                                    </p>
+                                </div>
+                                <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 mt-2 font-mono text-[9px] text-slate-400">
+                                    <div class="text-slate-500 mb-1">פקודת מערכת / קוד רץ:</div>
+                                    <code id="sim52-code-snippet" class="text-purple-300">await fs.writeFile('file.txt', data);</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+
+        </section>
+
+        
+                </div>
+
+                <div id="tab-disks" class="tab-content ">
+<!-- 5.4 דיסקים -->
+
+        <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
+            <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.4 דיסקים (Disks)</h2>
+            
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-lg text-slate-700 leading-relaxed">
+                    אחרי שהבנו את העקרונות הכלליים של התוכנה ומתאמי ההתקנים, נראה כיצד המערכת מתמודדת פנים אל פנים מול ההתקן המורכב וה"בעייתי" מכולם: <strong>הדיסק הקשיח (Magnetic Hard Disk - HDD)</strong>.
+                </p>
+                <div class="mt-4 p-4 bg-slate-50 border-r-4 border-slate-400 rounded-lg text-sm text-slate-600">
+                    למרות שכיום כונני פלאש (SSD) הופכים לנפוצים יותר, הדיסקים המגנטיים עדיין מהווים את עמוד השדרה של אחסון המידע בענן ובשרתים. הדיסק הקשיח הוא "צוואר הבקבוק" האולטימטיבי של המחשב – <strong>הוא איטי פי מיליונים מהמעבד</strong>. המטרה: לקרוא ולכתוב בלוקים במהירות, תחת חוקי משחק פיזיקליים נוקשים.
+                </div>
+            </div>
+
+            <!-- 5.4.1 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.4.1 חומרת הדיסק (Disk Hardware)</h3>
+                <p class="mb-5 text-slate-700">אפשר לדמיין את הדיסק כמו פטיפון משוכלל מאוד המורכב ממספר תקליטים המונחים זה מעל זה.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <!-- מבנה פיזי -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <strong class="text-indigo-800 block text-lg mb-3 border-b border-indigo-100 pb-2">⚙️ המבנה הפיזי</strong>
+                        <ul class="space-y-4 text-sm text-slate-700">
+                            <li><strong class="text-slate-900 block">פלטות (Platters):</strong> מס' דיסקות מתכת מצופות חומר מגנטי, המושחלות על ציר (Spindle) שמסתובב במהירות עצומה (5,400-15,000 סל"ד).</li>
+                            <li><strong class="text-slate-900 block">ראשי קריאה/כתיבה:</strong> לכל משטח פלטה (עליון ותחתון) יש ראש אלקטרומגנטי זעיר שמרחף מעליו.</li>
+                            <li class="bg-indigo-50 p-2 rounded-lg border border-indigo-100"><strong class="text-indigo-900 block">הזרוע המכנית (Disk Arm):</strong> כל הראשים מחוברים לזרוע אחת. <em>המשמעות:</em> כולם זזים יחד פנימה והחוצה. אי אפשר להזיז ראש אחד לקצה וראש שני למרכז.</li>
+                        </ul>
+                    </div>
+
+                    <!-- מבנה לוגי -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <strong class="text-emerald-800 block text-lg mb-3 border-b border-emerald-100 pb-2">📐 המבנה הלוגי</strong>
+                        <ul class="space-y-4 text-sm text-slate-700">
+                            <li><strong class="text-slate-900 block">מסלולים (Tracks):</strong> כל משטח מחולק לאלפי טבעות קונצנטריות.</li>
+                            <li><strong class="text-slate-900 block">גליל (Cylinder):</strong> אוסף כל המסלולים שנמצאים באותו רדיוס בדיוק, בכל הפלטות יחד (כי הזרוע זזה כיחידה אחת), יוצר צורה וירטואלית של גליל.</li>
+                            <li><strong class="text-slate-900 block">סקטורים/מגזרים (Sectors):</strong> כל מסלול נחתך לפלחים (כמו עוגה). זוהי יחידת המידע הבסיסית ביותר לקריאה/כתיבה (512 עד 4096 בתים).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- האנטומיה של קריאת נתונים -->
+                <div class="bg-red-50 p-6 rounded-xl border border-red-200">
+                    <h4 class="font-bold text-red-900 text-lg mb-4">האנטומיה של קריאה: למה זה כל כך איטי?</h4>
+                    <p class="text-red-800 text-sm mb-4">כדי לקרוא בלוק, בקר הדיסק מבצע 3 פעולות עוקבות, שלכל אחת "תג מחיר" בזמן:</p>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-white p-3 rounded-lg border border-red-100 shadow-sm relative overflow-hidden">
+                            <div class="absolute right-0 top-0 bottom-0 w-2 bg-red-600"></div>
+                            <strong class="text-red-700">1. זמן חיפוש (Seek Time) - ⚠️ האויב הגדול ביותר!</strong>
+                            <p class="text-slate-600 text-sm mt-1">הזמן להזיז את הזרוע המכנית למסלול (צילינדר) המבוקש. זוהי מסה פיזית שזזה, ולכן זו הפעולה <strong>האיטית והיקרה ביותר</strong> (מילי-שניות).</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-red-100 shadow-sm relative overflow-hidden">
+                            <div class="absolute right-0 top-0 bottom-0 w-2 bg-orange-400"></div>
+                            <strong class="text-orange-700">2. השהיית סיבוב (Rotational Latency)</strong>
+                            <p class="text-slate-600 text-sm mt-1">הזרוע במקום, אך צריך להמתין שהפלטה תסתובב עד שהסקטור המבוקש יגיע בדיוק מתחת לראש הקריאה.</p>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg border border-red-100 shadow-sm relative overflow-hidden">
+                            <div class="absolute right-0 top-0 bottom-0 w-2 bg-emerald-400"></div>
+                            <strong class="text-emerald-700">3. זמן העברה (Transfer Time)</strong>
+                            <p class="text-slate-600 text-sm mt-1">הזמן שבו הנתונים עצמם מומרים לאותות חשמליים ונשלחים לבקר. זוהי הפעולה המהירה ביותר מבין השלוש.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5.4.2 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.4.2 עיצוב דיסקים (Disk Formatting)</h3>
+                <p class="mb-5 text-slate-700">לפני שניתן לכתוב נתונים לדיסק קשיח חדש, הוא חייב לעבור תהליך של עיצוב בשתי רמות:</p>
+                
+                <div class="space-y-6">
+                    <!-- Low Level -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <strong class="text-slate-800 text-lg block mb-3">1. עיצוב ברמה נמוכה (Low-Level Formatting)</strong>
+                        <p class="text-slate-600 text-sm mb-4">מבוצע במפעל. משרטט את המסלולים והסקטורים הפיזיים על הפלטות הריקות. כל סקטור כולל:</p>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                            <div class="flex-1 bg-white p-2 text-center rounded border border-slate-200 text-sm"><strong class="block text-indigo-600">קדם-אות (Preamble)</strong> רצף ביטים לסנכרון הראש.</div>
+                            <div class="flex-1 bg-white p-2 text-center rounded border border-slate-200 text-sm"><strong class="block text-emerald-600">נתונים (Data)</strong> המידע עצמו (512/4096).</div>
+                            <div class="flex-1 bg-white p-2 text-center rounded border border-slate-200 text-sm"><strong class="block text-purple-600">קוד תיקון שגיאות (ECC)</strong> לזיהוי ותיקון פגמים פיזיים.</div>
+                        </div>
+
+                        <strong class="text-slate-700 block mb-2 text-sm">🛠️ טריקים הנדסיים לשיפור תזמון:</strong>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <strong class="text-blue-700 text-sm block">הסטת גלילים (Cylinder Skew)</strong>
+                                <p class="text-xs text-slate-600 mt-1">מסיטים את מספור הסקטורים במסלול הבא כדי לפצות על הזמן שלוקח לזרוע לזוז (Seek time), כך שהראש ינחת על סקטור 0 בדיוק כשהוא עובר תחתיו, בלי להמתין סיבוב שלם.</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <strong class="text-blue-700 text-sm block">שזירת סקטורים (Interleaving)</strong>
+                                <p class="text-xs text-slate-600 mt-1">בבקרים איטיים ישנים, ממספרים בדילוגים (0, 3, 6, 1...) כך שעד שהבקר מעבד את סקטור 0, סקטור 1 בדיוק מגיע, ואין צורך להמתין שוב.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- High Level -->
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                        <strong class="text-blue-900 text-lg block mb-2">2. עיצוב ברמה גבוהה (High-Level Formatting)</strong>
+                        <p class="text-blue-800 text-sm">
+                            לאחר חלוקה למחיצות (Partitions) וכתיבת מידע האתחול (MBR), מערכת ההפעלה מבצעת עיצוב לוגי. היא יוצרת את נתוני מערכת הקבצים (File System), מגדירה את ספריית השורש ומאתחלת את מפת הבלוקים הפנויים לקליטת קבצים.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5.4.3 -->
+            <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">5.4.3 אלגוריתמי תזמון זרוע הדיסק</h3>
+                <p class="mb-5 text-slate-700">
+                    מאחר ש<strong>זמן החיפוש (Seek Time)</strong> שואב את רוב ביצועי המערכת, מערכת ההפעלה משנה את סדר בקשות ה-I/O כדי למזער את תנועת הזרוע.
+                </p>
+                
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <!-- FCFS -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span>🕒</span> 1. כל הקודם זוכה (FCFS)</h4>
+                        <p class="text-slate-600 text-sm mb-2">בקשות מטופלות בדיוק לפי סדר הגעתן.</p>
+                        <div class="bg-red-50 text-red-800 text-xs p-2 rounded">
+                            <strong>חיסרון קטלני:</strong> ביצועים גרועים. הזרוע תתרוצץ הלוך ושוב על פני הדיסק (למשל צילינדר 1, 1000, 2), ותבלה את זמנה בתנועה ריקה במקום בקריאה.
+                        </div>
+                    </div>
+
+                    <!-- SSTF -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span>⚡</span> 2. זמן חיפוש קצר תחילה (SSTF)</h4>
+                        <p class="text-slate-600 text-sm mb-2">בוחרים תמיד את הבקשה הקרובה ביותר למיקום הנוכחי של הזרוע.</p>
+                        <div class="bg-green-50 text-green-800 text-xs p-2 rounded mb-2"><strong>יתרון:</strong> ממזער תנועות ומשפר תפוקה.</div>
+                        <div class="bg-orange-50 text-orange-800 text-xs p-2 rounded">
+                            <strong>חיסרון (הרעבה - Starvation):</strong> אם יש עומס באזור צפוף באמצע הדיסק, בקשות בקצוות עלולות להמתין לנצח.
+                        </div>
+                    </div>
+
+                    <!-- SCAN -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span>🛗</span> 3. אלגוריתם המעלית (SCAN)</h4>
+                        <p class="text-slate-600 text-sm mb-2">כדי לפתור הרעבה, הזרוע נעה רק לכיוון אחד ואוספת בקשות בדרך. כשהיא מגיעה לקצה, היא הופכת כיוון וסורקת חזרה (כמו מעלית).</p>
+                        <div class="bg-green-50 text-green-800 text-xs p-2 rounded">
+                            <strong>יתרון:</strong> שילוב מעולה של ביצועים ומניעת הרעבה (כל בקשה תטופל בוודאות).
+                        </div>
+                    </div>
+
+                    <!-- C-SCAN -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span>🔄</span> 4. מעלית מעגלי (C-SCAN)</h4>
+                        <p class="text-slate-600 text-sm mb-2">SCAN רגיל מקפח בקשות בקצה הרחוק כי הוא הופך כיוון מיד. C-SCAN סורק תמיד רק לכיוון אחד. בסוף הוא קופץ חזרה להתחלה <strong>ללא קריאה</strong> ומתחיל סריקה זהה.</p>
+                        <div class="bg-blue-50 text-blue-800 text-xs p-2 rounded">
+                            <strong>יתרון:</strong> מספק זמן המתנה אחיד ושוויוני לכל הבקשות, ללא קשר למיקומן בדיסק.
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Simulator 5.3: Disk Elevator -->
+                <div class="mt-6 bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-xl border border-slate-800 relative overflow-hidden" dir="rtl">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-yellow-500"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span>🛗</span> סימולטור 5.3: סימולטור המעלית של הדיסק (The Disk Elevator)
+                        </h4>
+                        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-mono">Arm Scheduling</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mb-6 leading-relaxed">
+                        השוו את תפקודם של אלגוריתמי תזמון הדיסק השונים: FCFS, SSTF, SCAN, C-SCAN. הזינו בקשות או הפעילו הדמיית הרעבה.
+                    </p>
+
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <!-- Controls -->
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col gap-4 md:col-span-1">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1.5">אלגוריתם:</label>
+                                <select id="sim53-algo" class="w-full bg-slate-850 border border-slate-700 text-slate-350 rounded-lg p-2 text-xs focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                                    <option value="fcfs">FCFS (First-Come, First-Served)</option>
+                                    <option value="sstf">SSTF (Shortest Seek Time First)</option>
+                                    <option value="scan">SCAN (Elevator)</option>
+                                    <option value="cscan">C-SCAN (Circular SCAN)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1.5">מיקום התחלתי (0-199):</label>
+                                <input type="number" id="sim53-start-pos" min="0" max="199" value="50" class="w-full bg-slate-850 border border-slate-700 text-slate-300 rounded-lg p-2 text-xs font-mono focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1.5">תור בקשות (צילינדרים):</label>
+                                <input type="text" id="sim53-queue" value="98, 183, 37, 122, 14, 124, 65, 67" class="w-full bg-slate-850 border border-slate-700 text-slate-300 rounded-lg p-2 text-xs font-mono focus:ring-1 focus:ring-amber-500 focus:outline-none" placeholder="למשל: 50, 120, 10">
+                                <div class="flex gap-2 mt-1.5">
+                                    <button onclick="generateRandomSim53Queue()" class="flex-1 py-1 rounded bg-slate-800 text-[10px] text-slate-300 hover:bg-slate-700 border border-slate-750">אקראי</button>
+                                    <button onclick="clearSim53Queue()" class="flex-1 py-1 rounded bg-slate-800 text-[10px] text-slate-300 hover:bg-slate-700 border border-slate-750">נקה</button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 pt-2 border-t border-slate-800">
+                                <button id="sim53-start-btn" onclick="startSim53()" class="w-full py-2.5 rounded-lg bg-amber-600 text-white font-bold hover:bg-amber-500 transition-all text-xs flex items-center justify-center gap-1 shadow-md shadow-amber-950/30">
+                                    <span>▶️</span> הרץ סימולציה
+                                </button>
+                                <button id="sim53-starve-btn" onclick="toggleSim53Starvation()" class="w-full py-2 rounded-lg bg-red-650 text-white font-bold hover:bg-red-600 transition-all text-xs flex items-center justify-center gap-1 border border-red-500/20">
+                                    ☠️ הדגמת הרעבה (SSTF)
+                                </button>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-800 text-[11px] text-slate-450 space-y-1 font-mono">
+                                <div>מיקום זרוע: <span id="sim53-head-pos" class="font-bold text-amber-400">50</span></div>
+                                <div>סך תנועה: <span id="sim53-total-movement" class="font-bold text-white">0</span> צילינדרים</div>
+                            </div>
+                        </div>
+
+                        <!-- Graph & Table visualization -->
+                        <div class="md:col-span-3 flex flex-col gap-4">
+                            <!-- Visual Track / Chart -->
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 relative h-[180px] overflow-hidden flex flex-col justify-between">
+                                <div class="flex justify-between text-[9px] text-slate-500 font-mono border-b border-slate-900 pb-1">
+                                    <span>0 (פנים הדיסק)</span>
+                                    <span>50</span>
+                                    <span>100</span>
+                                    <span>150</span>
+                                    <span>199 (חוץ הדיסק)</span>
+                                </div>
+
+                                <!-- Seek Graph SVG -->
+                                <div class="relative w-full h-[120px] bg-slate-900/30 rounded border border-slate-900 flex items-center">
+                                    <svg id="sim53-graph-svg" class="w-full h-full absolute inset-0 z-10">
+                                        <!-- Seek lines will be drawn here dynamically -->
+                                    </svg>
+                                    
+                                    <!-- Vertical grid lines -->
+                                    <div class="absolute inset-y-0 left-0 w-full flex justify-between pointer-events-none opacity-10">
+                                        <div class="border-r border-white h-full"></div>
+                                        <div class="border-r border-white h-full"></div>
+                                        <div class="border-r border-white h-full"></div>
+                                        <div class="border-r border-white h-full"></div>
+                                        <div class="border-r border-white h-full"></div>
+                                    </div>
+                                </div>
+
+                                <div class="text-[9px] text-slate-500 font-sans text-center">
+                                    הקו הכתום מציג את תנועת הזרוע בין בקשות הצילינדר השונות.
+                                </div>
+                            </div>
+
+                            <!-- Live Requests Status Bar -->
+                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs">
+                                <div class="text-[10px] text-slate-500 mb-1.5">מצב תור הבקשות בזמן אמת:</div>
+                                <div id="sim53-queue-status" class="flex flex-wrap gap-1.5">
+                                    <!-- Live items go here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+
+        </section>
+                </div>
+
+                <div id="tab-clocks" class="tab-content ">
+                    <!-- 5.5 שעונים וקוצבי זמן -->
+                    <section class="space-y-6">
+                        <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.5 שעונים וקוצבי זמן (Clocks & Timers)</h2>
+                        <p class="text-lg px-2 text-slate-700 leading-relaxed">
+                            שעונים וקוצבי זמן (Clocks/Timers) אינם התקני קלט/פלט רגילים – הם אינם קוראים קבצים או מדפיסים תווים. תפקידם היחיד והקריטי הוא לנהל את ממד הזמן במערכת ההפעלה, לחולל פסיקות יזומות ולמנוע מתוכניות להשתלט על המעבד או לתקוע את המחשב.
+                        </p>
+
+                        <!-- 5.5.1 -->
+                        <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                            <h3 class="text-xl font-bold text-blue-800 mb-4">5.5.1 מתנדים ושעוני חומרה</h3>
+                            <p class="mb-4 text-slate-700 leading-relaxed">
+                                ברמת החומרה, שעון מבוסס על **מתנד גביש קוורץ (Quartz Crystal Oscillator)**. כאשר הגביש מקבל מתח חשמלי, הוא רוטט בתדר מדויק מאוד (למשל, מיליוני פעמים בשנייה).
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                    <h4 class="font-bold text-slate-800 mb-2">⏱️ אוגר ספירה לאחור (Counter Register)</h4>
+                                    <p class="text-slate-600 text-sm leading-relaxed">
+                                        בכל רטט של הגביש, ערך האוגר יורד ב-1. כאשר אוגר הספירה מגיע ל-0, הוא מעורר **פסיקת חומרה (Clock Interrupt)** וטוען את עצמו מחדש מערך התחלתי קבוע המוגדר על ידי מערכת ההפעלה.
+                                    </p>
+                                </div>
+                                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                    <h4 class="font-bold text-slate-800 mb-2">⚡ פסיקת השעון (Clock Tick)</h4>
+                                    <p class="text-slate-600 text-sm leading-relaxed">
+                                        תדירות פסיקת השעון נעה בדרך כלל בין 100 ל-1000 פסיקות בשנייה (100Hz עד 1KHz). פסיקה זו היא הלב הפועם של המערכת המאפשר שיתוף זמן (Time-Sharing).
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- 5.5.2 -->
+                        <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                            <h3 class="text-xl font-bold text-blue-800 mb-4">5.5.2 תפקידי השעון במערכת ההפעלה</h3>
+                            <p class="mb-4 text-slate-700">פסיקת השעון מריצה שגרת טיפול (ISR) המבצעת מספר פעולות קריטיות בכל "פעימה":</p>
+                            <div class="space-y-3">
+                                <div class="flex items-start gap-3 p-3 bg-blue-50/50 rounded-lg">
+                                    <span class="text-xl">🔄</span>
+                                    <div>
+                                        <strong class="text-blue-900 block">תזמון מונע (Preemptive Scheduling):</strong>
+                                        <p class="text-slate-700 text-sm leading-relaxed">מערכת ההפעלה מקטינה את ה-Quantum (פרוסת הזמן) של התהליך הרץ. אם הוא הגיע ל-0, מופעל המתזמן שמבצע החלפת הקשר (Context Switch) כדי להעביר את ה-CPU לתהליך הבא בתור.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-3 bg-blue-50/50 rounded-lg">
+                                    <span class="text-xl">🛡️</span>
+                                    <div>
+                                        <strong class="text-blue-900 block">הגנה מפני לולאות אינסופיות:</strong>
+                                        <p class="text-slate-700 text-sm leading-relaxed">ללא פסיקת שעון, תהליך משתמש שנכנס ללולאה אינסופית היה משתק את המחשב לנצח. פסיקת החומרה קוטעת את התהליך באופן כפוי ומחזירה שליטה לליבת המערכת.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-3 bg-blue-50/50 rounded-lg">
+                                    <span class="text-xl">📅</span>
+                                    <div>
+                                        <strong class="text-blue-900 block">ניהול שעוני תוכנה (Software Timers):</strong>
+                                        <p class="text-slate-700 text-sm leading-relaxed">מערכת ההפעלה מנהלת רשימה של אירועים מושהים (למשל, "הער את תהליך X בעוד 3 שניות"). בכל פעימה היא בודקת אילו שעונים פגו ומעירה את התהליכים המתאימים.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- 5.5.3 + Simulator 5.5 -->
+                        <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b border-slate-100 pb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-blue-800">5.5.3 מנגנון כלב השמירה (Watchdog Timer)</h3>
+                                    <p class="text-slate-600 text-sm mt-1">מערכת הגנה חומרתית מפני קפיאה מוחלטת של ה-CPU או ליבת מערכת ההפעלה.</p>
+                                </div>
+                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold self-start md:self-center">חומרה להגנת המערכת</span>
+                            </div>
+                            
+                            <p class="text-slate-700 leading-relaxed mb-6">
+                                במערכות קריטיות (או במכשירים משובצים - Embedded Systems), עלולה להתרחש שגיאה חמורה בליבה או בחומרה שגורמת לכל המערכת לקפוא – כולל טיפול בפסיקות. 
+                                **טיימר כלב השמירה (Watchdog)** הוא רכיב חומרה חיצוני נפרד מהמעבד המריץ שעון ספירה לאחור. 
+                                במצב תקין, מערכת ההפעלה שולחת אות איפוס לטיימר במרווחי זמן קבועים – פעולה הנקראת **"להאכיל את כלב השמירה" (Feeding the Watchdog)**. 
+                                אם המערכת קופאת ולא מזינה את הכלב, הטיימר מגיע ל-0 ושולח אות **Hard Reset (אתחול פיזי)** ישירות למעבד.
+                            </p>
+
+                            <!-- Watchdog Simulator Section -->
+                            <div class="bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-xl border border-slate-800 relative overflow-hidden animate-once" dir="rtl">
+                                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-amber-500 to-green-500"></div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                                        <span>🐕</span> סימולטור 5.5: הדמיית כלב השמירה (Watchdog Timer)
+                                    </h4>
+                                    <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-mono">Interactive Simulation</span>
+                                </div>
+
+                                <div class="grid md:grid-cols-3 gap-6">
+                                    <!-- Control Panel -->
+                                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between">
+                                        <div>
+                                            <h5 class="text-sm font-bold text-slate-300 mb-3 border-b border-slate-800 pb-2">לוח בקרה</h5>
+                                            <div class="space-y-4">
+                                                <div>
+                                                    <label class="block text-xs text-slate-400 mb-2">מצב כלב השמירה:</label>
+                                                    <div class="grid grid-cols-2 gap-2">
+                                                        <button id="wd-enable-btn" onclick="toggleWatchdog(true)" class="px-3 py-2 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">פעיל</button>
+                                                        <button id="wd-disable-btn" onclick="toggleWatchdog(false)" class="px-3 py-2 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-red-650/20 text-red-400 border-red-500/30">כבוי</button>
+                                                    </div>
+                                                </div>
+                                                <div class="pt-2">
+                                                    <button id="wd-freeze-btn" onclick="triggerWdFreeze()" class="w-full py-2.5 rounded-lg bg-red-600 text-white font-bold hover:bg-red-500 transition-all text-xs shadow-md shadow-red-900/30 flex items-center justify-center gap-1">
+                                                        <span>🚨</span> הרץ לולאה אינסופית (הקפא מערכת)
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4 pt-3 border-t border-slate-800">
+                                            <button id="wd-feed-btn" onclick="feedWatchdog()" class="w-full py-3 rounded-lg bg-emerald-600 text-white font-black hover:bg-emerald-500 transition-all text-sm shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-1">
+                                                🦴 להאכיל את כלב השמירה (איפוס טיימר)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Visual State representation -->
+                                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col items-center justify-center">
+                                        <h5 class="text-sm font-bold text-slate-300 mb-4 self-start border-b border-slate-800 pb-2 w-full text-center">מצב ה-CPU והליבה</h5>
+                                        <div id="wd-cpu-circle" class="w-24 h-24 rounded-full bg-emerald-500/20 border-4 border-emerald-500 flex flex-col items-center justify-center shadow-lg transition-all duration-300 mb-3">
+                                            <span id="wd-cpu-emoji" class="text-3xl font-sans">😊</span>
+                                            <span id="wd-cpu-status-txt" class="text-[10px] font-bold text-emerald-400 mt-1 uppercase">Healthy</span>
+                                        </div>
+                                        <p id="wd-status-desc" class="text-xs text-slate-400 text-center leading-relaxed h-12">
+                                            המערכת פועלת באופן תקין. ה-CPU מריץ תהליכים ומאכיל את ה-Watchdog מדי פעם.
+                                        </p>
+                                    </div>
+
+                                    <!-- Watchdog timer hardware display -->
+                                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col items-center justify-between">
+                                        <h5 class="text-sm font-bold text-slate-300 mb-2 w-full text-center border-b border-slate-800 pb-2">מד חומרת Watchdog</h5>
+                                        <div class="relative w-28 h-28 flex items-center justify-center mb-2">
+                                            <!-- SVG circular progress bar -->
+                                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                                <circle cx="50" cy="50" r="40" stroke="#1e293b" stroke-width="8" fill="transparent" />
+                                                <circle id="wd-timer-circle" cx="50" cy="50" r="40" stroke="#f59e0b" stroke-width="8" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="0" class="transition-all duration-100" />
+                                            </svg>
+                                            <div class="absolute flex flex-col items-center">
+                                                <span id="wd-timer-val" class="text-2xl font-black text-white">5.0</span>
+                                                <span class="text-[9px] text-slate-400 uppercase">seconds</span>
+                                            </div>
+                                        </div>
+                                        <div class="w-full text-center">
+                                            <span id="wd-hardware-status" class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">WAITING</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- System Flash Notification / Reset Effect -->
+                                <div id="wd-reset-overlay" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-150 flex items-center justify-center z-20">
+                                    <div class="text-slate-900 text-2xl font-black flex items-center gap-2">
+                                        <span>⚡</span> מבצע Hard Reset פיזי לחומרה...
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+                </div>
+
+                                <div id="tab-glossary-concepts" class="tab-content ">
+                    <!-- 5.6 רשימת מושגים -->
+                    <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
+                        <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.6 רשימת מושגים מסכמת</h2>
+                        <p class="text-lg px-2 text-slate-700 leading-relaxed mb-4">
+                            להלן כל המושגים המרכזיים והרשמיים של פרק 5. השתמשו בכרטיסיות הזיכרון האינטראקטיביות כדי לשנן ולבחון את עצמכם לקראת הבחינה.
+                        </p>
+
+                        <!-- Interactive Flashcard Widget Controls -->
+                        <div class="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 p-6 rounded-3xl border-2 border-blue-200/60 mb-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <!-- Mode toggles -->
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-slate-700">מצב תצוגה:</span>
+                                <button id="flashcard-mode-study" onclick="setFlashcardMode('study')" class="bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95">📖 מצב למידה (כרטיסים גלויים)</button>
+                                <button id="flashcard-mode-test" onclick="setFlashcardMode('test')" class="bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">❓ מצב בחינה (לחיצה להפיכה)</button>
+                            </div>
+                            <!-- Stats / Reset -->
+                            <div class="text-xs font-bold text-slate-600 flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+                                <div id="flashcard-stats-container" class="hidden">נחשפו: <span id="flashcard-opened-count" class="text-blue-600 font-extrabold text-sm">0</span> מתוך <span id="flashcard-total-count" class="font-bold">14</span></div>
+                                <button onclick="resetFlashcards()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-1 px-3 rounded-lg text-[10px] transition-colors cursor-pointer">איפוס כרטיסיות</button>
+                            </div>
+                        </div>
+
+                        <!-- Categories Filter Tabs -->
+                        <div class="flex flex-wrap gap-2 mb-8 border-b pb-4 border-slate-150" id="flashcard-categories-tabs">
+                            <!-- Dynamic tabs populated in JS -->
+                        </div>
+
+                        <!-- Flashcard Grid Deck -->
+                        <div id="flashcard-deck" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                            <!-- Cards will be dynamically generated by Javascript -->
+                        </div>
+                    </section>
+                </div>
+
+                <div id="tab-glossary-questions" class="tab-content ">
+<!-- 5.6 שאלות פתורות -->
+
+        <section class="space-y-6 border-t-4 border-slate-200 pt-8 mt-8">
+            <h2 class="text-2xl font-bold text-slate-900 bg-slate-200 inline-block px-4 py-2 rounded-lg">5.6 בעיות פתורות ושאלות לחזרה</h2>
+            
+            <div class="space-y-8">
+                <!-- שאלה 1 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 p-5 border-b border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">שאלה 1: תקורה של גנבת מחזורים (DMA Cycle Stealing)</h3>
+                        <p class="text-slate-700">
+                            נתון בקר דיסק (DMA) המעביר נתונים לזיכרון הראשי בקצב של 2 מגה-בתים בשנייה (2MB/sec). המחשב עצמו מצויד במעבד הפועל בקצב שעון של 2 גיגה-הרץ (2GHz). ה-DMA גונב מחזור שעון אחד של המעבד עבור כל מילה (Word) בגודל 4 בתים שהוא מעביר לזיכרון.
+                            <br><br>
+                            <strong>מהו אחוז הזמן המדויק שהמעבד מאבד (זמן שבו הוא קפוא) עקב תופעת גנבת המחזורים?</strong>
+                        </p>
+                    </div>
+                    <div class="bg-emerald-50 p-5">
+                        <h4 class="font-bold text-emerald-800 mb-3 border-b border-emerald-200 pb-1">תשובה פתורה:</h4>
+                        <div class="space-y-2 text-emerald-900 text-sm leading-relaxed">
+                            <p>קודם כל נחשב כמה פעמים בשנייה ה-DMA גונב מחזור.</p>
+                            <p>קצב ההעברה הוא $2,000,000$ בתים בשנייה. מכיוון שכל מילה היא בת 4 בתים, מתבצעות $\frac{2,000,000}{4} = 500,000$ העברות מילה בשנייה.</p>
+                            <p>על כל העברה כזו, המעבד מאבד מחזור שעון אחד. לכן המעבד מאבד $500,000$ מחזורי שעון בכל שנייה.</p>
+                            <p>המעבד פועל בקצב של 2GHz, כלומר הוא מבצע $2,000,000,000$ (2 מיליארד) מחזורי שעון בשנייה בסך הכל.</p>
+                            <p>נחשב את האחוז:<br>
+                            $\frac{500,000}{2,000,000,000} \times 100 = 0.025\%$</p>
+                            <div class="mt-3 bg-white p-3 rounded border border-emerald-200 font-medium">
+                                <strong>מסקנה:</strong> למרות תופעת "גנבת המחזורים", התקורה היא זניחה ביותר (פחות ממאית האחוז!). שימוש ב-DMA משתלם בצורה בלתי רגילה בהשוואה למעבד שהיה מבצע את כל הקריאה בעצמו (קלט/פלט מתוכנת).
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- שאלה 2 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 p-5 border-b border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">שאלה 2: חישוב הסטת גלילים (Cylinder Skew)</h3>
+                        <p class="text-slate-700">
+                            נתון דיסק קשיח המסתובב במהירות של 7200 סיבובים לדקה (RPM). כל מסלול (Track) על הדיסק מכיל 100 סקטורים בדיוק. הזמן הנדרש לזרוע המכנית לזוז ממסלול אחד למסלול הסמוך לו (Track-to-track seek time) הוא 1 מילי-שנייה (1ms).
+                            <br><br>
+                            <strong>מה צריכה להיות "הסטת הגלילים" (Cylinder Skew) האידיאלית במונחים של מספר סקטורים, כדי שזרוע הדיסק תנחת בדיוק על סקטור 0 של המסלול הבא לאחר המעבר?</strong>
+                        </p>
+                    </div>
+                    <div class="bg-emerald-50 p-5">
+                        <h4 class="font-bold text-emerald-800 mb-3 border-b border-emerald-200 pb-1">תשובה פתורה:</h4>
+                        <div class="space-y-2 text-emerald-900 text-sm leading-relaxed">
+                            <p>נחשב את זמן הסיבוב של הדיסק בשניות: $7200 \text{ RPM} / 60 = 120$ סיבובים בשנייה.</p>
+                            <p>מכאן שזמן סיבוב אחד (Revolution) אורך $\frac{1}{120}$ שנייה, שהם בערך $8.33$ מילי-שניות (ms).</p>
+                            <p>מכיוון שיש 100 סקטורים בכל מסלול, הזמן שלוקח לסקטור אחד לעבור מתחת לראש הוא: $\frac{8.33\text{ms}}{100} = 0.0833\text{ms}$ לסקטור.</p>
+                            <p>הזרוע המכנית זקוקה ל-1ms כדי לזוז למסלול הבא. נחשב כמה סקטורים יעברו מתחת לראש במהלך מילי-שנייה אחת:<br>
+                            $\frac{1\text{ms}}{0.0833\text{ms/sector}} = 12$ סקטורים.</p>
+                            <div class="mt-3 bg-white p-3 rounded border border-emerald-200 font-medium">
+                                <strong>מסקנה:</strong> בזמן שהזרוע זזה למסלול הבא, הדיסק יסתובב בדיוק ב-12 סקטורים. לכן, כדי לא להפסיד סיבוב המתנה, יש להגדיר הסטת גלילים של 12 סקטורים (כלומר, סקטור 0 של המסלול החדש ימוקם גיאומטרית 12 סקטורים "קדימה" ביחס לסקטור 0 של המסלול הקודם).
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- שאלה 3 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 p-5 border-b border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">שאלה 3: אלגוריתמי תזמון דיסק (SSTF מול SCAN)</h3>
+                        <p class="text-slate-700">
+                            תור הבקשות לבקר הדיסק מכיל דרישות קריאה מהצילינדרים הבאים (מסודרים משמאל לימין לפי סדר הגעתם למערכת):<br>
+                            <code class="bg-white px-2 py-1 rounded border shadow-sm">10, 22, 20, 2, 40, 6, 38</code>
+                            <br><br>
+                            ראש הדיסק נמצא כעת בצילינדר 20, וכיוון התנועה האחרון שלו היה <strong>כלפי מעלה</strong> (כלומר, לכיוון המספרים הגבוהים יותר).<br>
+                            <strong>מה יהיה סדר הטיפול בבקשות לפי אלגוריתם SSTF (זמן חיפוש קצר ביותר תחילה), ומה יהיה הסדר לפי אלגוריתם SCAN (מעלית)?</strong>
+                        </p>
+                    </div>
+                    <div class="bg-emerald-50 p-5">
+                        <h4 class="font-bold text-emerald-800 mb-3 border-b border-emerald-200 pb-1">תשובה פתורה:</h4>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- SSTF -->
+                            <div>
+                                <strong class="text-emerald-900 block mb-2">לפי אלגוריתם SSTF:</strong>
+                                <p class="text-sm text-emerald-800 mb-2">בכל רגע המערכת בוחרת את היעד הקרוב ביותר, ללא התחשבות בכיוון:</p>
+                                <ul class="text-sm text-emerald-900 space-y-1 mb-3 bg-white/50 p-3 rounded">
+                                    <li>הראש ב-20. הקרוב ביותר הוא 20 (מרחק 0).</li>
+                                    <li>נותרו: 10, 22, 2, 40, 6, 38. הקרוב ביותר הוא 22 (מרחק 2).</li>
+                                    <li>נותרו: 10, 2, 40, 6, 38. הקרוב ביותר הוא 10 (מרחק 12).</li>
+                                    <li>נותרו: 2, 40, 6, 38. הקרוב ביותר הוא 6 (מרחק 4).</li>
+                                    <li>נותרו: 2, 40, 38. הקרוב ביותר הוא 2 (מרחק 4).</li>
+                                    <li>נותרו: 40, 38. הקרוב ביותר הוא 38 (מרחק 36).</li>
+                                    <li>אחרון נותר 40 (מרחק 2).</li>
+                                </ul>
+                                <div class="bg-white p-2 rounded border border-emerald-200 font-mono text-sm shadow-sm">
+                                    <strong>סדר SSTF:</strong><br>
+                                    $20 \rightarrow 22 \rightarrow 10 \rightarrow 6 \rightarrow 2 \rightarrow 38 \rightarrow 40$
+                                </div>
+                            </div>
+
+                            <!-- SCAN -->
+                            <div>
+                                <strong class="text-emerald-900 block mb-2">לפי אלגוריתם SCAN (מעלית):</strong>
+                                <p class="text-sm text-emerald-800 mb-2">הראש אוסף בקשות בכיוון מעלה עד לבקשה הגבוהה ביותר, ורק אז הופך כיוון:</p>
+                                <ul class="text-sm text-emerald-900 space-y-1 mb-3 bg-white/50 p-3 rounded">
+                                    <li>הראש ב-20. קורא את 20.</li>
+                                    <li>ממשיך למעלה: פוגש את 22.</li>
+                                    <li>ממשיך למעלה: פוגש את 38.</li>
+                                    <li>ממשיך למעלה: פוגש את 40.</li>
+                                    <li><em class="text-emerald-700">אין יותר בקשות. הופך כיוון ויורד:</em></li>
+                                    <li>בדרך למטה פוגש את 10.</li>
+                                    <li>ממשיך למטה: פוגש את 6.</li>
+                                    <li>ממשיך למטה: פוגש את 2.</li>
+                                </ul>
+                                <div class="bg-white p-2 rounded border border-emerald-200 font-mono text-sm shadow-sm">
+                                    <strong>סדר SCAN:</strong><br>
+                                    $20 \rightarrow 22 \rightarrow 38 \rightarrow 40 \rightarrow 10 \rightarrow 6 \rightarrow 2$
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- שאלה 4 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 p-5 border-b border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">שאלה 4 (נכון / לא נכון): פתרון בעיית קיפאון ע"י Spooling</h3>
+                        <p class="text-slate-700">
+                            <strong>שאלה:</strong> שימוש במנגנון Spooling (הדפסה בתור) עבור מדפסות מונע לחלוטין את בעיית ה-Deadlock (קיפאון) שעלולה להיווצר כשתהליכים מתחרים על גישה בלעדית למדפסת.
+                        </p>
+                    </div>
+                    <div class="bg-emerald-50 p-5">
+                        <h4 class="font-bold text-emerald-800 mb-2">תשובה פתורה:</h4>
+                        <strong class="text-emerald-900 text-lg block mb-2">✅ נכון.</strong>
+                        <p class="text-emerald-900 text-sm leading-relaxed">
+                            <strong>נימוק:</strong> קיפאון נוצר כאשר מספר תהליכים ננעלים על משאבים וממתינים זה לזה בשרשרת מעגלית ("החזק והמתן"). ללא Spooling, תוכנית הייתה צריכה לבקש "נעילה" על המדפסת הפיזית. בזכות ה-Spooling, תוכניות המשתמש אינן מקבלות גישה למדפסת כלל. הן רק כותבות קבצים זמניים לספרייה בדיסק הקשיח. תהליך אחד ויחיד במערכת (הדיימון - Daemon) מורשה לפנות למדפסת ולשלוח אליה את הקבצים בטור. מכיוון שאף תוכנית לא יכולה לנעול את המשאב או להמתין לו ישירות, בעיית הקיפאון בחומרה נפתרת מהיסוד.
+                        </p>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+    
+                </div>
+
+
+            </div>
+        </div>
+    
+        <!-- Questions Modal -->
+        <div id="questions-modal" class="fixed inset-0 z-[100] flex items-center justify-center opacity-0 pointer-events-none" dir="rtl">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeQuestionsModal()"></div>
+            <div class="transform scale-95 transition-all relative w-full max-w-2xl mx-4">
+                <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 id="modal-title" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span>💡</span>
+                            <span id="modal-section-name">שאלות מנחות</span>
+                        </h3>
+                        <button onclick="closeQuestionsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer text-lg font-bold">&times;</button>
+                    </div>
+                    <div id="modal-body" class="p-6 max-h-[70vh] overflow-y-auto">
+                        <!-- Content injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repository of Guide Questions -->
+        <div id="questions-repo" class="hidden">
+            
+            <div id="questions-intro">
+                <div class="text-slate-500 text-center py-8">אין שאלות מנחות לסעיף זה.</div>
+            </div>
+            
+            <div id="questions-hardware">
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>מה ההבדל המרכזי בין התקני בלוקים להתקני תווים?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p><strong>התקני בלוקים</strong> שומרים נתונים בגושים בעלי גודל קבוע וכתובת, ומאפשרים גישה אקראית לכל בלוק (למשל דיסק קשיח). לעומת זאת, <strong>התקני תווים</strong> מעבירים זרם רציף של בתים ללא בלוקים או חיפוש אקראי, כמו מקלדת או עכבר.</p>
+                        </div>
+                    </details>
+                    
+                    <!-- Q2 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 2</span>
+                                <span>מהו תפקידו של ה-DMA ואיזו בעיה הוא פותר?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p>ה-<strong>DMA</strong> (Direct Memory Access) מיועד לשחרר את המעבד מניהול ידני של העברת בלוקים גדולים של נתונים. במקום שהמעבד יעביר בית-בית (שיטת PIO), ה-DMA פונה ישירות לזיכרון הראשי ומעביר את כל הבלוק. החיסרון היחיד הוא שהוא עשוי לגנוב למעבד מחזורי שעון ("Cycle Stealing") כי הם חולקים את אותו אפיק נתונים (Bus).</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            
+            <div id="questions-software">
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>מהי המטרה החשובה ביותר של תוכנת הקלט/פלט?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p>המטרה המרכזית היא <strong>אי-תלות בהתקן (Device Independence)</strong>. תוכנית שקוראת או כותבת קבצים צריכה לעשות זאת בצורה אחידה, בלי לדעת אם הנתונים נמצאים על דיסק קשיח, SSD או כונן רשת מקומי. מערכת ההפעלה יוצרת "הפשטה" לפעולות.</p>
+                        </div>
+                    </details>
+
+                    <!-- Q2 -->
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 2</span>
+                                <span>מהו Spooling ומדוע הוא נחוץ בהתקנים ייעודיים?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed">
+                            <p><strong>Spooling</strong> הוא מנגנון יצירת תור וירטואלי להתקן שלא יכול לטפל בכמה משימות במקביל (Dedicated Device), כגון מדפסת. במקום שתהליך אחד ינעל את המדפסת לעצמו (מה שעלול להוביל לקיפאון - Deadlock), כל תהליך כותב קובץ לספריית ה-Spooling, ומנגנון (Daemon) מיוחד מדפיס את הקבצים בתור, אחד אחרי השני.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            
+            <div id="questions-layers">
+                <div class="space-y-4">
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>באילו ארבע שכבות מחולקת תוכנת הקלט/פלט?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-1">
+                            <p>1. <strong>פסיקות חומרה (Interrupt Handlers)</strong> - השכבה התחתונה ביותר שקרובה לחומרה ומטפלת באותות.</p>
+                            <p>2. <strong>מנהלי התקנים (Device Drivers)</strong> - הקוד הספציפי שמתקשר ישירות לאוגרים של ההתקן (פקודות קריאה/כתיבה).</p>
+                            <p>3. <strong>תוכנת I/O בלתי תלויה בהתקן</strong> - שייכת למערכת ההפעלה. מטפלת בהגנה, שמות, Caching, ו-Spooling.</p>
+                            <p>4. <strong>ספריות תוכנה במרחב משתמש</strong> - השכבה העליונה (למשל פונקציית `printf` ב-C).</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            
+            <div id="questions-disks">
+                <div class="space-y-4">
+                    <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                        <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                            <span class="flex items-center gap-2 text-xs">
+                                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1</span>
+                                <span>אילו אלגוריתמים קיימים לתזמון זרוע הדיסק ומה ההבדלים ביניהם?</span>
+                            </span>
+                            <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180 text-[10px]">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-xs leading-relaxed space-y-2">
+                            <p><strong>FCFS (First-Come, First-Served):</strong> משרת את הבקשות לפי סדר הגעתן. פשוט אך לא יעיל מכיוון שהוא מייצר תנועות ארוכות ומיותרות של ראש הדיסק הלוך ושוב.</p>
+                            <p><strong>SSTF (Shortest Seek Time First):</strong> בוחר תמיד את הבקשה הקרובה ביותר למיקום הנוכחי של הראש. מהיר בהרבה, אך חיסרון משמעותי הוא סיכון ל"הרעבה" (Starvation) של בקשות שנמצאות בקצוות הדיסק.</p>
+                            <p><strong>SCAN (אלגוריתם מעלית):</strong> הזרוע נעה לכיוון אחד בלבד (למשל פנימה), משרתת את כל הבקשות בדרכה עד לקצה הדיסק, ואז משנה כיוון (החוצה) ומשרתת בקשות בחזור. מונע הרעבה באופן הוגן.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- JavaScript -->
+    
+    <script>
+        const tabs = [
+            'intro', 'hardware', 'software', 'layers', 
+            'disks', 'clocks', 'glossary-concepts', 'glossary-questions'
+        ];
+
+        function showQuestions(tabId, sectionName, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const modal = document.getElementById('questions-modal');
+            const modalBody = document.getElementById('modal-body');
+            const modalSectionName = document.getElementById('modal-section-name');
+            const repo = document.getElementById('questions-' + tabId);
+
+            if (repo) {
+                let html = repo.innerHTML.trim();
+                if (!html) {
+                    html = '<div class="text-slate-500 text-center py-8">אין שאלות מנחות זמינות לסעיף זה.</div>';
+                }
+
+                modalBody.innerHTML = html;
+                modalSectionName.textContent = 'שאלות מנחות ללימוד - ' + sectionName;
+
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.querySelector('.transform').classList.remove('scale-95');
+                
+                if (window.MathJax) {
+                    MathJax.typesetPromise([modalBody]).catch((err) => console.log(err.message));
+                }
+            }
+        }
+
+        function closeQuestionsModal() {
+            const modal = document.getElementById('questions-modal');
+            if (modal) {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.querySelector('.transform').classList.add('scale-95');
+            }
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            const selectedTab = document.getElementById(`tab-${tabId}`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active-nav');
+            });
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active-nav');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('sidebar-collapsed');
+                document.getElementById('mobile-overlay').classList.add('hidden');
+                document.getElementById('mobile-overlay').classList.remove('opacity-100');
+                document.getElementById('mobile-overlay').classList.add('opacity-0');
+            }
+        }
+
+        function toggleSidebar() {
+            const body = document.body;
+            const overlay = document.getElementById('mobile-overlay');
+            
+            body.classList.toggle('sidebar-collapsed');
+            
+            if (body.classList.contains('sidebar-collapsed')) {
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            } else {
+                overlay.classList.remove('hidden');
+                void overlay.offsetWidth;
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+            }
+        }
+
+        function navigateTab(direction) {
+            const activeBtn = document.querySelector('.nav-btn.active-nav');
+            if (!activeBtn) return;
+            
+            const currentTabId = activeBtn.id.replace('btn-', '');
+            const currentIndex = tabs.indexOf(currentTabId);
+            
+            let newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < tabs.length) {
+                showTab(tabs[newIndex]);
+            }
+        }
+
+        // ==========================================
+        // 5.6 Flashcard Deck State & Logic
+        // ==========================================
+        let flashcardMode = 'study'; // 'study' or 'test'
+        let openedFlashcards = new Set();
+        const flashcardData = [
+  {
+    "term": "התקן בלוקים (Block Device)",
+    "definition": "התקן קלט/פלט (כגון דיסק קשיח או כונן SSD) המאחסן ומעביר נתונים בגושים בעלי גודל קבוע (בלוקים). התכונה החשובה ביותר שלו היא היכולת לגישה אקראית (Random Access), כלומר ניתן לגשת לכל בלוק ובלוק בנפרד וללא תלות באחרים.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "התקן תווים (Character Device)",
+    "definition": "התקן (כגון מקלדת, עכבר או כרטיס רשת) המקבל או שולח מידע כזרם רציף של תווים טוריים. בהתקן זה אין מושג של \"כתובת\" או \"בלוק\", ולא ניתן לדלג קדימה או אחורה בנתונים (אין פעולת Seek).",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "בקר התקן (Device Controller)",
+    "definition": "השבב האלקטרוני המגשר בין מערכת ההפעלה לבין החומרה המכנית של ההתקן. הוא מקבל את הפקודות הכלליות, שולט במנועים, בודק שגיאות בחומרה (ECC) ואוגר את הנתונים בחוצץ פנימי בטרם העברתם לזיכרון הראשי.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "קלט/פלט ממופה זיכרון (Memory-Mapped I/O)",
+    "definition": "שיטה שבה אוגרי הבקרה של ההתקנים (Registers) ממופים לתוך מרחב הכתובות הפיזי של הזיכרון הראשי. המעבד יכול לקרוא ולכתוב אליהם באמצעות פקודות זיכרון רגילות, ומערכת ההפעלה מגנה עליהם על ידי אי-מיפויים לטבלאות הדפים של המשתמשים.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "גישה ישירה לזיכרון (DMA)",
+    "definition": "בקר חומרה ייעודי שמטרתו להעביר בלוקים גדולים של נתונים ישירות מההתקן אל הזיכרון הראשי (ולהיפך), ללא התערבותו של המעבד הראשי. משחרר את המעבד לבצע משימות חישוביות בזמן שהנתונים עוברים.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "גנבת מחזורים (Cycle Stealing)",
+    "definition": "תופעה בה בקר ה-DMA והמעבד הראשי מתחרים על גישה לאפיק המערכת (System Bus). כאשר ה-DMA משתמש באפיק, הוא \"גונב\" למעבד מחזור שעון, מה שגורם למעבד להמתין שבריר שנייה.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "פסיקת חומרה (Interrupt)",
+    "definition": "אות חשמלי הנשלח למעבד ע\"י התקן או בקר להודיע על סיום פעולה (למשל, העברת קובץ ב-DMA) או על שגיאה. הפסיקה גורמת למעבד לקטוע את עבודתו ולעבור לשגרת טיפול (ISR).",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "מתאם התקן (Device Driver)",
+    "definition": "תוכנה ייעודית (לרוב מסופקת ע\"י יצרן החומרה) המתרגמת את קריאות המערכת הכלליות לפקודות החשמליות והספציפיות הנדרשות להפעלת בקר ההתקן.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "ספולר / הדפסה בתור (Spooling)",
+    "definition": "מנגנון לניהול התקנים בלעדיים. תוכניות כותבות פלט לקבצים זמניים ב\"ספריית המתנה\". תהליך Daemon יחיד ניגש לחומרה ומדפיס אותם בזה אחר זה, למניעת ערבוב ובעיות קיפאון (Deadlock).",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "זמן חיפוש (Seek Time)",
+    "definition": "הזמן הנדרש להזזת הזרוע המכנית של הדיסק הקשיח אל עבר המסלול (Cylinder) המבוקש. הפעולה האיטית וה\"יקרה\" ביותר בשימוש בדיסק מגנטי.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "השהיית סיבוב (Rotational Latency)",
+    "definition": "הזמן שראש הקריאה ממתין (לאחר הגעתו למסלול) עד שהפלטה המגנטית תסתובב והסקטור המבוקש יגיע בדיוק מתחתיו.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "אלגוריתם המעלית (SCAN)",
+    "definition": "אלגוריתם תזמון דיסק בו הזרוע נעה מקצה אחד לשני ומטפלת בכל הבקשות בדרכה. בהגעה לקצה, הופכת כיוון וחוזרת.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "אלגוריתם מעלית מעגלי (C-SCAN)",
+    "definition": "גרסת מעלית בה הסריקה תמיד בכיוון אחד. בסוף הדיסק הזרוע קופצת חזרה להתחלה ללא קריאות, כדי למנוע אפליה בזמני המתנה של קצוות הדיסק.",
+    "category": "מושגים כלליים"
+  },
+  {
+    "term": "הסטת גלילים (Cylinder Skew)",
+    "definition": "מנגנון לוגי המגדיר הסטה במספור הסקטורים בין מסלולים, כדי שזרוע הדיסק תספיק לזוז למסלול הסמוך והסקטור הראשון יחכה לה בדיוק מתחת לראש, מבלי להפסיד סיבוב שלם.",
+    "category": "מושגים כלליים"
+  }
+];
+
+        function initFlashcards() {
+            // Populate category tabs if needed
+            const categoriesTabs = document.getElementById("flashcard-categories-tabs");
+            if (categoriesTabs) {
+                categoriesTabs.innerHTML = "";
+                const categories = ['הכל', ...new Set(flashcardData.map(item => item.category))];
+                categories.forEach(cat => {
+                    const tabBtn = document.createElement("button");
+                    tabBtn.className = cat === 'הכל' 
+                        ? "px-3 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs font-bold transition-all border border-blue-200" 
+                        : "px-3 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition-all border border-slate-200";
+                    tabBtn.textContent = cat;
+                    tabBtn.onclick = () => {
+                        document.querySelectorAll("#flashcard-categories-tabs button").forEach(btn => {
+                            btn.className = "px-3 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition-all border border-slate-200";
+                        });
+                        tabBtn.className = "px-3 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs font-bold transition-all border border-blue-200";
+                        filterFlashcards(cat);
+                    };
+                    categoriesTabs.appendChild(tabBtn);
+                });
+            }
+            renderFlashcards(flashcardData);
+        }
+
+        function filterFlashcards(category) {
+            const filtered = category === 'הכל' 
+                ? flashcardData 
+                : flashcardData.filter(item => item.category === category);
+            renderFlashcards(filtered);
+        }
+
+        function setFlashcardMode(mode) {
+            flashcardMode = mode;
+            const btnStudy = document.getElementById("flashcard-mode-study");
+            const btnTest = document.getElementById("flashcard-mode-test");
+            const statsEl = document.getElementById("flashcard-stats-container");
+
+            if (mode === 'study') {
+                btnStudy.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                btnTest.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                statsEl.classList.add("hidden");
+            } else {
+                btnStudy.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                btnTest.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                statsEl.classList.remove("hidden");
+            }
+            renderFlashcards(flashcardData);
+        }
+
+        function renderFlashcards(data) {
+            const deck = document.getElementById("flashcard-deck");
+            if (!deck) return;
+            deck.innerHTML = "";
+
+            const totalEl = document.getElementById("flashcard-total-count");
+            if (totalEl) totalEl.textContent = data.length;
+
+            let openedFiltered = 0;
+            data.forEach(item => {
+                if (openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            const openedEl = document.getElementById("flashcard-opened-count");
+            if (openedEl) openedEl.textContent = openedFiltered;
+
+            data.forEach((item, index) => {
+                const cardScene = document.createElement("div");
+
+                if (flashcardMode === 'study') {
+                    cardScene.className = "flashcard-scene flat-mode";
+                    cardScene.innerHTML = `
+                        <div class="flashcard-card">
+                            <div class="flashcard-face flashcard-front">
+                                <div>
+                                    <h4 class="text-sm font-black text-slate-800 leading-tight">${item.term}</h4>
+                                </div>
+                            </div>
+                            <div class="flashcard-face flashcard-back">
+                                <p class="text-xs text-slate-600 leading-relaxed">${item.definition}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const isFlipped = openedFlashcards.has(item.term);
+                    cardScene.className = isFlipped ? "flashcard-scene flipped" : "flashcard-scene";
+                    cardScene.onclick = () => toggleFlashcard(cardScene, item.term);
+
+                    cardScene.innerHTML = `
+                        <div class="flashcard-card">
+                            <div class="flashcard-face flashcard-front flex flex-col justify-center items-center text-center">
+                                <h4 class="text-base font-black text-slate-800 leading-tight mt-1">${item.term}</h4>
+                                <div class="text-[9px] text-slate-400 font-bold mt-4 animate-pulse">
+                                    לחיצה לחשיפה ❓
+                                </div>
+                            </div>
+                            <div class="flashcard-face flashcard-back flex flex-col justify-between font-sans">
+                                <div class="overflow-y-auto pr-1">
+                                    <h5 class="text-xs font-black text-slate-700 leading-tight mt-1">${item.term}</h5>
+                                    <p class="text-[11px] text-slate-650 leading-relaxed mt-2" dir="rtl">${item.definition}</p>
+                                </div>
+                                <div class="text-[9px] text-blue-500 font-bold border-t pt-1.5 border-slate-200 flex items-center justify-between select-none">
+                                    <span>נחשף</span>
+                                    <span>✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                deck.appendChild(cardScene);
+            });
+        }
+
+        function toggleFlashcard(el, term) {
+            if (flashcardMode === 'study') return;
+
+            if (openedFlashcards.has(term)) {
+                openedFlashcards.delete(term);
+                el.classList.remove("flipped");
+            } else {
+                openedFlashcards.add(term);
+                el.classList.add("flipped");
+            }
+
+            let openedFiltered = 0;
+            flashcardData.forEach(item => {
+                if (openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            document.getElementById("flashcard-opened-count").textContent = openedFiltered;
+        }
+
+        function resetFlashcards() {
+            openedFlashcards.clear();
+            renderFlashcards(flashcardData);
+        }
+
+
+        // ==========================================
+        // Simulator 5.1: PIO vs DMA
+        // ==========================================
+        let sim51Mode = 'pio';
+        let sim51Interval = null;
+        let sim51Bytes = 0;
+        let sim51Running = false;
+        const sim51UserTasks = [
+            'Computing PI decimals...',
+            'Compiling index.cpp...',
+            'Rendering HTML components...',
+            'Listening to keyboard interrupts...',
+            'Scanning USB controller status...',
+            'Updating system clock scheduler...'
+        ];
+
+        function setSim51Mode(mode) {
+            if (sim51Running) return;
+            sim51Mode = mode;
+            const pioBtn = document.getElementById('sim51-mode-pio');
+            const dmaBtn = document.getElementById('sim51-mode-dma');
+            const dmaBox = document.getElementById('sim51-dma-box');
+
+            if (mode === 'pio') {
+                pioBtn.className = "w-full py-2 px-3 rounded-lg text-xs font-bold transition-all border border-blue-500/30 bg-blue-650/20 text-blue-400";
+                dmaBtn.className = "w-full py-2 px-3 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700";
+                dmaBox.style.opacity = '0.3';
+            } else {
+                pioBtn.className = "w-full py-2 px-3 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700";
+                dmaBtn.className = "w-full py-2 px-3 rounded-lg text-xs font-bold transition-all border border-blue-500/30 bg-blue-650/20 text-blue-400";
+                dmaBox.style.opacity = '1';
+                dmaBox.classList.add('border-blue-500');
+            }
+            resetSim51();
+        }
+
+        function resetSim51() {
+            if (sim51Interval) clearInterval(sim51Interval);
+            sim51Bytes = 0;
+            sim51Running = false;
+            document.getElementById('sim51-bytes-val').textContent = '0';
+            document.getElementById('sim51-cpu-util').textContent = '0%';
+            document.getElementById('sim51-cpu-util').className = "font-bold text-slate-400";
+            document.getElementById('sim51-dev-status').textContent = 'IDLE';
+            document.getElementById('sim51-ram-status').textContent = 'WAITING';
+            document.getElementById('sim51-task-desc').textContent = 'Idle';
+            document.getElementById('sim51-cpu-box').className = "bg-slate-900 p-3 rounded-lg border border-slate-800 transition-all";
+            document.getElementById('sim51-cpu-emoji').textContent = "💻";
+            document.getElementById('sim51-log-lines').innerHTML = '<div class="text-slate-500">&gt; System ready for transfer.</div>';
+            document.getElementById('sim51-particles-container').innerHTML = '';
+            document.getElementById('sim51-start-btn').disabled = false;
+        }
+
+        function addSim51Log(text, colorClass = 'text-slate-300') {
+            const logContainer = document.getElementById('sim51-log-lines');
+            const line = document.createElement('div');
+            line.className = colorClass;
+            line.textContent = '> ' + text;
+            logContainer.appendChild(line);
+            if (logContainer.children.length > 3) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        function startSim51() {
+            if (sim51Running) return;
+            sim51Running = true;
+            document.getElementById('sim51-start-btn').disabled = true;
+            document.getElementById('sim51-dev-status').textContent = 'READING';
+            document.getElementById('sim51-ram-status').textContent = 'WRITING';
+
+            let cpuUtil = sim51Mode === 'pio' ? 100 : 5;
+            document.getElementById('sim51-cpu-util').textContent = cpuUtil + '%';
+            document.getElementById('sim51-cpu-util').className = sim51Mode === 'pio' ? "font-bold text-red-500 animate-pulse" : "font-bold text-emerald-400";
+
+            if (sim51Mode === 'pio') {
+                document.getElementById('sim51-cpu-box').className = "bg-red-950 p-3 rounded-lg border border-red-500 transition-all animate-bounce";
+                document.getElementById('sim51-cpu-emoji').textContent = "🥵";
+                document.getElementById('sim51-task-desc').textContent = 'I/O Polling & Loop';
+            } else {
+                document.getElementById('sim51-cpu-box').className = "bg-emerald-950 p-3 rounded-lg border border-emerald-500 transition-all";
+                document.getElementById('sim51-cpu-emoji').textContent = "😊";
+                document.getElementById('sim51-task-desc').textContent = 'User Computations';
+            }
+
+            sim51Interval = setInterval(() => {
+                sim51Bytes += 64;
+                if (sim51Bytes > 1024) sim51Bytes = 1024;
+                document.getElementById('sim51-bytes-val').textContent = sim51Bytes;
+
+                // Animate packet particle
+                spawnSim51Particle(sim51Mode);
+
+                if (sim51Mode === 'pio') {
+                    addSim51Log(`CPU read byte ${sim51Bytes - 64} -> CPU write to RAM.`);
+                } else {
+                    const randomTask = sim51UserTasks[Math.floor(Math.random() * sim51UserTasks.length)];
+                    addSim51Log(`[CPU] Active: ${randomTask}`, 'text-emerald-400');
+                    addSim51Log(`[DMA] Block transfer: ${sim51Bytes - 64} bytes to RAM`, 'text-blue-400');
+                }
+
+                if (sim51Bytes >= 1024) {
+                    clearInterval(sim51Interval);
+                    sim51Running = false;
+                    document.getElementById('sim51-dev-status').textContent = 'COMPLETE';
+                    document.getElementById('sim51-ram-status').textContent = 'COMPLETE';
+                    
+                    if (sim51Mode === 'dma') {
+                        addSim51Log('[CPU] INTERRUPT received: DMA transfer complete!', 'text-amber-400 font-bold');
+                        document.getElementById('sim51-cpu-emoji').textContent = "😮";
+                        // Trigger light flash
+                        const cpuBox = document.getElementById('sim51-cpu-box');
+                        cpuBox.classList.add('bg-amber-500');
+                        setTimeout(() => {
+                            cpuBox.classList.remove('bg-amber-500');
+                            document.getElementById('sim51-cpu-emoji').textContent = "😎";
+                            document.getElementById('sim51-cpu-util').textContent = '0%';
+                        }, 800);
+                    } else {
+                        addSim51Log('PIO Transfer finished.', 'text-white font-bold');
+                        document.getElementById('sim51-cpu-box').className = "bg-slate-900 p-3 rounded-lg border border-slate-800 transition-all";
+                        document.getElementById('sim51-cpu-emoji').textContent = "😴";
+                        document.getElementById('sim51-cpu-util').textContent = '0%';
+                    }
+                    document.getElementById('sim51-start-btn').disabled = false;
+                }
+            }, 200);
+        }
+
+        function spawnSim51Particle(mode) {
+            const container = document.getElementById('sim51-particles-container');
+            const particle = document.createElement('div');
+            particle.className = "absolute w-2.5 h-2.5 bg-yellow-400 rounded-full shadow-lg transition-all duration-300 z-30";
+            
+            const startX = 20; // Disk
+            const cpuX = 50;   // CPU
+            const dmaX = 50;   // DMA
+            const ramX = 80;   // RAM
+            
+            if (mode === 'pio') {
+                particle.style.left = startX + '%';
+                particle.style.top = '25%';
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.style.left = cpuX + '%';
+                    particle.style.top = '30%';
+                }, 50);
+
+                setTimeout(() => {
+                    particle.style.left = ramX + '%';
+                    particle.style.top = '25%';
+                }, 150);
+            } else {
+                particle.style.left = startX + '%';
+                particle.style.top = '25%';
+                particle.style.backgroundColor = '#60a5fa'; // Blue for DMA
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.style.left = dmaX + '%';
+                    particle.style.top = '60%';
+                }, 50);
+
+                setTimeout(() => {
+                    particle.style.left = ramX + '%';
+                    particle.style.top = '25%';
+                }, 150);
+            }
+            
+            setTimeout(() => {
+                if (particle.parentNode) particle.parentNode.removeChild(particle);
+            }, 300);
+        }
+
+
+        // ==========================================
+        // Simulator 5.2: System Call Plinko
+        // ==========================================
+        let sim52Running = false;
+        const sim52Data = {
+            'write-disk': [
+                {
+                    title: '1. מרחב משתמש (User Space)',
+                    desc: 'התוכנית שלכם קוראת לפונקציה של ספריית C הסטנדרטית כדי לכתוב מידע. הספרייה מכינה את החוצצים במרחב המשתמש ומבצעת פקודת TRAP (קריאת מערכת) כדי להעביר את המעבד למצב ליבה (Kernel Mode).',
+                    code: 'await fs.writeFile("file.txt", data);'
+                },
+                {
+                    title: '2. שכבת מע"פ עצמאית (OS Level)',
+                    desc: 'שכבת מערכת ההפעלה העצמאית (Device-Independent) בודקת את הרשאות הכתיבה שלכם לקובץ. היא מתרגמת את שם הקובץ הלוגי לכתובת ההתקן ובלוק הדיסק המתאים, ומנהלת את ה-Buffer Cache בליבה.',
+                    code: 'vfs_write(fd, buf, count);'
+                },
+                {
+                    title: '3. מנהל התקן (Driver)',
+                    desc: 'מנהל ההתקן (Device Driver) של הדיסק מקבל את מספר הבלוק הלוגי ומתרגם אותו למסלול, סקטור וראש קריאה/כתיבה פיזיים. הוא בונה את פקודת הכתיבה ושולח אותה ישירות לאוגרי הבקר של הדיסק.',
+                    code: 'disk_driver_submit_cmd(WRITE, sector, buf);'
+                },
+                {
+                    title: '4. בקר וחומרה פיזית (Hardware)',
+                    desc: 'בקר הדיסק הפיזי (Controller) מסובב את המנוע, מעביר את הראש המגנטי למסלול המתאים, וכותב פיזית את המידע למדיה המגנטית. בסיום הכתיבה, מופעלת פסיקת חומרה (Interrupt) כדי להודיע למעבד על השלמת הפעולה.',
+                    code: 'OUTB(CONTROL_REG, CMD_WRITE); // Hardware port'
+                }
+            ],
+            'print-doc': [
+                {
+                    title: '1. מרחב משתמש (User Space)',
+                    desc: 'התוכנית קוראת ל-printf. פונקציה זו במרחב המשתמש מעבדת את הפורמט של המחרוזת ואז מפעילה קריאת מערכת מסוג write כדי לשלוח את התווים למרחב הליבה.',
+                    code: 'printf("Hello %s\\n", username);'
+                },
+                {
+                    title: '2. שכבת מע"פ עצמאית (OS Level)',
+                    desc: 'המערכת מזהה שמדובר במדפסת (/dev/printer). מאחר ומדפסת היא התקן בלעדי (Dedicated Device), היא מנתבת את הקובץ ישירות לממגנון ה-Spooler כדי להכניס אותו לתור ההדפסה מבלי לחסום את המשתמש.',
+                    code: 'spool_write_buffer(printer_fd, buf);'
+                },
+                {
+                    title: '3. מנהל התקן (Driver)',
+                    desc: 'דרייבר המדפסת קורא את התווים מתור ה-Spooler, טוען אותם לתוך החוצץ של בקר המדפסת דרך אוגרי הבקרה ומכין את החומרה להתחלת ההדפסה הפיזית.',
+                    code: 'printer_driver_write_char(char);'
+                },
+                {
+                    title: '4. בקר וחומרה פיזית (Hardware)',
+                    desc: 'בקר המדפסת האלקטרוני מפעיל את מנגנון ההדפסה הפיזי (הזרקת דיו או לייזר) ומדפיס את התווים על הנייר. בכל פעם שחוצץ החומרה מתרוקן, נשלחת פסיקה לדרייבר כדי לטעון את התווים הבאים.',
+                    code: 'OUTB(PRINTER_DATA, char);'
+                }
+            ]
+        };
+
+        function startSim52() {
+            if (sim52Running) return;
+            sim52Running = true;
+            const op = document.getElementById('sim52-op-select').value;
+            const ball = document.getElementById('sim52-ball');
+            const stateTxt = document.getElementById('sim52-state-txt');
+            
+            stateTxt.textContent = 'RUNNING';
+            stateTxt.className = "text-purple-400 font-bold animate-pulse";
+            ball.style.opacity = '1';
+            ball.textContent = op === 'write-disk' ? '💾' : '🖨️';
+
+            let step = 0;
+            const stepTops = ['12px', '88px', '164px', '240px'];
+
+            function runStep() {
+                if (step >= 4) {
+                    setTimeout(() => {
+                        ball.style.opacity = '0';
+                        ball.style.top = '10px';
+                        document.querySelectorAll('[id^="sim52-layer-"]').forEach(el => {
+                            el.style.borderColor = '';
+                            el.style.backgroundColor = '';
+                        });
+                        stateTxt.textContent = 'COMPLETE';
+                        stateTxt.className = "text-emerald-400 font-bold";
+                        sim52Running = false;
+                    }, 1000);
+                    return;
+                }
+
+                ball.style.top = stepTops[step];
+
+                document.querySelectorAll('[id^="sim52-layer-"]').forEach(el => {
+                    el.style.borderColor = '';
+                    el.style.backgroundColor = '';
+                });
+
+                const activeLayer = document.getElementById(`sim52-layer-${step + 1}`);
+                const color = step === 0 ? 'rgb(168, 85, 247)' : step === 1 ? 'rgb(59, 130, 246)' : step === 2 ? 'rgb(16, 185, 129)' : 'rgb(245, 158, 11)';
+                if (activeLayer) {
+                    activeLayer.style.borderColor = color;
+                    activeLayer.style.backgroundColor = color.replace('rgb', 'rgba').replace(')', ', 0.15)');
+                }
+
+                const stepData = sim52Data[op][step];
+                document.getElementById('sim52-info-title').textContent = stepData.title;
+                document.getElementById('sim52-info-desc').textContent = stepData.desc;
+                document.getElementById('sim52-code-snippet').textContent = stepData.code;
+
+                step++;
+                setTimeout(runStep, 1500);
+            }
+
+            runStep();
+        }
+
+
+        // ==========================================
+        // Simulator 5.3: Disk Elevator
+        // ==========================================
+        let sim53Running = false;
+        let sim53StarvationInterval = null;
+        let sim53Requests = [];
+        let sim53Completed = [];
+        let sim53Head = 50;
+        let sim53Direction = 1;
+        let sim53TotalMoves = 0;
+        let sim53StepTimeout = null;
+
+        function generateRandomSim53Queue() {
+            const q = [];
+            for (let i = 0; i < 8; i++) {
+                q.push(Math.floor(Math.random() * 190) + 5);
+            }
+            document.getElementById('sim53-queue').value = q.join(', ');
+        }
+
+        function clearSim53Queue() {
+            document.getElementById('sim53-queue').value = '';
+            resetSim53Visuals();
+        }
+
+        function resetSim53Visuals() {
+            if (sim53StepTimeout) clearTimeout(sim53StepTimeout);
+            if (sim53StarvationInterval) clearInterval(sim53StarvationInterval);
+            sim53Running = false;
+            document.getElementById('sim53-head-pos').textContent = '50';
+            document.getElementById('sim53-total-movement').textContent = '0';
+            document.getElementById('sim53-queue-status').innerHTML = '';
+            const svg = document.getElementById('sim53-graph-svg');
+            if (svg) svg.innerHTML = '';
+            sim53Requests = [];
+            sim53Completed = [];
+            sim53Head = 50;
+            sim53TotalMoves = 0;
+            document.getElementById('sim53-start-btn').disabled = false;
+            document.getElementById('sim53-starve-btn').textContent = '☠️ הדגמת הרעבה (SSTF)';
+        }
+
+        function renderSim53Queue() {
+            const container = document.getElementById('sim53-queue-status');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            sim53Requests.forEach(r => {
+                const badge = document.createElement('span');
+                badge.className = (r === 190 && document.getElementById('sim53-starve-btn').textContent.includes('עצור'))
+                    ? "px-2 py-0.5 rounded bg-red-900/60 border border-red-500 text-red-100 text-xs font-bold animate-pulse"
+                    : "px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-330 text-xs font-mono";
+                badge.textContent = r;
+                container.appendChild(badge);
+            });
+
+            sim53Completed.forEach(c => {
+                const badge = document.createElement('span');
+                badge.className = "px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-800 text-emerald-400 text-xs font-mono opacity-60";
+                badge.textContent = c + ' ✓';
+                container.appendChild(badge);
+            });
+        }
+
+        function drawSim53Graph() {
+            const svg = document.getElementById('sim53-graph-svg');
+            if (!svg) return;
+            svg.innerHTML = '';
+            const width = svg.clientWidth || svg.parentNode.clientWidth || 400;
+            const height = 120;
+            const totalSteps = sim53Completed.length + sim53Requests.length;
+            const stepY = height / (totalSteps + 1 || 8);
+
+            let pathD = `M ${(50 / 200) * width} 10`;
+            let currentY = 10;
+            
+            sim53Completed.forEach((pos, idx) => {
+                currentY += stepY;
+                const x = (pos / 200) * width;
+                pathD += ` L ${x} ${currentY}`;
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', currentY);
+                circle.setAttribute('r', '4');
+                circle.setAttribute('fill', '#f59e0b');
+                svg.appendChild(circle);
+
+                const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                txt.setAttribute('x', x);
+                txt.setAttribute('y', currentY - 6);
+                txt.setAttribute('fill', '#fff');
+                txt.setAttribute('font-size', '8px');
+                txt.setAttribute('text-anchor', 'middle');
+                txt.textContent = pos;
+                svg.appendChild(txt);
+            });
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathD);
+            path.setAttribute('stroke', '#d97706');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('fill', 'none');
+            svg.appendChild(path);
+        }
+
+        function startSim53() {
+            if (sim53Running) return;
+            resetSim53Visuals();
+            
+            const rawQ = document.getElementById('sim53-queue').value;
+            sim53Requests = rawQ.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n >= 0 && n <= 199);
+            if (sim53Requests.length === 0) {
+                alert('אנא הזן ערכי צילינדר תקינים בין 0 ל-199');
+                return;
+            }
+
+            sim53Running = true;
+            document.getElementById('sim53-start-btn').disabled = true;
+            sim53Head = parseInt(document.getElementById('sim53-start-pos').value) || 50;
+            sim53TotalMoves = 0;
+            sim53Completed = [];
+            sim53Direction = 1;
+
+            renderSim53Queue();
+            drawSim53Graph();
+            runSim53Step();
+        }
+
+        function runSim53Step() {
+            if (sim53Requests.length === 0) {
+                sim53Running = false;
+                document.getElementById('sim53-start-btn').disabled = false;
+                return;
+            }
+
+            const algo = document.getElementById('sim53-algo').value;
+            let nextIndex = -1;
+
+            if (algo === 'fcfs') {
+                nextIndex = 0;
+            } 
+            else if (algo === 'sstf') {
+                let minDiff = 999;
+                for (let i = 0; i < sim53Requests.length; i++) {
+                    const diff = Math.abs(sim53Requests[i] - sim53Head);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        nextIndex = i;
+                    }
+                }
+            } 
+            else if (algo === 'scan') {
+                let sortedReq = [...sim53Requests].sort((a,b)=>a-b);
+                let viable = sortedReq.filter(r => sim53Direction === 1 ? r >= sim53Head : r <= sim53Head);
+                
+                if (viable.length === 0) {
+                    sim53Direction = -sim53Direction;
+                    viable = sortedReq.filter(r => sim53Direction === 1 ? r >= sim53Head : r <= sim53Head);
+                }
+
+                const chosen = sim53Direction === 1 ? viable[0] : viable[viable.length - 1];
+                nextIndex = sim53Requests.indexOf(chosen);
+            } 
+            else if (algo === 'cscan') {
+                let viable = sim53Requests.filter(r => r >= sim53Head).sort((a,b)=>a-b);
+                if (viable.length === 0) {
+                    sim53Head = 0;
+                    viable = sim53Requests.sort((a,b)=>a-b);
+                }
+                nextIndex = sim53Requests.indexOf(viable[0]);
+            }
+
+            if (nextIndex !== -1) {
+                const nextPos = sim53Requests[nextIndex];
+                sim53Requests.splice(nextIndex, 1);
+                sim53Completed.push(nextPos);
+                
+                sim53TotalMoves += Math.abs(nextPos - sim53Head);
+                sim53Head = nextPos;
+
+                document.getElementById('sim53-head-pos').textContent = sim53Head;
+                document.getElementById('sim53-total-movement').textContent = sim53TotalMoves;
+
+                renderSim53Queue();
+                drawSim53Graph();
+
+                sim53StepTimeout = setTimeout(runSim53Step, 800);
+            }
+        }
+
+        function toggleSim53Starvation() {
+            const btn = document.getElementById('sim53-starve-btn');
+            if (btn.textContent.includes('עצור')) {
+                resetSim53Visuals();
+                return;
+            }
+
+            resetSim53Visuals();
+            btn.textContent = '⏹️ עצור הדמיית הרעבה';
+            btn.className = "w-full py-2 rounded-lg bg-red-650 text-white font-bold hover:bg-red-600 transition-all text-xs flex items-center justify-center gap-1 border border-red-500";
+            
+            document.getElementById('sim53-algo').value = 'sstf';
+            document.getElementById('sim53-start-pos').value = '50';
+            document.getElementById('sim53-queue').value = '45, 55, 190';
+            
+            sim53Requests = [45, 55, 190];
+            sim53Completed = [];
+            sim53Head = 50;
+            sim53TotalMoves = 0;
+            sim53Running = true;
+
+            renderSim53Queue();
+            drawSim53Graph();
+
+            sim53StarvationInterval = setInterval(() => {
+                if (sim53Requests.length > 0) {
+                    let minDiff = 999;
+                    let nextIndex = -1;
+                    for (let i = 0; i < sim53Requests.length; i++) {
+                        const diff = Math.abs(sim53Requests[i] - sim53Head);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            nextIndex = i;
+                        }
+                    }
+                    if (nextIndex !== -1) {
+                        const nextPos = sim53Requests[nextIndex];
+                        sim53Requests.splice(nextIndex, 1);
+                        sim53Completed.push(nextPos);
+                        sim53TotalMoves += Math.abs(nextPos - sim53Head);
+                        sim53Head = nextPos;
+                    }
+                }
+
+                const randomCloseReq = Math.floor(Math.random() * 25) + 40;
+                sim53Requests.push(randomCloseReq);
+
+                if (!sim53Requests.includes(190) && !sim53Completed.includes(190)) {
+                    sim53Requests.push(190);
+                }
+
+                document.getElementById('sim53-head-pos').textContent = sim53Head;
+                document.getElementById('sim53-total-movement').textContent = sim53TotalMoves;
+
+                renderSim53Queue();
+                drawSim53Graph();
+            }, 1000);
+        }
+
+
+        // ==========================================
+        // Simulator 5.4: Double Buffering
+        // ==========================================
+        let sim54Running = false;
+        let sim54Interval = null;
+        let sim54Single = { fill: 0, play: 0, isBuffering: true, freezes: 0 };
+        let sim54Double = { bufA: 100, bufB: 0, play: 0, active: 'A', isBuffering: false, freezes: 0 };
+
+        function startSim54() {
+            if (sim54Running) return;
+            sim54Running = true;
+            document.getElementById('sim54-start-btn').disabled = true;
+
+            document.getElementById('sim54-single-player').classList.remove('hidden');
+            document.getElementById('sim54-double-player').classList.remove('hidden');
+            document.getElementById('sim54-single-play-icon').classList.add('hidden');
+            document.getElementById('sim54-double-play-icon').classList.add('hidden');
+
+            sim54Interval = setInterval(() => {
+                if (sim54Single.isBuffering) {
+                    sim54Single.fill += 6;
+                    document.getElementById('sim54-single-status').textContent = 'BUFFERING';
+                    document.getElementById('sim54-single-status').className = "text-[9px] bg-amber-500/20 text-amber-400 px-1 rounded font-mono animate-pulse";
+                    if (sim54Single.fill >= 100) {
+                        sim54Single.fill = 100;
+                        sim54Single.isBuffering = false;
+                    }
+                } else {
+                    sim54Single.fill -= 8;
+                    sim54Single.play += 1.5;
+                    document.getElementById('sim54-single-status').textContent = 'PLAYING';
+                    document.getElementById('sim54-single-status').className = "text-[9px] bg-emerald-500/20 text-emerald-400 px-1 rounded font-mono";
+                    if (sim54Single.fill <= 0) {
+                        sim54Single.fill = 0;
+                        sim54Single.isBuffering = true;
+                        sim54Single.freezes++;
+                        document.getElementById('sim54-single-freezes').textContent = sim54Single.freezes;
+                    }
+                }
+
+                if (sim54Double.active === 'A') {
+                    sim54Double.bufA -= 8;
+                    sim54Double.bufB += 10;
+                    if (sim54Double.bufB > 100) sim54Double.bufB = 100;
+
+                    sim54Double.play += 1.5;
+                    document.getElementById('sim54-double-status').textContent = 'PLAYING (BUF A)';
+                    document.getElementById('sim54-double-status').className = "text-[9px] bg-emerald-500/20 text-emerald-400 px-1 rounded font-mono";
+
+                    if (sim54Double.bufA <= 0) {
+                        sim54Double.bufA = 0;
+                        if (sim54Double.bufB >= 100) {
+                            sim54Double.active = 'B';
+                        } else {
+                            sim54Double.freezes++;
+                            document.getElementById('sim54-double-freezes').textContent = sim54Double.freezes;
+                            document.getElementById('sim54-double-status').textContent = 'BUFFERING';
+                            document.getElementById('sim54-double-status').className = "text-[9px] bg-red-500/20 text-red-400 px-1 rounded font-mono animate-pulse";
+                        }
+                    }
+                } else {
+                    sim54Double.bufB -= 8;
+                    sim54Double.bufA += 10;
+                    if (sim54Double.bufA > 100) sim54Double.bufA = 100;
+
+                    sim54Double.play += 1.5;
+                    document.getElementById('sim54-double-status').textContent = 'PLAYING (BUF B)';
+                    document.getElementById('sim54-double-status').className = "text-[9px] bg-emerald-500/20 text-emerald-400 px-1 rounded font-mono";
+
+                    if (sim54Double.bufB <= 0) {
+                        sim54Double.bufB = 0;
+                        if (sim54Double.bufA >= 100) {
+                            sim54Double.active = 'A';
+                        } else {
+                            sim54Double.freezes++;
+                            document.getElementById('sim54-double-freezes').textContent = sim54Double.freezes;
+                            document.getElementById('sim54-double-status').textContent = 'BUFFERING';
+                            document.getElementById('sim54-double-status').className = "text-[9px] bg-red-500/20 text-red-400 px-1 rounded font-mono animate-pulse";
+                        }
+                    }
+                }
+
+                document.getElementById('sim54-single-buf-fill').style.width = sim54Single.fill + '%';
+                document.getElementById('sim54-single-buf-val').textContent = Math.round(sim54Single.fill) + '%';
+                document.getElementById('sim54-single-playback-bar').style.width = Math.min(100, sim54Single.play) + '%';
+                document.getElementById('sim54-single-screen-txt').textContent = Math.round(Math.min(100, sim54Single.play)) + '% played';
+
+                document.getElementById('sim54-bufA-fill').style.width = sim54Double.bufA + '%';
+                document.getElementById('sim54-bufA-val').textContent = Math.round(sim54Double.bufA) + '%';
+                document.getElementById('sim54-bufB-fill').style.width = sim54Double.bufB + '%';
+                document.getElementById('sim54-bufB-val').textContent = Math.round(sim54Double.bufB) + '%';
+                document.getElementById('sim54-double-playback-bar').style.width = Math.min(100, sim54Double.play) + '%';
+                document.getElementById('sim54-double-screen-txt').textContent = Math.round(Math.min(100, sim54Double.play)) + '% played';
+
+                if (sim54Double.active === 'A') {
+                    document.getElementById('sim54-bufA-box').className = "w-full bg-slate-900 h-4 rounded border border-emerald-500 overflow-hidden relative";
+                    document.getElementById('sim54-bufB-box').className = "w-full bg-slate-900 h-4 rounded border border-slate-800 overflow-hidden relative opacity-50";
+                } else {
+                    document.getElementById('sim54-bufB-box').className = "w-full bg-slate-900 h-4 rounded border border-emerald-500 overflow-hidden relative";
+                    document.getElementById('sim54-bufA-box').className = "w-full bg-slate-900 h-4 rounded border border-slate-800 overflow-hidden relative opacity-50";
+                }
+
+                if (sim54Single.play >= 100 && sim54Double.play >= 100) {
+                    clearInterval(sim54Interval);
+                    sim54Running = false;
+                    document.getElementById('sim54-single-player').classList.add('hidden');
+                    document.getElementById('sim54-double-player').classList.add('hidden');
+                    document.getElementById('sim54-single-play-icon').classList.remove('hidden');
+                    document.getElementById('sim54-double-play-icon').classList.remove('hidden');
+                    document.getElementById('sim54-single-status').textContent = 'FINISHED';
+                    document.getElementById('sim54-double-status').textContent = 'FINISHED';
+                }
+            }, 150);
+        }
+
+        function resetSim54() {
+            if (sim54Interval) clearInterval(sim54Interval);
+            sim54Running = false;
+            sim54Single = { fill: 0, play: 0, isBuffering: true, freezes: 0 };
+            sim54Double = { bufA: 100, bufB: 0, play: 0, active: 'A', isBuffering: false, freezes: 0 };
+
+            document.getElementById('sim54-single-freezes').textContent = '0';
+            document.getElementById('sim54-double-freezes').textContent = '0';
+            document.getElementById('sim54-single-status').textContent = 'IDLE';
+            document.getElementById('sim54-double-status').textContent = 'IDLE';
+            document.getElementById('sim54-single-status').className = "text-[9px] bg-amber-500/20 text-amber-400 px-1 rounded font-mono";
+            document.getElementById('sim54-double-status').className = "text-[9px] bg-emerald-500/20 text-emerald-400 px-1 rounded font-mono";
+
+            document.getElementById('sim54-single-player').classList.add('hidden');
+            document.getElementById('sim54-double-player').classList.add('hidden');
+            document.getElementById('sim54-single-play-icon').classList.remove('hidden');
+            document.getElementById('sim54-double-play-icon').classList.remove('hidden');
+
+            document.getElementById('sim54-single-buf-fill').style.width = '0%';
+            document.getElementById('sim54-single-buf-val').textContent = '0%';
+            document.getElementById('sim54-single-playback-bar').style.width = '0%';
+            document.getElementById('sim54-single-screen-txt').textContent = '0% played';
+
+            document.getElementById('sim54-bufA-fill').style.width = '100%';
+            document.getElementById('sim54-bufA-val').textContent = '100%';
+            document.getElementById('sim54-bufB-fill').style.width = '0%';
+            document.getElementById('sim54-bufB-val').textContent = '0%';
+            document.getElementById('sim54-double-playback-bar').style.width = '0%';
+            document.getElementById('sim54-double-screen-txt').textContent = '0% played';
+
+            document.getElementById('sim54-bufA-box').className = "w-full bg-slate-900 h-4 rounded border border-slate-800 overflow-hidden relative";
+            document.getElementById('sim54-bufB-box').className = "w-full bg-slate-900 h-4 rounded border border-slate-800 overflow-hidden relative";
+
+            document.getElementById('sim54-start-btn').disabled = false;
+        }
+
+
+        // ==========================================
+        // Simulator 5.5: Watchdog Timer
+        // ==========================================
+        let wdActive = true;
+        let wdTimer = 5.0;
+        let wdSystemFrozen = false;
+        let wdFeedTimer = null;
+        let wdCountdownInterval = null;
+
+        function toggleWatchdog(enable) {
+            wdActive = enable;
+            const enableBtn = document.getElementById('wd-enable-btn');
+            const disableBtn = document.getElementById('wd-disable-btn');
+            const hwStatus = document.getElementById('wd-hardware-status');
+
+            if (enable) {
+                enableBtn.className = "px-3 py-2 rounded-lg text-xs font-bold transition-all border border-blue-500 bg-blue-650/20 text-blue-400";
+                disableBtn.className = "px-3 py-2 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700";
+                hwStatus.textContent = 'MONITORING';
+                hwStatus.className = "text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono";
+            } else {
+                enableBtn.className = "px-3 py-2 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700";
+                disableBtn.className = "px-3 py-2 rounded-lg text-xs font-bold transition-all border border-red-500 bg-red-650/20 text-red-400";
+                hwStatus.textContent = 'DISABLED';
+                hwStatus.className = "text-xs px-2 py-0.5 rounded bg-red-950 text-red-400 font-mono";
+            }
+        }
+
+        function feedWatchdog() {
+            if (wdSystemFrozen) return;
+            wdTimer = 5.0;
+            updateWdTimerDisplay();
+        }
+
+        function triggerWdFreeze() {
+            if (wdSystemFrozen) return;
+            wdSystemFrozen = true;
+
+            const cpuCircle = document.getElementById('wd-cpu-circle');
+            cpuCircle.className = "w-24 h-24 rounded-full bg-red-500/20 border-4 border-red-500 flex flex-col items-center justify-center shadow-lg transition-all duration-300 mb-3 animate-pulse";
+            document.getElementById('wd-cpu-emoji').textContent = "😵";
+            document.getElementById('wd-cpu-status-txt').textContent = 'FROZEN';
+            document.getElementById('wd-cpu-status-txt').className = "text-[10px] font-bold text-red-500 mt-1 uppercase";
+            document.getElementById('wd-status-desc').textContent = "המערכת נקלעה ללולאה אינסופית! טיפול בפסיקות חסום. המערכת אינה מגיבה.";
+            
+            document.getElementById('wd-feed-btn').disabled = true;
+
+            if (wdActive) {
+                document.getElementById('wd-hardware-status').textContent = 'ALERT';
+                document.getElementById('wd-hardware-status').className = "text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-400 font-mono animate-pulse";
+            }
+        }
+
+        function updateWdTimerDisplay() {
+            document.getElementById('wd-timer-val').textContent = wdTimer.toFixed(1);
+            
+            const dashOffset = (1 - (wdTimer / 5.0)) * 251.2;
+            document.getElementById('wd-timer-circle').setAttribute('stroke-dashoffset', dashOffset);
+            
+            const circle = document.getElementById('wd-timer-circle');
+            if (wdTimer > 3.0) {
+                circle.setAttribute('stroke', '#10b981');
+            } else if (wdTimer > 1.5) {
+                circle.setAttribute('stroke', '#f59e0b');
+            } else {
+                circle.setAttribute('stroke', '#ef4444');
+            }
+        }
+
+        function initWatchdog() {
+            wdTimer = 5.0;
+            wdSystemFrozen = false;
+            document.getElementById('wd-feed-btn').disabled = false;
+            
+            const cpuCircle = document.getElementById('wd-cpu-circle');
+            cpuCircle.className = "w-24 h-24 rounded-full bg-emerald-500/20 border-4 border-emerald-500 flex flex-col items-center justify-center shadow-lg transition-all duration-300 mb-3";
+            document.getElementById('wd-cpu-emoji').textContent = "😊";
+            document.getElementById('wd-cpu-status-txt').textContent = 'HEALTHY';
+            document.getElementById('wd-cpu-status-txt').className = "text-[10px] font-bold text-emerald-400 mt-1 uppercase";
+            document.getElementById('wd-status-desc').textContent = "המערכת פועלת באופן תקין. ה-CPU מריץ תהליכים ומאכיל את ה-Watchdog מדי פעם.";
+            
+            toggleWatchdog(wdActive);
+            updateWdTimerDisplay();
+
+            if (wdCountdownInterval) clearInterval(wdCountdownInterval);
+            wdCountdownInterval = setInterval(() => {
+                if (wdActive) {
+                    wdTimer -= 0.1;
+                    if (wdTimer <= 0) {
+                        wdTimer = 0;
+                        updateWdTimerDisplay();
+                        
+                        triggerWdHardwareReset();
+                    } else {
+                        updateWdTimerDisplay();
+                    }
+                }
+            }, 100);
+
+            if (wdFeedTimer) clearInterval(wdFeedTimer);
+            wdFeedTimer = setInterval(() => {
+                if (!wdSystemFrozen && wdActive) {
+                    feedWatchdog();
+                }
+            }, 1200);
+        }
+
+        function triggerWdHardwareReset() {
+            clearInterval(wdCountdownInterval);
+            clearInterval(wdFeedTimer);
+
+            const overlay = document.getElementById('wd-reset-overlay');
+            overlay.style.opacity = '0.9';
+
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                initWatchdog();
+            }, 1500);
+        }
+
+
+        // ==========================================
+        // Main initialization & event listeners
+        // ==========================================
+        window.addEventListener('load', () => {
+            const tabs_elements = [];
+            const seenIds = new Set();
+            document.querySelectorAll('.tab-content').forEach(el => {
+                const id = el.id;
+                if (id && !seenIds.has(id)) {
+                    seenIds.add(id);
+                    tabs_elements.push(el);
+                }
+            });
+
+            tabs_elements.forEach((tab, index) => {
+                const navContainer = document.createElement('div');
+                navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
+
+                // Previous Button
+                if (index > 0) {
+                    const prevTabId = tabs_elements[index - 1].id.replace('tab-', '');
+                    const prevBtn = document.createElement('button');
+                    prevBtn.onclick = () => showTab(prevTabId);
+                    prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    prevBtn.innerHTML = `
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>הקודם</span>
+                    `;
+                    navContainer.appendChild(prevBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
+
+                // Next Button
+                if (index < tabs_elements.length - 1) {
+                    const nextTabId = tabs_elements[index + 1].id.replace('tab-', '');
+                    const nextBtn = document.createElement('button');
+                    nextBtn.onclick = () => showTab(nextTabId);
+                    nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    nextBtn.innerHTML = `
+                        <span>הבא</span>
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    `;
+                    navContainer.appendChild(nextBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
+
+                tab.appendChild(navContainer);
+            });
+
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+            
+            document.querySelectorAll('details').forEach(details => {
+                details.addEventListener('toggle', (e) => {
+                    if (details.open && window.MathJax) {
+                        MathJax.typesetPromise([details]).catch((err) => console.log(err.message));
+                    }
+                });
+            });
+
+            initFlashcards();
+            resetSim51();
+            resetSim54();
+            initWatchdog();
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                document.body.classList.remove('sidebar-collapsed');
+                document.getElementById('mobile-overlay').classList.add('hidden');
+            } else if (!document.getElementById('mobile-overlay').classList.contains('opacity-100')) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        });
+    </script>
+
+</body>
+</html>
