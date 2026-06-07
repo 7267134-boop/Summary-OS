@@ -356,7 +356,7 @@ def main():
         }
 
         /* פס שוליים אדום כמו במחברת שורות קלאסית */
-        .notebook-container::before {
+        .notebook-page::before {
             content: '';
             position: absolute;
             top: 0;
@@ -368,7 +368,7 @@ def main():
             pointer-events: none;
         }
 
-        .notebook-container::after {
+        .notebook-page::after {
             content: '';
             position: absolute;
             top: 0;
@@ -386,6 +386,7 @@ def main():
             margin: 0 auto;
             padding: 40px 90px 60px 40px;
             background-color: rgba(253, 251, 247, 0.95);
+            position: relative;
         }
 
         .title-orange { color: #c2410c; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(194, 65, 12, 0.2); padding-bottom: 2px; }
@@ -587,7 +588,7 @@ def main():
     # Main block
     final_html.append("""
     <!-- אזור התוכן הראשי (מחברת) -->
-    <main id="main-content" class="flex-1 notebook-container relative transition-all duration-300 ease-in-out lg:mr-80 lg:w-[calc(100%-20rem)] pb-12">
+    <main id="main-content" class="flex-1 notebook-container relative transition-all duration-300 ease-in-out lg:mr-80 pb-12">
         <div class="notebook-page min-h-screen">
     """)
     
@@ -613,32 +614,65 @@ def main():
             // Load initial state from localStorage
             const sidebarHidden = localStorage.getItem('sidebar-hidden') === 'true';
 
+            // Find the section closest to the top of the viewport
+            function getVisibleSection() {
+                const sections = document.querySelectorAll('section[id]');
+                let closest = null;
+                let minDistance = Infinity;
+                sections.forEach(sec => {
+                    const rect = sec.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closest = sec;
+                    }
+                });
+                return closest;
+            }
+
+            // Restore scroll position to keep the section in focus
+            function restoreScroll(el) {
+                if (!el) return;
+                el.scrollIntoView({ block: 'start', behavior: 'auto' });
+                // Repeat after transition finishes (300ms) to adjust for dynamic reflow height shifts
+                setTimeout(() => {
+                    el.scrollIntoView({ block: 'start', behavior: 'auto' });
+                }, 100);
+                setTimeout(() => {
+                    el.scrollIntoView({ block: 'start', behavior: 'auto' });
+                }, 310);
+            }
+
             function showSidebar() {
+                const activeEl = getVisibleSection();
                 sidebar.classList.remove('translate-x-full');
                 sidebar.classList.add('translate-x-0');
                 if (window.innerWidth >= 1024) { // lg breakpoint
-                    mainContent.classList.remove('lg:mr-0', 'lg:w-full');
-                    mainContent.classList.add('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
+                    mainContent.classList.remove('lg:mr-0');
+                    mainContent.classList.add('lg:mr-80');
                 } else {
                     backdrop.classList.remove('hidden');
                     backdrop.classList.add('opacity-100');
                 }
                 openBtn.classList.add('hidden');
                 localStorage.setItem('sidebar-hidden', 'false');
+                restoreScroll(activeEl);
             }
 
             function hideSidebar() {
+                const activeEl = getVisibleSection();
                 sidebar.classList.remove('translate-x-0');
                 sidebar.classList.add('translate-x-full');
                 if (window.innerWidth >= 1024) { // lg breakpoint
-                    mainContent.classList.remove('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
-                    mainContent.classList.add('lg:mr-0', 'lg:w-full');
+                    mainContent.classList.remove('lg:mr-80');
+                    mainContent.classList.add('lg:mr-0');
                 } else {
                     backdrop.classList.remove('opacity-100');
                     backdrop.classList.add('hidden');
                 }
                 openBtn.classList.remove('hidden');
                 localStorage.setItem('sidebar-hidden', 'true');
+                restoreScroll(activeEl);
             }
 
             openBtn.addEventListener('click', showSidebar);
@@ -648,23 +682,25 @@ def main():
             // Responsive adjustment on resize
             window.addEventListener('resize', () => {
                 const isHidden = sidebar.classList.contains('translate-x-full');
+                const activeEl = getVisibleSection();
                 if (window.innerWidth >= 1024) {
                     backdrop.classList.remove('opacity-100');
                     backdrop.classList.add('hidden');
                     if (isHidden) {
-                        mainContent.classList.remove('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
-                        mainContent.classList.add('lg:mr-0', 'lg:w-full');
+                        mainContent.classList.remove('lg:mr-80');
+                        mainContent.classList.add('lg:mr-0');
                     } else {
-                        mainContent.classList.remove('lg:mr-0', 'lg:w-full');
-                        mainContent.classList.add('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
+                        mainContent.classList.remove('lg:mr-0');
+                        mainContent.classList.add('lg:mr-80');
                     }
                 } else {
-                    mainContent.classList.remove('lg:mr-80', 'lg:w-[calc(100%-20rem)]', 'lg:mr-0', 'lg:w-full');
+                    mainContent.classList.remove('lg:mr-80', 'lg:mr-0');
                     if (!isHidden) {
                         backdrop.classList.remove('hidden');
                         backdrop.classList.add('opacity-100');
                     }
                 }
+                restoreScroll(activeEl);
             });
 
             // Initialize state
