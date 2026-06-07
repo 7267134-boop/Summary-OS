@@ -3,127 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>פרק 1: מבוא למערכות הפעלה - סיכום מתומצת לחזרה</title>
+    <title>סיכום קורס: מערכות הפעלה (20594)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <style>
         body {
+            background-color: #fdfbf7;
+            background-image:
+                linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0;
+            font-family: 'Assistant', sans-serif;
+            color: #1e293b;
+            line-height: 1.8;
+            font-size: 1.15rem;
+            position: relative;
+        }
+
+        h1, h2, h3, h4, .font-heading {
             font-family: 'Rubik', sans-serif;
+        }
+
+        /* פס שוליים אדום כמו במחברת שורות קלאסית */
+        .notebook-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 60px;
+            bottom: 0;
+            width: 2px;
+            background-color: rgba(220, 38, 38, 0.35);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .notebook-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 65px;
+            bottom: 0;
+            width: 1px;
+            background-color: rgba(220, 38, 38, 0.15);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* עיצוב המיכל הראשי */
+        .notebook-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 90px 60px 40px;
+            background-color: rgba(253, 251, 247, 0.95);
+        }
+
+        .title-orange { color: #c2410c; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(194, 65, 12, 0.2); padding-bottom: 2px; }
+        .title-red { color: #b91c1c; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(185, 28, 28, 0.2); padding-bottom: 2px; }
+        .title-blue { color: #1d4ed8; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(29, 78, 216, 0.2); padding-bottom: 2px; }
+        .title-teal { color: #0f766e; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(15, 118, 110, 0.2); padding-bottom: 2px; }
+        .title-purple { color: #6d28d9; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(109, 40, 217, 0.2); padding-bottom: 2px; }
+        .title-green { color: #15803d; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(21, 128, 61, 0.2); padding-bottom: 2px; }
+        .title-pink { color: #be185d; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(190, 24, 93, 0.2); padding-bottom: 2px; }
+        .title-rose { color: #e11d48; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(225, 29, 72, 0.2); padding-bottom: 2px; }
+        .title-cyan { color: #0891b2; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(8, 145, 178, 0.2); padding-bottom: 2px; }
+        .title-indigo { color: #4338ca; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(67, 56, 202, 0.2); padding-bottom: 2px; }
+
+        .hand-drawn-box {
+            border: 2px solid #475569;
+            border-radius: 4px 190px 6px 15px / 95px 12px 150px 7px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 4px 4px 0px #cbd5e1;
+        }
+
+        .warning-box {
+            border: 2px solid #ef4444;
+            border-radius: 120px 8px 180px 10px / 12px 140px 10px 110px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            background: rgba(254, 226, 226, 0.4);
+            color: #991b1b;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: #0f172a;
+            font-weight: 700;
+            background-color: rgba(15, 23, 42, 0.06);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #f8fafc;
+            border-right: 4px solid #3b82f6;
+            padding: 1.25rem;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            direction: ltr;
+            text-align: left;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: transparent;
+            color: #f8fafc;
+            padding: 0;
+            font-weight: normal;
+            display: block;
+        }
+
+        .list-bullet {
+            position: relative;
+            padding-right: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .list-bullet::before {
+            content: '■';
+            position: absolute;
+            right: 0;
+            font-size: 0.8em;
+            top: 0.25em;
+        }
+
+        .list-bullet-orange::before { color: #c2410c; }
+        .list-bullet-red::before { color: #b91c1c; }
+        .list-bullet-blue::before { color: #1d4ed8; }
+        .list-bullet-teal::before { color: #0f766e; }
+        .list-bullet-purple::before { color: #6d28d9; }
+        .list-bullet-green::before { color: #15803d; }
+        .list-bullet-pink::before { color: #be185d; }
+        .list-bullet-rose::before { color: #e11d48; }
+        .list-bullet-cyan::before { color: #0891b2; }
+        .list-bullet-indigo::before { color: #4338ca; }
+
+        .sidebar-nav {
+            scrollbar-width: thin;
+            scrollbar-color: #94a3b8 transparent;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased leading-relaxed">
+<body class="bg-amber-50/20 min-h-screen text-slate-800 font-sans relative antialiased flex">
 
-    <!-- Header Section -->
-    <header class="bg-indigo-700 text-white shadow-md">
-        <div class="max-w-4xl mx-auto px-6 py-10">
-            <h1 class="text-3xl md:text-4xl font-bold mb-3 tracking-tight">פרק 1: מבוא למערכות הפעלה</h1>
-            <p class="text-indigo-100 text-lg md:text-xl font-light">סיכום מתומצת לחזרה</p>
+    <!-- כפתור פתיחת תפריט ניווט (מוצג כשהתפריט מוסתר) -->
+    <button id="toggle-sidebar-open"
+        class="fixed right-4 top-4 z-30 bg-[#fdfbf7] text-slate-700 hover:text-amber-700 hover:bg-amber-50 border border-amber-200 shadow-lg rounded-full p-3 transition duration-300 ease-in-out hidden"
+        title="הצג תפריט ניווט">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+    
+    <!-- רקע כהה לתפריט הצידי במובייל -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-10 transition-opacity duration-300 hidden lg:hidden"></div>
+    
+    <aside id="sidebar" class="w-80 max-w-[85vw] bg-[#fdfbf7] text-slate-800 fixed right-0 top-0 bottom-0 z-25 flex flex-col shadow-[-4px_0_24px_rgba(0,0,0,0.05)] border-l border-slate-200/80 transition-transform duration-300 ease-in-out transform translate-x-0">
+        <div class="p-5 border-b border-slate-200/80 relative">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span>📖</span> תוכן העניינים
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">לחץ על סעיף כדי לקפוץ אליו ישירות</p>
+            <button id="toggle-sidebar-close" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition" title="הסתר תפריט">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
-    </header>
+        
+        <div class="flex-1 p-6 space-y-6 overflow-y-auto">
+    
+            <!-- פרק 1 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-orange-700 mb-1 border-b border-orange-200/80 pb-1">פרק 1: מבוא למערכות הפעלה</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-1-1" class="text-slate-700 hover:text-orange-700 hover:bg-orange-50/50 block rounded px-2 py-0.5 transition font-medium">1.1 מהי מערכת הפעלה?</a>
+                    </li>
+                    <li>
+                        <a href="#sec-1-2" class="text-slate-700 hover:text-orange-700 hover:bg-orange-50/50 block rounded px-2 py-0.5 transition font-medium">1.2 היסטוריה והתפתחות</a>
+                    </li>
+                    <li>
+                        <a href="#sec-1-3" class="text-slate-700 hover:text-orange-700 hover:bg-orange-50/50 block rounded px-2 py-0.5 transition font-medium">1.3 סקירת חומרה רלוונטית (מבנה המעבד)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-1-4" class="text-slate-700 hover:text-orange-700 hover:bg-orange-50/50 block rounded px-2 py-0.5 transition font-medium">1.4 גן החיות של מערכות ההפעלה</a>
+                    </li>
+                    <li>
+                        <a href="#sec-1-5" class="text-slate-700 hover:text-orange-700 hover:bg-orange-50/50 block rounded px-2 py-0.5 transition font-medium">1.5 מושגי יסוד</a>
+                    </li>
+                    <li>
+                        <a href="#sec-1-6" class="text-slate-700 hover:text-orange-700 hover:bg-orange-50/50 block rounded px-2 py-0.5 transition font-medium">1.6 קריאות מערכת (System Calls)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-1-7" class="text-slate-700 hover:text-orange-700 hover:bg-orange-50/50 block rounded px-2 py-0.5 transition font-medium">1.7 המבנה של מערכות הפעלה</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 2 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-red-700 mb-1 border-b border-red-200/80 pb-1">פרק 2: מעבד ותהליכים</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-2-1" class="text-slate-700 hover:text-red-700 hover:bg-red-50/50 block rounded px-2 py-0.5 transition font-medium">2.1 מודל התהליכים (Processes)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-2-2" class="text-slate-700 hover:text-red-700 hover:bg-red-50/50 block rounded px-2 py-0.5 transition font-medium">2.2 תהליכונים (Threads)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-2-3" class="text-slate-700 hover:text-red-700 hover:bg-red-50/50 block rounded px-2 py-0.5 transition font-medium">2.3 תקשורת בין תהליכים (IPC) וסנכרון</a>
+                    </li>
+                    <li>
+                        <a href="#sec-2-4" class="text-slate-700 hover:text-red-700 hover:bg-red-50/50 block rounded px-2 py-0.5 transition font-medium">2.4 בעיות סנכרון קלאסיות</a>
+                    </li>
+                    <li>
+                        <a href="#sec-2-5" class="text-slate-700 hover:text-red-700 hover:bg-red-50/50 block rounded px-2 py-0.5 transition font-medium">2.5 תזמון מעבד (CPU Scheduling)</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 3 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-blue-700 mb-1 border-b border-blue-200/80 pb-1">פרק 3: ניהול זיכרון</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-3-1" class="text-slate-700 hover:text-blue-700 hover:bg-blue-50/50 block rounded px-2 py-0.5 transition font-medium">3.1 ניהול זיכרון בסיסי והחלפה (Swapping)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-3-2" class="text-slate-700 hover:text-blue-700 hover:bg-blue-50/50 block rounded px-2 py-0.5 transition font-medium">3.2 זיכרון וירטואלי ודפדוף (Paging)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-3-3" class="text-slate-700 hover:text-blue-700 hover:bg-blue-50/50 block rounded px-2 py-0.5 transition font-medium">3.3 מבני טבלאות דפים ומנגנוני האצה</a>
+                    </li>
+                    <li>
+                        <a href="#sec-3-4" class="text-slate-700 hover:text-blue-700 hover:bg-blue-50/50 block rounded px-2 py-0.5 transition font-medium">3.4 אלגוריתמים להחלפת דפים (Page Replacement Algorithms)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-3-5" class="text-slate-700 hover:text-blue-700 hover:bg-blue-50/50 block rounded px-2 py-0.5 transition font-medium">3.5 סוגיות עיצוב במערכות דפדוף</a>
+                    </li>
+                    <li>
+                        <a href="#sec-3-6" class="text-slate-700 hover:text-blue-700 hover:bg-blue-50/50 block rounded px-2 py-0.5 transition font-medium">3.6 סגמנטציה (Segmentation)</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 4 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-teal-700 mb-1 border-b border-teal-200/80 pb-1">פרק 4: מערכות קבצים</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-4-1" class="text-slate-700 hover:text-teal-700 hover:bg-teal-50/50 block rounded px-2 py-0.5 transition font-medium">4.1 קבצים וספריות (Files and Directories)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-4-2" class="text-slate-700 hover:text-teal-700 hover:bg-teal-50/50 block rounded px-2 py-0.5 transition font-medium">4.2 מימוש קבצים והקצאת בלוקים (File Implementation)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-4-3" class="text-slate-700 hover:text-teal-700 hover:bg-teal-50/50 block rounded px-2 py-0.5 transition font-medium">4.3 מימוש ספריות וקבצים משותפים (Directory Implementation & Shared Files)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-4-4" class="text-slate-700 hover:text-teal-700 hover:bg-teal-50/50 block rounded px-2 py-0.5 transition font-medium">4.4 ניהול שטח הדיסק (Disk Space Management)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-4-5" class="text-slate-700 hover:text-teal-700 hover:bg-teal-50/50 block rounded px-2 py-0.5 transition font-medium">4.5 אמינות וביצועים של מערכות קבצים (Reliability and Performance)</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 5 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-purple-700 mb-1 border-b border-purple-200/80 pb-1">פרק 5: קלט/פלט (I/O)</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-5-1" class="text-slate-700 hover:text-purple-700 hover:bg-purple-50/50 block rounded px-2 py-0.5 transition font-medium">5.1 עקרונות חומרת קלט/פלט</a>
+                    </li>
+                    <li>
+                        <a href="#sec-5-2" class="text-slate-700 hover:text-purple-700 hover:bg-purple-50/50 block rounded px-2 py-0.5 transition font-medium">5.2 עקרונות תוכנת קלט/פלט</a>
+                    </li>
+                    <li>
+                        <a href="#sec-5-3" class="text-slate-700 hover:text-purple-700 hover:bg-purple-50/50 block rounded px-2 py-0.5 transition font-medium">5.3 מודל השכבות של תוכנת קלט/פלט</a>
+                    </li>
+                    <li>
+                        <a href="#sec-5-4" class="text-slate-700 hover:text-purple-700 hover:bg-purple-50/50 block rounded px-2 py-0.5 transition font-medium">5.4 דיסקים מגנטיים (Magnetic Disks)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-5-5" class="text-slate-700 hover:text-purple-700 hover:bg-purple-50/50 block rounded px-2 py-0.5 transition font-medium">5.5 שעונים וקוצבי זמן (Clocks & Timers)</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 6 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-green-700 mb-1 border-b border-green-200/80 pb-1">פרק 6: קיפאון (Deadlock)</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-6-1" class="text-slate-700 hover:text-green-700 hover:bg-green-50/50 block rounded px-2 py-0.5 transition font-medium">6.1 משאבים (Resources)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-6-2" class="text-slate-700 hover:text-green-700 hover:bg-green-50/50 block rounded px-2 py-0.5 transition font-medium">6.2 הגדרת קיפאון ומודלים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-6-3" class="text-slate-700 hover:text-green-700 hover:bg-green-50/50 block rounded px-2 py-0.5 transition font-medium">6.3 אסטרטגיות התמודדות ואלגוריתם בת היענה</a>
+                    </li>
+                    <li>
+                        <a href="#sec-6-4" class="text-slate-700 hover:text-green-700 hover:bg-green-50/50 block rounded px-2 py-0.5 transition font-medium">6.4 גילוי והתאוששות (Detection and Recovery)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-6-5" class="text-slate-700 hover:text-green-700 hover:bg-green-50/50 block rounded px-2 py-0.5 transition font-medium">6.5 התחמקות מקיפאון (Avoidance)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-6-6" class="text-slate-700 hover:text-green-700 hover:bg-green-50/50 block rounded px-2 py-0.5 transition font-medium">6.6 מניעת קיפאון (Prevention)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-6-7" class="text-slate-700 hover:text-green-700 hover:bg-green-50/50 block rounded px-2 py-0.5 transition font-medium">6.7 נושאים נוספים</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 7 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-pink-700 mb-1 border-b border-pink-200/80 pb-1">פרק 7: וירטואליזציה וענן</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-7-1" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.1 מוטיבציה ושימושים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-2" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.2 דרישות חומרה ומודל Popek-Goldberg</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-3" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.3 טיפוסי Hypervisor</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-4" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.4 וירטואליזציה יעילה ופתרון האתגרים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-5" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.5 פרא-וירטואליזציה (Paravirtualization)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-6" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.6 וירטואליזציה של זיכרון</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-7" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.7 וירטואליזציה של קלט/פלט (I/O)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-8" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.8 מכונות וירטואליות מרובות מעבדים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-9" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.9 מחשוב ענן</a>
+                    </li>
+                    <li>
+                        <a href="#sec-7-10" class="text-slate-700 hover:text-pink-700 hover:bg-pink-50/50 block rounded px-2 py-0.5 transition font-medium">7.10 קונטיינרים (Containers)</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 8 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-rose-700 mb-1 border-b border-rose-200/80 pb-1">פרק 8: מערכות מרובות מעבדים</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-8-1" class="text-slate-700 hover:text-rose-700 hover:bg-rose-50/50 block rounded px-2 py-0.5 transition font-medium">8.1.1 חומרת ריבוי ליבות ומעבדים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-8-1" class="text-slate-700 hover:text-rose-700 hover:bg-rose-50/50 block rounded px-2 py-0.5 transition font-medium">8.1.2 סוגי מערכות הפעלה למערכות מרובות מעבדים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-8-1" class="text-slate-700 hover:text-rose-700 hover:bg-rose-50/50 block rounded px-2 py-0.5 transition font-medium">8.1.3 אתגרי סנכרון ומנעולים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-8-1" class="text-slate-700 hover:text-rose-700 hover:bg-rose-50/50 block rounded px-2 py-0.5 transition font-medium">8.1.4 תזמון מרובה מעבדים</a>
+                    </li>
+                    <li>
+                        <a href="#sec-8-special-5" class="text-slate-700 hover:text-rose-700 hover:bg-rose-50/50 block rounded px-2 py-0.5 transition font-medium">סוגיות קצה ברמת החומרה (משאלות החזרה והסיכום)</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 9 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-cyan-700 mb-1 border-b border-cyan-200/80 pb-1">פרק 9: מנגנוני הגנה (Protection Mechanisms)</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-9-2" class="text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/50 block rounded px-2 py-0.5 transition font-medium">9.2 מבוא ועקרונות יסוד</a>
+                    </li>
+                    <li>
+                        <a href="#sec-9-2" class="text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/50 block rounded px-2 py-0.5 transition font-medium">9.2.1 הגנה על ידי קביעת תחומים (Protection Domains)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-9-2" class="text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/50 block rounded px-2 py-0.5 transition font-medium">9.2.2 רשימות בקרת גישה (Access Control Lists - ACL)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-9-2" class="text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/50 block rounded px-2 py-0.5 transition font-medium">9.2.3 רשימות יכולות (Capability Lists - C-Lists)</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- פרק 10 -->
+            <div class="mb-4">
+                <h3 class="font-bold text-indigo-700 mb-1 border-b border-indigo-200/80 pb-1">פרק 10: מבוא ללינוקס, xv6 ו-docker</h3>
+                <ul class="space-y-1 text-sm list-none pr-2">
+                    <li>
+                        <a href="#sec-10-1" class="text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/50 block rounded px-2 py-0.5 transition font-medium">10.1 לינוקס: עקרונות ומשפחות (Linux & Distributions)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-10-2" class="text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/50 block rounded px-2 py-0.5 transition font-medium">10.2 שורת הפקודה (The Terminal)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-10-3" class="text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/50 block rounded px-2 py-0.5 transition font-medium">10.3 מערכת ההפעלה xv6</a>
+                    </li>
+                    <li>
+                        <a href="#sec-10-4" class="text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/50 block rounded px-2 py-0.5 transition font-medium">10.4 מבנה הגרעין וקריאות מערכת (ממ"ן 01 - פקודת ps)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-10-5" class="text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/50 block rounded px-2 py-0.5 transition font-medium">10.5 קונטיינרים ווירטואליזציה (ממ"ן 02 - עולם הבועות)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-10-6" class="text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/50 block rounded px-2 py-0.5 transition font-medium">10.6 אקולוגיה של משאבים (ממ"ן 03 - Mount Namespace)</a>
+                    </li>
+                    <li>
+                        <a href="#sec-10-7" class="text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/50 block rounded px-2 py-0.5 transition font-medium">10.7 מבוא ל-Docker (דוקר) במציאות</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- אזור התוכן הראשי (מחברת) -->
+    <main id="main-content" class="flex-1 notebook-container relative transition-all duration-300 ease-in-out lg:mr-80 lg:w-[calc(100%-20rem)] pb-12">
+        <div class="notebook-page min-h-screen">
+    
+        <div class="mb-12 text-center">
+            <h1 class="text-3xl md:text-5xl font-black text-slate-800 tracking-tight mb-2">סיכום קורס: מערכות הפעלה</h1>
+            <p class="text-slate-500 font-medium">סמסטר ב' - 20594</p>
+        </div>
+    
 
-    <main class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        <!-- ================= פרק 1 ================= -->
+        <div class="border-b-4 border-orange-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-orange-800 font-heading">פרק 1: מבוא למערכות הפעלה</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 1 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Header Section -->
+    
+
+    
         
         <!-- Introduction -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <p class="text-slate-600 text-lg">
-                להלן סיכום ממוקד ומקיף של פרק 1 מתוך מדריך הלמידה, המיועד לחזרה מהירה לאחר היכרות ראשונית עם החומר:
-            </p>
-        </div>
+        
 
         <!-- Section 1.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h2 class="text-xl font-bold text-indigo-800">1.1 מהי מערכת הפעלה?</h2>
-            </div>
-            <div class="p-6">
+
+        <section id="sec-1-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-orange">1.1 מהי מערכת הפעלה?</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 font-medium">מערכת ההפעלה מוגדרת משתי נקודות מבט מרכזיות:</p>
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">כמכונה מורחבת/מדומה (גישת מלמעלה-למטה):</strong> שכבת תוכנה המסתירה את מורכבות הפעולה האמיתית של החומרה. היא מספקת למתכנת ממשק נוח וקל לשימוש באמצעות הפשטה (למשל, שימוש בפונקציות כמו <code class="bg-slate-100 px-1 rounded text-sm text-pink-600">open</code> ו-<code class="bg-slate-100 px-1 rounded text-sm text-pink-600">read</code> לקבצים במקום לנהל את הדיסק ישירות).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">כמנהל משאבים (גישת מלמטה-למעלה):</strong> תוכנה המנהלת את הקצאת המשאבים השונים (מעבד, זיכרון, קלט/פלט) לתהליכים שרצים במערכת בצורה יעילה ובטוחה.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 1.2 -->
 
-        <!-- Section 1.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h2 class="text-xl font-bold text-indigo-800">1.2 היסטוריה והתפתחות</h2>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-1-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-orange">1.2 היסטוריה והתפתחות</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">מערכת אצווה (Batch System):</strong> ביצוע רציף של סדרת משימות שהוכנה מראש, כאשר כל משימה מתבצעת מתחילתה ועד סופה מבלי לשתף את המעבד.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">ריבוי תוכניות (Multiprogramming):</strong> מספר תהליכים שוהים בזיכרון הראשי בו-זמנית. כאשר תהליך ממתין לאירוע (כמו קלט/פלט), המעבד מוקצה לתהליך אחר כדי לייעל את ניצולתו.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">חלוקת זמן (Timesharing):</strong> מאפשרת למספר משתמשים לעבוד אינטראקטיבית בו-זמנית. כל משתמש/תהליך מקבל את המעבד לפרק זמן מוגבל, מה שמבטיח תגובה מהירה לפקודות.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 1.3 -->
 
-        <!-- Section 1.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h2 class="text-xl font-bold text-indigo-800">1.3 סקירת חומרה רלוונטית (מבנה המעבד)</h2>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-1-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-orange">1.3 סקירת חומרה רלוונטית (מבנה המעבד)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">מצבי מעבד:</strong> המעבד תומך ב<strong>מצב מיוחס (Kernel Mode)</strong> שבו ניתן לבצע כל פעולה אפשרית ללא הגבלות, וב<strong>מצב משתמש (User Mode)</strong> המוגבל מביצוע פעולות "רגישות".
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">אוגרים מרכזיים (Registers):</strong> זיכרון מהיר מובנה במעבד.
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-1 text-slate-600">
-                            <li><strong>PC (Program Counter):</strong> שומר את כתובת הפקודה הבאה.</li>
-                            <li><strong>IR (Instruction Register):</strong> שומר את ההוראה הנוכחית.</li>
-                            <li><strong>PSW (Program Status Word):</strong> מחזיק את מצב המעבד, כולל סיבית המציינת אם המעבד במצב מיוחס או משתמש.</li>
+                            <li class="list-bullet list-bullet-orange"><strong>PC (Program Counter):</strong> שומר את כתובת הפקודה הבאה.</li>
+                            <li class="list-bullet list-bullet-orange"><strong>IR (Instruction Register):</strong> שומר את ההוראה הנוכחית.</li>
+                            <li class="list-bullet list-bullet-orange"><strong>PSW (Program Status Word):</strong> מחזיק את מצב המעבד, כולל סיבית המציינת אם המעבד במצב מיוחס או משתמש.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
                         <strong class="text-slate-900">פסיקות חומרה (Interrupts):</strong> מנגנון המשהה תוכנית רצה לשם טיפול באירוע חיצוני (כמו סיום קלט/פלט). המעבד שומר את ההקשר (Context) ועובר לשגרה לטיפול בפסיקות המנוהלת על ידי מערכת ההפעלה.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 1.4 -->
 
-        <!-- Section 1.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h2 class="text-xl font-bold text-indigo-800">1.4 גן החיות של מערכות ההפעלה</h2>
-            </div>
-            <div class="p-6">
+        <section id="sec-1-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-orange">1.4 גן החיות של מערכות ההפעלה</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-700">
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div class="hand-drawn-box">
                         <strong class="text-indigo-700 block mb-1">מחשב מרכזי (Mainframe)</strong>
                         מחשבים בעלי עוצמת אחסון וחישוב עצומה לארגונים גדולים, הממוקדים בעיבוד נתונים רחב היקף ואמינות.
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div class="hand-drawn-box">
                         <strong class="text-indigo-700 block mb-1">שרתים (Servers)</strong>
                         מתאפיינים בהרצת מספר רב של תוכניות במקביל לשרת משתמשי קצה ברשת. מושם דגש על שרידות וזמינות השירותים.
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div class="hand-drawn-box">
                         <strong class="text-indigo-700 block mb-1">מערכות מקביליות (Multiprocessor)</strong>
                         מחשבים המצוידים ביותר ממעבד אחד החולקים זיכרון משותף. בארכיטקטורה סימטרית (SMP) מערכת ההפעלה ותהליכים רצים על כל המעבדים, בעוד באסימטרית מעבד אחד (Master) מקצה משימות לשאר (Slaves).
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div class="hand-drawn-box">
                         <strong class="text-indigo-700 block mb-1">מערכות מבוזרות (Distributed)</strong>
                         חישוב המבוזר בין מספר מעבדים בעלי זיכרון עצמאי המתקשרים ברשת, עם דגש על ביזור עומסים ושיתוף משאבים.
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div class="hand-drawn-box">
                         <strong class="text-indigo-700 block mb-1">מחשבים אישיים (PC)</strong>
                         מערכות המיועדות לשרת משתמש יחיד תוך מתן זמן תגובה מהיר ונוחות שימוש.
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div class="hand-drawn-box">
                         <strong class="text-indigo-700 block mb-1">זמן אמת (Real-Time)</strong>
                         מערכות שהדגש בהן הוא עמידה באילוצי זמנים. Hard Real-Time מחייב עמידה נוקשה בזמנים, בעוד Soft Real-Time סובלני לחריגות מסוימות.
                     </div>
@@ -132,44 +572,46 @@
                         מיועדות למכשירים ניידים וכרטיסים חכמים, ומתאפיינות בדרישות מחמירות לחיסכון במשאבי המערכת.
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 1.5 -->
 
-        <!-- Section 1.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h2 class="text-xl font-bold text-indigo-800">1.5 מושגי יסוד</h2>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-1-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-orange">1.5 מושגי יסוד</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">תהליך (Process):</strong> תוכנית ריצה (executable) בביצוע. התהליך מכיל את מרחב הזיכרון שלו, קוד, נתונים, מצביע מחסנית, מונה פקודות ומידע על משאבים פתוחים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">קיפאון (Deadlock):</strong> מצב שבו תהליכים בקבוצה אינם יכולים להתקדם כי כל אחד ממתין לאירוע או משאב המוחזק בלעדית על ידי תהליך אחר באותה קבוצה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">ניהול זיכרון:</strong> שיטות המאפשרות לשכן מספר תהליכים בזיכרון הראשי בו-זמנית ולהריץ תוכניות הגדולות מנפח הזיכרון הפיזי.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">ניהול קלט/פלט:</strong> יצירת ממשק אחיד לניהול התקני החומרה השונים במערכת לאחסון והעברת מידע.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">קבצים (Files):</strong> יחידות מידע לוגיות הממומשות בתוכנה ומנוהלות על ידי מערכת ההפעלה לאחסון נתונים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-slate-900">מעטפת (Shell):</strong> תוכנית משתמש המהווה ממשק אינטראקטיבי ומתרגמת את פקודות המשתמש לקריאות מערכת.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 1.6 -->
 
-        <!-- Section 1.6 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h2 class="text-xl font-bold text-indigo-800">1.6 קריאות מערכת (System Calls)</h2>
-            </div>
-            <div class="p-6">
+        <section id="sec-1-6" class="mb-12 scroll-mt-6">
+            <h3 class="title-orange">1.6 קריאות מערכת (System Calls)</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="flex items-start mb-4">
                     <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center border border-blue-200 text-blue-600 ml-3 font-bold mt-0.5">1</div>
                     <p class="text-slate-700">קריאת מערכת היא הממשק שדרכו תהליך מבקש ממערכת ההפעלה שירות הדורש הרשאות מיוחדות.</p>
@@ -182,105 +624,112 @@
                     <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center border border-blue-200 text-blue-600 ml-3 font-bold mt-0.5">3</div>
                     <p class="text-slate-700">פקודת ה-TRAP מעבירה את המעבד למצב מיוחס (Kernel Mode) ומעבירה את השליטה למערכת ההפעלה לצורך אספקת השירות המבוקש.</p>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 1.7 -->
 
-        <!-- Section 1.7 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h2 class="text-xl font-bold text-indigo-800">1.7 המבנה של מערכות הפעלה</h2>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-1-7" class="mb-12 scroll-mt-6">
+            <h3 class="title-orange">1.7 המבנה של מערכות הפעלה</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">מערכת מונוליתית (Monolithic):</strong> אוסף גדול של פונקציות הפועלות יחד כיחידה אחת במצב מיוחס.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">מערכות מרובדות (Layered):</strong> המערכת מאורגנת ברבדים היררכיים, כאשר כל רובד מתקשר רק דרך ממשק מוגדר עם הרבדים הסמוכים אליו.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">מכונה מדומה (Virtual Machine):</strong> מערכת ההפעלה מתפקדת כשכבת תוכנה המספקת העתקים מדויקים של החומרה למערכות הפעלה או תוכניות הרצות מעליה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">אקסו-קרנל (Exokernel):</strong> הגרעין מבצע רק הקצאת משאבים והגנה עליהם, בעוד תוכניות המשתמש מקבלות החלטות על צורת השימוש בהם באמצעות ספריות ייעודיות.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-orange">
                         <strong class="text-indigo-700">גרעין מינימליסטי (Microkernel) ושרת-לקוח:</strong> הגרעין קטן ככל האפשר ומטפל רק בפעולות הכרחיות. שירותי המערכת (מערכת קבצים, ניהול זיכרון וכו') מוצאים מחוץ לגרעין ורצים כתהליכי שרת עצמאיים במצב משתמש. הגרעין מתפקד כ"דוור" המעביר הודעות בין תהליכי הלקוח לשרתים, מה שמשפר את יציבות המערכת ומקל על ביזור.
                     </li>
                 </ul>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 2 ================= -->
+            
+<!-- ================= פרק 2 ================= -->
         
         <!-- Chapter 2 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 2: מעבד ותהליכים</h2>
-        </div>
 
-        <!-- Section 2.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">2.1 מודל התהליכים (Processes)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <!-- ================= פרק 2 ================= -->
+        <div class="border-b-4 border-red-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-red-800 font-heading">פרק 2: מעבד ותהליכים</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 2 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 2.1 -->
+
+        <section id="sec-2-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-red">2.1 מודל התהליכים (Processes)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">הגדרה:</strong> תהליך הוא מופע אקטיבי של תוכנית בביצוע. הוא מורכב ממרחב הזיכרון שלו (קוד, נתונים, מחסנית הריצה), מצב האוגרים (כולל מונה הפקודות - PC), ומשאבי מערכת שהוקצו לו (כמו קבצים פתוחים).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">פסאודו-מקביליות (Multiprogramming):</strong> במערכת בעלת מעבד יחיד, מתבצעת אשליה של ריצה מקבילית על ידי מעבר מהיר של המעבד בין התהליכים השונים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">מצבי תהליך מרכזיים:</strong>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-1 text-slate-600">
-                            <li><strong class="text-indigo-700">רץ (Running):</strong> התהליך משתמש בפועל במעבד באותו רגע.</li>
-                            <li><strong class="text-indigo-700">מוכן (Ready):</strong> התהליך זמין ויכול לרוץ, אך המעבד תפוס כרגע על ידי תהליך אחר.</li>
-                            <li><strong class="text-indigo-700">חסום (Blocked):</strong> התהליך אינו יכול להמשיך את ריצתו עד שיתרחש אירוע חיצוני מסוים (למשל, סיום פעולת קלט/פלט).</li>
-                            <li><strong class="text-indigo-700">טבלת תהליכים (PCB - Process Control Block):</strong> מערכת ההפעלה מנהלת טבלה הכוללת רשומה לכל תהליך, השומרת את כל ההקשר (Context) והמידע הדרוש להשהיה ולחידוש מדויק של ריצת התהליך מבלי לאבד נתונים.</li>
+                            <li class="list-bullet list-bullet-red"><strong class="text-indigo-700">רץ (Running):</strong> התהליך משתמש בפועל במעבד באותו רגע.</li>
+                            <li class="list-bullet list-bullet-red"><strong class="text-indigo-700">מוכן (Ready):</strong> התהליך זמין ויכול לרוץ, אך המעבד תפוס כרגע על ידי תהליך אחר.</li>
+                            <li class="list-bullet list-bullet-red"><strong class="text-indigo-700">חסום (Blocked):</strong> התהליך אינו יכול להמשיך את ריצתו עד שיתרחש אירוע חיצוני מסוים (למשל, סיום פעולת קלט/פלט).</li>
+                            <li class="list-bullet list-bullet-red"><strong class="text-indigo-700">טבלת תהליכים (PCB - Process Control Block):</strong> מערכת ההפעלה מנהלת טבלה הכוללת רשומה לכל תהליך, השומרת את כל ההקשר (Context) והמידע הדרוש להשהיה ולחידוש מדויק של ריצת התהליך מבלי לאבד נתונים.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
                         <strong class="text-slate-900">היררכיה:</strong> תהליך יכול ליצור תהליכים בנים, מה שיוצר מבנה של עץ תהליכים (לדוגמה במערכות UNIX בעזרת קריאת <code class="bg-slate-100 px-1 rounded text-sm text-pink-600">fork</code>).
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 2.2 -->
 
-        <!-- Section 2.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">2.2 תהליכונים (Threads)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-2-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-red">2.2 תהליכונים (Threads)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">מוטיבציה:</strong> תהליכונים מאפשרים קיום של מספר זרמי ביצוע שונים החולקים את אותו מרחב זיכרון ומשאבים של תהליך יחיד. היתרון הוא חיסכון משמעותי בזמן היצירה ובהחלפת ההקשר (Context Switch) לעומת תהליכים כבדים, וכן שיתוף מידע פשוט ומהיר יותר.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">מרחב משותף מול מרחב פרטי:</strong> תהליכונים באותו תהליך חולקים את הקוד, הנתונים הגלובליים והקבצים הפתוחים, אך לכל תהליכון יש אוגרים משלו, מונה פקודות (PC) עצמאי, ומחסנית (Stack) נפרדת לניהול שגרות.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">גישות למימוש תהליכונים:</strong>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li>
+                            <li class="list-bullet list-bullet-red">
                                 <strong class="text-indigo-700">במרחב המשתמש (User-Space Threads):</strong> הניהול מתבצע על ידי ספריית תהליכונים ללא מעורבות של מערכת ההפעלה, מה שהופך את המעברים למהירים מאוד. החיסרון הבולט: אם תהליכון אחד נחסם (למשל בהמתנה לדיסק), כל התהליך נחסם כי מערכת ההפעלה אינה מודעת לקיום שאר התהליכונים.
                             </li>
-                            <li>
+                            <li class="list-bullet list-bullet-red">
                                 <strong class="text-indigo-700">במרחב הליבה (Kernel-Space Threads):</strong> מערכת ההפעלה מנהלת את התהליכונים בעצמה. במקרה זה חסימת תהליכון אחד אינה חוסמת את האחרים, אך פעולות הניהול יקרות יותר מבחינת ביצועים מכיוון שהן דורשות קריאות מערכת ומעבר למצב מיוחס.
                             </li>
                         </ul>
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 2.3 -->
 
-        <!-- Section 2.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">2.3 תקשורת בין תהליכים (IPC) וסנכרון</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-2-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-red">2.3 תקשורת בין תהליכים (IPC) וסנכרון</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-6 text-slate-700">
                     <p>
                         <strong class="text-slate-900">תנאי מרוץ (Race Condition):</strong> מצב שבו מספר תהליכים ניגשים לזיכרון משותף בו-זמנית, והתוצאה הסופית תלויה בסדר ההרצה המקרי של הפקודות.<br>
@@ -315,20 +764,21 @@
                         </ul>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 2.4 -->
 
-        <!-- Section 2.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">2.4 בעיות סנכרון קלאסיות</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-2-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-red">2.4 בעיות סנכרון קלאסיות</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">הפילוסופים הסועדים (Dining Philosophers):</strong> חמישה פילוסופים זקוקים לשני מזלגות (ימין ושמאל) כדי לאכול. הבעיה מדגימה את הסכנה להיווצרות קיפאון (Deadlock - כשכולם מרימים את המזלג הימני יחד) או הרעבה בתרחישים של חלוקת משאבים מרובים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-red">
                         <strong class="text-slate-900">קוראים וכותבים (Readers and Writers):</strong> מידול של מסד נתונים שבו מאפשרים לקוראים מרובים לגשת למידע במקביל לטובת יעילות, אך כותב חייב לקבל גישה בלעדית ומוחלטת למשאב.
                     </li>
                 </ul>
@@ -351,15 +801,16 @@
                         <div>// Consumer: Down(full) -> Down(mutex) -> [Remove] -> Up(mutex) -> Up(empty)</div>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 2.5 -->
 
-        <!-- Section 2.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">2.5 תזמון מעבד (CPU Scheduling)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-2-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-red">2.5 תזמון מעבד (CPU Scheduling)</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700 font-medium">תפקיד מערכת ההפעלה להחליט איזה תהליך מתוך הממתינים בתור ה-Ready יקבל כעת את המעבד.</p>
                 
                 <div class="space-y-6">
@@ -380,63 +831,68 @@
                         </ul>
                     </div>
                 </div>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 3 ================= -->
+            
+<!-- ================= פרק 3 ================= -->
         
         <!-- Chapter 3 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 3: ניהול זיכרון</h2>
-        </div>
 
-        <!-- Section 3.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">3.1 ניהול זיכרון בסיסי והחלפה (Swapping)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <!-- ================= פרק 3 ================= -->
+        <div class="border-b-4 border-blue-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-blue-800 font-heading">פרק 3: ניהול זיכרון</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 3 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 3.1 -->
+
+        <section id="sec-3-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-blue">3.1 ניהול זיכרון בסיסי והחלפה (Swapping)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">מרחב כתובות לוגי (Address Space):</strong> הפשטה המנתקת את התוכנית מהכתובות הפיזיות בזיכרון. לכל תהליך יש מרחב כתובות עצמאי המתחיל ב-0, והחומרה (באמצעות אוגרי בסיס וגבול - Base and Limit Registers) מתרגמת את הכתובות בזמן ריצה ומגנה על תהליכים מפני דריסת מידע הדדית.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">החלפה (Swapping):</strong> מערכת שבה תהליכים מועברים בשלמותם מהזיכרון הראשי (RAM) לדיסק הקשיח (וחזרה) לפי הצורך.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">פרגמנטציה חיצונית (External Fragmentation):</strong> כתוצאה מכניסה ויציאה של תהליכים בגדלים שונים, הזיכרון מתמלא ב"חורים" קטנים של מקום פנוי שאינם רציפים. פתרון אפשרי הוא דחיסה (Compaction) — הזזת כל התהליכים בזיכרון כלפי מעלה כדי ליצור גוש פנוי אחד גדול (פעולה יקרה מאוד מבחינת זמן מעבד).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900 block mb-2">אלגוריתמי הקצאה רציפה (Placement Algorithms):</strong>
                         <p class="mb-2">ניהול השטחים הפנויים מתבצע באמצעות מפות סיביות (Bitmaps) או רשימות מקושרות (Linked Lists):</p>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">First-Fit:</strong> סורק את רשימת החורים מהתחלה ומקצה את החור הראשון שגדול מספיק. מהיר, אך נוטה להעמיס פרגמנטציה בתחילת הזיכרון.</li>
-                            <li><strong class="text-indigo-700">Next-Fit:</strong> דומה ל-First-Fit, אך מתחיל את הסריקה מהנקודה שבה נעצרה ההקצאה הקודמת.</li>
-                            <li><strong class="text-indigo-700">Best-Fit:</strong> סורק את כל הרשימה ובוחר את החור הקרוב ביותר בגודלו לדרישת התהליך. האלגוריתם איטי ויוצר חורים שיוריים זעירים שאינם ניתנים לשימוש.</li>
-                            <li><strong class="text-indigo-700">Worst-Fit:</strong> בוחר תמיד את החור הגדול ביותר במערכת, מתוך מחשבה שהחלק שיישאר יהיה גדול מספיק לשימוש עתידי (בפועל אינו יעיל).</li>
+                            <li class="list-bullet list-bullet-blue"><strong class="text-indigo-700">First-Fit:</strong> סורק את רשימת החורים מהתחלה ומקצה את החור הראשון שגדול מספיק. מהיר, אך נוטה להעמיס פרגמנטציה בתחילת הזיכרון.</li>
+                            <li class="list-bullet list-bullet-blue"><strong class="text-indigo-700">Next-Fit:</strong> דומה ל-First-Fit, אך מתחיל את הסריקה מהנקודה שבה נעצרה ההקצאה הקודמת.</li>
+                            <li class="list-bullet list-bullet-blue"><strong class="text-indigo-700">Best-Fit:</strong> סורק את כל הרשימה ובוחר את החור הקרוב ביותר בגודלו לדרישת התהליך. האלגוריתם איטי ויוצר חורים שיוריים זעירים שאינם ניתנים לשימוש.</li>
+                            <li class="list-bullet list-bullet-blue"><strong class="text-indigo-700">Worst-Fit:</strong> בוחר תמיד את החור הגדול ביותר במערכת, מתוך מחשבה שהחלק שיישאר יהיה גדול מספיק לשימוש עתידי (בפועל אינו יעיל).</li>
                         </ul>
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 3.2 -->
 
-        <!-- Section 3.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">3.2 זיכרון וירטואלי ודפדוף (Paging)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-3-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-blue">3.2 זיכרון וירטואלי ודפדוף (Paging)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">הקונספט:</strong> מאפשר להריץ תוכניות שמרחב הכתובות שלהן גדול מהזיכרון הפיזי הזמין, על ידי שמירת רק חלקים נחוצים מהתוכנית בזיכרון הראשי בכל רגע נתון.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">דפים (Pages) ומסגרות דף (Page Frames):</strong> מרחב הכתובות הווירטואלי מחולק ליחידות בגודל קבוע הנקראות דפים. הזיכרון הפיזי מחולק ליחידות באותו הגודל בדיוק הנקראות מסגרות דף.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">רכיב ה-MMU (Memory Management Unit):</strong> שבב חומרה המתרגם בזמן אמת כתובת וירטואלית לכתובת פיזית. הכתובת הווירטואלית מורכבת ממספר דף (Page) והיסט (Offset). ה-MMU משתמש במספר הדף כאינדקס בתוך טבלת הדפים (Page Table) כדי למצוא את מספר מסגרת הדף הפיזית המתאימה, ומצמיד אליה את ההיסט ללא שינוי.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">נפילת דף (Page Fault):</strong> בטבלת הדפים קיימת סיבית נוכחות/היעדר (Present/Absent Bit). אם תהליך ניגש לדף שאינו נמצא כרגע ב-RAM, הסיבית היא 0. ה-MMU מזהה זאת ויוצר פסיקה מיוחדת (Page Fault). מערכת ההפעלה תופסת את השליטה, טוענת את הדף החסר מהדיסק לתוך מסגרת פנויה ב-RAM, מעדכנת את הטבלה ומריצה מחדש את הפקודה שנכשלה.
                     </li>
                 </ul>
@@ -456,75 +912,78 @@
                         <li>מערכת ההפעלה לוכדת את הפסיקה, מקצה מסגרת דף פיזית חדשה ב-RAM, <strong>משכפלת אליה רק את הדף הספציפי שבו בוצע הניסיון לכתוב</strong>, ומעדכנת את טבלת הדפים של התהליך הכותב להרשאות קריאה/כתיבה רגילות.</li>
                     </ol>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 3.3 -->
 
-        <!-- Section 3.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">3.3 מבני טבלאות דפים ומנגנוני האצה</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-3-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-blue">3.3 מבני טבלאות דפים ומנגנוני האצה</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">טבלת דפים רב-רמתית (Multi-level Page Table):</strong> במרחבי כתובות גדולים (למשל 32 או 64 סיביות), טבלת דפים ליניארית תתפוס נפח עצום בזיכרון. הפתרון הוא חלוקת טבלת הדפים להיררכיה (למשל, טבלה חיצונית המצביעה על טבלאות פנימיות). בדרך זו, רק טבלאות הדפים של אזורים בזיכרון שנמצאים בשימוש בפועל נשמרות ב-RAM, מה שחוסך מקום רב במרחבי כתובות דלילים (Sparse).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">טבלת דפים הפוכה (Inverted Page Table):</strong> במקום לנהל טבלה עבור כל תהליך, מנהלים טבלה מרכזית אחת עבור המערכת כולה, שבה יש רשומה אחת לכל מסגרת דף פיזית ב-RAM. החיסכון במקום הוא עצום, אך החיפוש הופך למורכב יותר ודורש שימוש בטבלת גיבוב (Hash Table) כדי לשמור על מהירות התרגום.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">מטמון תרגום (TLB - Translation Lookaside Buffer):</strong> מכיוון שגישה לטבלת הדפים דורשת גישת זיכרון נוספת ומאטה את המערכת, ה-MMU מצויד ברכיב חומרה אסוציאטיבי מהיר (TLB) השומר את תרגומי הכתובות האחרונים שבוצעו. חל אינטגרציה מלאה: קודם כל מחפשים ב-TLB (במקרה של TLB Hit התרגום מיידי), ורק אם המידע לא נמצא (TLB Miss) ניגשים לטבלת הדפים בזיכרון ומעדכנים את ה-TLB.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 3.4 -->
 
-        <!-- Section 3.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">3.4 אלגוריתמים להחלפת דפים (Page Replacement Algorithms)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-3-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-blue">3.4 אלגוריתמים להחלפת דפים (Page Replacement Algorithms)</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700 font-medium">כאשר מתרחשת נפילת דף ואין מסגרת פיזית פנויה ב-RAM, מערכת ההפעלה חייבת לבחור דף קיים לפנוי (ואם הוא שונה, לכתוב אותו קודם לדיסק באמצעות בדיקת סיבית המשתנה - Modified/Dirty Bit).</p>
                 
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">האלגוריתם האופטימלי (Optimal):</strong> מפנה את הדף שלא ייעשה בו שימוש במשך הזמן הארוך ביותר בעתיד. אלגוריתם זה אינו ניתן למימוש מעשי מכיוון שמערכת ההפעלה אינה יכולה לנבא את העתיד, והוא משמש אך ורק ככלי השוואה תיאורטי (Lower Bound).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">NRU (Not Recently Used):</strong> משתמש בשתי סיביות חומרה: R (הייתה גישה/קריאה) ו-M (השתנה/נכתב). השעון מאפס את סיביות R באופן מחזורי. המערכת מחלקת את הדפים ל-4 מחלקות לפי ערכי הסיביות ומפנה באקראי דף מהמחלקה הנמוכה ביותר שאינה ריקה (עדיפות לפינוי דפים שלא נקראו ושלא השתנו).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">FIFO (First-In, First-Out):</strong> מנהל את הדפים ברשימה לפי סדר כניסתם ומפנה את הדף הוותיק ביותר. אלגוריתם זה עלול לפנות דפים חיוניים שנמצאים בשימוש תדיר, וסובל מ<strong>אנומליית בליידי (Belady's Anomaly)</strong> — מצב שבו הגדלת מספר מסגרות הזיכרון הפיזי גורמת דווקא לעלייה במספר נפילות הדף.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">הזדקנות שנייה (Second-Chance):</strong> שיפור של FIFO. בודקים את סיבית R של הדף הוותיק ביותר: אם R=0 הוא מפונה; אם R=1, מאפסים את הסיבית ל-0 והדף מועבר לסוף התור (כאילו נכנס זה עתה).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">אלגוריתם השעון (Clock):</strong> מימוש יעיל יותר של "הזדמנות שנייה" באמצעות מבנה נתונים מעגלי ומצביע (מחוג), ללא צורך בהזזת דפים פיזית ברשימה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">LRU (Least Recently Used):</strong> מפנה את הדף שלא ניגשו אליו במשך הזמן הארוך ביותר. האלגוריתם מצוין אך דורש תמיכת חומרה יקרה (כמו חותם זמן או מחסנית חומרה).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">אלגוריתם הזדקנות (Aging):</strong> קירוב תוכנתי יעיל של LRU. לכל דף מוקצה משתנה תוכנה בן n סיביות. בכל פעימת שעון, המערכת מזיזה את המשתנה ימינה (Shift Right) ומציבה את סיבית ה-R בסיבית השמאלית ביותר (MSB). הדף בעל הערך המספרי הנמוך ביותר הוא זה שלא ניגשו אליו הכי הרבה זמן, והוא נבחר לפינוי.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">קבוצת עבודה (Working Set):</strong> מבוסס על עקרון המקומיות (Locality of Reference). מוגדרת קבוצת הדפים שהתהליך ניגש אליהם ב-&Delta; יחידות הזמן האחרונות. האלגוריתם מונע נפילות דף מרובות על ידי הבטחה שכל קבוצת העבודה של התהליך שוהה בזיכרון לפני הרצתו.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">WSClock:</strong> שילוב של אלגוריתם השעון עם עקרון קבוצת העבודה, המציע יעילות גבוהה ומקובל מאוד במערכות מודרניות.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 3.5 -->
 
-        <!-- Section 3.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">3.5 סוגיות עיצוב במערכות דפדוף</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-3-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-blue">3.5 סוגיות עיצוב במערכות דפדוף</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-4 text-slate-700">
                     <div>
                         <strong class="text-slate-900 block mb-2">מדיניות הקצאה מקומית מול גלובלית (Local vs. Global Allocation):</strong>
@@ -537,53 +996,58 @@
                         <strong class="text-slate-900">פרפור זיכרון (Thrashing):</strong> מצב קריטי שבו הזיכרון הפיזי הכולל קטן מצירוף קבוצות העבודה של כל התהליכים הרצים. כתוצאה מכך, המערכת מבלה כמעט את כל זמנה בטיפול בנפילות דף ובהחלפת מידע מול הדיסק, והניצולת של המעבד (CPU Utilization) צונחת לאפס. הפתרון הוא השהיית תהליכים (Suspending) והעברתם לדיסק כדי לפנות מסגרות לשאר.
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 3.6 -->
 
-        <!-- Section 3.6 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">3.6 סגמנטציה (Segmentation)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-3-6" class="mb-12 scroll-mt-6">
+            <h3 class="title-blue">3.6 סגמנטציה (Segmentation)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">ההבדל הלוגי:</strong> פייג'ינג הוא מנגנון חד-ממדי וליניארי השקוף למתכנת, שנועד לאפשר מרחב זיכרון גדול ורציף. סגמנטציה היא מנגנון דו-ממדי המודע למבנה הלוגי של התוכנית.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-slate-900">מבנה:</strong> הזיכרון מחולק למקטעים עצמאיים (Segments) בגדלים משתנים (כגון סגמנט קוד, סגמנט מחסנית, סגמנט נתונים, ספריות משותפות). כתובת מורכבת מ-(Segment Number, Offset). כל סגמנט יכול לגדול או לקטון באופן עצמאי מבלי להשפיע על האחרים, מה שמקל על שיתוף קוד והגנה ברמת ההרשאות.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-blue">
                         <strong class="text-indigo-700">שילוב במערכות מודרניות:</strong> ברבות מהן משלבים את השיטות (Paged Segmentation) — הזיכרון מחולק לוגית לסגמנטים, וכל סגמנט מחולק פנימית לדפים בגודל קבוע לצורך ניהול פיזי יעיל.
                     </li>
                 </ul>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 4 ================= -->
+            
+<!-- ================= פרק 4 ================= -->
         
         <!-- Chapter 4 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 4: מערכות קבצים</h2>
-        </div>
 
-        <!-- Section 4.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">4.1 קבצים וספריות (Files and Directories)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <!-- ================= פרק 4 ================= -->
+        <div class="border-b-4 border-teal-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-teal-800 font-heading">פרק 4: מערכות קבצים</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 4 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 4.1 -->
+
+        <section id="sec-4-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-teal">4.1 קבצים וספריות (Files and Directories)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900">הפשטת קבצים:</strong> מערכת הקבצים מספקת הפשטה לוגית לאחסון ארוך טווח על גבי התקנים פיזיים (כמו דיסקים או כונני SSD). הקובץ הוא מרחב לוגי רציף של מידע המבודד מהמבנה הפיזי של המדיה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900 block mb-2">מבנה קבצים:</strong>
                         <p class="mb-2">קיימים שלושה מודלים קלאסיים לארגון המידע בקובץ:</p>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">רצף בייטים (Byte Sequence):</strong> המודל המקובל במערכות מודרניות (POSIX/Linux/Windows). מערכת ההפעלה רואה בקובץ רצף בייטים בלתי מובנה, והפרשנות והניתוח שלו הן באחריות מלאה של תוכנית המשתמש.</li>
-                            <li><strong class="text-indigo-700">רצף רשומות (Record Sequence):</strong> הקובץ מחולק לרשומות בגודל קבוע עם מבנה פנימי, כאשר פעולות הקריאה והכתיבה מתבצעות ברמת הרשומה.</li>
-                            <li><strong class="text-indigo-700">עץ (Tree):</strong> קובץ הבנוי מרשומות בגדלים משתנים המאורגנות במבנה היררכי (עץ) לפי מפתח חיפוש, מה שמאפשר שליפה מהירה של רשומות ספציפיות.</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">רצף בייטים (Byte Sequence):</strong> המודל המקובל במערכות מודרניות (POSIX/Linux/Windows). מערכת ההפעלה רואה בקובץ רצף בייטים בלתי מובנה, והפרשנות והניתוח שלו הן באחריות מלאה של תוכנית המשתמש.</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">רצף רשומות (Record Sequence):</strong> הקובץ מחולק לרשומות בגודל קבוע עם מבנה פנימי, כאשר פעולות הקריאה והכתיבה מתבצעות ברמת הרשומה.</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">עץ (Tree):</strong> קובץ הבנוי מרשומות בגדלים משתנים המאורגנות במבנה היררכי (עץ) לפי מפתח חיפוש, מה שמאפשר שליפה מהירה של רשומות ספציפיות.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
@@ -593,15 +1057,16 @@
                         <strong class="text-slate-900">ספריות (Directories):</strong> מבנים לוגיים למיפוי בין שם הקובץ לנתוני הזיהוי הפיזיים שלו במערכת. במערכות מודרניות המבנה הוא היררכי (עץ ספריות) המאפשר הגדרת נתיב מוחלט (Absolute Path — מתוך ספריית השורש <code class="bg-slate-100 px-1 rounded text-sm text-pink-600">/</code>) ונתיב יחסי (Relative Path — מתוך ספריית העבודה הנוכחית של התהליך).
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 4.2 -->
 
-        <!-- Section 4.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">4.2 מימוש קבצים והקצאת בלוקים (File Implementation)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-4-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-teal">4.2 מימוש קבצים והקצאת בלוקים (File Implementation)</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700 font-medium">התקן האחסון הפיזי מחולק לבלוקים בגודל קבוע. ניהול הקצאת הבלוקים הללו לקבצים השונים מתבצע בכמה שיטות מרכזיות:</p>
                 
                 <div class="space-y-6 text-slate-700">
@@ -649,46 +1114,48 @@
                         </ul>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 4.3 -->
 
-        <!-- Section 4.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">4.3 מימוש ספריות וקבצים משותפים (Directory Implementation & Shared Files)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-4-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-teal">4.3 מימוש ספריות וקבצים משותפים (Directory Implementation & Shared Files)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900">מימוש ספריות:</strong> ברמת הליבה, ספרייה היא קובץ מיוחד המכיל רשימה של רשומות. תפקיד כל רשומה הוא למפות בין השם הטקסטואלי של הקובץ לבין הנתונים הדרושים לאיתורו פיזית בדיסק (במערכת FAT הרשומה תכיל את מספר הבלוק הראשון; במערכת UNIX הרשומה תכיל את מספר ה-I-node של הקובץ).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900">תמיכה בשמות ארוכים:</strong> שמות קבצים באורך משתנה ממומשים על ידי רשומות באורך משתנה בתוך קובץ הספרייה, או על ידי שמירת שמות הקבצים בערימה (Heap) פנימית נפרדת והצבת מצביע אליה ברשומת הספרייה הקבועה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900 block mb-2">קבצים משותפים (Shared Files / Links):</strong>
                         <p class="mb-2">קישור המאפשר לקובץ פיזי יחיד להופיע תחת שמות שונים או בספריות שונות במערכת:</p>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-3 text-slate-600">
-                            <li><strong class="text-indigo-700">קישור קשיח (Hard Link):</strong> רשומת הספרייה החדשה מצביעה ישירות לאותו מספר I-node של הקובץ המקורי. ה-I-node עצמו מנהל מונה קישורים (Link Count) הפנימי לו. כאשר משתמש מוחק קובץ, המערכת רק גורעת 1 ממונה הקישורים ומסירה את הרשומה מהספרייה הנוכחית; הקובץ והמידע שלו יימחקו פיזית מהדיסק רק כאשר מונה הקישורים ב-I-node יגיע ל-0.</li>
-                            <li><strong class="text-indigo-700">קישור סימבולי (Symbolic Link / Soft Link):</strong> נוצר קובץ חדש לחלוטין מסוג מיוחד (Symlink), שתוכנו הפיזי הוא פשוט מחרוזת טקסט המייצגת את נתיב הגישה (Path) לקובץ המקורי. בעת גישה לקישור, מערכת ההפעלה קוראת את הנתיב ומנתבת את הפעולה אליו. אם הקובץ המקורי נמחק או זז, הקישור הסימבולי הופך ל"יתום" (Dangling Link) וניסיון גישה אליו יחזיר שגיאה.</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">קישור קשיח (Hard Link):</strong> רשומת הספרייה החדשה מצביעה ישירות לאותו מספר I-node של הקובץ המקורי. ה-I-node עצמו מנהל מונה קישורים (Link Count) הפנימי לו. כאשר משתמש מוחק קובץ, המערכת רק גורעת 1 ממונה הקישורים ומסירה את הרשומה מהספרייה הנוכחית; הקובץ והמידע שלו יימחקו פיזית מהדיסק רק כאשר מונה הקישורים ב-I-node יגיע ל-0.</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">קישור סימבולי (Symbolic Link / Soft Link):</strong> נוצר קובץ חדש לחלוטין מסוג מיוחד (Symlink), שתוכנו הפיזי הוא פשוט מחרוזת טקסט המייצגת את נתיב הגישה (Path) לקובץ המקורי. בעת גישה לקישור, מערכת ההפעלה קוראת את הנתיב ומנתבת את הפעולה אליו. אם הקובץ המקורי נמחק או זז, הקישור הסימבולי הופך ל"יתום" (Dangling Link) וניסיון גישה אליו יחזיר שגיאה.</li>
                         </ul>
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 4.4 -->
 
-        <!-- Section 4.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">4.4 ניהול שטח הדיסק (Disk Space Management)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-4-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-teal">4.4 ניהול שטח הדיסק (Disk Space Management)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900 block mb-2">בחירת גודל הבלוק (Block Size):</strong> פשרה (Trade-off) הנדסית מרכזית:
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">בלוקים גדולים:</strong> משפרים את קצב העברת הנתונים (throughput) מכיוון שניתן לקרוא נפח מידע גדול יותר בכל פקודת קלט/פלט פיזית לדיסק, אך גורמים לבזבוז מקום רב עקב פרגמנטציה פנימית (קובץ קטן בגודל 10 בייט עדיין יתפוס בלוק שלם של 4KB או 64KB).</li>
-                            <li><strong class="text-indigo-700">בלוקים קטנים:</strong> מנצלים את שטח האחסון בדיסק בצורה אופטימלית עם מינימום בזבוז, אך פוגעים בביצועים ומגדילים את תקורת הניהול (טבלאות דפים/אינדקסים ארוכות יותר וריבוי פעולות קלט/פלט).</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">בלוקים גדולים:</strong> משפרים את קצב העברת הנתונים (throughput) מכיוון שניתן לקרוא נפח מידע גדול יותר בכל פקודת קלט/פלט פיזית לדיסק, אך גורמים לבזבוז מקום רב עקב פרגמנטציה פנימית (קובץ קטן בגודל 10 בייט עדיין יתפוס בלוק שלם של 4KB או 64KB).</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">בלוקים קטנים:</strong> מנצלים את שטח האחסון בדיסק בצורה אופטימלית עם מינימום בזבוז, אך פוגעים בביצועים ומגדילים את תקורת הניהול (טבלאות דפים/אינדקסים ארוכות יותר וריבוי פעולות קלט/פלט).</li>
                         </ul>
                     </li>
                     <li class="pl-2">
@@ -702,23 +1169,24 @@
                         <strong class="text-slate-900">מכסות דיסק (Disk Quotas):</strong> מנגנון הגבלה מנהלתי המונע ממשתמשים בודדים להשתלט על כל נפח האחסון בדיסק. מערכת ההפעלה מנהלת טבלת מכסות לכל משתמש המורכבת משני חסמים: <strong class="text-indigo-700">גבול רך (Soft Limit)</strong> — חריגה ממנו מותרת למשך תקופת חסד (Grace Period) ומייצרת אזהרות, ו<strong class="text-indigo-700">גבול קשיח (Hard Limit)</strong> — חסום מוחלט שלא ניתן לחרוג ממנו, וכל ניסיון כתיבה מעבר לו ייכשל מיידית.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 4.5 -->
 
-        <!-- Section 4.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">4.5 אמינות וביצועים של מערכות קבצים (Reliability and Performance)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-4-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-teal">4.5 אמינות וביצועים של מערכות קבצים (Reliability and Performance)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900">בדיקת עקביות (Consistency Check):</strong> קריסת מערכת (כגון ניתוק מתח) באמצע פעולת כתיבה עלולה להוביל למצב שבו המבנים הלוגיים בדיסק אינם מסונכרנים (למשל, בלוק הוקצה לקובץ אך לא הוסר מרשימת הבלוקים הפנויים). תוכניות שירות כגון <code class="bg-slate-100 px-1 rounded text-sm text-pink-600">fsck</code> או <code class="bg-slate-100 px-1 rounded text-sm text-pink-600">chkdsk</code> מבצעות סריקה מקיפה בעת עליית המערכת, בונות טבלאות אימות עצמאיות לקבצים ולבלוקים הפנויים, ומחפשות סתירות לצורך תיקון מבני (כגון מחיקת קבצים פגומים או שחרור בלוקים אבודים).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-teal">
                         <strong class="text-slate-900 block mb-2">מערכות קבצים מיומנות (Journaling File Systems):</strong> פתרון מודרני למניעת סריקות דיסק ארוכות לאחר קריסה.
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">מנגנון:</strong> לפני ביצוע כל שינוי במבנה הפיזי של מערכת הקבצים, מערכת ההפעלה כותבת את כוונת הפעולה (Transaction) לתוך קובץ יומן מיוחד (Journal) בדיסק באופן אטומי ומהיר. רק לאחר שהיומן נכתב בהצלחה, המערכת מבצעת את השינויים בפועל במבני הנתונים הראשיים של הדיסק. במקרה של קריסה, המערכת אינה סורקת את כל הדיסק; היא פשוט קוראת את היומן (פעולה של שניות בודדות) ומשלימה (Redo) או מבטלת (Undo) את הפעולות שלא הסתיימו בהצלחה.</li>
+                            <li class="list-bullet list-bullet-teal"><strong class="text-indigo-700">מנגנון:</strong> לפני ביצוע כל שינוי במבנה הפיזי של מערכת הקבצים, מערכת ההפעלה כותבת את כוונת הפעולה (Transaction) לתוך קובץ יומן מיוחד (Journal) בדיסק באופן אטומי ומהיר. רק לאחר שהיומן נכתב בהצלחה, המערכת מבצעת את השינויים בפועל במבני הנתונים הראשיים של הדיסק. במקרה של קריסה, המערכת אינה סורקת את כל הדיסק; היא פשוט קוראת את היומן (פעולה של שניות בודדות) ומשלימה (Redo) או מבטלת (Undo) את הפעולות שלא הסתיימו בהצלחה.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
@@ -730,29 +1198,33 @@
                         </ul>
                     </li>
                 </ul>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 5 ================= -->
+            
+<!-- ================= פרק 5 ================= -->
         
         <!-- Chapter 5 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 5: קלט/פלט (I/O)</h2>
-        </div>
 
-        <!-- Section 5.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">5.1 עקרונות חומרת קלט/פלט</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <!-- ================= פרק 5 ================= -->
+        <div class="border-b-4 border-purple-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-purple-800 font-heading">פרק 5: קלט/פלט (I/O)</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 5 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 5.1 -->
+
+        <section id="sec-5-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-purple">5.1 עקרונות חומרת קלט/פלט</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-slate-900 block mb-2">סוגי התקנים:</strong> המערכת מחלקת את רוב ההתקנים לשתי משפחות עיקריות:
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">התקני בלוקים (Block Devices):</strong> מידע נאגר ומועבר בבלוקים בגודל קבוע (כמו דיסקים). התכונה הקריטית היא התמיכה בגישה אקראית (Random Access) המאפשרת קריאת כל בלוק באופן בלתי תלוי.</li>
-                            <li><strong class="text-indigo-700">התקני תווים (Character Devices):</strong> מעבירים זרם רציף של תווים (כמו מקלדת או כרטיס רשת) ללא כתובות או אפשרות לדלג (No Seek).</li>
-                            <li><strong class="text-indigo-700">חריג:</strong> שעונים וקוצבי זמן, אשר אינם שייכים לאף קבוצה אלא תפקידם לייצר פסיקות חומרה מתוזמנות.</li>
+                            <li class="list-bullet list-bullet-purple"><strong class="text-indigo-700">התקני בלוקים (Block Devices):</strong> מידע נאגר ומועבר בבלוקים בגודל קבוע (כמו דיסקים). התכונה הקריטית היא התמיכה בגישה אקראית (Random Access) המאפשרת קריאת כל בלוק באופן בלתי תלוי.</li>
+                            <li class="list-bullet list-bullet-purple"><strong class="text-indigo-700">התקני תווים (Character Devices):</strong> מעבירים זרם רציף של תווים (כמו מקלדת או כרטיס רשת) ללא כתובות או אפשרות לדלג (No Seek).</li>
+                            <li class="list-bullet list-bullet-purple"><strong class="text-indigo-700">חריג:</strong> שעונים וקוצבי זמן, אשר אינם שייכים לאף קבוצה אלא תפקידם לייצר פסיקות חומרה מתוזמנות.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
@@ -768,38 +1240,40 @@
                         <strong class="text-slate-900">פסיקות לא-מדויקות (Imprecise Interrupts):</strong> במעבדים מודרניים הפועלים בארכיטקטורת Pipeline (הרצת מספר פקודות במקביל בשלבים שונים), הגעת פסיקה קוטעת את המעבד במצב שבו חלק מהפקודות הסתיימו וחלקן באמצע. מצב זה מטיל מעמסה כבדה על מערכת ההפעלה שנדרשת "לנקות" את המצב כדי לחזור אליו בבטחה.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 5.2 -->
 
-        <!-- Section 5.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">5.2 עקרונות תוכנת קלט/פלט</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-5-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-purple">5.2 עקרונות תוכנת קלט/פלט</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700">המטרה המרכזית של תוכנת הקלט/פלט היא יצירת <strong>הפשטה ואי-תלות בהתקן (Device Independence)</strong>, כך שהמתכנת לא יצטרך להכיר את החומרה ויוכל להשתמש בפקודות קריאה וכתיבה אחידות לכל סוגי ההתקנים.</p>
                 
                 <strong class="text-slate-900 block mb-2 border-b pb-1">התפתחות שיטות הקלט/פלט:</strong>
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700 mt-2">
-                    <li class="pl-2">
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-indigo-700">קלט/פלט מתוכנת (Programmed I/O):</strong> המעבד מנהל את התקשורת ישירות ונכנס ללולאת "המתנה פעילה" (Polling) עד שהחומרה מסיימת. היתרון הוא פשטות, אך החיסרון הקטלני הוא שיתוק מלא של המעבד וירידה דרסטית בניצולת המערכת.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-indigo-700">מונחה אירועים (Interrupt-driven I/O):</strong> במקום להמתין, המעבד חוסם את התהליך, עובר להריץ תוכנית אחרת, ומתעורר רק כשהחומרה שולחת פסיקה המודיעה על סיום הפעולה. שיטה זו טובה להתקנים איטיים (כמו מקלדת), אך מול התקנים מהירים (כמו דיסק) עלולה להיווצר "סופת פסיקות" שתבזבז את כל זמן המעבד על החלפות הקשר.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-indigo-700">באמצעות DMA:</strong> שילוב מנצח בו ה-DMA מטפל בכל הבלוק ושולח פסיקה אחת בלבד למעבד בסיום התהליך. חסרונו הקטן הוא תופעת ה"גנבת מחזורים" (Cycle Stealing) שבה ה-DMA תופס את ערוץ התקשורת לזיכרון ומעכב את המעבד לשבריר שנייה.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 5.3 -->
 
-        <!-- Section 5.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">5.3 מודל השכבות של תוכנת קלט/פלט</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-5-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-purple">5.3 מודל השכבות של תוכנת קלט/פלט</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700 font-medium">המערכת בנויה היררכית כדי לבודד את החומרה מהמשתמש:</p>
                 
                 <ol class="space-y-4 list-decimal list-outside ms-6 text-slate-700">
@@ -816,25 +1290,26 @@
                         <strong class="text-slate-900">מרחב המשתמש:</strong> ספריות עזר (כמו <code class="bg-slate-100 px-1 rounded text-sm text-pink-600">printf</code> המכינה את הנתונים לפני פנייה לגרעין) ומנגנון ה-Spooling. Spooling פותר את בעיית הקיפאון (Deadlock) בהתקנים בלעדיים (כמו מדפסת) על ידי כך שתוכניות כותבות קבצים לספריית המתנה, ותהליך אחד בלבד (הדיימון) ניגש למדפסת בפועל ומדפיס אותם בטור.
                     </li>
                 </ol>
+            
             </div>
         </section>
+            
+<!-- Section 5.4 -->
 
-        <!-- Section 5.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">5.4 דיסקים מגנטיים (Magnetic Disks)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-5-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-purple">5.4 דיסקים מגנטיים (Magnetic Disks)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-slate-900">מבנה פיזי ולוגי:</strong> הדיסק בנוי מפלטות מסתובבות וראשי קריאה/כתיבה המחוברים כולם לזרוע מכנית אחת. המידע מסודר בטבעות קונצנטריות הנקראות מסלולים (Tracks), שנחתכים לסקטורים (Sectors). אוסף כל המסלולים ברדיוס זהה בכל הפלטות יחד נקרא גליל (Cylinder).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-slate-900 block mb-2">מגבלות זמני קריאה:</strong> כדי לקרוא סקטור, הדיסק מבצע שלוש פעולות:
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">זמן חיפוש (Seek Time):</strong> תנועת הזרוע הפיזית למסלול. זוהי הפעולה האיטית והקריטית ביותר (מילי-שניות).</li>
-                            <li><strong class="text-indigo-700">השהיית סיבוב (Rotational Latency):</strong> המתנה שהפלטה תסתובב עד שהסקטור יגיע מתחת לראש.</li>
-                            <li><strong class="text-indigo-700">זמן העברה (Transfer Time):</strong> משך שליחת הנתונים בפועל.</li>
+                            <li class="list-bullet list-bullet-purple"><strong class="text-indigo-700">זמן חיפוש (Seek Time):</strong> תנועת הזרוע הפיזית למסלול. זוהי הפעולה האיטית והקריטית ביותר (מילי-שניות).</li>
+                            <li class="list-bullet list-bullet-purple"><strong class="text-indigo-700">השהיית סיבוב (Rotational Latency):</strong> המתנה שהפלטה תסתובב עד שהסקטור יגיע מתחת לראש.</li>
+                            <li class="list-bullet list-bullet-purple"><strong class="text-indigo-700">זמן העברה (Transfer Time):</strong> משך שליחת הנתונים בפועל.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
@@ -856,11 +1331,11 @@
                         <span>⚡</span> כונני SSD מול דיסקים מגנטיים (HDD) ומערכות קבצים מתאימות
                     </h4>
                     <div class="grid md:grid-cols-2 gap-4 text-sm mb-3">
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="hand-drawn-box">
                             <span class="font-bold text-slate-800 block mb-1">דיסק מגנטי (HDD)</span>
                             בעל רכיבים מכניים נעזרים. ביצועי הגישה תלויים לחלוטין במיקום הפיזי של הזרוע. גישה אקראית דורשת זמן חיפוש (Seek Time) ארוך ויקר, ולכן נדרשים אלגוריתמי תזמון זרוע (כמו SCAN) והקצאת בלוקים רציפה ככל הניתן.
                         </div>
-                        <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                        <div class="hand-drawn-box">
                             <span class="font-bold text-indigo-950 block mb-1">כונן אלקטרוני (SSD)</span>
                             מבוסס על זיכרון הבזק (Flash Memory). <strong>אין רכיבים נעים ואין זמן חיפוש מכני</strong>. מהירות הגישה האקראית שקולה למהירות הגישה הסדרתית.
                         </div>
@@ -871,42 +1346,47 @@
                         מבחינת תוכנה, במערכות אלו עדיף להשתמש ב<strong>מערכות קבצים מבוססות יומן/רצף (Log-structured file systems)</strong>. מערכות אלו כותבות את כל העדכונים והשינויים ברצף ממושך במיקומים חדשים, במקום לדרוס שוב ושוב את אותם בלוקים פיזיים של מבני נתונים קבועים, ובכך מאריכות דרמטית את חיי כונן ה-SSD.
                     </p>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 5.5 -->
 
-        <!-- Section 5.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">5.5 שעונים וקוצבי זמן (Clocks & Timers)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-5-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-purple">5.5 שעונים וקוצבי זמן (Clocks & Timers)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-slate-900">אופן הפעולה:</strong> מתנד גביש קוורץ יוצר פעימות בתדר קבוע. בכל פעימה, אוגר ספירה לאחור מופחת באחד. כאשר האוגר מגיע לאפס, הוא מחולל פסיקת חומרה תקופתית (Clock Tick) שאותה קולטת מערכת ההפעלה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-slate-900">תפקידי מערכת ההפעלה (ניהול זמן):</strong> קבלת פסיקת השעון משמשת להקטנת הקוונטום (פרוסת הזמן) של התהליך הרץ לשם ביצוע תזמון מונע (Preemptive Scheduling), להגנה על המערכת מפני לולאות אינסופיות של משתמשים, ולניהול טיימרים לוגיים של תוכנות.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-purple">
                         <strong class="text-slate-900">כלב שמירה (Watchdog Timer):</strong> מנגנון חומרתי להגנה על מערכות מפני קפיאה מוחלטת של הליבה. מערכת ההפעלה חייבת "להאכיל את כלב השמירה" (לאפס את הטיימר) מעת לעת. אם הליבה קורסת ולא מבצעת את האיפוס, השעון החיצוני יגיע לאפס ויבצע למעבד פקודת אתחול פיזי (Hard Reset) ללא פשרות.
                     </li>
                 </ul>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 6 ================= -->
+            
+<!-- ================= פרק 6 ================= -->
         
         <!-- Chapter 6 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 6: קיפאון (Deadlock)</h2>
-        </div>
 
-        <!-- Section 6.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">6.1 משאבים (Resources)</h3>
-            </div>
-            <div class="p-6">
+        <!-- ================= פרק 6 ================= -->
+        <div class="border-b-4 border-green-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-green-800 font-heading">פרק 6: קיפאון (Deadlock)</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 6 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 6.1 -->
+
+        <section id="sec-6-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-green">6.1 משאבים (Resources)</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-6 text-slate-700">
                     <div>
                         <strong class="text-slate-900 block mb-2 border-b pb-1">סוגי משאבים לפי בלעדיות:</strong>
@@ -935,56 +1415,59 @@
                         <p class="mt-2 text-sm text-slate-700">סכנת הקיפאון נוצרת בשלב <strong>הבקשה</strong>, כאשר תהליכים נחסמים בהמתנה למשאבים תפוסים.</p>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 6.2 -->
 
-        <!-- Section 6.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">6.2 הגדרת קיפאון ומודלים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-6-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-green">6.2 הגדרת קיפאון ומודלים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-slate-900">הגדרה:</strong> קבוצת תהליכים חסומה לנצח, משום שכל תהליך בקבוצה ממתין לשחרור משאב שמוחזק על ידי תהליך אחר באותה קבוצה סגורה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-slate-900 block mb-2">ארבעת תנאי קופמן (Coffman Conditions):</strong>
                         <p class="mb-2">כדי שייווצר קיפאון, חייבים להתקיים 4 תנאים בו-זמנית:</p>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">מניעה הדדית:</strong> המשאבים נמצאים בשימוש בלעדי.</li>
-                            <li><strong class="text-indigo-700">החזק והמתן:</strong> תהליך מחזיק במשאב אחד לפחות, ומבקש משאב אחר המוחזק על ידי תהליך שכן.</li>
-                            <li><strong class="text-indigo-700">אי-חילוץ:</strong> מערכת ההפעלה אינה יכולה להפקיע משאב בכוח מהתהליך המחזיק בו.</li>
-                            <li><strong class="text-indigo-700">המתנה מעגלית:</strong> קיימת שרשרת מעגלית של תהליכים הממתינים זה לזה.</li>
+                            <li class="list-bullet list-bullet-green"><strong class="text-indigo-700">מניעה הדדית:</strong> המשאבים נמצאים בשימוש בלעדי.</li>
+                            <li class="list-bullet list-bullet-green"><strong class="text-indigo-700">החזק והמתן:</strong> תהליך מחזיק במשאב אחד לפחות, ומבקש משאב אחר המוחזק על ידי תהליך שכן.</li>
+                            <li class="list-bullet list-bullet-green"><strong class="text-indigo-700">אי-חילוץ:</strong> מערכת ההפעלה אינה יכולה להפקיע משאב בכוח מהתהליך המחזיק בו.</li>
+                            <li class="list-bullet list-bullet-green"><strong class="text-indigo-700">המתנה מעגלית:</strong> קיימת שרשרת מעגלית של תהליכים הממתינים זה לזה.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
                         <strong class="text-slate-900">גרף הקצאת משאבים (RAG - Resource Allocation Graph):</strong> מודל ויזואלי שבו תהליכים הם עיגולים ומשאבים הם ריבועים. חץ ממשאב לתהליך מעיד על הקצאה, וחץ מתהליך למשאב מעיד על בקשה והמתנה. במערכת שבה מכל משאב יש רק עותק אחד, קיומו של מעגל סגור בגרף מהווה הוכחה מוחלטת לקיפאון.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 6.3 -->
 
-        <!-- Section 6.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">6.3 אסטרטגיות התמודדות ואלגוריתם בת היענה</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-6-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-green">6.3 אסטרטגיות התמודדות ואלגוריתם בת היענה</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700">קיימות ארבע גישות לטיפול: <strong>התעלמות</strong>, <strong>גילוי והתאוששות</strong>, <strong>התחמקות דינמית</strong>, ו<strong>מניעה מבנית</strong>.</p>
-                <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg">
+                <div class="hand-drawn-box">
                     <strong class="text-indigo-700 block mb-2">אלגוריתם בת היענה (The Ostrich Algorithm):</strong>
                     <p class="text-slate-700">הגישה הנפוצה ביותר במחשבים אישיים (Windows/Linux). המערכת מתעלמת מסכנת הקיפאון. זוהי פשרה הנדסית: ההסתברות לקיפאון נמוכה, והמחיר (פגיעה יומיומית בביצועים לצורך בדיקות כבדות) יקר מדי. גישה זו אסורה לחלוטין במערכות זמן-אמת קריטיות (Real-Time).</p>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 6.4 -->
 
-        <!-- Section 6.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">6.4 גילוי והתאוששות (Detection and Recovery)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-6-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-green">6.4 גילוי והתאוששות (Detection and Recovery)</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700">המערכת מחלקת משאבים ללא בדיקה, אך מבצעת סריקות יזומות כדי לאתר תקיעות.</p>
                 
                 <div class="space-y-6 text-slate-700">
@@ -1002,185 +1485,197 @@
                         </ul>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 6.5 -->
 
-        <!-- Section 6.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">6.5 התחמקות מקיפאון (Avoidance)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-6-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-green">6.5 התחמקות מקיפאון (Avoidance)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-slate-900">דרישת חובה לגישה זו:</strong> כל תהליך חייב להצהיר מראש על המספר המקסימלי של משאבים שידרוש בחייו.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-slate-900 block mb-2">מצב בטוח לעומת לא בטוח:</strong>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700">מצב בטוח (Safe State):</strong> קיים סדר הרצה ודאי שיאפשר לכל התהליכים לסיים, גם אם כולם ידרשו את המקסימום שלהם ברגע זה.</li>
-                            <li><strong class="text-indigo-700">מצב לא בטוח (Unsafe State):</strong> אין ערובה שכזו. זה אינו קיפאון בהווה, אלא כניסה לאזור שממנו הקיפאון עלול להיות בלתי נמנע.</li>
+                            <li class="list-bullet list-bullet-green"><strong class="text-indigo-700">מצב בטוח (Safe State):</strong> קיים סדר הרצה ודאי שיאפשר לכל התהליכים לסיים, גם אם כולם ידרשו את המקסימום שלהם ברגע זה.</li>
+                            <li class="list-bullet list-bullet-green"><strong class="text-indigo-700">מצב לא בטוח (Unsafe State):</strong> אין ערובה שכזו. זה אינו קיפאון בהווה, אלא כניסה לאזור שממנו הקיפאון עלול להיות בלתי נמנע.</li>
                         </ul>
                     </li>
                     <li class="pl-2">
                         <strong class="text-slate-900">אלגוריתם הבנקאי (Banker's Algorithm):</strong> לפני אישור בקשה, המערכת מבצעת הדמיה (הקצאה וירטואלית). הבקשה תאושר רק אם המלאי הפנוי שיוותר במערכת יאפשר לפחות לתהליך אחד אחר להשלים את מלוא צרכיו (עד המקסימום) ולשחרר את משאביו בחזרה. חסרונו המרכזי של האלגוריתם הוא חוסר הפרקטיות שבו, שכן במציאות, תהליכים כמעט ולא יכולים לנבא במדויק את המקסימום שידרשו.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 6.6 -->
 
-        <!-- Section 6.6 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">6.6 מניעת קיפאון (Prevention)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-6-6" class="mb-12 scroll-mt-6">
+            <h3 class="title-green">6.6 מניעת קיפאון (Prevention)</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700 font-medium">תכנון המערכת כך שלפחות אחד מתנאי קופמן לא יוכל להתקיים לעולם:</p>
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-indigo-700">תקיפת "מניעה הדדית":</strong> שימוש ב-Spooling (כמו יצירת דיימון מדפסת כדי שלקוחות לא ייגשו אליה ישירות).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-indigo-700">תקיפת "החזק והמתן":</strong> חיוב התהליך לבקש את כל המשאבים מראש (הכל או כלום) או שחרור משאבים קיימים בטרם בקשת חדשים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-indigo-700">תקיפת "אי-חילוץ":</strong> וירטואליזציה (כמו בזיכרון RAM), לא רלוונטי לחומרת ציוד הקפי.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-indigo-700">תקיפת "המתנה מעגלית":</strong> הגישה החזקה ביותר. מספור קשיח של כל המשאבים, וחיוב תהליכים לבקש משאבים אך ורק בסדר מספרי עולה. כך בלתי אפשרי לסגור מעגל מתמטי בגרף.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 6.7 -->
 
-        <!-- Section 6.7 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">6.7 נושאים נוספים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-6-7" class="mb-12 scroll-mt-6">
+            <h3 class="title-green">6.7 נושאים נוספים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-slate-900">נעילה דו-שלבית (Two-Phase Locking):</strong> במסדי נתונים, מנסים לנעול את כל הרשומות הנדרשות. אם נתקלים בחסימה - משחררים הכול מיד ומנסים מחדש מאוחר יותר.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-slate-900">קיפאון חי (Livelock):</strong> תהליכים פעילים ורצים (משתמשים ב-CPU) אך משנים מצב באופן סימטרי בניסיון להתחמק מקיפאון, ובכך חוסמים זה את זה לנצח ללא התקדמות (כמו שני אנשים מנומסים מדי במסדרון). הפתרון הוא הוספת השהיה אקראית לשבירת הסימטריה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-green">
                         <strong class="text-slate-900">הרעבה (Starvation):</strong> בשונה מקיפאון שבו כולם תקועים, בהרעבה המערכת פועלת כהלכה, אך תהליך מסוים מופלה לרעה על ידי המתזמן ואינו מקבל משאב לעולם. מנגנון התיישנות (Aging), המעלה את עדיפות התהליך הממתין עם הזמן, פותר בעיה זו.
                     </li>
                 </ul>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 7 ================= -->
+            
+<!-- ================= פרק 7 ================= -->
         
         <!-- Chapter 7 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 7: וירטואליזציה וענן</h2>
-        </div>
 
-        <!-- Section 7.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.1 מוטיבציה ושימושים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <!-- ================= פרק 7 ================= -->
+        <div class="border-b-4 border-pink-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-pink-800 font-heading">פרק 7: וירטואליזציה וענן</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 7 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 7.1 -->
+
+        <section id="sec-7-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.1 מוטיבציה ושימושים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">רעיון הבסיס:</strong> שכבת תוכנה המפרידה בין החומרה הפיזית למערכות ההפעלה, ומאפשרת למספר "מכונות וירטואליות" (<span class="font-mono text-sm" dir="ltr">VMs</span>) לרוץ במקביל על שרת יחיד.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">היתרונות המרכזיים:</strong> איחוד שרתים (הפחתת עלויות חומרה על ידי ניצול יעיל), ניוד מערכות (העתקת VM בשלמותו לשרת אחר), תוכנות התקן וירטואליות (קופסה שחורה מוכנה לשימוש), מידור (קריסת מכונה אחת אינה משפיעה על השאר) ומחשוב ענן.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">מיקום שכבת הווירטואליזציה:</strong> יכולה להתבצע ברמת האמולציה המלאה (חיקוי איטי), ברמת מערכת ההפעלה (קונטיינרים), או ברמת ה-<span class="font-mono text-sm" dir="ltr">HAL</span> (ה-Hypervisor הקלאסי המנצל את מעבד הארכיטקטורה לביצועים גבוהים).
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 7.2 -->
 
-        <!-- Section 7.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.2 דרישות חומרה ומודל Popek-Goldberg</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-7-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.2 דרישות חומרה ומודל Popek-Goldberg</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700 font-medium">כדי ש-Hypervisor ייחשב לתקין, עליו לעמוד ב-3 דרישות:</p>
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-indigo-700">נאמנות למקור (Fidelity):</strong> תוכנה חייבת להחזיר תוצאות זהות לחלוטין לריצה על חומרה אמיתית.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-indigo-700">ניהול משאבים (Resource Control):</strong> ה-Hypervisor שולט בלעדית בחומרה, ומערכת ההפעלה האורחת אינה יכולה לעקוף אותו.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-indigo-700">יעילות (Efficiency):</strong> רוב הפקודות חייבות להתבצע ישירות על המעבד הפיזי ללא התערבות תוכנתית.
                     </li>
                     <li class="pl-2 border-t pt-4">
                         <strong class="text-slate-900">אתגר מעבדי x86 הישנים:</strong> גישת ה-Trap-and-Emulate דורשת שכל הוראה רגישה (שמשנה מצב חומרה) תהיה גם הוראה מיוחסת (המייצרת TRAP במצב משתמש). במעבדי <span class="font-mono text-sm" dir="ltr">x86</span> היו פקודות רגישות (כמו <code class="bg-slate-100 px-1 rounded text-sm text-pink-600">POPF</code> או קריאת אוגר CS) שנכשלו בשקט או החזירו מידע שגוי במקום לייצר TRAP, מה ששבר את האשליה הווירטואלית.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 7.3 -->
 
-        <!-- Section 7.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.3 טיפוסי Hypervisor</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-7-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.3 טיפוסי Hypervisor</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">טיפוס 1 (Bare-Metal):</strong> מערכת ההפעלה עצמה היא ה-Hypervisor, המותקן ישירות על החומרה. מיועד לשרתים ולביצועים גבוהים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">טיפוס 2 (Hosted):</strong> ה-Hypervisor מותקן כתוכנה על גבי מערכת הפעלה מארחת רגילה (Host OS).
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 7.4 -->
 
-        <!-- Section 7.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.4 וירטואליזציה יעילה ופתרון האתגרים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-7-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.4 וירטואליזציה יעילה ופתרון האתגרים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900 block mb-1">תרגום בינארי דינמי:</strong> ה-Hypervisor סורק את קוד האורחת בזמן אמת ומחלק אותו ל"בלוקים בסיסיים". בלוקים רגילים זוכים לביצוע ישיר על המעבד (ליעילות), בעוד שבלוקים המכילים פקודות רגישות הבעייתיות ב-<span class="font-mono text-sm" dir="ltr">x86</span> "מתורגמים" ונכתבים מחדש לפקודות בטוחות הפונות ל-Hypervisor, ונשמרים במטמון לשימוש חוזר. אופטימיזציות כוללות שרשור קפיצות והתעלמות מקידוד תוכניות משתמש.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900 block mb-1">המהפכה החומרתית (Intel VT-x / AMD-V):</strong> יצרניות החומרה פתרו את פגם ה-<span class="font-mono text-sm" dir="ltr">x86</span> על ידי הוספת מצבי מעבד: Root Mode ל-Hypervisor ו-Non-Root Mode לאורח. כעת, כל הוראה רגישה שמבוצעת באורח מייצרת באופן אמין <strong>VM-Exit</strong> חומרתי. ה-Hypervisor תופס את השליטה, מטפל בבקשה, ומבצע <strong>VM-Entry</strong> להמשך.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900 block mb-1">פעולת Hypervisor מטיפוס 2:</strong> כיוון שהוא תהליך משתמש, הוא מסתייע במודול גרעין (Kernel Module) במערכת המארחת כדי לשנות אוגרים, לנהל פסיקות, או לגשת לחומרה בפועל ב-<span class="font-mono text-sm" dir="ltr">Ring 0</span>.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 7.5 -->
 
-        <!-- Section 7.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.5 פרא-וירטואליזציה (Paravirtualization)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">במקום להריץ את מערכת ההפעלה האורחת "כמות שהיא" ולייצר עומס הנדסי, קוד המקור שלה <strong>משונה</strong> כך שהיא מודעת להיותה וירטואלית.</li>
-                    <li class="pl-2">הפקודות הרגישות מוחלפות ב-<strong>Hypercalls</strong> (פניות API ישירות ל-Hypervisor).</li>
-                    <li class="pl-2">כתוצאה מכך ה-Hypervisor אינו צריך לנטר או לתרגם קוד, הופך לרזה ומהיר מאוד, ומתנהג כמו מיקרו-קרנל.</li>
+        <section id="sec-7-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.5 פרא-וירטואליזציה (Paravirtualization)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-pink">במקום להריץ את מערכת ההפעלה האורחת "כמות שהיא" ולייצר עומס הנדסי, קוד המקור שלה <strong>משונה</strong> כך שהיא מודעת להיותה וירטואלית.</li>
+                    <li class="pl-2 list-bullet list-bullet-pink">הפקודות הרגישות מוחלפות ב-<strong>Hypercalls</strong> (פניות API ישירות ל-Hypervisor).</li>
+                    <li class="pl-2 list-bullet list-bullet-pink">כתוצאה מכך ה-Hypervisor אינו צריך לנטר או לתרגם קוד, הופך לרזה ומהיר מאוד, ומתנהג כמו מיקרו-קרנל.</li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 7.6 -->
 
-        <!-- Section 7.6 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.6 וירטואליזציה של זיכרון</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-7-6" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.6 וירטואליזציה של זיכרון</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700 font-medium">ניהול הזיכרון דורש גישור על המיפוי הכפול: כתובת וירטואלית של האורח לכתובת פיזית של האורח, וממנה לכתובת הפיזית האמיתית בשרת המארח.</p>
                 <div class="space-y-6 text-slate-700">
                     <ul class="list-disc list-outside ms-6 space-y-3">
@@ -1197,53 +1692,56 @@
                         </ul>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 7.7 -->
 
-        <!-- Section 7.7 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.7 וירטואליזציה של קלט/פלט (I/O)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-7-7" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.7 וירטואליזציה של קלט/פלט (I/O)</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700">אמולציה תוכנתית של חומרה מייצרת צוואר בקבוק במערכות עתירות נתונים. <strong>פתרונות חומרה:</strong></p>
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">הקצאה ישירה (Device Passthrough):</strong> שימוש ב-I/O MMU המאפשר לשייך התקן פיזי (כמו כרטיס רשת) באופן בלעדי למכונה יחידה. הגישה ישירה וחומרתית, ללא תיווך ה-Hypervisor, ומספקת ביצועים מקסימליים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">SR-IOV:</strong> כדי לא לנעול כרטיס למכונה אחת, תקן זה גורם לכרטיס הפיזי "לפצל" את עצמו למספר פונקציות וירטואליות (VF) שכל אחת מוקצית למכונה אחרת, ובכך לאפשר שיתוף חומרתי עוקף VMM.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 7.8 -->
 
-        <!-- Section 7.8 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.8 מכונות וירטואליות מרובות מעבדים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-7-8" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.8 מכונות וירטואליות מרובות מעבדים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">תבניות (Flavors):</strong> הקצאת משאבים וליבות וירטואליות (vCPUs) מתוך הליבות הפיזיות מוגדרת מראש בתבניות.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">אתגר התזמון:</strong> מערכת אורחת משתמשת ב"מנעולי ספין" מתוך ציפייה שהליבות המקבילות רצות בו-זמנית. אם ה-Hypervisor יתזמן רק ליבה אחת, היא עלולה לבזבז זמן מעבד בהמתנה למנעול שמוחזק על ידי ליבה "רדומה".
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-pink">
                         <strong class="text-slate-900">תזמון כנופיה (Gang Scheduling):</strong> הפתרון הוא לחייב את ה-Hypervisor להריץ את כל ה-vCPUs של אותה מכונה באותו הזמן בדיוק על הליבות הפיזיות.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 7.9 -->
 
-        <!-- Section 7.9 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.9 מחשוב ענן</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-7-9" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.9 מחשוב ענן</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-6 text-slate-700">
                     <div>
                         <strong class="text-slate-900 block mb-2 border-b pb-1">מודלים של פריסה:</strong>
@@ -1263,15 +1761,16 @@
                         </ul>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 7.10 -->
 
-        <!-- Section 7.10 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">7.10 קונטיינרים (Containers)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-7-10" class="mb-12 scroll-mt-6">
+            <h3 class="title-pink">7.10 קונטיינרים (Containers)</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-4 text-slate-700">
                     <p><strong class="text-slate-900">וירטואליזציה ברמת מערכת ההפעלה:</strong> אין Hypervisor, אלא מערכת ההפעלה (Linux) מחלקת את המשאבים שלה תוך שימוש בקרנל אחד משותף לכלל הקונטיינרים.</p>
                     
@@ -1293,22 +1792,26 @@
                         <p class="text-slate-700">תלות בקרנל יחיד (אי אפשר להריץ Windows על Linux), בידוד חלש יותר ממכונות וירטואליות מבוססות חומרה, קריסת קרנל או פריצת אבטחה בסיסית תפיל ותחשוף את כל הקונטיינרים בשרת.</p>
                     </div>
                 </div>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 8 ================= -->
+            
+<!-- ================= פרק 8 ================= -->
         
         <!-- Chapter 8 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 8: מערכות מרובות מעבדים</h2>
-        </div>
 
-        <!-- Section 8.1.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">8.1.1 חומרת ריבוי ליבות ומעבדים</h3>
-            </div>
-            <div class="p-6">
+        <!-- ================= פרק 8 ================= -->
+        <div class="border-b-4 border-rose-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-rose-800 font-heading">פרק 8: מערכות מרובות מעבדים</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 8 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 8.1.1 -->
+
+        <section id="sec-8-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-rose">8.1.1 חומרת ריבוי ליבות ומעבדים</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-6 text-slate-700">
                     <div>
                         <strong class="text-slate-900 block mb-2 border-b pb-1">גישה לזיכרון:</strong>
@@ -1320,52 +1823,54 @@
                         </ul>
                     </div>
 
-                    <ul class="space-y-4 list-disc list-outside ms-6">
-                        <li class="pl-2">
+                    <ul class="space-y-4 text-slate-700">
+                        <li class="pl-2 list-bullet list-bullet-rose">
                             <strong class="text-slate-900"><span dir="ltr">Hyper-threading</span> (ריבוי תהליכונים חומרתי):</strong> טכנולוגיה המאפשרת לליבה פיזית יחידה להריץ מספר תהליכונים במקביל על ידי שכפול משאבים חלקי (כגון אוגרים), בעוד יחידות הביצוע והמטמון משותפות. חשוב להדגיש: זה לא שקול לליבה נוספת ומוסיף לכל היותר כ-30% ביצועים.
                         </li>
-                        <li class="pl-2">
+                        <li class="pl-2 list-bullet list-bullet-rose">
                             <strong class="text-slate-900">תכנות מקבילי:</strong> מערכת ההפעלה והחומרה אינן מסוגלות להפוך קוד סדרתי רגיל לקוד מקבילי בעצמן. האחריות על חלוקת הקוד לתהליכים או תהליכונים (<span class="font-mono text-sm" dir="ltr">Threads</span>) מוטלת באופן בלעדי על המתכנת.
                         </li>
                     </ul>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 8.1.2 -->
 
-        <!-- Section 8.1.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">8.1.2 סוגי מערכות הפעלה למערכות מרובות מעבדים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-8-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-rose">8.1.2 סוגי מערכות הפעלה למערכות מרובות מעבדים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">מערכת נפרדת לכל מעבד:</strong> זיכרון ה-RAM מחולק סטטית, וכל מעבד מריץ עותק פרטי ושלם של מערכת ההפעלה. שיטה זו אינה נפוצה כיום בשל חוסר יעילות ואי-יכולת לבצע חלוקת עומסים בין מעבד עמוס למעבד פנוי.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">מוביל-נגרר (Master-Slave):</strong> רק מעבד יחיד (המוביל) מריץ את קוד מערכת ההפעלה, בעוד השאר מריצים תוכניות משתמש בלבד ומפנים כל קריאת מערכת אל המוביל. החיסרון הקריטי הוא יצירת צוואר בקבוק על המעבד המוביל ככל שמוסיפים מעבדים נוספים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">ריבוי מעבדים סימטרי (<span class="font-mono text-sm" dir="ltr">SMP</span>):</strong> השיטה המודרנית והנפוצה. עותק יחיד של מערכת ההפעלה שוכן בזיכרון, וכל מעבד רשאי להריץ אותו. האתגר המרכזי כאן הוא חוסר עקביות ותנאי מרוץ (Race Condition), ולכן יש לפצל את מערכת ההפעלה לאזורים קריטיים עצמאיים המוגנים כל אחד על ידי מנעול (Lock) משלו. ריבוי מנעולים מחייב תכנון מדוקדק למניעת קיפאון (Deadlock).
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 8.1.3 -->
 
-        <!-- Section 8.1.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">8.1.3 אתגרי סנכרון ומנעולים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-8-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-rose">8.1.3 אתגרי סנכרון ומנעולים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">כישלון השבתת הפסיקות:</strong> במעבד בודד, חסימת פסיקות מספיקה ליצירת מניעה הדדית. במערכת מרובת מעבדים, פעולה זו משפיעה רק על המעבד שביצע אותה, ושאר המעבדים עדיין יכולים לגשת לזיכרון המשותף במקביל ולדרוס נתונים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">נעילת אפיק הזיכרון (Bus Locking):</strong> כדי לבצע סנכרון אמיתי, משתמשים בפקודות חומרה אטומיות כמו <span class="font-mono text-sm bg-slate-100 px-1 rounded text-pink-600" dir="ltr">TSL</span> או <span class="font-mono text-sm bg-slate-100 px-1 rounded text-pink-600" dir="ltr">SWP</span>. כאשר מעבד מפעיל פקודה זו, הוא מנחה את החומרה לנעול פיזית את אפיק הזיכרון הראשי, כך שאף מעבד אחר אינו יכול לגשת לזיכרון כלל עד לסיום הפעולה.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">חסרונות מנעולי ספין (Spinlocks):</strong> כאשר מעבד נכנס ל"המתנה פעילה" על מנעול תפוס, הוא לא רק מבזבז זמן עיבוד, אלא הדגימה הבלתי פוסקת שלו מעמיסה תעבורה כבדה על אפיק הזיכרון. לכן מנעולים חייבים להיות מוחזקים לזמן הקצר ביותר האפשרי.
                     </li>
                 </ul>
@@ -1386,62 +1891,68 @@
                         היתרון העצום על פני מנעולים מסורתיים הוא שבמידה והפעולה נכשלה, התהליכון אינו נחסם ואינו עובר למצב שינה יקר (Context Switch), אלא יכול פשוט לנסות שוב בלולאה (Spin) לקרוא את הערך החדש ולבצע פקודת CAS מעודכנת, מה שמשפר דרסטית את ביצועי המערכת בריבוי ליבות.
                     </p>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 8.1.4 -->
 
-        <!-- Section 8.1.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">8.1.4 תזמון מרובה מעבדים</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-8-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-rose">8.1.4 תזמון מרובה מעבדים</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">זיקת מטמון (Cache Affinity):</strong> מתזמנים מודרניים משתדלים לנתב תהליכון חזרה אל אותו מעבד שעליו רץ קודם לכן, כדי לנצל את הנתונים שכבר קיימים בו (מטמון "חם"), תוך ניסיון לאזן זאת עם חלוקת עומסים הוגנת.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">שיתוף מרחבי (Space Sharing):</strong> הקצאה בלעדית של קבוצת מעבדים לקבוצת תהליכונים קשורים. היתרון הוא מניעת תקורת החלפות הקשר (Context Switch), אך אם תהליכון נחסם לפעולת I/O, המעבד שלו נשאר מבוזבז וריק.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">תזמון כנופיות (Gang Scheduling):</strong> פתרון לזמני המתנה פנימיים. כל "כנופיית" התהליכונים מתחילה ומסיימת את יחידת הזמן (קוונטום) ביחד, בו-זמנית, על מעבדים שונים. כך מובטח שכל התהליכונים זמינים לתקשר ביניהם מיידית ללא חסימות מיותרות.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section: Hardware Edge Cases -->
 
-        <!-- Section: Hardware Edge Cases -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">סוגיות קצה ברמת החומרה (משאלות החזרה והסיכום)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-8-special-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-rose">סוגיות קצה ברמת החומרה (משאלות החזרה והסיכום)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">תקשורת (Topologies):</strong> חיבור המעבדים לזיכרון מתבצע על ידי אפיק (Bus), מתג צולב (Crossbar Switch) המאפשר גישה למספר יחידות זיכרון ללא צוואר בקבוק של אפיק בודד, או רשת מיתוג רב-שלבית (Multistage Network).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">גישה מקבילית לזיכרון:</strong> כאשר כמה ליבות ניגשות לאותה כתובת פיזית באותו שבריר שנייה, החומרה כופה <strong>סריאליזציה (טוריות)</strong> של הבקשות. כתיבה לכתובת כזו תגרור פסילת מטמון (Invalidation) בשאר הליבות כדי לשמור על עקביות.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-rose">
                         <strong class="text-slate-900">הוראת <span class="font-mono" dir="ltr">SWP (Swap)</span>:</strong> מחליפה אטומית בין ערך באוגר לערך בזיכרון, תוך נעילת האפיק, ולכן שימושית לבניית מנעולים בדומה ל-<span class="font-mono text-sm bg-slate-100 px-1 rounded text-pink-600" dir="ltr">TSL</span> (אם קיבלנו 0 במקום המנעול, סימן שנכנסנו לאזור הקריטי; אם 1 - נכנסים ל-Spinlock או מבצעים Context Switch).
                     </li>
                 </ul>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 9 ================= -->
+            
+<!-- ================= פרק 9 ================= -->
         
         <!-- Chapter 9 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 9: מנגנוני הגנה (Protection Mechanisms)</h2>
-        </div>
 
-        <!-- Section 9.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">9.2 מבוא ועקרונות יסוד</h3>
-            </div>
-            <div class="p-6">
+        <!-- ================= פרק 9 ================= -->
+        <div class="border-b-4 border-cyan-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-cyan-800 font-heading">פרק 9: מנגנוני הגנה (Protection Mechanisms)</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 9 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 9.2 -->
+
+        <section id="sec-9-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-cyan">9.2 מבוא ועקרונות יסוד</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-4 text-slate-700">
                     <p><strong class="text-slate-900">מטרה:</strong> פיקוח, הסדרה ואכיפה של מדיניות הגישה של תוכניות, תהליכים ומשתמשים למשאבי המערכת במערכות מרובות משתמשים/תהליכים, כדי למנוע פגיעה בשוגג או בזדון.</p>
                     
@@ -1454,24 +1965,25 @@
                         <p class="mt-3 text-slate-700"><strong class="text-slate-900">משמעות:</strong> כל תהליך חייב לקבל אך ורק את ההרשאות המינימליות ההכרחיות לו כדי לבצע את משימתו הנוכחית, ולא שום גישה או כוח מעבר לכך.</p>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 9.2.1 -->
 
-        <!-- Section 9.2.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">9.2.1 הגנה על ידי קביעת תחומים (Protection Domains)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-9-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-cyan">9.2.1 הגנה על ידי קביעת תחומים (Protection Domains)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-cyan">
                         <strong class="text-slate-900">מהו תחום (Domain)?</strong> סביבת עבודה התוחמת במדויק אילו פעולות מותר לתהליך לבצע. כל תהליך רץ בכל רגע נתון בתוך תחום הגנה מסוים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-cyan">
                         <strong class="text-slate-900">זכות גישה (Access Right):</strong> מיוצגת כזוג ערכים: <code class="bg-slate-100 px-1 rounded text-sm font-mono text-pink-600" dir="ltr">&lt;עצם, אוסף הרשאות&gt;</code>.
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-1 text-slate-600">
-                            <li><strong class="text-indigo-700">עצם (Object):</strong> המשאב שאליו ניגשים (קובץ, מדפסת).</li>
-                            <li><strong class="text-indigo-700">אוסף הרשאות (Rights Set):</strong> הפעולות המותרות (קריאה, כתיבה, ביצוע).</li>
+                            <li class="list-bullet list-bullet-cyan"><strong class="text-indigo-700">עצם (Object):</strong> המשאב שאליו ניגשים (קובץ, מדפסת).</li>
+                            <li class="list-bullet list-bullet-cyan"><strong class="text-indigo-700">אוסף הרשאות (Rights Set):</strong> הפעולות המותרות (קריאה, כתיבה, ביצוע).</li>
                         </ul>
                     </li>
                     <li class="pl-2">
@@ -1490,15 +2002,16 @@
                         <strong class="text-slate-900">מטריצת ההגנה (Protection Matrix):</strong> המודל התאורטי המלא. השורות הן התחומים, העמודות הן העצמים, והמשבצות מכילות את זכויות הגישה. מכיוון שמטריצה זו ענקית וריקה ברובה (דלילה), לא יעיל לשמור אותה כפי שהיא, ולכן מערכות הפעלה מפצלות אותה לשתי גישות מעשיות: <span class="font-mono text-sm" dir="ltr">ACL</span> (פיצול אנכי) ו-<span class="font-mono text-sm" dir="ltr">C-Lists</span> (פיצול אופקי).
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 9.2.2 -->
 
-        <!-- Section 9.2.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">9.2.2 רשימות בקרת גישה (Access Control Lists - ACL)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-9-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-cyan">9.2.2 רשימות בקרת גישה (Access Control Lists - ACL)</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-4 text-slate-700">
                     <p><strong class="text-slate-900">הרעיון (פיצול אנכי):</strong> פירוק המטריצה לפי עמודות (עצמים). לכל עצם (למשל, קובץ) מוצמדת רשימה המפרטת אילו תחומים/משתמשים רשאים לגשת אליו ומה מותר להם לעשות.</p>
                     
@@ -1524,15 +2037,16 @@
                         <strong class="text-slate-900">דוגמה מעשית:</strong> מנגנון ההרשאות <span class="font-mono text-sm" dir="ltr">NTFS</span> ב-<span class="font-mono text-sm" dir="ltr">Windows</span> או <span class="font-mono text-sm" dir="ltr">POSIX ACLs</span> ב-<span class="font-mono text-sm" dir="ltr">Linux</span>.
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 9.2.3 -->
 
-        <!-- Section 9.2.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">9.2.3 רשימות יכולות (Capability Lists - C-Lists)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-9-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-cyan">9.2.3 רשימות יכולות (Capability Lists - C-Lists)</h3>
+            <div class="p-2 md:p-4">
+                
                 <div class="space-y-4 text-slate-700">
                     <p><strong class="text-slate-900">הרעיון (פיצול אופקי):</strong> פירוק המטריצה לפי שורות (תחומים). לכל תחום (תהליך) מוצמדת רשימה של "כרטיסיות יכולת" (<span class="font-mono text-sm" dir="ltr">Capabilities</span>).</p>
                     
@@ -1567,48 +2081,53 @@
                         <strong class="text-slate-900">דוגמה מעשית:</strong> מנגנון מתארי הקבצים (<span class="font-mono text-sm" dir="ltr">File Descriptors</span>) ב-<span class="font-mono text-sm" dir="ltr">UNIX/Linux</span> - לאחר פתיחת הקובץ, התהליך מקבל מספר (יכולת זמנית) שבאמצעותו הוא קורא וכותב ללא בדיקת הרשאות נוספת בכל פקודה.
                     </div>
                 </div>
+            
             </div>
         </section>
-
-        <!-- ================= פרק 10 ================= -->
+            
+<!-- ================= פרק 10 ================= -->
         
         <!-- Chapter 10 Banner -->
-        <div class="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mt-12 mb-2">
-            <h2 class="text-2xl md:text-3xl font-bold tracking-tight">פרק 10: מבוא ללינוקס, xv6 ו-docker</h2>
-        </div>
 
-        <!-- Section 10.1 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">10.1 לינוקס: עקרונות ומשפחות (Linux & Distributions)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <!-- ================= פרק 10 ================= -->
+        <div class="border-b-4 border-indigo-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-indigo-800 font-heading">פרק 10: מבוא ללינוקס, xv6 ו-docker</h2>
+            <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק 10 מתוך מדריך הלמידה:</p>
+        </div>
+        
+<!-- Section 10.1 -->
+
+        <section id="sec-10-1" class="mb-12 scroll-mt-6">
+            <h3 class="title-indigo">10.1 לינוקס: עקרונות ומשפחות (Linux & Distributions)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">גרעין מול הפצה:</strong> לינוקס כשלעצמה היא רק ה"גרעין" (<span class="font-mono text-sm" dir="ltr">Kernel</span>) המנהל את החומרה והמשאבים. כדי להשתמש בה, עוטפים אותה בתוכנות ובממשקים לכדי מערכת הפעלה שלמה הנקראת "הפצה" (<span class="font-mono text-sm" dir="ltr">Distribution / Distro</span>).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">קוד פתוח (Open Source):</strong> בניגוד ל-<span class="font-mono text-sm" dir="ltr">Windows</span> ו-<span class="font-mono text-sm" dir="ltr">macOS</span> (קוד סגור), הקוד של לינוקס פתוח לציבור, מה שמאפשר ללמוד אותו, לשנות אותו ולהתאים אותו אישית.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900 block mb-2">משפחות בולטות:</strong>
                         <ul class="list-circle list-inside mt-2 ms-4 space-y-2 text-slate-600">
-                            <li><strong class="text-indigo-700 font-mono" dir="ltr">Debian / Ubuntu:</strong> מצטיינות ביציבות, פילוסופיית "Just Works" וקהילת תמיכה עצומה.</li>
-                            <li><strong class="text-indigo-700 font-mono" dir="ltr">Red Hat (RHEL) / Fedora:</strong> הסטנדרט בעולם האנטרפרייז (תאגידים) ומובילות בפיתוח טכנולוגיות חדשות (Bleeding Edge).</li>
-                            <li><strong class="text-indigo-700 font-mono" dir="ltr">Arch / Manjaro:</strong> מיועדות למשתמשים מתקדמים המחפשים שליטה מוחלטת והרכבה עצמית ("DIY").</li>
-                            <li><strong class="text-indigo-700 font-mono" dir="ltr">Kali Linux:</strong> הפצה ייעודית לאנשי אבטחת מידע ופצחנים (האקרים) המכילה כלי תקיפה מובנים.</li>
+                            <li class="list-bullet list-bullet-indigo"><strong class="text-indigo-700 font-mono" dir="ltr">Debian / Ubuntu:</strong> מצטיינות ביציבות, פילוסופיית "Just Works" וקהילת תמיכה עצומה.</li>
+                            <li class="list-bullet list-bullet-indigo"><strong class="text-indigo-700 font-mono" dir="ltr">Red Hat (RHEL) / Fedora:</strong> הסטנדרט בעולם האנטרפרייז (תאגידים) ומובילות בפיתוח טכנולוגיות חדשות (Bleeding Edge).</li>
+                            <li class="list-bullet list-bullet-indigo"><strong class="text-indigo-700 font-mono" dir="ltr">Arch / Manjaro:</strong> מיועדות למשתמשים מתקדמים המחפשים שליטה מוחלטת והרכבה עצמית ("DIY").</li>
+                            <li class="list-bullet list-bullet-indigo"><strong class="text-indigo-700 font-mono" dir="ltr">Kali Linux:</strong> הפצה ייעודית לאנשי אבטחת מידע ופצחנים (האקרים) המכילה כלי תקיפה מובנים.</li>
                         </ul>
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 10.2 -->
 
-        <!-- Section 10.2 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">10.2 שורת הפקודה (The Terminal)</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-10-2" class="mb-12 scroll-mt-6">
+            <h3 class="title-indigo">10.2 שורת הפקודה (The Terminal)</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700">הטרמינל הוא הלב הפועם של המערכת. בלינוקס עץ התיקיות מתחיל משורש אחד יחיד (<code class="bg-slate-100 px-1 rounded text-sm text-pink-600 font-bold" dir="ltr">/</code>), בניגוד לכוננים נפרדים ב-<span class="font-mono text-sm" dir="ltr">Windows</span>.</p>
                 
                 <div class="space-y-4 text-slate-700">
@@ -1648,92 +2167,97 @@
                         </div>
                     </div>
                 </div>
+            
             </div>
         </section>
+            
+<!-- Section 10.3 -->
 
-        <!-- Section 10.3 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">10.3 מערכת ההפעלה xv6</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-10-3" class="mb-12 scroll-mt-6">
+            <h3 class="title-indigo">10.3 מערכת ההפעלה xv6</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">מוטיבציה:</strong> מערכות לינוקס מודרניות מורכבות ממיליוני שורות קוד ולא ניתנות ללימוד מעמיק. <span class="font-mono text-sm" dir="ltr">xv6</span> נכתבה ב-MIT כמערכת לימודית המהווה שכתוב מודרני ב-<span class="font-mono text-sm" dir="ltr">ANSI C</span> של מערכת <span class="font-mono text-sm" dir="ltr">Unix V6</span> הקלאסית, ומותאמת למעבדי <span class="font-mono text-sm" dir="ltr">x86</span> או <span class="font-mono text-sm" dir="ltr">RISC-V</span>.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">רכיבים:</strong> למרות פשטותה (ויש בה באגים מכוונים), היא מכילה את כל רכיבי הליבה: מתזמן תהליכים, ניהול זיכרון וטבלאות דפים, מערכת קבצים (<span class="font-mono text-sm" dir="ltr">i-nodes</span>), ומנגנון פסיקות.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 10.4 -->
 
-        <!-- Section 10.4 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">10.4 מבנה הגרעין וקריאות מערכת (ממ"ן 01 - פקודת ps)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-10-4" class="mb-12 scroll-mt-6">
+            <h3 class="title-indigo">10.4 מבנה הגרעין וקריאות מערכת (ממ"ן 01 - פקודת ps)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">המערכת מבוססת על הפרדה מוחלטת:</strong> מרחב משתמש המוגבל בהרשאותיו (<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">fs.img</code>) מול מרחב הליבה העוצמתי (<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">xv6.img</code>).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">מנגנון ה-TRAP:</strong> תוכנית במרחב משתמש (כמו <code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">ps.c</code>) אינה יכולה לקרוא ישירות זיכרון של הגרעין. היא נעזרת בפקודת שפת סף (<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">SYSCALL</code>) המייצרת פסיקת תוכנה (<span class="font-mono text-sm" dir="ltr">TRAP</span>), מקפיאה את המעבד, מעלה הרשאות ל-<span class="font-mono text-sm" dir="ltr">Kernel Mode</span>, וקופצת לשער כניסה מאובטח בגרעין (<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">syscall.c</code> דרך נתיב מוגדר בטבלה).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">טבלת התהליכים (PCB):</strong> במרחב הליבה (<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">proc.c</code>), המערכת מנהלת מערך גלובלי (<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">ptable.proc</code>). כל תא במערך הוא <code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">struct proc</code> השומר נתונים כמו ה-<span class="font-mono text-sm" dir="ltr">PID</span>, מצב (<span class="font-mono text-sm" dir="ltr">State</span>), גודל הזיכרון (<span class="font-mono text-sm" dir="ltr">sz</span>), ומצביע לתהליך האב (<span class="font-mono text-sm" dir="ltr">PPID</span>).
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">לוגיקת עיבוד:</strong> פונקציה הסורקת את הטבלה חייבת לדלג על תאים שמצבם הוא <span class="font-mono text-sm bg-slate-100 px-1 rounded text-indigo-700" dir="ltr">UNUSED</span>. כדי להציג את האב של תהליך ה-<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">init</code> (שהוא התהליך הראשון), יש לזהותו באופן פרטני ולהחזיר ערך <span class="font-mono" dir="ltr">0</span> מדומה.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 10.5 -->
 
-        <!-- Section 10.5 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">10.5 קונטיינרים ווירטואליזציה (ממ"ן 02 - עולם הבועות)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-10-5" class="mb-12 scroll-mt-6">
+            <h3 class="title-indigo">10.5 קונטיינרים ווירטואליזציה (ממ"ן 02 - עולם הבועות)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900"><span dir="ltr">PID Namespace</span> (זהות כפולה):</strong> בניגוד לעולם "שטוח" שבו יש PID יחיד ומוחלט, קונטיינרים מייצרים "בועות" בידוד. כל תהליך מקבל זהות פנימית (<span class="font-mono text-sm" dir="ltr">PID</span>) בתוך הבועה (למשל, התהליך הראשון בקונטיינר בטוח שה-<span class="font-mono text-sm" dir="ltr">PID</span> שלו הוא 1), וזהות חיצונית אובייקטיבית (<span class="font-mono text-sm" dir="ltr">EXTPID</span>) כפי שרואה אותו הגרעין.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">תיקון קשרי הורה-ילד:</strong> תהליך בתוך הבועה מדווח על תהליך האב הפיזי שיצר אותו מחוצה לה. עקב כך, זיהוי ה-<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">init</code> המקורי של המערכת (ולא של הקונטיינרים) מתבצע אך ורק על ידי בדיקה האם ה-<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">extpid</code> שווה ל-1, ולא ה-<code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">pid</code> הפנימי.
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 10.6 -->
 
-        <!-- Section 10.6 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">10.6 אקולוגיה של משאבים (ממ"ן 03 - Mount Namespace)</h3>
-            </div>
-            <div class="p-6">
-                <ul class="space-y-4 list-disc list-outside ms-6 text-slate-700">
-                    <li class="pl-2">
+        <section id="sec-10-6" class="mb-12 scroll-mt-6">
+            <h3 class="title-indigo">10.6 אקולוגיה של משאבים (ממ"ן 03 - Mount Namespace)</h3>
+            <div class="p-2 md:p-4">
+                
+                <ul class="space-y-4 text-slate-700">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900 font-mono" dir="ltr">Mount Namespace:</strong> מנגנון המייצר לקונטיינר אשליה של מערכת קבצים פרטית. נקודות העגינה נלקחות מתוך מאגר חומרה מוגבל המנוהל בזיכרון הגרעין.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">דליפת משאבים (Resource Leak):</strong> אם קונטיינר נסגר והמשאבים אינם מוחזרים למאגר, המערכת תיכנס לפאניקה ותקרוס (<span class="font-mono text-sm text-red-600 font-bold" dir="ltr">Kernel Panic</span>) כאשר יאזלו האובייקטים.
                     </li>
-                    <li class="pl-2">
+                    <li class="pl-2 list-bullet list-bullet-indigo">
                         <strong class="text-slate-900">פתרון (Reference Counting):</strong> מערכת ההפעלה חייבת לנהל "מונה משתמשים" (מוסיפה 1 בכניסה, מחסירה 1 ביציאה). רק התהליך האחרון שעוזב (כאשר המונה מתאפס ל-0) מבצע את פעולת הניקוי ושחרור המשאבים בפועל (הפונקציה <code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">mount_nsleave</code> בקובץ <code class="bg-slate-100 px-1 rounded text-sm text-pink-600" dir="ltr">mnt_ns.c</code>).
                     </li>
                 </ul>
+            
             </div>
         </section>
+            
+<!-- Section 10.7 -->
 
-        <!-- Section 10.7 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                <h3 class="text-xl font-bold text-indigo-800">10.7 מבוא ל-Docker (דוקר) במציאות</h3>
-            </div>
-            <div class="p-6">
+        <section id="sec-10-7" class="mb-12 scroll-mt-6">
+            <h3 class="title-indigo">10.7 מבוא ל-Docker (דוקר) במציאות</h3>
+            <div class="p-2 md:p-4">
+                
                 <p class="mb-4 text-slate-700">
                     <strong class="text-slate-900">דוקר לעומת VMs:</strong> בעוד מכונות וירטואליות מתחקות אחר חומרה שלמה ומריצות מערכות הפעלה כפולות, דוקר מבצע וירטואליזציה ברמת ה-<span class="font-mono text-sm" dir="ltr">OS</span>. הקונטיינרים רצים על הגרעין המשותף של המארח תוך שימוש ב-<span class="font-mono text-sm" dir="ltr">Namespaces</span> לבידוד סביבתי ו-<span class="font-mono text-sm" dir="ltr">Cgroups</span> להגבלת צריכת המשאבים הפיזיים (CPU/RAM).
                 </p>
@@ -1752,14 +2276,93 @@
                         </li>
                     </ol>
                 </div>
+            
             </div>
         </section>
-
+            
+        <!-- Footer inside the page for elegant paper-notebook style -->
+        <footer class="text-center text-slate-400 mt-16 pt-8 border-t border-dashed border-slate-200 text-sm">
+            <p>נוצר בסביבת Tailwind CSS — מותאם לקריאה ונגישות.</p>
+        </footer>
+        </div>
     </main>
     
-    <footer class="text-center text-slate-500 py-6 text-sm">
-        <p>נוצר בסביבת Tailwind CSS — מותאם לקריאה ונגישות.</p>
-    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const openBtn = document.getElementById('toggle-sidebar-open');
+            const closeBtn = document.getElementById('toggle-sidebar-close');
+            const backdrop = document.getElementById('sidebar-backdrop');
 
+            // Load initial state from localStorage
+            const sidebarHidden = localStorage.getItem('sidebar-hidden') === 'true';
+
+            function showSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                if (window.innerWidth >= 1024) { // lg breakpoint
+                    mainContent.classList.remove('lg:mr-0', 'lg:w-full');
+                    mainContent.classList.add('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
+                } else {
+                    backdrop.classList.remove('hidden');
+                    backdrop.classList.add('opacity-100');
+                }
+                openBtn.classList.add('hidden');
+                localStorage.setItem('sidebar-hidden', 'false');
+            }
+
+            function hideSidebar() {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('translate-x-full');
+                if (window.innerWidth >= 1024) { // lg breakpoint
+                    mainContent.classList.remove('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
+                    mainContent.classList.add('lg:mr-0', 'lg:w-full');
+                } else {
+                    backdrop.classList.remove('opacity-100');
+                    backdrop.classList.add('hidden');
+                }
+                openBtn.classList.remove('hidden');
+                localStorage.setItem('sidebar-hidden', 'true');
+            }
+
+            openBtn.addEventListener('click', showSidebar);
+            closeBtn.addEventListener('click', hideSidebar);
+            backdrop.addEventListener('click', hideSidebar);
+
+            // Responsive adjustment on resize
+            window.addEventListener('resize', () => {
+                const isHidden = sidebar.classList.contains('translate-x-full');
+                if (window.innerWidth >= 1024) {
+                    backdrop.classList.remove('opacity-100');
+                    backdrop.classList.add('hidden');
+                    if (isHidden) {
+                        mainContent.classList.remove('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
+                        mainContent.classList.add('lg:mr-0', 'lg:w-full');
+                    } else {
+                        mainContent.classList.remove('lg:mr-0', 'lg:w-full');
+                        mainContent.classList.add('lg:mr-80', 'lg:w-[calc(100%-20rem)]');
+                    }
+                } else {
+                    mainContent.classList.remove('lg:mr-80', 'lg:w-[calc(100%-20rem)]', 'lg:mr-0', 'lg:w-full');
+                    if (!isHidden) {
+                        backdrop.classList.remove('hidden');
+                        backdrop.classList.add('opacity-100');
+                    }
+                }
+            });
+
+            // Initialize state
+            if (window.innerWidth < 1024) {
+                // On mobile, start with hidden sidebar for better UX
+                hideSidebar();
+            } else if (sidebarHidden) {
+                hideSidebar();
+            } else {
+                showSidebar();
+            }
+        });
+    </script>
+    
 </body>
 </html>
