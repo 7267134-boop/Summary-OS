@@ -1,30 +1,269 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מבוא ללינוקס, טרמינל ומערכת xv6</title>
+    <title>פרק 10: לינוקס, xv6 וקונטיינרים</title>
+
+    <!-- Google Fonts Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        codebg: '#1e293b',
+                        highlight: '#38bdf8',
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                        mono: ['Fira Code', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Heebo', sans-serif; background-color: #f8fafc; }
-        code { font-family: 'Fira Code', monospace; direction: ltr; display: inline-block; }
-        .ltr-block { direction: ltr; text-align: left; }
+        body {
+            background-color: #f4f7fb;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .thought-box {
+            background: #fdf4ff;
+            border-right: 4px solid #d946ef;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .concept-box {
+            background: #f0fdf4;
+            border-right: 4px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .sim-console {
+            background-color: #020617 !important;
+            color: #10b981 !important;
+            text-shadow: 0 0 2px #10b981;
+            font-family: 'Fira Code', monospace;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-y: auto;
+            max-height: 150px;
+            direction: ltr;
+            text-align: left;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            border: 1px solid #1e293b;
+        }
+
+        /* Sidebar collapse transition & styles */
+        aside {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .sidebar-collapsed aside {
+            width: 0 !important;
+            min-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 0.85rem 1rem 0.85rem 2rem;
+            border-radius: 0.5rem;
+            color: #cbd5e1;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            background-color: #1e293b;
+            color: #fff;
+            padding-right: 1.25rem;
+        }
+
+        .nav-btn.active-nav {
+            background-color: #2563eb;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            border-right: 4px solid #60a5fa;
+        }
+        
+        .nav-group-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .nav-btn-prev,
+        .nav-btn-next {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-btn-prev:hover {
+            transform: translateX(2px);
+        }
+
+        .nav-btn-next:hover {
+            transform: translateX(-2px);
+        }
+        
+        code {
+            direction: ltr !important;
+            text-align: left !important;
+            font-family: 'Fira Code', 'Consolas', monospace !important;
+        }
+        
+        pre {
+            direction: ltr !important;
+            text-align: left !important;
+            font-family: 'Fira Code', 'Consolas', monospace !important;
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased leading-relaxed">
 
-    <header class="bg-indigo-700 text-white py-12 shadow-md">
-        <div class="max-w-6xl mx-auto px-6">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">מבוא ללינוקס, טרמינל ומערכת xv6</h1>
-            <p class="text-lg md:text-xl text-indigo-100 max-w-3xl">המדריך המלא להבנת מערכות הפעלה, שורת הפקודה, וההיסטוריה של פיתוח סביבות עבודה למפתחים.</p>
+<body class="text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-80 bg-darker text-slate-300 flex flex-col h-full shadow-2xl z-50 flex-shrink-0 border-l border-slate-800 absolute lg:relative lg:translate-x-0 translate-x-full transition-transform duration-300" id="sidebar">
+        <div class="p-6 border-b border-slate-800 bg-darker relative">
+            <h1 class="text-3xl font-black text-white tracking-tight leading-tight">מערכות<br><span class="text-brand-500">הפעלה</span></h1>
+            <p class="text-xs text-slate-400 mt-2">פרק 10: לינוקס, xv6 וקונטיינרים</p>
+            
+            <button onclick="toggleSidebar()" class="lg:hidden absolute left-4 top-6 text-slate-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="mt-4">
+                <a href="index.html" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 12l9-9m-9 9l9 9" /></svg>
+                    חזרה לדף הבית
+                </a>
+            </div>
         </div>
-    </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-12 space-y-16">
+        <div class="flex-1 overflow-y-auto p-4 pb-20">
+            <div class="nav-group">
+                <div class="nav-group-title">חלקי הפרק</div>
+                
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('intro-terminal-tab')" id="btn-intro-terminal-tab" class="nav-btn active-nav">
+                        <span>🐧 10.1 מה זה לינוקס וטרמינל</span>
+                    </button>
+                </div>
+                
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('xv6-maman01-tab')" id="btn-xv6-maman01-tab" class="nav-btn">
+                        <span>🛠️ 10.2 מערכת xv6 וממ"ן 01</span>
+                    </button>
+                </div>
 
-        <!-- SECTION 1: WHAT IS LINUX -->
-        <section class="space-y-8" id="what-is-linux">
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('containers-maman02-tab')" id="btn-containers-maman02-tab" class="nav-btn">
+                        <span>📦 10.3 קונטיינרים וממ"ן 02</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('mount-maman03-tab')" id="btn-mount-maman03-tab" class="nav-btn">
+                        <span>📂 10.4 מרחבי שמות וממ"ן 03</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('docker-cloud-tab')" id="btn-docker-cloud-tab" class="nav-btn">
+                        <span>🐳 10.5 דוקר וסביבות ענן</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto scroll-smooth bg-white relative w-full">
+        <!-- Toggle button for mobile -->
+        <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="lg:hidden fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg z-40 hover:bg-blue-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+        <button onclick="toggleSidebarDesktop()" class="hidden lg:flex fixed bottom-6 right-6 bg-slate-800 text-white p-3 rounded-full shadow-lg z-40 hover:bg-slate-900 transition-colors" title="הסתר/הצג תפריט">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+
+        <div class="max-w-5xl mx-auto p-6 lg:p-16 pb-32">
+
+            <!-- ==========================================
+                 TAB 1: INTRO & TERMINAL
+            =========================================== -->
+            <div id="intro-terminal-tab" class="tab-content active">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-700 text-blue-50 rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 10.1
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight mb-4">מבוא ללינוקס ולשורת הפקודה</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        הבנת מודל הקוד הפתוח, תפקיד הגרעין (Kernel), עבודה בסביבת הטרמינל וניווט במערכת הקבצים ההיררכית.
+                    </p>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <section class="space-y-8" id="what-is-linux">
             <div class="border-b-4 border-indigo-200 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">1. מה זה בעצם לינוקס?</h2>
             </div>
@@ -164,9 +403,10 @@
                 </div>
             </div>
         </section>
-
-        <!-- SECTION 2: THE TERMINAL -->
-        <section class="space-y-8" id="the-terminal">
+                    
+                    <hr class="my-12 border-slate-200" />
+                    
+                    <section class="space-y-8" id="the-terminal">
             <div class="border-b-4 border-emerald-200 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">2. הטרמינל (The Terminal / Command Line)</h2>
             </div>
@@ -311,9 +551,69 @@
                 </details>
             </div>
         </section>
+                    
+                    <!-- SIMULATOR 1: Terminal Tree Navigator -->
+                    <div class="mt-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 10.1: נווט עץ התיקיות והטרמינל (Terminal Tree Navigator)</span>
+                        </div>
+                        
+                        <div class="p-6">
+                            <p class="text-slate-300 text-sm mb-6">
+                                הקושי הגדול ביותר במעבר מ-Windows הוא לדמיין את היררכיית הקבצים בלי ממשק גרפי.
+                                הריצו פקודות בטרמינל (כמו <code>cd</code>, <code>mkdir</code>, <code>pwd</code>, <code>ls</code>, <code>cat readme.txt</code>) 
+                                או לחצו על התיקיות בעץ הוויזואלי משמאל, וראו כיצד המערכת משנה את התיקייה הנוכחית ומעדכנת את היררכיית הקבצים שלכם!
+                            </p>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[450px]">
+                                <!-- Terminal Box (Right in RTL layout) -->
+                                <div class="bg-slate-950 rounded-xl p-4 flex flex-col justify-between h-full border border-slate-800 shadow-inner order-1 lg:order-2">
+                                    <div id="sim1-term-output" class="flex-1 overflow-y-auto pr-2 space-y-1 mb-2 text-left" style="direction: ltr;">
+                                        <div class="text-slate-400 font-mono text-xs">// Terminal emulator running sh</div>
+                                        <div class="text-emerald-400 font-mono text-xs">student@xv6-academy:~$ pwd</div>
+                                        <div class="text-slate-300 font-mono text-xs">/home/student</div>
+                                        <div class="text-slate-500 font-mono text-xs">Type 'help' for command list.</div>
+                                    </div>
+                                    <div class="flex items-center gap-2 border-t border-slate-900 pt-2" style="direction: ltr; text-align: left;">
+                                        <span class="text-sky-400 font-mono font-bold" id="sim1-prompt">student@xv6-academy:/home/student$</span>
+                                        <input type="text" id="sim1-input" class="flex-1 bg-transparent border-none text-white focus:outline-none focus:ring-0 p-0 font-mono text-sm" placeholder="..." autocomplete="off">
+                                    </div>
+                                </div>
+                                
+                                <!-- Visual Tree Box (Left in RTL layout) -->
+                                <div class="bg-slate-950 rounded-xl p-4 flex flex-col h-full border border-slate-800 shadow-inner overflow-hidden order-2 lg:order-1">
+                                    <h4 class="text-sm font-bold text-slate-400 border-b border-slate-800 pb-2 mb-2">מבנה עץ הקבצים (Visual Directory Tree)</h4>
+                                    <div id="sim1-tree-container" class="flex-1 overflow-y-auto text-right text-sm" style="direction: rtl;">
+                                        <!-- Will be rendered by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- SECTION 3: XV6 -->
-        <section class="space-y-8 pb-12" id="xv6">
+            <!-- ==========================================
+                 TAB 2: XV6 & MAMAN 01
+            =========================================== -->
+            <div id="xv6-maman01-tab" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-700 text-blue-50 rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 10.2
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight mb-4">מערכת xv6 וממ"ן 01</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        הבנת הארכיטקטורה הלימודית של xv6, מיפוי קובצי הליבה, ומימוש פקודת <code>ps</code> דרך מנגנון קריאות המערכת (System Calls).
+                    </p>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <section class="space-y-8 pb-12" id="xv6">
             <div class="border-b-4 border-amber-300 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">3. מבוא למערכת xv6</h2>
             </div>
@@ -401,9 +701,10 @@
                 </div>
             </div>
         </section>
-
-        <!-- SECTION 4: MAMAN 01 DEEP DIVE -->
-        <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-01">
+                    
+                    <hr class="my-12 border-slate-200" />
+                    
+                    <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-01">
             <div class="border-b-4 border-purple-300 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">4. צלילה לעומק: ממ"ן 01 והקרביים של xv6</h2>
             </div>
@@ -674,9 +975,10 @@
             </div>
 
         </section>
-
-        <!-- SECTION 5: KERNEL DEEP DIVE & SUMMARIES -->
-        <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="kernel-code">
+                    
+                    <hr class="my-12 border-slate-200" />
+                    
+                    <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="kernel-code">
             <div class="border-b-4 border-rose-300 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">5. הלב הפועם: הקוד בתוך הגרעין וסיכום המטלה</h2>
             </div>
@@ -881,9 +1183,112 @@
             </div>
 
         </section>
+                    
+                    <!-- SIMULATOR 2: The Syscall Diver -->
+                    <div class="mt-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 10.2: צולל קריאות המערכת (The Syscall Diver)</span>
+                        </div>
+                        
+                        <div class="p-6">
+                            <p class="text-slate-300 text-sm mb-6">
+                                הבנת הדרך שבה פקודה כמו <code>ps</code> עוברת מהמשתמש למעבד ובחזרה לליבה היא האתגר המרכזי בממ"ן 01. 
+                                הריצו את הסימולציה צעד אחר צעד כדי לראות את המעבד עובר דרך קובצי הקוד של xv6, מחולל TRAP, ומאחזר את נתוני התהליכים.
+                            </p>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                                <!-- Steps list (RTL) -->
+                                <div class="lg:col-span-5 space-y-3">
+                                    <div class="text-sm font-bold text-slate-400 mb-2">שלבי המעבר (Execution Path)</div>
+                                    
+                                    <div id="sim2-step-0" class="p-3 rounded-lg border border-slate-800 bg-slate-950/40 text-slate-400 transition-all flex items-start gap-2.5 cursor-pointer" onclick="goToSyscallStep(0)">
+                                        <span class="bg-slate-800 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold font-mono">1</span>
+                                        <div>
+                                            <div class="font-bold text-xs">קוד משתמש (User App)</div>
+                                            <div class="text-[10px] text-slate-500">user/ps.c</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="sim2-step-1" class="p-3 rounded-lg border border-slate-800 bg-slate-950/40 text-slate-400 transition-all flex items-start gap-2.5 cursor-pointer" onclick="goToSyscallStep(1)">
+                                        <span class="bg-slate-800 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold font-mono">2</span>
+                                        <div>
+                                            <div class="font-bold text-xs">מעטפת אסמבלי (Assembly Stub)</div>
+                                            <div class="text-[10px] text-slate-500">user/usys.S</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="sim2-step-2" class="p-3 rounded-lg border border-slate-800 bg-slate-950/40 text-slate-400 transition-all flex items-start gap-2.5 cursor-pointer" onclick="goToSyscallStep(2)">
+                                        <span class="bg-slate-800 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold font-mono">3</span>
+                                        <div>
+                                            <div class="font-bold text-xs">נתב קריאות מערכת (Syscall Router)</div>
+                                            <div class="text-[10px] text-slate-500">kernel/syscall.c</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="sim2-step-3" class="p-3 rounded-lg border border-slate-800 bg-slate-950/40 text-slate-400 transition-all flex items-start gap-2.5 cursor-pointer" onclick="goToSyscallStep(3)">
+                                        <span class="bg-slate-800 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold font-mono">4</span>
+                                        <div>
+                                            <div class="font-bold text-xs">מעטפת הגרעין (Syscall Wrapper)</div>
+                                            <div class="text-[10px] text-slate-500">kernel/sysproc.c</div>
+                                        </div>
+                                    </div>
 
-        <!-- SECTION 6: MAMAN 02 - CONTAINERS -->
-        <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-02">
+                                    <div id="sim2-step-4" class="p-3 rounded-lg border border-slate-800 bg-slate-950/40 text-slate-400 transition-all flex items-start gap-2.5 cursor-pointer" onclick="goToSyscallStep(4)">
+                                        <span class="bg-slate-800 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold font-mono">5</span>
+                                        <div>
+                                            <div class="font-bold text-xs">ליבת ניהול תהליכים (Core Implementation)</div>
+                                            <div class="text-[10px] text-slate-500">kernel/proc.c</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex gap-2 pt-2">
+                                        <button onclick="prevSyscallStep()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-1.5 rounded text-xs font-bold transition-transform active:scale-95">הקודם</button>
+                                        <button onclick="nextSyscallStep()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded text-xs font-bold transition-transform active:scale-95" id="sim2-next-btn">הבא</button>
+                                        <button onclick="resetSyscallSim()" class="bg-slate-800 hover:bg-slate-700 text-slate-400 p-1.5 rounded text-xs transition-transform active:scale-95">🔄</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Code Viewer & Explanation (LTR) -->
+                                <div class="lg:col-span-7 bg-slate-950 rounded-xl p-4 border border-slate-800 flex flex-col justify-between h-[360px] lg:h-[400px]">
+                                    <div>
+                                        <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                                            <span class="text-slate-400 text-xs font-mono" id="sim2-file-title">user/ps.c</span>
+                                            <span class="bg-blue-900/50 text-blue-300 text-[10px] px-2 py-0.5 rounded font-mono" id="sim2-space-indicator">User Space</span>
+                                        </div>
+                                        <div class="text-right mb-4">
+                                            <p class="text-slate-300 text-sm leading-relaxed" id="sim2-explanation">
+                                                הסבר על השלב הנוכחי יופיע כאן...
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 overflow-auto rounded bg-slate-900 border border-slate-850 p-3 text-left" style="direction: ltr;">
+                                        <pre class="m-0 p-0 bg-transparent text-xs text-sky-300 font-mono leading-relaxed" id="sim2-code-content">
+// Code block
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 3: CONTAINERS & MAMAN 02
+            =========================================== -->
+            <div id="containers-maman02-tab" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-700 text-blue-50 rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 10.3
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight mb-4">קונטיינרים וממ"ן 02</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        הבנת בידוד תהליכים בעזרת Namespaces ו-cgroups, והתמודדות עם מיפוי PIDs בממ"ן 02.
+                    </p>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-02">
             <div class="border-b-4 border-cyan-300 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">6. ממ"ן 02: המעבר מ"עולם שטוח" לעולם של "בועות" (קונטיינרים)</h2>
             </div>
@@ -1045,9 +1450,10 @@
                 </p>
             </div>
         </section>
-
-        <!-- SECTION 7: MAMAN 02 IMPLEMENTATION -->
-        <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-02-implementation">
+                    
+                    <hr class="my-12 border-slate-200" />
+                    
+                    <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-02-implementation">
             <div class="border-b-4 border-indigo-400 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">7. ממ"ן 02: מדריך יישום מעשי (שלב אחר שלב)</h2>
             </div>
@@ -1221,9 +1627,116 @@
 
             </div>
         </section>
+                    
+                    <!-- SIMULATOR 3: The Dual-Identity Matrix -->
+                    <div class="mt-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 10.3: מטריצת הזהות הכפולה (The Dual-Identity Matrix)</span>
+                        </div>
+                        
+                        <div class="p-6">
+                            <p class="text-slate-300 text-sm mb-6">
+                                בממ"ן 02, המטרה היא להבטיח שתהליכים בתוך קונטיינר יראו PIDs עצמאיים (החל מ-1), 
+                                בעוד הליבה המארחת מזהה אותם ב-PIDs האמיתיים שלהם (מזהה חיצוני - <code>extpid</code>). 
+                                הסימולטור ממחיש את המיפוי הדו-כיווני שמתבצע בגרעין. לחצו על התהליכים וראו את מיפוי ה-PID!
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <!-- Host OS View (Right) -->
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                    <h4 class="text-sm font-bold text-sky-400 border-b border-slate-800 pb-2 mb-3">מערכת ההפעלה המארחת (Host OS Perspective)</h4>
+                                    <div class="space-y-2 text-xs" style="direction: ltr; text-align: left;">
+                                        <div class="bg-slate-900 p-2 rounded text-slate-500 border border-slate-850 flex justify-between">
+                                            <span>systemd [PID: 1]</span>
+                                            <span class="text-slate-600">Core Services</span>
+                                        </div>
+                                        <div class="bg-slate-900 p-2 rounded text-slate-500 border border-slate-850 flex justify-between">
+                                            <span>dockerd [PID: 840]</span>
+                                            <span class="text-slate-600">Docker Engine</span>
+                                        </div>
+                                        <!-- Interactive processes -->
+                                        <div id="host-p4520" onclick="selectContainerProcess('p4520')" class="bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all">
+                                            <span class="font-bold">container-init [PID: 4520]</span>
+                                            <span class="text-amber-500 font-mono text-[10px] bg-amber-950/50 px-2 py-0.5 rounded border border-amber-900">Mapped to Container PID 1</span>
+                                        </div>
+                                        <div id="host-p4522" onclick="selectContainerProcess('p4522')" class="bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all">
+                                            <span class="font-bold">python3 app.py [PID: 4522]</span>
+                                            <span class="text-amber-500 font-mono text-[10px] bg-amber-950/50 px-2 py-0.5 rounded border border-amber-900">Mapped to Container PID 2</span>
+                                        </div>
+                                        <div id="host-p4525" onclick="selectContainerProcess('p4525')" class="bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all">
+                                            <span class="font-bold">postgres [PID: 4525]</span>
+                                            <span class="text-amber-500 font-mono text-[10px] bg-amber-950/50 px-2 py-0.5 rounded border border-amber-900">Mapped to Container PID 3</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Container A View (Left) -->
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                    <h4 class="text-sm font-bold text-emerald-400 border-b border-slate-800 pb-2 mb-3">מבט מתוך הקונטיינר (Container PID Namespace)</h4>
+                                    <div class="space-y-2 text-xs" style="direction: ltr; text-align: left;">
+                                        <!-- Container PIDs starting from 1 -->
+                                        <div id="cont-p1" onclick="selectContainerProcess('p4520')" class="bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all">
+                                            <span class="font-bold">/sbin/init [PID: 1]</span>
+                                            <span class="text-sky-500 font-mono text-[10px]">Real Host PID: 4520</span>
+                                        </div>
+                                        <div id="cont-p2" onclick="selectContainerProcess('p4522')" class="bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all">
+                                            <span class="font-bold">python3 app.py [PID: 2]</span>
+                                            <span class="text-sky-500 font-mono text-[10px]">Real Host PID: 4522</span>
+                                        </div>
+                                        <div id="cont-p3" onclick="selectContainerProcess('p4525')" class="bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all">
+                                            <span class="font-bold">postgres [PID: 3]</span>
+                                            <span class="text-sky-500 font-mono text-[10px]">Real Host PID: 4525</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Debugging Challenge Question -->
+                            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                                <h5 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2">
+                                    <span>🧠</span> שאלת הבנה לממ"ן 02:
+                                </h5>
+                                <p class="text-slate-300 text-xs mb-4">
+                                    תהליך בתוך קונטיינר מריץ בדיקה: <code>if(myproc()->pid == 1)</code> ומזהה את עצמו כ-init. 
+                                    כיצד נמנע מתהליך בקונטיינר א' להשפיע בטעות על תהליך בקונטיינר ב' (שגם לו יש PID 1 פנימי) ברמת הליבה?
+                                </p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <button onclick="answerMaman02Quiz(1)" class="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded text-right text-xs text-slate-300 hover:text-white transition-all active:scale-[0.98]">
+                                        א. הליבה מפרידה ביניהם באמצעות השוואה של ה-<code>extpid</code> (ה-PID החיצוני במערכת המארחת) שהוא תמיד ייחודי.
+                                    </button>
+                                    <button onclick="answerMaman02Quiz(2)" class="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded text-right text-xs text-slate-300 hover:text-white transition-all active:scale-[0.98]">
+                                        ב. הליבה משתמשת בשם התהליך (name) כדי להחליט למי לשלוח סיגנל.
+                                    </button>
+                                    <button onclick="answerMaman02Quiz(3)" class="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded text-right text-xs text-slate-300 hover:text-white transition-all active:scale-[0.98]">
+                                        ג. אין דרך להפריד ביניהם, הליבה של xv6 קורסת אם יש שני תהליכים עם PID 1 במקביל.
+                                    </button>
+                                </div>
+                                <div id="sim3-quiz-feedback" class="mt-4 p-3 rounded text-xs hidden">
+                                    <!-- Dynamic feedback -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- SECTION 8: MAMAN 03 - MOUNT NAMESPACE -->
-        <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-03">
+            <!-- ==========================================
+                 TAB 4: MOUNT NAMESPACES & MAMAN 03
+            =========================================== -->
+            <div id="mount-maman03-tab" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-700 text-blue-50 rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 10.4
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight mb-4">מרחבי שמות של עגינה וממ"ן 03</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        חקירת עגינת קבצים (Mounts), שיתוף ובידוד מערכות קבצים, וניהול נכון של מוני ייחוסים (Reference Counting) למניעת זליגות זיכרון.
+                    </p>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="maman-03">
             <div class="border-b-4 border-teal-400 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">8. ממ"ן 03: מאשליית הזהות לאשליית התיקיות (Mount Namespace)</h2>
             </div>
@@ -1382,9 +1895,86 @@
             </div>
 
         </section>
+                    
+                    <!-- SIMULATOR 4: The Zombie Leak Simulator -->
+                    <div class="mt-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 10.4: מדמה זליגות וזומבים של עגינה (The Zombie Leak Simulator)</span>
+                        </div>
+                        
+                        <div class="p-6">
+                            <p class="text-slate-300 text-sm mb-6">
+                                בממ"ן 03, אתם בונים מנגנון עגינה (Mount Point) מבודד לכל קונטיינר. 
+                                כאשר קונטיינר משתמש במערכת קבצים, הליבה מחזיקה מונה ייחוסים (Reference Counter) עבור העגינה. 
+                                אם תמחקו קונטיינר או תפתחו קובץ מבלי לשחרר את הייחוסים כראוי, ה-Mount יישאר בזיכרון הליבה כ"זומבי" - מה שיגרום לנזילת זיכרון! 
+                                נסו לנהל את המערכת ושימו לב שלא לגרום לקריסת ליבה (Kernel Panic).
+                            </p>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+                                <!-- Control board (Right) -->
+                                <div class="lg:col-span-5 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between h-[300px]">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-400 border-b border-slate-850 pb-2 mb-4">לוח בקרה (Controls)</h4>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <button onclick="sim4CloneNS()" class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded text-xs font-bold transition-all active:scale-95">
+                                                👥 Clone Namespace
+                                            </button>
+                                            <button onclick="sim4DestroyNS()" class="bg-red-900/60 hover:bg-red-900 text-red-200 p-2.5 rounded text-xs font-bold border border-red-800 transition-all active:scale-95">
+                                                ☠️ Destroy Container NS
+                                            </button>
+                                            <button onclick="sim4OpenFile()" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded text-xs font-bold transition-all active:scale-95">
+                                                🔓 Open File in /mnt
+                                            </button>
+                                            <button onclick="sim4CloseFile()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2.5 rounded text-xs font-bold transition-all active:scale-95">
+                                                🔒 Close File Descriptor
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border-t border-slate-850 pt-3">
+                                        <div class="flex justify-between items-center text-xs text-slate-400 mb-1">
+                                            <span>מצב זיכרון הליבה (Kernel Mount Tables):</span>
+                                            <span id="sim4-leak-counter" class="text-emerald-400 font-bold">0 Leaks</span>
+                                        </div>
+                                        <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-805">
+                                            <div id="sim4-memory-bar" class="bg-emerald-500 h-full w-[10%]" style="transition: width 0.3s ease;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Visual board (Left) -->
+                                <div class="lg:col-span-7 bg-slate-950 p-4 rounded-xl border border-slate-800 h-[300px] flex flex-col justify-between">
+                                    <h4 class="text-xs font-bold text-slate-400 border-b border-slate-850 pb-2 mb-2">עגינות פעילות במערכת (Mount Points Table)</h4>
+                                    <div class="flex-1 overflow-y-auto space-y-2 text-xs" style="direction: ltr; text-align: left;" id="sim4-mount-table">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="sim4-console" class="sim-console">
+                                > Kernal initialized. Root mount count: 1
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- SECTION 9: DOCKER & CODESPACES -->
-        <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="docker">
+            <!-- ==========================================
+                 TAB 5: DOCKER & CLOUD
+            =========================================== -->
+            <div id="docker-cloud-tab" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-700 text-blue-50 rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 10.5
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight mb-4">דוקר וסביבות ענן</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        מעגל הפיתוח של Docker: תיאוריית השכבות (Layers), מנגנון שכפול-בכתיבה (Copy-on-Write) ושימוש ב-GitHub Codespaces כמטחנת ענן פיתוחית.
+                    </p>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <section class="space-y-10 pt-12 border-t-4 border-slate-200" id="docker">
             <div class="border-b-4 border-blue-400 pb-2">
                 <h2 class="text-3xl font-bold text-slate-900">9. עולם הקונטיינרים המציאותי: מבוא לדוקר (Docker)</h2>
             </div>
@@ -1626,12 +2216,934 @@
             </div>
 
         </section>
+                    
+                    <!-- SIMULATOR 5: The Docker Bakery -->
+                    <div class="mt-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 10.5: מאפיית השכבות של דוקר (The Docker Bakery)</span>
+                        </div>
+                        
+                        <div class="p-6">
+                            <p class="text-slate-300 text-sm mb-6">
+                                דוקר משתמש במערכת קבצים בשכבות (UnionFS). ה-Image הוא רק אוסף של שכבות קריאה-בלבד (Read-Only) המוערמות זו על גבי זו. 
+                                ברגע שמריצים קונטיינר, מתווספת שכבה דקה מאוד של כתיבה-וקריאה (Read-Write Layer). 
+                                לחצו על השלבים כדי לבנות תמונה (Build) ולהריץ ממנה קונטיינרים נפרדים, וצפו בשיטת ה-Copy-on-Write בפעולה!
+                            </p>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[460px] lg:h-[400px]">
+                                <!-- Column 1: Dockerfile (Recipe) -->
+                                <div class="lg:col-span-4 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between h-full">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-400 border-b border-slate-850 pb-2 mb-3">1. מתכון: Dockerfile</h4>
+                                        <div class="bg-slate-900 rounded p-3 font-mono text-xs text-sky-400 space-y-1 select-none" style="direction: ltr; text-align: left;">
+                                            <div><span class="text-amber-500">FROM</span> node:18-alpine</div>
+                                            <div><span class="text-amber-500">WORKDIR</span> /usr/src/app</div>
+                                            <div><span class="text-amber-500">COPY</span> package*.json ./</div>
+                                            <div><span class="text-amber-500">RUN</span> npm install</div>
+                                            <div><span class="text-amber-500">COPY</span> . .</div>
+                                            <div><span class="text-amber-500">CMD</span> ["node", "server.js"]</div>
+                                        </div>
+                                    </div>
+                                    <button onclick="sim5BuildImage()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5">
+                                        🥖 בנה תמונה (Build Image)
+                                    </button>
+                                </div>
+                                
+                                <!-- Column 2: Image Layers (Frozen Cake) -->
+                                <div class="lg:col-span-4 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col h-full overflow-hidden">
+                                    <h4 class="text-xs font-bold text-slate-400 border-b border-slate-850 pb-2 mb-3">2. תמונת דוקר (Read-Only layers)</h4>
+                                    <div class="flex-1 flex flex-col-reverse gap-1.5 overflow-y-auto" id="sim5-image-stack">
+                                        <div class="text-slate-500 text-xs text-center my-auto">לחצו על Build כדי ליצור את השכבות הקפואות...</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Column 3: Live Containers -->
+                                <div class="lg:col-span-4 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between h-full">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-400 border-b border-slate-850 pb-2 mb-3">3. קונטיינרים רצים (Writable Layers)</h4>
+                                        <div class="space-y-3 overflow-y-auto h-[230px]" id="sim5-container-list">
+                                            <!-- Container instances with RW tops -->
+                                            <div class="text-slate-500 text-xs text-center my-auto pt-10">אין קונטיינרים פעילים.</div>
+                                        </div>
+                                    </div>
+                                    <button onclick="sim5RunContainer()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5" id="sim5-run-btn" disabled>
+                                        🚀 הרץ קונטיינר (Run Container)
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="sim5-console" class="sim-console mt-4">
+                                > Docker daemon started. Ready to build.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+        </div>
     </main>
 
-    <footer class="bg-slate-900 text-slate-400 py-8 text-center mt-12">
-        <p dir="rtl">נוצר בארכיטקטורת Tailwind CSS ע"י Gem 3</p>
-    </footer>
+    <!-- JS Logic for chapter 10 -->
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+            const overlay = document.getElementById('mobile-overlay');
+            if (document.body.classList.contains('sidebar-collapsed')) {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('opacity-100');
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            }
+        }
 
+        function toggleSidebarDesktop() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        // Tab Switching
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active-nav');
+            });
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) activeBtn.classList.add('active-nav');
+            
+            // Scroll main content area to top on tab switch
+            document.querySelector('main').scrollTop = 0;
+            
+            // On mobile, close sidebar after click
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('sidebar-collapsed');
+                document.getElementById('mobile-overlay').classList.add('hidden');
+            }
+        }
+        
+        // General Console Logger
+        function logToSimConsole(consoleId, msg, color = '#10b981') {
+            const cons = document.getElementById(consoleId);
+            if (!cons) return;
+            const line = document.createElement('div');
+            line.style.color = color;
+            line.className = 'font-mono my-0.5';
+            line.innerHTML = '> ' + msg;
+            cons.appendChild(line);
+            cons.scrollTop = cons.scrollHeight;
+        }
+
+        // ==========================================
+        // SIMULATOR 1: Terminal Tree Navigator JS
+        // ==========================================
+        let sim1Fs = {
+            name: 'root',
+            type: 'dir',
+            children: {
+                'home': {
+                    name: 'home',
+                    type: 'dir',
+                    children: {
+                        'student': {
+                            name: 'student',
+                            type: 'dir',
+                            children: {
+                                'maman01': { name: 'maman01', type: 'dir', children: {} },
+                                'readme.txt': { name: 'readme.txt', type: 'file', content: 'ברוכים הבאים ל-xv6! כאן תממשו קריאות מערכת בממ"ן 01.' }
+                            }
+                        }
+                    }
+                },
+                'bin': {
+                    name: 'bin',
+                    type: 'dir',
+                    children: {
+                        'ls': { name: 'ls', type: 'file', content: 'Binary executable for listing directories' },
+                        'cat': { name: 'cat', type: 'file', content: 'Binary executable for printing file contents' },
+                        'mkdir': { name: 'mkdir', type: 'file', content: 'Binary executable for creating directories' }
+                    }
+                }
+            }
+        };
+
+        let sim1Path = ['home', 'student'];
+
+        function sim1GetDirByPath(pathArray) {
+            let curr = sim1Fs;
+            for (let p of pathArray) {
+                if (curr.children && curr.children[p] && curr.children[p].type === 'dir') {
+                    curr = curr.children[p];
+                } else {
+                    return null;
+                }
+            }
+            return curr;
+        }
+
+        function sim1RenderTree() {
+            const container = document.getElementById('sim1-tree-container');
+            if (!container) return;
+            
+            function buildHTML(node, path) {
+                let isCurrent = (path.join('/') === sim1Path.join('/'));
+                let highlightClass = isCurrent ? 'text-sky-400 font-bold bg-sky-950/60 px-2 py-0.5 rounded border border-sky-900/40' : 'text-slate-300';
+                
+                let html = `<div class="my-1.5">`;
+                if (node.type === 'dir') {
+                    // Convert path to JS string array for onclick call
+                    let pathArgs = path.map(p => `'${p}'`).join(',');
+                    html += `<span class="${highlightClass} inline-flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors" onclick="sim1SelectPath([${pathArgs}])">
+                        <span class="text-amber-500">📁</span> <span class="font-mono">${node.name}</span>
+                    </span>`;
+                    if (node.children && Object.keys(node.children).length > 0) {
+                        html += `<div class="mr-4 pr-3 border-r border-slate-800 mt-1">`;
+                        for (let childName in node.children) {
+                            html += buildHTML(node.children[childName], [...path, childName]);
+                        }
+                        html += `</div>`;
+                    }
+                } else {
+                    html += `<span class="text-slate-400 inline-flex items-center gap-1.5 mr-2">
+                        <span>📄</span> <span class="font-mono">${node.name}</span>
+                    </span>`;
+                }
+                html += `</div>`;
+                return html;
+            }
+            
+            container.innerHTML = buildHTML({ name: '/', type: 'dir', children: sim1Fs.children }, []);
+        }
+
+        function sim1SelectPath(path) {
+            sim1Path = path;
+            sim1UpdatePrompt();
+            sim1RenderTree();
+            sim1LogOutput(`student@xv6-academy:~$ cd /${sim1Path.join('/')}`, '#38bdf8');
+        }
+
+        function sim1UpdatePrompt() {
+            const prompt = document.getElementById('sim1-prompt');
+            if (!prompt) return;
+            let pathStr = sim1Path.length === 0 ? '/' : '/' + sim1Path.join('/');
+            prompt.innerText = `student@xv6-academy:${pathStr}$`;
+        }
+
+        function sim1LogOutput(text, color = '#e2e8f0') {
+            const output = document.getElementById('sim1-term-output');
+            if (!output) return;
+            const div = document.createElement('div');
+            div.style.color = color;
+            div.className = 'font-mono text-xs my-0.5';
+            div.innerText = text;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function sim1ExecCommand(line) {
+            line = line.trim();
+            if (!line) return;
+            
+            sim1LogOutput(`$ ${line}`, '#38bdf8');
+            
+            let parts = line.split(/\s+/);
+            let cmd = parts[0].toLowerCase();
+            let args = parts.slice(1);
+            
+            let currentDir = sim1GetDirByPath(sim1Path);
+            
+            if (cmd === 'help') {
+                sim1LogOutput('Available commands: ls, cd, mkdir, cat, pwd, clear, help', '#10b981');
+            } else if (cmd === 'pwd') {
+                sim1LogOutput(sim1Path.length === 0 ? '/' : '/' + sim1Path.join('/'));
+            } else if (cmd === 'clear') {
+                const output = document.getElementById('sim1-term-output');
+                if (output) output.innerHTML = '';
+            } else if (cmd === 'ls') {
+                if (!currentDir || !currentDir.children || Object.keys(currentDir.children).length === 0) {
+                    sim1LogOutput('(empty directory)', '#64748b');
+                } else {
+                    let files = [];
+                    let dirs = [];
+                    for (let name in currentDir.children) {
+                        let node = currentDir.children[name];
+                        if (node.type === 'dir') {
+                            dirs.push(name + '/');
+                        } else {
+                            files.push(name);
+                        }
+                    }
+                    if (dirs.length > 0) sim1LogOutput(dirs.join('   '), '#f59e0b');
+                    if (files.length > 0) sim1LogOutput(files.join('   '), '#cbd5e1');
+                }
+            } else if (cmd === 'cd') {
+                let dest = args[0];
+                if (!dest || dest === '~') {
+                    sim1Path = ['home', 'student'];
+                } else if (dest === '/') {
+                    sim1Path = [];
+                } else if (dest === '..') {
+                    if (sim1Path.length > 0) {
+                        sim1Path.pop();
+                    }
+                } else {
+                    if (currentDir.children[dest] && currentDir.children[dest].type === 'dir') {
+                        sim1Path.push(dest);
+                    } else {
+                        sim1LogOutput(`cd: no such file or directory: ${dest}`, '#ef4444');
+                    }
+                }
+                sim1UpdatePrompt();
+                sim1RenderTree();
+            } else if (cmd === 'mkdir') {
+                let name = args[0];
+                if (!name) {
+                    sim1LogOutput('mkdir: missing operand', '#ef4444');
+                } else if (currentDir.children[name]) {
+                    sim1LogOutput(`mkdir: cannot create directory '${name}': File exists`, '#ef4444');
+                } else {
+                    currentDir.children[name] = {
+                        name: name,
+                        type: 'dir',
+                        children: {}
+                    };
+                    sim1LogOutput(`Directory '${name}' created successfully.`, '#10b981');
+                    sim1RenderTree();
+                }
+            } else if (cmd === 'cat') {
+                let name = args[0];
+                if (!name) {
+                    sim1LogOutput('cat: missing file name', '#ef4444');
+                } else {
+                    let node = currentDir.children[name];
+                    if (node && node.type === 'file') {
+                        sim1LogOutput(node.content || '(empty file)');
+                    } else if (node && node.type === 'dir') {
+                        sim1LogOutput(`cat: ${name}: Is a directory`, '#ef4444');
+                    } else {
+                        sim1LogOutput(`cat: ${name}: No such file or directory`, '#ef4444');
+                    }
+                }
+            } else {
+                sim1LogOutput(`sh: command not found: ${cmd}. Type 'help' for commands.`, '#ef4444');
+            }
+        }
+
+        // ==========================================
+        // SIMULATOR 2: The Syscall Diver JS
+        // ==========================================
+        let sim2CurrentStep = 0;
+        const sim2Steps = [
+            {
+                file: 'user/ps.c',
+                space: 'User Space',
+                spaceColor: 'bg-blue-900/50 text-blue-300',
+                exp: 'התהליך של המשתמש קורא לפונקציה ps() שהיא קריאת מערכת. הקוד הזה מתקמפל לסביבת המשתמש (User Mode). מאחר שאין לו הרשאה לגעת בטבלאות הגרעין הפיזיות, הקריאה צריכה לחצות את גבול ה-User-Kernel.',
+                code: `// user/ps.c
+#include "kernel/types.h"
+#include "user/user.h"
+
+int main(int argc, char *argv[]) {
+    ps();  // ביצוע קריאת המערכת
+    exit(0);
+}`
+            },
+            {
+                file: 'user/usys.S',
+                space: 'User Space (Assembly)',
+                spaceColor: 'bg-blue-900/50 text-blue-300',
+                exp: 'הקריאה מנותבת למעטפת האסמבלי שנוצרת אוטומטית. בארכיטקטורת RISC-V, הפקודה li טוענת את מספר ה-syscall (הקבוע SYS_ps) לתוך הרגיסטר a7, ואז פקודת ecall פונה ישירות לחומרה ומחוללת Trap (פסיקה יזומה) שמעבירה את המעבד למצב גרעין (Kernel Mode).',
+                code: `# user/usys.S (Generated stub)
+.global ps
+ps:
+ li a7, SYS_ps   # טען מזהה קריאה לרגיסטר a7
+ ecall           # מעבר חומרה (Trap) לגרעין
+ ret`
+            },
+            {
+                file: 'kernel/syscall.c',
+                space: 'Kernel Space',
+                spaceColor: 'bg-emerald-900/50 text-emerald-300',
+                exp: 'פונקציית ה-syscall המרכזית בגרעין תופסת את ה-Trap. היא ניגשת ל-trapframe של התהליך הנוכחי, שולפת את מספר הקריאה מהרגיסטר a7, ובודקת בטבלת הפונקציות הממופות. אם המזהה קיים, היא מריצה את עטיפת הפונקציה (במקרה זה sys_ps).',
+                code: `// kernel/syscall.c
+void syscall(void) {
+  int num;
+  struct proc *p = myproc();
+  num = p->trapframe->a7; // שליפת ערך הרגיסטר a7
+  
+  if(num > 0 && num < NSYSCALL && syscalls[num]) {
+    // השמת ערך ההחזרה ברגיסטר a0 של התהליך
+    p->trapframe->a0 = syscalls[num]();
+  } else {
+    p->trapframe->a0 = -1;
+  }
+}`
+            },
+            {
+                file: 'kernel/sysproc.c',
+                space: 'Kernel Space (Wrapper)',
+                spaceColor: 'bg-emerald-900/50 text-emerald-300',
+                exp: 'כאן מיושמת פונקציית המעטפת sys_ps(). תפקיד פונקציות המעטפת בקובץ זה הוא לקרוא פרמטרים ששלח המשתמש מהרגיסטרים (a0, a1 וכו\') בעזרת פונקציות כמו argint, ולאחר מכן לקרוא למימוש הליבה האמיתי ב-proc.c.',
+                code: `// kernel/sysproc.c
+uint64 sys_ps(void) {
+  // קריאה למימוש הליבה המרכזי שסורק את התהליכים
+  return ps(); 
+}`
+            },
+            {
+                file: 'kernel/proc.c',
+                space: 'Kernel Space (Core Logic)',
+                spaceColor: 'bg-emerald-900/50 text-emerald-300',
+                exp: 'הגענו לקוד הגרעין האמיתי! כאן הפונקציה ps() נועלת וסורקת את מערך התהליכים proc[NPROC] שנמצא בזיכרון המוגן של הגרעין. היא מדפיסה את המצב (RUNNING, SLEEPING, וכו\'), ה-PID והשם של כל תהליך פעיל, ואז מחזירה 0. השליטה חוזרת ל-syscall.c שמוריד את רמת הזכויות ומחזיר את המעבד למרחב המשתמש.',
+                code: `// kernel/proc.c
+int ps(void) {
+  struct proc *p;
+  printf("name\tpid\tstate\n");
+  for(p = proc; p < &proc[NPROC]; p++){
+    acquire(&p->lock); // נעילת התהליך למניעת תחרות
+    if(p->state != UNUSED){
+      printf("%s\t%d\t%s\n", p->name, p->pid, state_names[p->state]);
+    }
+    release(&p->lock);
+  }
+  return 0;
+}`
+            }
+        ];
+
+        function goToSyscallStep(stepIndex) {
+            sim2CurrentStep = stepIndex;
+            sim2UpdateVisuals();
+        }
+
+        function nextSyscallStep() {
+            if (sim2CurrentStep < sim2Steps.length - 1) {
+                sim2CurrentStep++;
+                sim2UpdateVisuals();
+            }
+        }
+
+        function prevSyscallStep() {
+            if (sim2CurrentStep > 0) {
+                sim2CurrentStep--;
+                sim2UpdateVisuals();
+            }
+        }
+
+        function resetSyscallSim() {
+            sim2CurrentStep = 0;
+            sim2UpdateVisuals();
+        }
+
+        function sim2UpdateVisuals() {
+            // Update step nodes styling
+            for (let i = 0; i < sim2Steps.length; i++) {
+                const node = document.getElementById('sim2-step-' + i);
+                if (!node) continue;
+                
+                if (i === sim2CurrentStep) {
+                    node.className = 'p-3 rounded-lg border border-blue-500 bg-blue-950/40 text-white shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-all flex items-start gap-2.5 cursor-pointer scale-[1.02]';
+                    const numBadge = node.querySelector('span');
+                    if (numBadge) numBadge.className = 'bg-blue-600 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold font-mono text-white';
+                } else {
+                    node.className = 'p-3 rounded-lg border border-slate-800 bg-slate-950/40 text-slate-400 transition-all flex items-start gap-2.5 cursor-pointer hover:bg-slate-900/50';
+                    const numBadge = node.querySelector('span');
+                    if (numBadge) numBadge.className = 'bg-slate-800 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold font-mono text-slate-400';
+                }
+            }
+
+            // Update details
+            const step = sim2Steps[sim2CurrentStep];
+            document.getElementById('sim2-file-title').innerText = step.file;
+            document.getElementById('sim2-space-indicator').innerText = step.space;
+            document.getElementById('sim2-space-indicator').className = step.spaceColor + ' text-[10px] px-2 py-0.5 rounded font-mono';
+            document.getElementById('sim2-explanation').innerText = step.exp;
+            document.getElementById('sim2-code-content').innerText = step.code;
+
+            // Next button control
+            const nextBtn = document.getElementById('sim2-next-btn');
+            if (sim2CurrentStep === sim2Steps.length - 1) {
+                nextBtn.innerText = 'סיום';
+                nextBtn.disabled = true;
+                nextBtn.className = 'flex-1 bg-slate-700 text-slate-500 py-1.5 rounded text-xs font-bold cursor-not-allowed';
+            } else {
+                nextBtn.innerText = 'הבא';
+                nextBtn.disabled = false;
+                nextBtn.className = 'flex-1 bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded text-xs font-bold transition-transform active:scale-95';
+            }
+        }
+
+        // ==========================================
+        // SIMULATOR 3: The Dual-Identity Matrix JS
+        // ==========================================
+        let selectedProc = null;
+        const procMappings = {
+            'p4520': { hostPid: 4520, contPid: 1, cmd: 'container-init (/sbin/init)', detail: 'זהו תהליך האתחול של הקונטיינר. בתוך ה-Namespace שלו, הוא חושב שהוא PID 1. בליבה המארחת הוא תהליך רגיל לחלוטין עם PID 4520.' },
+            'p4522': { hostPid: 4522, contPid: 2, cmd: 'python3 app.py', detail: 'תוכנת שרת המשתמש. מורצת על ידי ה-init של הקונטיינר. רואה את עצמה כ-PID 2 בקונטיינר, ומיוצגת כ-4522 על המחשב המארח.' },
+            'p4525': { hostPid: 4525, contPid: 3, cmd: 'postgres', detail: 'שרת מסד הנתונים שרץ בתוך הקונטיינר. בתוך סביבת הקונטיינר הוא PID 3, ובמערכת המארחת הוא PID 4525.' }
+        };
+
+        function selectContainerProcess(id) {
+            selectedProc = id;
+            
+            // Reset active states
+            const hostIds = ['p4520', 'p4522', 'p4525'];
+            hostIds.forEach(hid => {
+                const el = document.getElementById('host-' + hid);
+                if (el) el.className = 'bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all';
+            });
+            const contIds = ['cont-p1', 'cont-p2', 'cont-p3'];
+            contIds.forEach((cid, index) => {
+                const el = document.getElementById(cid);
+                if (el) el.className = 'bg-slate-900 hover:bg-slate-800/80 p-2.5 rounded text-slate-300 border border-slate-700 flex justify-between cursor-pointer transition-all';
+            });
+
+            // Highlight chosen
+            const hostEl = document.getElementById('host-' + id);
+            if (hostEl) {
+                hostEl.className = 'bg-blue-950 border-2 border-blue-500 p-2.5 rounded text-white flex justify-between cursor-pointer transition-all shadow-[0_0_12px_rgba(59,130,246,0.2)]';
+            }
+
+            // Map id to cont element
+            let contElId = '';
+            if (id === 'p4520') contElId = 'cont-p1';
+            else if (id === 'p4522') contElId = 'cont-p2';
+            else if (id === 'p4525') contElId = 'cont-p3';
+
+            const contEl = document.getElementById(contElId);
+            if (contEl) {
+                contEl.className = 'bg-emerald-950 border-2 border-emerald-500 p-2.5 rounded text-white flex justify-between cursor-pointer transition-all shadow-[0_0_12px_rgba(16,185,129,0.2)]';
+            }
+
+            // Show feedback/detail
+            const mapping = procMappings[id];
+            const feedback = document.getElementById('sim3-quiz-feedback');
+            feedback.classList.remove('hidden');
+            feedback.className = 'mt-4 p-3 rounded text-xs bg-slate-900 border border-blue-900/50 text-slate-200';
+            feedback.innerHTML = `<strong>📡 מיפוי פעיל:</strong> ${mapping.cmd} | <strong>PID במארח (Host):</strong> ${mapping.hostPid} ↔️ <strong>PID בקונטיינר:</strong> ${mapping.contPid}<br><span class="text-slate-400 block mt-1">${mapping.detail}</span>`;
+        }
+
+        function answerMaman02Quiz(answerIndex) {
+            const feedback = document.getElementById('sim3-quiz-feedback');
+            feedback.classList.remove('hidden');
+            
+            if (answerIndex === 1) {
+                feedback.className = 'mt-4 p-3 rounded text-xs bg-emerald-950/80 border border-emerald-500/50 text-emerald-200';
+                feedback.innerHTML = `<strong>✔️ תשובה נכונה!</strong> ה-extpid של התהליך הוא ה-PID הראשי במארח. מאחר שכל extpid הוא ייחודי לחלוטין בליבה, הליבה יכולה לבדוק למי שייכת הפעולה באמת ולמנוע זליגת הרשאות והשפעה בין קונטיינרים מבודדים, למרות שבתוך הקונטיינר לכל אחד מהם יש PID 1 פנימי.`;
+            } else {
+                feedback.className = 'mt-4 p-3 rounded text-xs bg-red-950/80 border border-red-500/50 text-red-200';
+                feedback.innerHTML = `<strong>❌ לא מדויק.</strong> חשבו על כך: שמות של תהליכים אינם ייחודיים (למשל, לשני קונטיינרים יכול להיות תהליך בשם sh). הליבה חייבת מזהה מספרי ייחודי ברמה הגלובלית - וזהו בדיוק תפקידו של ה-extpid שאתם מוסיפים למבנה התהליך בממ"ן 02!`;
+            }
+        }
+
+        // ==========================================
+        // SIMULATOR 4: The Zombie Leak Simulator JS
+        // ==========================================
+        let sim4Mounts = [
+            { id: 'm1', path: '/', source: '/dev/sda1', refCount: 1, visibleInHost: true, visibleInCont: true },
+            { id: 'm2', path: '/var/log', source: '/dev/sda2', refCount: 1, visibleInHost: true, visibleInCont: false }
+        ];
+        let sim4ContainerNSActive = false;
+        let sim4OpenFileActive = false;
+        let sim4Leaks = 0;
+
+        function sim4RenderMounts() {
+            const container = document.getElementById('sim4-mount-table');
+            if (!container) return;
+
+            let html = '';
+            sim4Mounts.forEach(m => {
+                let isZombie = (m.refCount > 0 && !m.visibleInHost && !sim4ContainerNSActive);
+                let bgClass = 'bg-slate-900 border-slate-850';
+                let statusText = 'Active';
+                let statusColor = 'text-sky-400';
+                
+                if (isZombie) {
+                    bgClass = 'bg-red-950/40 border-red-900/60 animate-pulse';
+                    statusText = '⚠️ ZOMBIE LEAK (No active Namespace uses this, but ref_count > 0!)';
+                    statusColor = 'text-red-400 font-bold';
+                } else if (m.refCount === 0) {
+                    bgClass = 'bg-slate-950 border-slate-900 opacity-40';
+                    statusText = 'Released (Will be freed)';
+                    statusColor = 'text-slate-500';
+                }
+
+                html += `
+                <div class="p-3 rounded border ${bgClass} flex justify-between items-center transition-all">
+                    <div>
+                        <div class="font-bold font-mono">${m.path} (${m.source})</div>
+                        <div class="text-[10px] ${statusColor} mt-1">${statusText}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] text-slate-500">References</div>
+                        <div class="text-lg font-black font-mono text-white">${m.refCount}</div>
+                    </div>
+                </div>`;
+            });
+            
+            container.innerHTML = html;
+
+            // Update memory meter
+            const leakCount = sim4Leaks;
+            document.getElementById('sim4-leak-counter').innerText = `${leakCount} Leaks`;
+            
+            const bar = document.getElementById('sim4-memory-bar');
+            let percentage = 10 + (leakCount * 30);
+            if (percentage > 100) percentage = 100;
+            
+            if (leakCount === 0) {
+                bar.className = 'bg-emerald-500 h-full w-[10%]';
+                document.getElementById('sim4-leak-counter').className = 'text-emerald-400 font-bold';
+            } else if (leakCount === 1) {
+                bar.className = 'bg-yellow-500 h-full w-[40%]';
+                document.getElementById('sim4-leak-counter').className = 'text-yellow-400 font-bold';
+            } else if (leakCount === 2) {
+                bar.className = 'bg-orange-500 h-full w-[70%]';
+                document.getElementById('sim4-leak-counter').className = 'text-orange-400 font-bold';
+            } else {
+                bar.className = 'bg-red-600 h-full w-[100%]';
+                document.getElementById('sim4-leak-counter').className = 'text-red-500 font-bold';
+            }
+            bar.style.width = percentage + '%';
+        }
+
+        function sim4CloneNS() {
+            if (sim4ContainerNSActive) {
+                logToSimConsole('sim4-console', 'Container namespace already cloned!', 'yellow');
+                return;
+            }
+            sim4ContainerNSActive = true;
+            
+            // Clone root mount: increment ref count
+            sim4Mounts[0].refCount++;
+            
+            // Mount a new mount inside container
+            sim4Mounts.push({
+                id: 'm3',
+                path: '/mnt/data',
+                source: '/dev/sdb1',
+                refCount: 1, // namespace reference
+                visibleInHost: false,
+                visibleInCont: true
+            });
+
+            logToSimConsole('sim4-console', 'Container Namespace created. Cloned mounts from host, created /mnt/data inside container.', '#10b981');
+            sim4RenderMounts();
+        }
+
+        function sim4DestroyNS() {
+            if (!sim4ContainerNSActive) {
+                logToSimConsole('sim4-console', 'No active container namespace to destroy!', 'yellow');
+                return;
+            }
+            sim4ContainerNSActive = false;
+            
+            // Decrement root ref count
+            sim4Mounts[0].refCount--;
+            
+            // Decrement container specific mounts
+            const m3Index = sim4Mounts.findIndex(m => m.id === 'm3');
+            if (m3Index !== -1) {
+                sim4Mounts[m3Index].refCount--;
+                sim4Mounts[m3Index].visibleInCont = false;
+                
+                // If references are still > 0 (e.g. file is open), it becomes a zombie leak!
+                if (sim4Mounts[m3Index].refCount > 0) {
+                    sim4Leaks++;
+                    logToSimConsole('sim4-console', '⚠️ WARNING: Namespace destroyed but /mnt/data ref_count > 0! Zombie Mount created in kernel memory!', 'red');
+                } else {
+                    // Remove from list
+                    sim4Mounts.splice(m3Index, 1);
+                    logToSimConsole('sim4-console', 'Container namespace destroyed successfully. Mounts released clean.', '#10b981');
+                }
+            }
+
+            if (sim4Leaks >= 3) {
+                logToSimConsole('sim4-console', '💥 KERNEL PANIC: Out of memory in mount tables! Leak limit exceeded.', 'red');
+                alert('💥 KERNEL PANIC! Out of memory in mount tables! Please reset the system.');
+            }
+            
+            sim4RenderMounts();
+        }
+
+        function sim4OpenFile() {
+            if (!sim4ContainerNSActive) {
+                logToSimConsole('sim4-console', 'No container active. Open file on host directory...', '#64748b');
+                return;
+            }
+            if (sim4OpenFileActive) {
+                logToSimConsole('sim4-console', 'File is already open!', 'yellow');
+                return;
+            }
+            sim4OpenFileActive = true;
+            
+            // Increment ref count of /mnt/data
+            const m3 = sim4Mounts.find(m => m.id === 'm3');
+            if (m3) {
+                m3.refCount++;
+                logToSimConsole('sim4-console', 'Process opened /mnt/data/config.json. Reference count incremented to ' + m3.refCount, '#38bdf8');
+            }
+            sim4RenderMounts();
+        }
+
+        function sim4CloseFile() {
+            if (!sim4OpenFileActive) {
+                logToSimConsole('sim4-console', 'No open file descriptors.', 'yellow');
+                return;
+            }
+            sim4OpenFileActive = false;
+            
+            // Decrement ref count of /mnt/data
+            const m3Index = sim4Mounts.findIndex(m => m.id === 'm3');
+            if (m3Index !== -1) {
+                const m3 = sim4Mounts[m3Index];
+                m3.refCount--;
+                logToSimConsole('sim4-console', 'File closed. Reference count decremented to ' + m3.refCount, '#38bdf8');
+                
+                // If refCount hits 0 and namespace is also dead, clear it up
+                if (m3.refCount === 0 && !sim4ContainerNSActive) {
+                    sim4Mounts.splice(m3Index, 1);
+                    sim4Leaks = Math.max(0, sim4Leaks - 1);
+                    logToSimConsole('sim4-console', 'Zombie mount resolved and memory freed!', '#10b981');
+                }
+            }
+            sim4RenderMounts();
+        }
+
+        // ==========================================
+        // SIMULATOR 5: The Docker Bakery JS
+        // ==========================================
+        let sim5ImageBuilt = false;
+        let sim5Containers = [];
+        let sim5ContainerCount = 0;
+        let sim5Cached = false;
+
+        function sim5BuildImage() {
+            const stack = document.getElementById('sim5-image-stack');
+            if (!stack) return;
+            
+            logToSimConsole('sim5-console', '================', '#475569');
+            if (sim5ImageBuilt) {
+                logToSimConsole('sim5-console', 'Building image again...', '#38bdf8');
+                logToSimConsole('sim5-console', '✔️ Step 1/6 : FROM node:18-alpine --> Using cache', '#10b981');
+                logToSimConsole('sim5-console', '✔️ Step 2/6 : WORKDIR /usr/src/app --> Using cache', '#10b981');
+                logToSimConsole('sim5-console', '✔️ Step 3/6 : COPY package*.json ./ --> Using cache', '#10b981');
+                logToSimConsole('sim5-console', '✔️ Step 4/6 : RUN npm install --> Using cache', '#10b981');
+                logToSimConsole('sim5-console', '✔️ Step 5/6 : COPY . . --> Using cache', '#10b981');
+                logToSimConsole('sim5-console', '✔️ Step 6/6 : CMD ["node", "server.js"] --> Using cache', '#10b981');
+                logToSimConsole('sim5-console', '✔️ Built image: node-app:latest (cached)', '#38bdf8');
+                return;
+            }
+
+            stack.innerHTML = '<div class="text-slate-500 text-xs text-center my-auto animate-pulse">בונה תמונה...</div>';
+            logToSimConsole('sim5-console', 'Starting Docker build command...', '#38bdf8');
+            
+            setTimeout(() => {
+                logToSimConsole('sim5-console', 'Step 1/6 : FROM node:18-alpine (Pulling base layer)', '#64748b');
+                setTimeout(() => {
+                    logToSimConsole('sim5-console', 'Step 2/6 : WORKDIR /usr/src/app (Created meta directory)', '#64748b');
+                    setTimeout(() => {
+                        logToSimConsole('sim5-console', 'Step 3/6 : COPY package*.json ./ (Copied dependency specs)', '#64748b');
+                        setTimeout(() => {
+                            logToSimConsole('sim5-console', 'Step 4/6 : RUN npm install (Downloading dependencies...)', '#64748b');
+                            setTimeout(() => {
+                                logToSimConsole('sim5-console', 'Step 5/6 : COPY . . (Added application source code)', '#64748b');
+                                setTimeout(() => {
+                                    logToSimConsole('sim5-console', 'Step 6/6 : CMD ["node", "server.js"] (Set default runtime)', '#64748b');
+                                    
+                                    // Render stack layers
+                                    stack.innerHTML = `
+                                        <div class="bg-blue-900/60 border border-blue-700 rounded p-2 text-center text-[10px] text-white">
+                                            <strong>CMD ["node", "server.js"]</strong><br>
+                                            <span class="text-[8px] text-blue-300">Layer 4 (Read-Only)</span>
+                                        </div>
+                                        <div class="bg-blue-900/60 border border-blue-700 rounded p-2 text-center text-[10px] text-white">
+                                            <strong>COPY . .</strong><br>
+                                            <span class="text-[8px] text-blue-300">Layer 3 (Read-Only) - Source code</span>
+                                        </div>
+                                        <div class="bg-blue-900/60 border border-blue-700 rounded p-2 text-center text-[10px] text-white">
+                                            <strong>RUN npm install</strong><br>
+                                            <span class="text-[8px] text-blue-300">Layer 2 (Read-Only) - node_modules</span>
+                                        </div>
+                                        <div class="bg-blue-950/80 border border-blue-900 rounded p-2 text-center text-[10px] text-white">
+                                            <strong>node:18-alpine</strong><br>
+                                            <span class="text-[8px] text-blue-400">Base OS Layer (Read-Only) - 170MB</span>
+                                        </div>
+                                    `;
+                                    
+                                    sim5ImageBuilt = true;
+                                    document.getElementById('sim5-run-btn').disabled = false;
+                                    logToSimConsole('sim5-console', 'Successfully built image node-app:latest 🎉', '#10b981');
+                                }, 400);
+                            }, 400);
+                        }, 500);
+                    }, 400);
+                }, 400);
+            }, 400);
+        }
+
+        function sim5RunContainer() {
+            if (!sim5ImageBuilt) return;
+            
+            sim5ContainerCount++;
+            let cid = 'c-' + sim5ContainerCount;
+            let cname = 'webapp-instance-' + sim5ContainerCount;
+            
+            sim5Containers.push({
+                id: cid,
+                name: cname,
+                hasWritten: false
+            });
+
+            logToSimConsole('sim5-console', `Container ${cname} started. Allocating writable layer.`, '#10b981');
+            sim5RenderContainers();
+        }
+
+        function sim5WriteToContainer(id) {
+            const c = sim5Containers.find(x => x.id === id);
+            if (!c) return;
+            
+            if (c.hasWritten) {
+                logToSimConsole('sim5-console', `Container ${c.name} already wrote file.`, 'yellow');
+                return;
+            }
+            
+            c.hasWritten = true;
+            logToSimConsole('sim5-console', `[Copy-On-Write] Process requested write to 'server.js' in container ${c.name}...`, 'yellow');
+            setTimeout(() => {
+                logToSimConsole('sim5-console', `[Copy-On-Write] Copying 'server.js' from Read-Only layer to Writable Layer...`, '#38bdf8');
+                setTimeout(() => {
+                    logToSimConsole('sim5-console', `✔️ File updated in container-specific Writable Layer! (Base image layer remains untouched).`, '#10b981');
+                    sim5RenderContainers();
+                }, 600);
+            }, 600);
+        }
+
+        function sim5RenderContainers() {
+            const containerList = document.getElementById('sim5-container-list');
+            if (!containerList) return;
+
+            if (sim5Containers.length === 0) {
+                containerList.innerHTML = '<div class="text-slate-500 text-xs text-center my-auto pt-10">אין קונטיינרים פעילים.</div>';
+                return;
+            }
+
+            let html = '';
+            sim5Containers.forEach(c => {
+                let writeBadge = c.hasWritten 
+                    ? '<span class="text-emerald-400 font-bold">Copy-on-Write Activated (server.js modified)</span>' 
+                    : '<span class="text-slate-500">Shared Read-Only layers. Writable layer empty.</span>';
+                
+                let writeBtn = c.hasWritten
+                    ? ''
+                    : `<button onclick="sim5WriteToContainer('${c.id}')" class="mt-2 w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-1 rounded text-[10px] font-bold transition-all active:scale-95">✏️ Write to server.js (Modify Code)</button>`;
+
+                html += `
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-300">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="font-bold font-mono text-emerald-400">${c.name}</span>
+                        <span class="bg-emerald-950 text-emerald-300 text-[8px] px-1.5 py-0.5 rounded font-mono">Running</span>
+                    </div>
+                    <div class="text-[9px] font-mono leading-tight space-y-1">
+                        <div class="bg-emerald-950/40 border border-emerald-900/60 p-1 rounded text-[8px] text-center text-white">
+                            <strong>Writable Layer (Read-Write)</strong><br>
+                            ${writeBadge}
+                        </div>
+                        <div class="bg-slate-950 border border-slate-900 p-1 text-[8px] text-center text-slate-500">
+                            <strong>Shared image: node-app:latest (Read-Only)</strong>
+                        </div>
+                    </div>
+                    ${writeBtn}
+                </div>`;
+            });
+
+            containerList.innerHTML = html;
+        }
+
+        // Initialize Simulators on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            sim1RenderTree();
+            sim1UpdatePrompt();
+            sim2UpdateVisuals();
+            sim4RenderMounts();
+            
+            // Bind Terminal Input Enter Key
+            const termInput = document.getElementById('sim1-input');
+            if (termInput) {
+                termInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const val = termInput.value;
+                        termInput.value = '';
+                        sim1ExecCommand(val);
+                    }
+                });
+            }
+
+            // Inject navigation buttons at the bottom of each tab
+            const tabs = [];
+            const seenIds = new Set();
+            document.querySelectorAll('.tab-content').forEach(el => {
+                const id = el.id;
+                if (id && !seenIds.has(id)) {
+                    seenIds.add(id);
+                    tabs.push(el);
+                }
+            });
+
+            tabs.forEach((tab, index) => {
+                const navContainer = document.createElement('div');
+                navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
+
+                // Previous Button
+                if (index > 0) {
+                    const prevTabId = tabs[index - 1].id;
+                    const prevBtn = document.createElement('button');
+                    prevBtn.onclick = () => showTab(prevTabId);
+                    prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    prevBtn.innerHTML = `
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>הקודם</span>
+                    `;
+                    navContainer.appendChild(prevBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
+
+                // Next Button
+                if (index < tabs.length - 1) {
+                    const nextTabId = tabs[index + 1].id;
+                    const nextBtn = document.createElement('button');
+                    nextBtn.onclick = () => showTab(nextTabId);
+                    nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    nextBtn.innerHTML = `
+                        <span>הבא</span>
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    `;
+                    navContainer.appendChild(nextBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
+
+                tab.appendChild(navContainer);
+            });
+
+            // Ensure desktop layout starts open
+            if (window.innerWidth >= 1024) {
+                document.body.classList.remove('sidebar-collapsed');
+            } else {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        });
+    </script>
 </body>
 </html>

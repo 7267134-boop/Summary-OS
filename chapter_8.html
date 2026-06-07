@@ -1,540 +1,2357 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>פרק 8: מערכות מרובות מעבדים</title>
+
+    <!-- Google Fonts Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        racket: '#9e0000',
+                        primary: '#1d4ed8',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        codebg: '#1e293b',
+                        highlight: '#38bdf8'
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MathJax for rendering math symbols -->
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap');
         body {
-            font-family: 'Heebo', sans-serif;
+            background-color: #f4f7fb;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        /* 3D Flashcards */
+        .flashcard-scene {
+            perspective: 1000px;
+            cursor: pointer;
+            min-height: 180px;
+        }
+
+        .flashcard-card {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard-scene.flipped .flashcard-card {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .flashcard-front {
+            background-color: #ffffff;
+            color: #1e293b;
+            border-top: 4px solid #2563eb;
+        }
+
+        .flashcard-back {
             background-color: #f8fafc;
+            color: #334155;
+            transform: rotateY(180deg);
+            border-top: 4px solid #94a3b8;
+        }
+
+        .flashcard-scene.flat-mode {
+            min-height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-card {
+            transform: none !important;
+            transform-style: flat;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .flashcard-scene.flat-mode .flashcard-face {
+            position: static;
+            backface-visibility: visible;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-front {
+            background-color: #eff6ff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-back {
+            transform: none;
+            background-color: #ffffff;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        pre {
+            direction: ltr;
+            text-align: left;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: 'Consolas', monospace;
+        }
+
+        .nav-group {
+            margin-top: 1.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 0.85rem 1rem 0.85rem 3rem;
+            border-radius: 0.5rem;
+            color: #cbd5e1;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            background-color: #1e293b;
+            color: #fff;
+            padding-right: 1.5rem;
+        }
+
+        .nav-btn.active-nav {
+            background-color: #2563eb;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            border-right: 4px solid #60a5fa;
+        }
+
+        .thought-box {
+            background: #fdf4ff;
+            border-right: 4px solid #d946ef;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .tip-box {
+            background: #fffbeb;
+            border-right: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .concept-box {
+            background: #f0fdf4;
+            border-right: 4px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .deep-dive {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-right: 4px solid #64748b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .dark-scroll::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        .dark-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        /* Sidebar collapse transition & styles */
+        aside {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .sidebar-collapsed aside {
+            width: 0 !important;
+            min-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        #sidebar-toggle-btn {
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+        }
+
+        /* When sidebar is open: button floats to the left of the sidebar (RTL right side) */
+        body:not(.sidebar-collapsed) #sidebar-toggle-btn {
+            right: 21rem;
+        }
+
+        body.sidebar-collapsed #sidebar-toggle-btn {
+            right: 1rem;
+        }
+
+        /* Premium navigation buttons styling */
+        .nav-btn-prev,
+        .nav-btn-next {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-btn-prev:hover {
+            transform: translateX(2px);
+        }
+
+        .nav-btn-next:hover {
+            transform: translateX(-2px);
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased leading-relaxed">
 
-    <div class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+<body class="text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-80 bg-darker text-slate-300 flex flex-col h-full shadow-2xl z-20 flex-shrink-0 border-l border-slate-800">
+        <div class="p-6 border-b border-slate-800 bg-darker">
+            <h1 class="text-3xl font-black text-white tracking-tight leading-tight">מערכות<br><span class="text-blue-500">הפעלה</span></h1>
+            <p class="text-xs text-slate-400 mt-2">פרק 8: מערכות מרובות מעבדים</p>
+
+            <div class="mt-4">
+                <a href="index.html" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 12l9-9m-9 9l9 9" />
+                    </svg>
+                    חזרה לדף הבית
+                </a>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto dark-scroll p-4 pb-20">
+            <div class="nav-group">
+                <div class="nav-group-title">נושאי הלימוד</div>
+                
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('intro-hardware')" id="btn-intro-hardware" class="nav-btn active-nav">
+                        <span>⚙️ 8.1.1 חומרה ומבוא</span>
+                    </button>
+                </div>
+                
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('os-types')" id="btn-os-types" class="nav-btn">
+                        <span>🖥️ 8.1.2 סוגי מערכות הפעלה</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('synchronization')" id="btn-synchronization" class="nav-btn">
+                        <span>🔌 8.1.3 סנכרון מעבדים</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('scheduling')" id="btn-scheduling" class="nav-btn">
+                        <span>📊 8.1.4 תזמון מעבדים</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('summary')" id="btn-summary" class="nav-btn">
+                        <span>📝 8.5 סיכום הפרק</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('review-questions')" id="btn-review-questions" class="nav-btn">
+                        <span>❓ שאלות חזרה</span>
+                    </button>
+                </div>
+
+                <hr class="border-slate-800 my-4 opacity-50">
+                
+                <button onclick="showTab('glossary')" id="btn-glossary" class="nav-btn">
+                    <span>📖 מילון מושגים מסכם</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto scroll-smooth bg-white relative">
+        <div class="max-w-5xl mx-auto p-10 lg:p-16 pb-32">
+
+            <!-- ==========================================
+                 TAB 1: INTRO & HARDWARE
+            =========================================== -->
+            <div id="intro-hardware" class="tab-content active">
+                <header class="mb-12 border-b pb-6">
+                    <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 8
+                    </div>
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">8.1 ריבוי מעבדים וחומרת ריבוי ליבות</h2>
+                    <p class="text-xl text-slate-650 leading-relaxed">
+                        סעיף זה מהווה הקדמה לנושא ריבוי המעבדים ובוחן את המאפיינים הפיזיים והארכיטקטוניים של מעבדים מרובי ליבות (Multicore/Manycore).
+                    </p>
+                </header>
+
+                <div class="concept-box mb-8">
+                    <h3 class="font-bold text-lg text-emerald-800 mb-2">מבוא: אתגר ריבוי המעבדים</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed">
+                        שימוש במספר מעבדים או מספר ליבות הוא הדרך העיקרית כיום להאיץ את מהירות המחשב ולשפר את ביצועי מערכות המחשוב, שכן הגענו למגבלות פיזיקליות של מהירות השעון במעבדים בודדים. עם זאת, ריבוי המעבדים מייצר מורכבות עצומה עבור מערכת ההפעלה, הנדרשת לנהל בצורה יעילה ובטוחה את החומרה המשותפת, לפתור בעיות סנכרון ולחלק משימות בצורה חכמה.
+                    </p>
+                </div>
+
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">1. ארכיטקטורות גישה לזיכרון (UMA vs. NUMA)</h3>
+                
+                <!-- UMA vs NUMA diagrams -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <!-- UMA Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 font-black px-3 py-1 rounded-lg text-xs">UMA</span>
+                            <h4 class="font-extrabold text-lg text-slate-800">Uniform Memory Access</h4>
+                        </div>
+                        <p class="text-slate-600 text-xs mb-6">גישה אחידה לזיכרון. כל המעבדים מחוברים דרך אפיק מערכת משותף יחיד לזיכרון ראשי יחיד. זמן הגישה של כל מעבד לכל כתובת בזיכרון הוא אחיד וזהה.</p>
+                        
+                        <!-- Visual representation of UMA -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 flex flex-col items-center">
+                            <div class="flex gap-2 mb-4">
+                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 1</span>
+                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 2</span>
+                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 3</span>
+                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 4</span>
+                            </div>
+                            <!-- System Bus -->
+                            <div class="w-full bg-slate-350 h-2 rounded mb-4 relative flex items-center justify-center">
+                                <span class="text-[8px] text-slate-600 font-bold absolute -top-4">System Bus (אפיק משותף)</span>
+                            </div>
+                            <!-- RAM -->
+                            <div class="bg-emerald-600 text-white font-black text-xs px-8 py-3 rounded-lg shadow-md">
+                                Shared RAM
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NUMA Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-indigo-100 text-indigo-800 font-black px-3 py-1 rounded-lg text-xs">NUMA</span>
+                            <h4 class="font-extrabold text-lg text-slate-800">Non-Uniform Memory Access</h4>
+                        </div>
+                        <p class="text-slate-600 text-xs mb-6">גישה לא אחידה לזיכרון. לכל מעבד יש "חלקת זיכרון" מקומית מהירה משלו. גישה לזיכרון מקומי מהירה מאוד, אך גישה לזיכרון של מעבד אחר איטית יותר ומתבצעת דרך רשת חיבורים.</p>
+                        
+                        <!-- Visual representation of NUMA -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-150">
+                            <div class="grid grid-cols-2 gap-4 items-center">
+                                <!-- Node 1 -->
+                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
+                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 1</span>
+                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 1</span>
+                                </div>
+                                <!-- Node 2 -->
+                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
+                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 2</span>
+                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 2</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Interconnect line -->
+                            <div class="flex justify-center my-2 text-slate-400 text-xs font-bold animate-pulse">
+                                ⇅ Interconnect Network ⇅
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 items-center">
+                                <!-- Node 3 -->
+                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
+                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 3</span>
+                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 3</span>
+                                </div>
+                                <!-- Node 4 -->
+                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
+                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 4</span>
+                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Cache Coherence Sandbox Simulator -->
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">2. מעבדת עקביות המטמון (Cache Coherence Sandbox)</h3>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8">
+                    <p class="text-sm text-slate-655 mb-6 leading-relaxed">
+                        במעבדות אלו, לכל ליבה יש זיכרון מטמון (L1 Cache) פרטי משלה. כתוצאה מכך, כאשר מעבד אחד מעדכן משתנה בזיכרון, מעבד אחר עלול להמשיך לקרוא את הערך הישן מהמטמון שלו (מה שיוצר שגיאה לוגית של <strong>חוסר עקביות</strong>).
+                        <br>
+                        השתמש בסימולטור כדי לבחון את ההבדל בין ריצה <strong>ללא סנכרון</strong> לבין הפעלת פרוטוקול סנכרון חומרתי <strong>(MESI)</strong>.
+                    </p>
+
+                    <!-- Coherence Control -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-bold text-slate-600">מנגנון עקביות חומרתי:</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="coherence-mesi-toggle" onclick="toggleCoherenceMesi()" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                                <span id="coherence-mesi-label" class="ms-3 text-sm font-bold text-slate-500">כבוי (ללא MESI)</span>
+                            </label>
+                        </div>
+                        <button onclick="resetCoherenceSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">איפוס סימולטור</button>
+                    </div>
+
+                    <!-- Coherence Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                        <!-- Core A -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden" id="coherence-core-a-box">
+                            <h4 class="font-extrabold text-lg text-slate-800 mb-4 flex items-center justify-between">
+                                <span>ליבה א' (Core A)</span>
+                                <span id="coherence-core-a-state" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">ריק</span>
+                            </h4>
+                            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-6">
+                                <div class="text-xs text-blue-700 font-bold mb-1">L1 Cache (משתנה X):</div>
+                                <div id="coherence-core-a-cache-val" class="text-3xl font-black text-blue-900">-</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="coherenceRead('A')" class="flex-1 bg-slate-800 text-white hover:bg-slate-900 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">קרא X</button>
+                                <button onclick="coherenceWrite('A', 5)" class="flex-1 bg-primary text-white hover:bg-blue-700 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">כתוב X = 5</button>
+                            </div>
+                        </div>
+
+                        <!-- Core B -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden" id="coherence-core-b-box">
+                            <h4 class="font-extrabold text-lg text-slate-800 mb-4 flex items-center justify-between">
+                                <span>ליבה ב' (Core B)</span>
+                                <span id="coherence-core-b-state" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">ריק</span>
+                            </h4>
+                            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-6">
+                                <div class="text-xs text-blue-700 font-bold mb-1">L1 Cache (משתנה X):</div>
+                                <div id="coherence-core-b-cache-val" class="text-3xl font-black text-blue-900">-</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="coherenceRead('B')" class="flex-1 bg-slate-800 text-white hover:bg-slate-900 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">קרא X</button>
+                                <button onclick="coherenceWrite('B', 5)" class="flex-1 bg-primary text-white hover:bg-blue-700 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">כתוב X = 5</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shared RAM -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-6 text-center max-w-sm mx-auto relative overflow-hidden">
+                        <!-- Visual lightning paths -->
+                        <div id="coherence-pulse-line-a" class="absolute top-0 left-1/4 w-0.5 bg-yellow-400 h-0 transition-all duration-300"></div>
+                        <div id="coherence-pulse-line-b" class="absolute top-0 right-1/4 w-0.5 bg-yellow-400 h-0 transition-all duration-300"></div>
+                        
+                        <h4 class="font-extrabold text-sm text-slate-500 mb-1">Shared RAM (זיכרון ראשי משותף)</h4>
+                        <div class="text-[10px] text-slate-400 mb-2">כתובת זיכרון: X</div>
+                        <div id="coherence-ram-val" class="text-3xl font-black text-emerald-600 bg-emerald-50 border border-emerald-200 py-2 px-4 rounded-lg inline-block min-w-[80px]">0</div>
+                    </div>
+
+                    <!-- Warning alert & Logs console -->
+                    <div id="coherence-alert-box" class="hidden mb-4 p-4 rounded-lg text-sm bg-rose-50 border border-rose-200 text-rose-900 font-bold animate-pulse text-center"></div>
+                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-y-auto max-h-40 dark-scroll text-left" dir="ltr" id="coherence-console">
+                        &gt; System initialized. RAM value X = 0.
+                    </div>
+                </div>
+
+                <!-- Programmatic multicore warning -->
+                <div class="thought-box mb-8">
+                    <h4 class="font-bold text-lg text-purple-800 mb-2">💭 תכנות עם ריבוי ליבות - האחריות על המפתח</h4>
+                    <p class="text-slate-700 text-sm leading-relaxed">
+                        החומרה ומערכת ההפעלה <strong>אינן</strong> מסוגלות לקחת קוד סדרתי רגיל ולפצל אותו באופן אוטומטי לביצוע מקבילי על גבי מספר ליבות.
+                    </p>
+                    <p class="text-slate-655 text-sm leading-relaxed mt-2 font-medium">
+                        האחריות לכתוב קוד מקבילי (על ידי חלוקה לתהליכים או תהליכונים עצמאיים) מוטלת כולה על מפתח התוכנה. כדי להקל על כך, קיימות שפות תכנות וספריות ייעודיות המספקות כלים לניהול המקביליות.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 2: OS TYPES
+            =========================================== -->
+            <div id="os-types" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">8.1.2 סוגי מערכות הפעלה לריבוי מעבדים</h2>
+                    <p class="text-xl text-slate-650 leading-relaxed">
+                        כיצד ננהל את החומרה המשותפת כאשר ישנם מספר מעבדים או ליבות? נבחן 3 מודלים ארכיטקטוניים מרכזיים.
+                    </p>
+                </header>
+
+                <!-- Comparison details of models -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 text-sm">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="bg-slate-200 text-slate-800 font-extrabold text-[10px] px-2 py-0.5 rounded mb-2 inline-block">מודל 1</span>
+                        <h4 class="font-bold text-slate-900 mb-2">לכל מעבד מערכת הפעלה משלו</h4>
+                        <p class="text-slate-600 leading-relaxed">הזיכרון הראשי (RAM) מחולק מראש (באופן סטטי) למספר מחיצות. כל מעבד מקבל מחיצה פרטית משלו ובה נטען עותק שלם של מ"ה. אין מעבר של תהליכים או שיתוף עומסים בין מעבדים.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="bg-amber-100 text-amber-800 font-extrabold text-[10px] px-2 py-0.5 rounded mb-2 inline-block">מודל 2</span>
+                        <h4 class="font-bold text-slate-900 mb-2">מבנה מוביל-נגרר (Master-Slave)</h4>
+                        <p class="text-slate-600 leading-relaxed">קיים עותק יחיד של מערכת ההפעלה בזיכרון, אך <strong>רק מעבד 1 (המוביל - Master)</strong> מורשה להריץ את קוד מערכת ההפעלה. שאר המעבדים (הנגררים) מריצים אך ורק תוכניות משתמש.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[10px] px-2 py-0.5 rounded mb-2 inline-block">מודל 3</span>
+                        <h4 class="font-bold text-slate-900 mb-2">ריבוי מעבדים סימטרי (SMP)</h4>
+                        <p class="text-slate-600 leading-relaxed">קיים עותק יחיד של מ"ה בזיכרון, וכל המעבדים הם שווי זכויות. כל מעבד יכול להריץ את קוד מערכת ההפעלה ולבצע קריאות מערכת בעצמו באופן עצמאי ומקבילי.</p>
+                    </div>
+                </div>
+
+                <!-- Master-Slave Bottleneck Simulator -->
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">מבחן הריסוק של המוביל-נגרר (Master-Slave Bottleneck)</h3>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8">
+                    <p class="text-sm text-slate-655 mb-6 leading-relaxed">
+                        במודל מוביל-נגרר, כל קריאת מערכת (System Call) של מעבד נגרר (Slave) חייבת להישלח למעבד המוביל (Master) לצורך טיפול.
+                        כאשר עומס קריאות המערכת עולה, המעבד המוביל הופך לצוואר בקבוק (100% עומס) בזמן ששאר המעבדים עומדים בטלים (0% עומס) וממתינים.
+                        במודל SMP לעומת זאת, כל המעבדים מטפלים בקריאות המערכת של עצמם באופן מבוזר.
+                    </p>
+
+                    <!-- Mode & Workload controls -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 mb-6 flex flex-wrap gap-4 items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-bold text-slate-600">ארכיטקטורה:</span>
+                            <button id="ms-mode-ms" onclick="setMsMode('ms')" class="bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95">מוביל-נגרר (Master-Slave)</button>
+                            <button id="ms-mode-smp" onclick="setMsMode('smp')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">ריבוי סימטרי (SMP)</button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="triggerMsWorkload()" class="bg-primary text-white hover:bg-blue-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95">הוסף עומס עבודה (SysCalls)</button>
+                            <button onclick="resetMsSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">איפוס</button>
+                        </div>
+                    </div>
+
+                    <!-- CPUs Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                        <!-- CPU 1 -->
+                        <div id="cpu-box-1" class="bg-white p-5 rounded-xl border-2 border-indigo-500 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
+                            <div id="cpu-crown-1" class="absolute -top-3 left-1/2 -translate-x-1/2 text-xl">👑</div>
+                            <div>
+                                <h4 class="font-extrabold text-sm text-slate-800">CPU 1</h4>
+                                <div id="cpu-role-1" class="text-[10px] font-bold text-indigo-600 mb-2">Master (מוביל)</div>
+                                <div id="cpu-status-1" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                                    <div id="cpu-bar-1" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
+                                </div>
+                                <span id="cpu-pct-1" class="text-xs font-bold text-slate-600">20%</span>
+                            </div>
+                        </div>
+
+                        <!-- CPU 2 -->
+                        <div id="cpu-box-2" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
+                            <div>
+                                <h4 class="font-extrabold text-sm text-slate-800">CPU 2</h4>
+                                <div id="cpu-role-2" class="text-[10px] font-bold text-slate-400 mb-2">Slave (נגרר)</div>
+                                <div id="cpu-status-2" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                                    <div id="cpu-bar-2" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
+                                </div>
+                                <span id="cpu-pct-2" class="text-xs font-bold text-slate-600">20%</span>
+                            </div>
+                        </div>
+
+                        <!-- CPU 3 -->
+                        <div id="cpu-box-3" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
+                            <div>
+                                <h4 class="font-extrabold text-sm text-slate-800">CPU 3</h4>
+                                <div id="cpu-role-3" class="text-[10px] font-bold text-slate-400 mb-2">Slave (נגרר)</div>
+                                <div id="cpu-status-3" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                                    <div id="cpu-bar-3" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
+                                </div>
+                                <span id="cpu-pct-3" class="text-xs font-bold text-slate-600">20%</span>
+                            </div>
+                        </div>
+
+                        <!-- CPU 4 -->
+                        <div id="cpu-box-4" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
+                            <div>
+                                <h4 class="font-extrabold text-sm text-slate-800">CPU 4</h4>
+                                <div id="cpu-role-4" class="text-[10px] font-bold text-slate-400 mb-2">Slave (נגרר)</div>
+                                <div id="cpu-status-4" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                                    <div id="cpu-bar-4" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
+                                </div>
+                                <span id="cpu-pct-4" class="text-xs font-bold text-slate-600">20%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Packet container -->
+                    <div id="ms-packet-space" class="relative h-6 w-full overflow-hidden mb-4"></div>
+
+                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-y-auto max-h-40 dark-scroll text-left" dir="ltr" id="ms-console">
+                        &gt; Master-Slave Simulation initialized.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 3: SYNCHRONIZATION
+            =========================================== -->
+            <div id="synchronization" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">8.1.3 סנכרון עם ריבוי מעבדים</h2>
+                    <p class="text-xl text-slate-655 leading-relaxed">
+                        במודל SMP, לכל המעבדים יש גישה שווה לזיכרון הראשי. כיצד מונעים מהם "לדרוס" את עבודתם של מעבדים אחרים?
+                    </p>
+                </header>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                        <h3 class="font-extrabold text-lg text-slate-850">הבעיה עם חסימת פסיקות (Disabling Interrupts)</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid md:grid-cols-2 gap-6 text-sm">
+                            <div class="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
+                                <h4 class="font-bold text-indigo-850 mb-2">מעבד יחיד (Uniprocessor)</h4>
+                                <p class="text-slate-650 leading-relaxed">
+                                    מניעה הדדית (Mutual Exclusion) בקוד הקרנל מושגת בקלות: המעבד פשוט משבית את פסיקות החומרה שלו לפני הכניסה לקטע הקריטי. בהעדר פסיקות, לא יתרחש מעבר של זמן מעבד לתהליך אחר (אין Context Switch), והמעבד מובטח לסיים את הפעולה ללא הפרעה.
+                                </p>
+                            </div>
+                            <div class="bg-rose-50/50 p-4 rounded-lg border border-rose-100">
+                                <h4 class="font-bold text-rose-850 mb-2">ריבוי מעבדים (Multiprocessor)</h4>
+                                <p class="text-slate-655 leading-relaxed">
+                                    השבתת פסיקות <strong>משפיעה אך ורק על המעבד הספציפי שביצע אותה</strong>. שאר המעבדים במערכת ממשיכים לרוץ כרגיל, ועלולים לגשת במקביל לאותם כתובות זיכרון ראשיות ולשבש את הנתונים. לכן, שיטה זו אינה רלוונטית כלל לסנכרון בריבוי מעבדים.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bus Contention visualizer -->
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">מכבש ה-Spinlock ותעבורת האפיק (Bus Contention)</h3>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8">
+                    <p class="text-sm text-slate-655 mb-6 leading-relaxed">
+                        מנעולים המבוססים על הוראת חומרה אטומית (כמו TSL) נקראים <strong>Spinlocks</strong>, בהם המעבד הממתין מבצע "המתנה פעילה" בלולאה. 
+                        כאשר מספר מעבדים מנסים להיכנס בו-זמנית למנעול תפוס, הם מציפים את אפיק הזיכרון (System Bus) בדגימות רצופות, מה שמייצר עומס אפיק (Bus Contention) וחוסם את הגישה לזיכרון הראשי. הדבר מאט גם את המעבד שכבר מריץ את הקטע הקריטי.
+                    </p>
+
+                    <!-- Controller Bar -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 mb-6 flex flex-wrap gap-4 items-center justify-between shadow-sm">
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="busAcquireLock()" class="bg-primary text-white hover:bg-blue-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95 shadow-sm">מעבד 1 תופס מנעול</button>
+                            <button onclick="busTriggerSpinlock()" class="bg-amber-500 text-white hover:bg-amber-600 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95 shadow-sm">מעבדים 2-4 נכנסים ל-Spinlock</button>
+                            <button onclick="busReleaseLock()" class="bg-slate-800 text-white hover:bg-slate-900 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95 shadow-sm">שחרר מנעול</button>
+                        </div>
+                        <button onclick="resetBusSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">איפוס</button>
+                    </div>
+
+                    <!-- Alert / Status -->
+                    <div id="bus-contention-alert" class="hidden mb-6 p-4 rounded-lg text-sm bg-red-100 border border-red-200 text-red-900 font-black animate-pulse text-center">
+                        ⚠️ עומס אפיק: 100% (Bus Contention) - פקק תנועה כבד בגישה לזיכרון הראשי!
+                    </div>
+
+                    <!-- Visual Topologies -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 mb-6">
+                        <!-- 4 CPUs -->
+                        <div class="grid grid-cols-4 gap-4 mb-10 text-center">
+                            <!-- CPU 1 -->
+                            <div id="bus-cpu-1" class="bg-slate-50 p-4 border border-slate-200 rounded-lg transition-colors duration-300">
+                                <div class="font-extrabold text-sm text-slate-800">CPU 1</div>
+                                <div id="bus-cpu-status-1" class="text-[10px] text-slate-500 font-bold mt-1">מריץ קוד רגיל</div>
+                            </div>
+                            <!-- CPU 2 -->
+                            <div id="bus-cpu-2" class="bg-slate-50 p-4 border border-slate-200 rounded-lg transition-colors duration-300">
+                                <div class="font-extrabold text-sm text-slate-800">CPU 2</div>
+                                <div id="bus-cpu-status-2" class="text-[10px] text-slate-500 font-bold mt-1">מריץ קוד רגיל</div>
+                            </div>
+                            <!-- CPU 3 -->
+                            <div id="bus-cpu-3" class="bg-slate-50 p-4 border border-slate-200 rounded-lg transition-colors duration-300">
+                                <div class="font-extrabold text-sm text-slate-800">CPU 3</div>
+                                <div id="bus-cpu-status-3" class="text-[10px] text-slate-500 font-bold mt-1">מריץ קוד רגיל</div>
+                            </div>
+                            <!-- CPU 4 -->
+                            <div id="bus-cpu-4" class="bg-slate-50 p-4 border border-slate-200 rounded-lg transition-colors duration-300">
+                                <div class="font-extrabold text-sm text-slate-800">CPU 4</div>
+                                <div id="bus-cpu-status-4" class="text-[10px] text-slate-500 font-bold mt-1">מריץ קוד רגיל</div>
+                            </div>
+                        </div>
+
+                        <!-- System Bus and Polling Lanes -->
+                        <div class="relative h-20 w-full mb-8">
+                            <!-- Connecting lanes -->
+                            <div class="absolute bottom-0 right-[12.5%] w-0.5 h-full bg-slate-200" id="bus-lane-4"></div>
+                            <div class="absolute bottom-0 right-[37.5%] w-0.5 h-full bg-slate-200" id="bus-lane-3"></div>
+                            <div class="absolute bottom-0 right-[62.5%] w-0.5 h-full bg-slate-200" id="bus-lane-2"></div>
+                            <div class="absolute bottom-0 right-[87.5%] w-0.5 h-full bg-slate-200" id="bus-lane-1"></div>
+
+                            <!-- Red polling arrows/dots container -->
+                            <div id="bus-polling-dots" class="absolute inset-0 pointer-events-none"></div>
+
+                            <!-- System Bus line -->
+                            <div id="bus-main-line" class="absolute bottom-0 left-0 right-0 h-2 bg-slate-300 rounded transition-all duration-300"></div>
+                        </div>
+
+                        <!-- Connection from Bus to RAM -->
+                        <div class="relative h-10 w-full mb-4">
+                            <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1.5 bg-slate-300" id="bus-ram-connection"></div>
+                            <!-- Normal write dot animation -->
+                            <div id="bus-write-dot" class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-emerald-600 rounded-full shadow border border-white hidden"></div>
+                        </div>
+
+                        <!-- Shared Memory (RAM) -->
+                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl max-w-sm mx-auto text-center">
+                            <h4 class="font-extrabold text-sm text-slate-500 mb-2">זיכרון ראשי (RAM)</h4>
+                            <div class="flex justify-center gap-6 items-center">
+                                <div>
+                                    <span class="text-[10px] font-bold text-slate-400 block">ערך המנעול:</span>
+                                    <span id="bus-lock-val" class="font-mono text-lg font-black text-slate-800 bg-white border px-3 py-1 rounded">0</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-bold text-slate-400 block">עקומת השהיית כתיבה:</span>
+                                    <span id="bus-write-delay" class="font-mono text-sm font-bold text-emerald-600 bg-white border px-3 py-1 rounded">Normal (0ms)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Console -->
+                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-y-auto max-h-40 dark-scroll text-left" dir="ltr" id="bus-console">
+                        &gt; Bus Contention Visualizer initialized.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 4: SCHEDULING
+            =========================================== -->
+            <div id="scheduling" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">8.1.4 תזמון במערכות ריבוי מעבדים</h2>
+                    <p class="text-xl text-slate-650 leading-relaxed">
+                        במערכת מרובת מעבדים או ליבות, החלטות התזמון של מערכת ההפעלה צריכות לקחת בחשבון את המאפיינים הפיזיים של החומרה ואת דפוסי התקשורת של התהליכים.
+                    </p>
+                </header>
+
+                <!-- Cache Affinity Game -->
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">משחק אינטראקטיבי: המטמון החם והקר (Cache Affinity Game)</h3>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8">
+                    <p class="text-sm text-slate-655 mb-6 leading-relaxed">
+                        כאשר תהליכון רץ על מעבד מסוים, זיכרון המטמון (Cache) של אותו מעבד מתמלא בנתונים הרלוונטיים אליו (מטמון "חם"). 
+                        אם המתזמן יעביר את התהליך למעבד אחר (מטמון "קר"), הוא יתעכב לצורך טעינה מחדש של הנתונים מהזיכרון הראשי.
+                        <br>
+                        <strong>נסו בעצמכם:</strong> גררו את התהליך P1 למעבד המתאים כדי למנוע עיכובים בביצוע.
+                    </p>
+
+                    <!-- Score bar -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 mb-6 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-4 text-xs font-bold text-slate-600">
+                            <div>ניקוד: <span id="affinity-score" class="text-blue-600 text-sm">0</span></div>
+                            <div>עיכוב כולל: <span id="affinity-delay" class="text-red-500 text-sm">0ms</span></div>
+                        </div>
+                        <button onclick="resetAffinityGame()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-3 rounded-lg text-xs transition-all cursor-pointer">אתחל משחק</button>
+                    </div>
+
+                    <!-- Draggable item and targets container -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+                        <!-- Draggable Process -->
+                        <div class="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl shadow-sm min-h-[140px]">
+                            <div id="affinity-process" draggable="true" ondragstart="affinityDragStart(event)" class="w-16 h-16 bg-primary text-white font-extrabold flex flex-col justify-center items-center rounded-xl shadow-lg shadow-blue-500/25 cursor-grab active:cursor-grabbing hover:scale-105 transition-transform">
+                                <span class="text-base font-black">P1</span>
+                                <span class="text-[9px]">תהליך</span>
+                            </div>
+                            <span class="text-[10px] text-slate-400 font-bold mt-2">גרור אותי!</span>
+                        </div>
+
+                        <!-- 4 CPU Targets -->
+                        <div class="md:col-span-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <!-- CPU 1 (Warm) -->
+                            <div id="affinity-target-1" ondragover="affinityAllowDrop(event)" ondrop="affinityDrop(event, 1)" class="bg-orange-50/50 border-2 border-dashed border-orange-300 rounded-xl p-4 text-center min-h-[140px] flex flex-col justify-between transition-all relative overflow-hidden">
+                                <div id="affinity-progress-1" class="absolute inset-0 bg-orange-100/50 w-0 h-full transition-all"></div>
+                                <div class="relative z-10">
+                                    <h5 class="font-extrabold text-sm text-orange-950">CPU 1</h5>
+                                    <div class="text-[9px] font-bold text-orange-700 mt-1">מטמון חם 🔥</div>
+                                </div>
+                                <div id="affinity-cpu-result-1" class="text-xs font-bold text-slate-400 relative z-10">פנוי לקבלה</div>
+                            </div>
+
+                            <!-- CPU 2 -->
+                            <div id="affinity-target-2" ondragover="affinityAllowDrop(event)" ondrop="affinityDrop(event, 2)" class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 text-center min-h-[140px] flex flex-col justify-between transition-all relative overflow-hidden">
+                                <div id="affinity-progress-2" class="absolute inset-0 bg-blue-100/50 w-0 h-full transition-all"></div>
+                                <div class="relative z-10">
+                                    <h5 class="font-extrabold text-sm text-slate-800">CPU 2</h5>
+                                    <div class="text-[9px] font-bold text-slate-400 mt-1">מטמון קר ❄️</div>
+                                </div>
+                                <div id="affinity-cpu-result-2" class="text-xs font-bold text-slate-400 relative z-10">פנוי לקבלה</div>
+                            </div>
+
+                            <!-- CPU 3 -->
+                            <div id="affinity-target-3" ondragover="affinityAllowDrop(event)" ondrop="affinityDrop(event, 3)" class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 text-center min-h-[140px] flex flex-col justify-between transition-all relative overflow-hidden">
+                                <div id="affinity-progress-3" class="absolute inset-0 bg-blue-100/50 w-0 h-full transition-all"></div>
+                                <div class="relative z-10">
+                                    <h5 class="font-extrabold text-sm text-slate-800">CPU 3</h5>
+                                    <div class="text-[9px] font-bold text-slate-400 mt-1">מטמון קר ❄️</div>
+                                </div>
+                                <div id="affinity-cpu-result-3" class="text-xs font-bold text-slate-400 relative z-10">פנוי לקבלה</div>
+                            </div>
+
+                            <!-- CPU 4 -->
+                            <div id="affinity-target-4" ondragover="affinityAllowDrop(event)" ondrop="affinityDrop(event, 4)" class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 text-center min-h-[140px] flex flex-col justify-between transition-all relative overflow-hidden">
+                                <div id="affinity-progress-4" class="absolute inset-0 bg-blue-100/50 w-0 h-full transition-all"></div>
+                                <div class="relative z-10">
+                                    <h5 class="font-extrabold text-sm text-slate-800">CPU 4</h5>
+                                    <div class="text-[9px] font-bold text-slate-400 mt-1">מטמון קר ❄️</div>
+                                </div>
+                                <div id="affinity-cpu-result-4" class="text-xs font-bold text-slate-400 relative z-10">פנוי לקבלה</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedbacks -->
+                    <div id="affinity-feedback" class="mt-6 p-4 rounded-xl text-center text-sm font-bold bg-slate-100 border border-slate-200 text-slate-700">
+                        המשחק ממתין לתחילת ריצה. גררו את P1.
+                    </div>
+                </div>
+
+                <!-- Gang Scheduling Wait Penalty -->
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">סימולטור: תזמון כנופיות (Gang Scheduling Wait Penalty)</h3>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8">
+                    <p class="text-sm text-slate-655 mb-6 leading-relaxed">
+                        בסביבה בה תהליכונים שונים קשורים זה לזה ומשתפים מנעול, תזמון עצמאי (ללא Gang) עלול להוביל לבזבוז עצום של מחזורי מעבד.
+                        כאשר תהליכון A מחזיק במנעול ומורדם על ידי המתזמן, תהליכון B שממשיך לרוץ על מעבד אחר ייכנס ל-Spinlock ויבזבז את כל פרוסת הזמן שלו לריק מבלי שום התקדמות.
+                        תזמון כנופיות פותר זאת על ידי הרצת כל חברי הכנופייה יחד בבת אחת.
+                    </p>
+
+                    <!-- Toggle Controls -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 mb-6 flex flex-wrap gap-4 items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-bold text-slate-600">שיטת תזמון:</span>
+                            <button id="gang-mode-ind" onclick="setGangMode('ind')" class="bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95">תזמון עצמאי (ללא Gang)</button>
+                            <button id="gang-mode-gang" onclick="setGangMode('gang')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">תזמון כנופיות (Gang Scheduling)</button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="triggerGangSim()" class="bg-primary text-white hover:bg-blue-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95">הרץ סימולציה</button>
+                            <button onclick="resetGangSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">איפוס</button>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Arena -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 mb-6">
+                        <div class="space-y-6">
+                            <!-- CPU 1 Timeline -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-extrabold text-sm text-slate-800">CPU 1</span>
+                                    <span id="gang-cpu-task-1" class="text-xs text-slate-500 font-bold">מצב: Idle</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-10 rounded-lg overflow-hidden border border-slate-200 relative">
+                                    <!-- Progress tracks -->
+                                    <div id="gang-track-1-1" class="absolute top-0 bottom-0 left-0 bg-blue-500/80 transition-all duration-1000 flex items-center justify-center text-white text-xs font-black shadow-inner" style="width: 0%;">T1 (Holds Lock)</div>
+                                    <div id="gang-track-1-2" class="absolute top-0 bottom-0 left-0 bg-amber-500/80 transition-all duration-1000 flex items-center justify-center text-white text-xs font-black shadow-inner" style="width: 0%;">T2 (Spinning...)</div>
+                                </div>
+                            </div>
+
+                            <!-- CPU 2 Timeline -->
+                            <div id="gang-cpu-2-container" class="opacity-40 transition-opacity">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-extrabold text-sm text-slate-800">CPU 2</span>
+                                    <span id="gang-cpu-task-2" class="text-xs text-slate-400 font-bold">מצב: מנוטרל (במצב עצמאי)</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-10 rounded-lg overflow-hidden border border-slate-200 relative">
+                                    <div id="gang-track-2-1" class="absolute top-0 bottom-0 left-0 bg-emerald-600/80 transition-all duration-1000 flex items-center justify-center text-white text-xs font-black shadow-inner" style="width: 0%;">T2 (Running)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Score & Analysis -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-xl border text-center">
+                            <span class="text-[10px] font-bold text-slate-400 block">בזבוז זמן CPU (המתנה פעילה):</span>
+                            <span id="gang-stat-waste" class="text-2xl font-black text-slate-800">0%</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border text-center">
+                            <span class="text-[10px] font-bold text-slate-400 block">התקדמות העבודה הכוללת:</span>
+                            <span id="gang-stat-progress" class="text-2xl font-black text-slate-800">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-y-auto max-h-40 dark-scroll text-left" dir="ltr" id="gang-console">
+                        &gt; Gang Scheduling Simulator initialized.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 5: SUMMARY
+            =========================================== -->
+            <div id="summary" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">8.5 סיכום: מערכות מרובות מעבדים</h2>
+                    <p class="text-xl text-slate-605 leading-relaxed">
+                        ריכוז תמציתי של עקרונות הפרק והאתגרים ההנדסיים הנלמדים.
+                    </p>
+                </header>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-md p-8">
+                    <p class="text-slate-700 text-lg mb-6 border-b border-slate-100 pb-4">
+                        ניתן להאיץ מערכות מחשב ולשפר את מהירותן על ידי שימוש במספר מעבדים, אשר לרוב חולקים זיכרון ראשי (RAM) משותף. מערכות אלו, המורכבות משני מעבדים או יותר, או מעבדים המורכבים בעצמם ממספר ליבות, מציגות אתגרים ואפשרויות שונות של ארכיטקטורה וניהול.
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="flex gap-4">
+                            <div class="bg-indigo-50 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-extrabold text-indigo-600 border border-indigo-200">1</div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 mb-1">אפשרויות חיבור (Hardware Topologies)</h3>
+                                <p class="text-sm text-slate-600 leading-relaxed">המעבדים או הליבות יכולים להיות מחוברים ביניהם במספר תצורות חומרה: באמצעות אפיק משותף (Bus), מתג צולב (Crossbar Switch) למקביליות גבוהה, או רשת מיתוג רב-שלבית במערכות גדולות.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-4">
+                            <div class="bg-emerald-50 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-extrabold text-emerald-600 border border-emerald-200">2</div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 mb-1">תצורות מערכת הפעלה</h3>
+                                <p class="text-sm text-slate-600 leading-relaxed">שירותי מערכת ההפעלה ניתנים בדרכים שונות: לכל מעבד מערכת הפעלה משלו, ריבוי מעבדים סימטרי (SMP) שבו עותק אחד משרת את כולם בצורה שוויונית, או מערכת אסימטרית (Master-Slave).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div class="bg-amber-50 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-extrabold text-amber-600 border border-amber-200">3</div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 mb-1">סנכרון מול משאבים משותפים</h3>
+                                <p class="text-sm text-slate-600 leading-relaxed">מערכות SMP דורשות שימוש במנעולים (Locks) להגנה על מבני הנתונים של הקרנל. במקרה שהמנעול תפוס, המעבד יכול לבצע המתנה פעילה (Busy Waiting / Spinlock) או החלפת הקשר (Context Switch).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div class="bg-cyan-50 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-extrabold text-cyan-600 border border-cyan-200">4</div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 mb-1">תזמון תהליכים</h3>
+                                <p class="text-sm text-slate-600 leading-relaxed">אפשרויות התזמון במערכות אלו כוללות שיתוף זמן (Timesharing), שיתוף מרחבי (Space Sharing) להקצאת ליבות ייעודיות, ותזמון כנופיות (Gang Scheduling) לסינכרון מלא של קבוצת תהליכונים.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 6: REVIEW QUESTIONS
+            =========================================== -->
+            <div id="review-questions" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">שאלות לחזרה ויישום</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        בחן את הבנתך לגבי המושגים שלמדנו בנושא חומרה וסנכרון מעבדים.
+                    </p>
+                </header>
+
+                <div class="space-y-6">
+                    <!-- Question 1 -->
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 p-5 border-b border-slate-200 flex justify-between items-center">
+                            <h3 class="font-extrabold text-slate-900 text-lg flex items-start gap-2 max-w-[70%]">
+                                <span class="bg-indigo-100 text-indigo-800 rounded px-2.5 py-0.5 text-sm mt-0.5 font-bold">שאלה 1</span>
+                                <span>מה קורה בדיוק בזמן שבו כל ארבע הליבות במעבד מנסות לגשת לאותה כתובת זיכרון באותו הזמן?</span>
+                            </h3>
+                            <button onclick="toggleAnswer('ans-1', this)" class="bg-white hover:bg-slate-50 text-indigo-600 border border-slate-200 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer shadow-sm">הצג תשובה</button>
+                        </div>
+                        <div id="ans-1" class="hidden p-6 text-slate-750 text-sm space-y-3 leading-relaxed border-t border-slate-100 bg-indigo-50/10">
+                            <p>
+                                כאשר מספר ליבות מנסות לגשת לאותה כתובת פיזית בדיוק באותו שבריר שנייה (מחזור שעון), החומרה נכנסת לפעולה למניעת התנגשויות (Memory Contention). 
+                                אפיק הזיכרון או בקר הזיכרון מבצעים <strong>סריאליזציה (סידור טורי)</strong> של הבקשות. כלומר, הבקשות יסודרו בתור ויטופלו בזו אחר זו, ולא במקביל.
+                            </p>
+                            <p>
+                                בנוסף, אם לפחות ליבה אחת מנסה <strong>לכתוב</strong> לכתובת זו, פרוטוקולי עקביות מטמון (Cache Coherence Protocols, כגון MESI) בחומרה ידאגו להודיע לשאר הליבות שהעותק ששמור אצלן בזיכרון המטמון המקומי (L1/L2) אינו עדכני עוד ויש לפסול אותו (Invalidate), כדי להבטיח שאף ליבה לא תעבוד עם מידע "מלוכלך" או מיושן.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 p-5 border-b border-slate-200 flex justify-between items-center">
+                            <h3 class="font-extrabold text-slate-900 text-lg flex items-start gap-2 max-w-[70%]">
+                                <span class="bg-indigo-100 text-indigo-800 rounded px-2.5 py-0.5 text-sm mt-0.5 font-bold">שאלה 2</span>
+                                <span>האם ניתן לממש סנכרון בין כמה ליבות בעזרת פקודת SWP המבצעת החלפה בצורה אטומית?</span>
+                            </h3>
+                            <button onclick="toggleAnswer('ans-2', this)" class="bg-white hover:bg-slate-50 text-indigo-600 border border-slate-200 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer shadow-sm">הצג תשובה</button>
+                        </div>
+                        <div id="ans-2" class="hidden p-6 text-slate-750 text-sm space-y-3 leading-relaxed border-t border-slate-100 bg-indigo-50/10">
+                            <p>
+                                <strong>כן, בהחלט.</strong> פקודת SWP (Swap) או פקודות דומות כמו XCHG, מאפשרות להחליף ערך של אוגר במעבד עם ערך בכתובת זיכרון – כפעולה אטומית אחת שלא ניתנת להפרעה.
+                            </p>
+                            <p>
+                                השימוש זהה לפקודת TSL: הליבה רושמת באוגר שלה את הערך '1' ("נעול"), ואז מבצעת SWP עם מילת המנעול בזיכרון המשותף. 
+                            </p>
+                            <ul class="list-disc list-inside bg-white border border-slate-200 p-4 rounded-lg space-y-2">
+                                <li>אם הערך שחזר לאוגר הוא <strong>'0'</strong>: הליבה "זכתה" במנעול ונכנסת לקטע הקריטי.</li>
+                                <li>אם חזר <strong>'1'</strong>: ליבה אחרת מחזיקה במנעול, והליבה תיכנס להמתנה פעילה (Spinlock) או תוותר על המעבד (Context Switch).</li>
+                            </ul>
+                            <p class="mt-2 font-medium">מכיוון שההחלפה אטומית (תוך כדי נעילת אפיק הזיכרון), אין סכנה ששתי ליבות יקראו '0' באותו הזמן.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 7: GLOSSARY (FLASHCARDS)
+            =========================================== -->
+            <div id="glossary" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-4xl font-black text-slate-800 mb-2">מילון מושגים וכרטיסיות זיכרון</h2>
+                    <p class="text-slate-600">תרגל ובחן את עצמך על המושגים המרכזיים בפרק באמצעות כרטיסיות זיכרון אינטראקטיביות (שינון מול בחינה).</p>
+                </header>
+
+                <!-- Flashcard Controls -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-500">מצב עבודה:</span>
+                        <button id="flashcard-mode-study" onclick="setFlashcardMode('study')" class="bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95">שינון (רשימה)</button>
+                        <button id="flashcard-mode-test" onclick="setFlashcardMode('test')" class="bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">מבחן (3D)</button>
+                    </div>
+
+                    <!-- Categories Tabs -->
+                    <div class="flex flex-wrap gap-1.5 items-center" id="flashcard-categories-tabs">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <!-- Stats -->
+                    <div id="flashcard-stats-container" class="hidden text-xs text-slate-500 font-bold bg-white px-4 py-2 border border-slate-200 rounded-lg flex items-center gap-4">
+                        <div>נחשפו: <span id="flashcard-opened-count" class="text-blue-600 font-extrabold">0</span> מתוך <span id="flashcard-total-count" class="font-extrabold">0</span></div>
+                        <button onclick="resetFlashcards()" class="text-red-500 hover:text-red-700 transition-colors font-black cursor-pointer">איפוס</button>
+                    </div>
+                </div>
+
+                <!-- Flashcard Grid / Deck -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="flashcard-deck">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // ==========================================
+        // TABBING & ROUTING LOGIC
+        // ==========================================
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Show requested tab
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+
+            // Update sidebar active state
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active-nav'));
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('active-nav');
+
+            // Save tab to localstorage & updates hash
+            localStorage.setItem('activeTab_ch8', tabId);
+            window.location.hash = tabId;
+
+            // Scroll main content area to top
+            const main = document.querySelector('main');
+            if (main) main.scrollTop = 0;
+        }
+
+        // ==========================================
+        // SIDEBAR COLLAPSE LOGIC
+        // ==========================================
+        function toggleSidebar() {
+            const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+            updateToggleBtnIcon(isCollapsed);
+        }
+
+        function updateToggleBtnIcon(isCollapsed) {
+            const icon = document.getElementById('sidebar-toggle-icon');
+            if (!icon) return;
+            if (isCollapsed) {
+                // Hamburger icon
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />';
+            } else {
+                // Close icon
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />';
+            }
+        }
+
+        // ==========================================
+        // QUESTION ANSWER TOGGLER
+        // ==========================================
+        function toggleAnswer(id, btn) {
+            const ans = document.getElementById(id);
+            if (!ans) return;
+            if (ans.classList.contains('hidden')) {
+                ans.classList.remove('hidden');
+                btn.textContent = 'הסתר תשובה';
+                btn.className = "bg-slate-800 text-white hover:bg-slate-900 border border-slate-800 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer shadow-sm";
+            } else {
+                ans.classList.add('hidden');
+                btn.textContent = 'הצג תשובה';
+                btn.className = "bg-white hover:bg-slate-50 text-indigo-600 border border-slate-200 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer shadow-sm";
+            }
+        }
+
+        // ==========================================
+        // 1. CACHE COHERENCE LOGIC
+        // ==========================================
+        let coherenceMesi = false;
+        let ramX = 0;
+        let coreACache = null;
+        let coreBCache = null;
+        let coreACacheState = 'Empty'; // 'Empty', 'Shared', 'Modified', 'Invalid'
+        let coreBCacheState = 'Empty';
+
+        function logCoherence(msg) {
+            const consoleEl = document.getElementById("coherence-console");
+            if (!consoleEl) return;
+            consoleEl.innerHTML += `<br>&gt; ${msg}`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function updateCoherenceUI() {
+            const valA = document.getElementById("coherence-core-a-cache-val");
+            const valB = document.getElementById("coherence-core-b-cache-val");
+            const valRam = document.getElementById("coherence-ram-val");
+            const stateA = document.getElementById("coherence-core-a-state");
+            const stateB = document.getElementById("coherence-core-b-state");
+            const alertBox = document.getElementById("coherence-alert-box");
+
+            if (valA) valA.textContent = coreACache === null ? "-" : coreACache;
+            if (valB) valB.textContent = coreBCache === null ? "-" : coreBCache;
+            if (valRam) valRam.textContent = ramX;
+
+            if (stateA) {
+                stateA.textContent = coreACacheState === 'Empty' ? 'ריק' : (coreACacheState === 'Shared' ? 'Shared (משותף)' : (coreACacheState === 'Modified' ? 'Modified (שונה)' : 'Invalid (פסול)'));
+                if (coreACacheState === 'Empty') stateA.className = "text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold";
+                else if (coreACacheState === 'Shared') stateA.className = "text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold";
+                else if (coreACacheState === 'Modified') stateA.className = "text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold";
+                else if (coreACacheState === 'Invalid') stateA.className = "text-xs px-2 py-0.5 rounded bg-red-100 text-red-650 font-bold line-through";
+            }
+
+            if (stateB) {
+                stateB.textContent = coreBCacheState === 'Empty' ? 'ריק' : (coreBCacheState === 'Shared' ? 'Shared (משותף)' : (coreBCacheState === 'Modified' ? 'Modified (שונה)' : 'Invalid (פסול)'));
+                if (coreBCacheState === 'Empty') stateB.className = "text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold";
+                else if (coreBCacheState === 'Shared') stateB.className = "text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold";
+                else if (coreBCacheState === 'Modified') stateB.className = "text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold";
+                else if (coreBCacheState === 'Invalid') stateB.className = "text-xs px-2 py-0.5 rounded bg-red-100 text-red-650 font-bold line-through";
+            }
+
+            // Check for cache inconsistency
+            if (!coherenceMesi && coreACache !== null && coreBCache !== null && coreACache !== coreBCache && coreACacheState !== 'Invalid' && coreBCacheState !== 'Invalid') {
+                if (alertBox) {
+                    alertBox.textContent = `❌ חוסר עקביות במטמון! ליבה א' מחזיקה את הערך (${coreACache}) בזמן שליבה ב' מחזיקה את הערך (${coreBCache}). בקר הזיכרון (RAM) מחזיק בערך (${ramX}).`;
+                    alertBox.classList.remove("hidden");
+                }
+            } else {
+                if (alertBox) alertBox.classList.add("hidden");
+            }
+        }
+
+        function toggleCoherenceMesi() {
+            const checkbox = document.getElementById("coherence-mesi-toggle");
+            const label = document.getElementById("coherence-mesi-label");
+            coherenceMesi = checkbox.checked;
+            if (coherenceMesi) {
+                label.textContent = "פעיל (MESI)";
+                label.className = "ms-3 text-sm font-bold text-emerald-600";
+                logCoherence("MESI Hardware Cache Coherence protocol enabled.");
+            } else {
+                label.textContent = "כבוי (ללא MESI)";
+                label.className = "ms-3 text-sm font-bold text-slate-500";
+                logCoherence("MESI Hardware Cache Coherence protocol disabled.");
+            }
+            resetCoherenceSim();
+        }
+
+        function resetCoherenceSim() {
+            ramX = 0;
+            coreACache = null;
+            coreBCache = null;
+            coreACacheState = 'Empty';
+            coreBCacheState = 'Empty';
+            updateCoherenceUI();
+            const consoleEl = document.getElementById("coherence-console");
+            if (consoleEl) consoleEl.innerHTML = "&gt; Simulator reset. RAM value X = 0.";
+        }
+
+        function coherenceRead(core) {
+            if (core === 'A') {
+                if (coreACacheState === 'Invalid' || coreACache === null || coreACacheState === 'Empty') {
+                    coreACache = ramX;
+                    coreACacheState = 'Shared';
+                    if (coherenceMesi && coreBCacheState === 'Modified') {
+                        ramX = coreBCache; // Writeback modified value from Core B to RAM first
+                        coreACache = ramX;
+                        coreBCacheState = 'Shared';
+                        logCoherence("⚡ MESI: Core B was MODIFIED. Write-back triggered to RAM before Core A reads.");
+                    }
+                    logCoherence(`Core A L1 read miss. Fetched X = ${ramX} from RAM.`);
+                } else {
+                    logCoherence(`Core A L1 read hit. Value X = ${coreACache}.`);
+                }
+            } else {
+                if (coreBCacheState === 'Invalid' || coreBCache === null || coreBCacheState === 'Empty') {
+                    coreBCache = ramX;
+                    coreBCacheState = 'Shared';
+                    if (coherenceMesi && coreACacheState === 'Modified') {
+                        ramX = coreACache; // Writeback modified value from Core A to RAM first
+                        coreBCache = ramX;
+                        coreACacheState = 'Shared';
+                        logCoherence("⚡ MESI: Core A was MODIFIED. Write-back triggered to RAM before Core B reads.");
+                    }
+                    logCoherence(`Core B L1 read miss. Fetched X = ${ramX} from RAM.`);
+                } else {
+                    logCoherence(`Core B L1 read hit. Value X = ${coreBCache}.`);
+                }
+            }
+            updateCoherenceUI();
+        }
+
+        function coherenceWrite(core, val) {
+            if (core === 'A') {
+                coreACache = val;
+                coreACacheState = 'Modified';
+                logCoherence(`Core A updated L1 copy: X = ${val}.`);
+                
+                if (coherenceMesi) {
+                    if (coreBCache !== null && coreBCacheState !== 'Invalid' && coreBCacheState !== 'Empty') {
+                        coreBCacheState = 'Invalid';
+                        // Trigger pulse animation
+                        const pulseA = document.getElementById("coherence-pulse-line-a");
+                        const pulseB = document.getElementById("coherence-pulse-line-b");
+                        if (pulseA && pulseB) {
+                            pulseA.style.height = "100%";
+                            setTimeout(() => {
+                                pulseB.style.height = "100%";
+                                setTimeout(() => {
+                                    pulseA.style.height = "0";
+                                    pulseB.style.height = "0";
+                                }, 200);
+                            }, 100);
+                        }
+                        logCoherence(`⚡ MESI: Core A invalidates Core B's cache copy.`);
+                    }
+                    ramX = val; // Synchronous write-back simulation for study ease
+                }
+            } else {
+                coreBCache = val;
+                coreBCacheState = 'Modified';
+                logCoherence(`Core B updated L1 copy: X = ${val}.`);
+                
+                if (coherenceMesi) {
+                    if (coreACache !== null && coreACacheState !== 'Invalid' && coreACacheState !== 'Empty') {
+                        coreACacheState = 'Invalid';
+                        // Trigger pulse animation
+                        const pulseA = document.getElementById("coherence-pulse-line-a");
+                        const pulseB = document.getElementById("coherence-pulse-line-b");
+                        if (pulseA && pulseB) {
+                            pulseB.style.height = "100%";
+                            setTimeout(() => {
+                                pulseA.style.height = "100%";
+                                setTimeout(() => {
+                                    pulseA.style.height = "0";
+                                    pulseB.style.height = "0";
+                                }, 200);
+                            }, 100);
+                        }
+                        logCoherence(`⚡ MESI: Core B invalidates Core A's cache copy.`);
+                    }
+                    ramX = val;
+                }
+            }
+            updateCoherenceUI();
+        }
+
+        // ==========================================
+        // 2. MASTER-SLAVE BOTTLENECK LOGIC
+        // ==========================================
+        let msMode = 'ms'; // 'ms' or 'smp'
+        let msIntervals = [];
+
+        function setMsMode(mode) {
+            msMode = mode;
+            resetMsSim();
+            
+            const btnMs = document.getElementById("ms-mode-ms");
+            const btnSmp = document.getElementById("ms-mode-smp");
+
+            if (mode === 'ms') {
+                btnMs.className = "bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95";
+                btnSmp.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                
+                document.getElementById("cpu-crown-1").style.display = "block";
+                document.getElementById("cpu-role-1").textContent = "Master (מוביל)";
+                document.getElementById("cpu-role-1").className = "text-[10px] font-bold text-indigo-600 mb-2";
+                document.getElementById("cpu-box-1").className = "bg-white p-5 rounded-xl border-2 border-indigo-500 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]";
+                
+                for (let i = 2; i <= 4; i++) {
+                    document.getElementById(`cpu-role-${i}`).textContent = "Slave (נגרר)";
+                    document.getElementById(`cpu-role-${i}`).className = "text-[10px] font-bold text-slate-400 mb-2";
+                    document.getElementById(`cpu-box-${i}`).className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]";
+                }
+                logMs("Architecture switched to Master-Slave. CPU 1 is Master.");
+            } else {
+                btnMs.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                btnSmp.className = "bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95";
+                
+                document.getElementById("cpu-crown-1").style.display = "none";
+                document.getElementById("cpu-role-1").textContent = "Symmetric CPU";
+                document.getElementById("cpu-role-1").className = "text-[10px] font-bold text-emerald-600 mb-2";
+                document.getElementById("cpu-box-1").className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]";
+                
+                for (let i = 2; i <= 4; i++) {
+                    document.getElementById(`cpu-role-${i}`).textContent = "Symmetric CPU";
+                    document.getElementById(`cpu-role-${i}`).className = "text-[10px] font-bold text-emerald-600 mb-2";
+                    document.getElementById(`cpu-box-${i}`).className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]";
+                }
+                logMs("Architecture switched to SMP (Symmetric Multiprocessing).");
+            }
+        }
+
+        function logMs(msg) {
+            const consoleEl = document.getElementById("ms-console");
+            if (!consoleEl) return;
+            consoleEl.innerHTML += `<br>&gt; ${msg}`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function resetMsSim() {
+            msIntervals.forEach(clearInterval);
+            msIntervals = [];
+            const pSpace = document.getElementById("ms-packet-space");
+            if (pSpace) pSpace.innerHTML = "";
+
+            for (let i = 1; i <= 4; i++) {
+                setCpuState(i, 20, "מריץ קוד משתמש", "bg-blue-500");
+            }
+            const consoleEl = document.getElementById("ms-console");
+            if (consoleEl) consoleEl.innerHTML = "&gt; Simulator reset. Ready.";
+        }
+
+        function setCpuState(id, pct, status, barColorClass) {
+            const bar = document.getElementById(`cpu-bar-${id}`);
+            const label = document.getElementById(`cpu-status-${id}`);
+            const pctLabel = document.getElementById(`cpu-pct-${id}`);
+            if (bar) {
+                bar.className = `${barColorClass} h-full transition-all duration-300`;
+                bar.style.width = `${pct}%`;
+            }
+            if (label) label.textContent = status;
+            if (pctLabel) pctLabel.textContent = `${pct}%`;
+        }
+
+        function triggerMsWorkload() {
+            resetMsSim();
+            
+            if (msMode === 'ms') {
+                logMs("Adding workload... Slaves CPU 2, 3, 4 trigger System Calls.");
+                
+                // Slaves enter SysCall, block and send packets
+                for (let i = 2; i <= 4; i++) {
+                    setCpuState(i, 0, "ממתין ל-Master (בלוק)...", "bg-amber-400 animate-pulse");
+                    createPacketAnimation(i);
+                }
+                
+                // Master spikes to handle them one by one
+                let queue = [2, 3, 4];
+                setCpuState(1, 100, "⚠️ עומס יתר: מטפל ב-CPU 2...", "bg-red-650 animate-pulse");
+                logMs("CPU 1 (Master) load: 100%. Processing System Call queue.");
+
+                let currentIdx = 0;
+                let msIntVal = setInterval(() => {
+                    if (currentIdx < queue.length) {
+                        let targetCpu = queue[currentIdx];
+                        setCpuState(targetCpu, 100, "מריץ קוד משתמש", "bg-blue-500");
+                        logMs(`CPU 1 finished processing SysCall for CPU ${targetCpu}. CPU ${targetCpu} resumed.`);
+                        
+                        currentIdx++;
+                        if (currentIdx < queue.length) {
+                            let nextCpu = queue[currentIdx];
+                            setCpuState(1, 100, `⚠️ עומס יתר: מטפל ב-CPU ${nextCpu}...`, "bg-red-650 animate-pulse");
+                        } else {
+                            setCpuState(1, 20, "מריץ קוד משתמש", "bg-blue-500");
+                            logMs("Queue empty. CPU 1 (Master) returned to normal workload.");
+                            clearInterval(msIntVal);
+                        }
+                    }
+                }, 1500);
+                msIntervals.push(msIntVal);
+                
+            } else {
+                // SMP Mode
+                logMs("Adding workload... All CPUs receive System Calls concurrently.");
+                for (let i = 1; i <= 4; i++) {
+                    setCpuState(i, 60, "מריץ קריאת מערכת באופן עצמאי", "bg-emerald-600 animate-pulse");
+                }
+                logMs("SMP: Load distributed evenly. No CPU is bottlenecked.");
+                
+                let msIntVal = setTimeout(() => {
+                    for (let i = 1; i <= 4; i++) {
+                        setCpuState(i, 20, "מריץ קוד משתמש", "bg-blue-500");
+                    }
+                    logMs("SMP: All System Calls finished. Returned to normal workload.");
+                }, 2000);
+                msIntervals.push(msIntVal);
+            }
+        }
+
+        function createPacketAnimation(cpuId) {
+            const space = document.getElementById("ms-packet-space");
+            if (!space) return;
+
+            const packet = document.createElement("div");
+            packet.className = "absolute bottom-1 w-3.5 h-3.5 bg-indigo-600 rounded-full shadow border border-white transition-all duration-[1200ms] ease-out";
+            
+            let startPercent = 87 - (cpuId - 1) * 25; 
+            let targetPercent = 87; // Master CPU 1
+            
+            packet.style.right = `${startPercent}%`;
+            space.appendChild(packet);
+            
+            setTimeout(() => {
+                packet.style.right = `${targetPercent}%`;
+                packet.style.transform = "scale(0.8)";
+                setTimeout(() => {
+                    packet.remove();
+                }, 1200);
+            }, 50);
+        }
+
+        // ==========================================
+        // 3. BUS CONTENTION LOGIC
+        // ==========================================
+        let busLock = 0;
+        let busSpinning = false;
+        let busActiveIntervals = [];
+
+        function logBus(msg) {
+            const consoleEl = document.getElementById("bus-console");
+            if (!consoleEl) return;
+            consoleEl.innerHTML += `<br>&gt; ${msg}`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function resetBusSim() {
+            busActiveIntervals.forEach(clearInterval);
+            busActiveIntervals.forEach(clearTimeout);
+            busActiveIntervals = [];
+            busLock = 0;
+            busSpinning = false;
+            
+            for (let i = 1; i <= 4; i++) {
+                const cpu = document.getElementById(`bus-cpu-${i}`);
+                const status = document.getElementById(`bus-cpu-status-${i}`);
+                if (cpu) cpu.className = "bg-slate-50 p-4 border border-slate-200 rounded-lg transition-colors duration-300";
+                if (status) {
+                    status.textContent = "מריץ קוד רגיל";
+                    status.className = "text-[10px] text-slate-500 font-bold mt-1";
+                }
+            }
+
+            const mainLine = document.getElementById("bus-main-line");
+            const alertBox = document.getElementById("bus-contention-alert");
+            const lockVal = document.getElementById("bus-lock-val");
+            const delayVal = document.getElementById("bus-write-delay");
+            const dots = document.getElementById("bus-polling-dots");
+            const writeDot = document.getElementById("bus-write-dot");
+
+            if (mainLine) mainLine.className = "absolute bottom-0 left-0 right-0 h-2 bg-slate-300 rounded transition-all duration-300";
+            if (alertBox) alertBox.classList.add("hidden");
+            if (lockVal) {
+                lockVal.textContent = "0";
+                lockVal.className = "font-mono text-lg font-black text-slate-800 bg-white border px-3 py-1 rounded";
+            }
+            if (delayVal) {
+                delayVal.textContent = "Normal (0ms)";
+                delayVal.className = "font-mono text-sm font-bold text-emerald-600 bg-white border px-3 py-1 rounded";
+            }
+            if (dots) dots.innerHTML = "";
+            if (writeDot) writeDot.classList.add("hidden");
+            
+            const consoleEl = document.getElementById("bus-console");
+            if (consoleEl) consoleEl.innerHTML = "&gt; Bus Contention Visualizer initialized.";
+        }
+
+        function busAcquireLock() {
+            busLock = 1;
+            const lockVal = document.getElementById("bus-lock-val");
+            if (lockVal) {
+                lockVal.textContent = "1";
+                lockVal.className = "font-mono text-lg font-black text-red-650 bg-red-50 border border-red-200 px-3 py-1 rounded";
+            }
+            
+            const cpu1 = document.getElementById("bus-cpu-1");
+            const status1 = document.getElementById("bus-cpu-status-1");
+            if (cpu1) cpu1.className = "bg-emerald-50 border-2 border-emerald-500 p-4 rounded-lg transition-colors duration-300";
+            if (status1) {
+                status1.textContent = "🔑 מריץ קטע קריטי";
+                status1.className = "text-[10px] text-emerald-700 font-bold mt-1";
+            }
+            
+            logBus("CPU 1 acquired lock. Entering critical section.");
+            triggerCpu1WriteNormal();
+        }
+
+        function triggerCpu1WriteNormal() {
+            const dot = document.getElementById("bus-write-dot");
+            if (!dot) return;
+            
+            dot.classList.remove("hidden");
+            dot.style.top = "0%";
+            dot.style.transition = "top 0.5s linear";
+            
+            let t = setTimeout(() => {
+                dot.style.top = "100%";
+                let t2 = setTimeout(() => {
+                    dot.classList.add("hidden");
+                    logBus("CPU 1 successfully completed normal RAM write (Duration: 50ms).");
+                }, 500);
+                busActiveIntervals.push(t2);
+            }, 50);
+            busActiveIntervals.push(t);
+        }
+
+        function busTriggerSpinlock() {
+            if (busLock === 0) {
+                logBus("Cannot start spinlock. Lock is not acquired yet.");
+                return;
+            }
+            
+            busSpinning = true;
+            const alertBox = document.getElementById("bus-contention-alert");
+            const mainLine = document.getElementById("bus-main-line");
+            const delayVal = document.getElementById("bus-write-delay");
+
+            if (alertBox) alertBox.classList.remove("hidden");
+            if (mainLine) mainLine.className = "absolute bottom-0 left-0 right-0 h-2 bg-red-500 rounded transition-all duration-300 shadow-lg shadow-red-500/50";
+            if (delayVal) {
+                delayVal.textContent = "Delayed (420ms)";
+                delayVal.className = "font-mono text-sm font-bold text-red-650 bg-red-50 border px-3 py-1 rounded";
+            }
+
+            for (let i = 2; i <= 4; i++) {
+                const cpu = document.getElementById(`bus-cpu-${i}`);
+                const status = document.getElementById(`bus-cpu-status-${i}`);
+                if (cpu) cpu.className = "bg-amber-50 border-2 border-amber-400 p-4 rounded-lg transition-colors duration-300";
+                if (status) {
+                    status.textContent = "🔄 Spinlock (המתנה פעילה)";
+                    status.className = "text-[10px] text-amber-700 font-bold mt-1";
+                }
+            }
+            
+            logBus("CPUs 2, 3, 4 failed to acquire lock. Entering Spinlock loops.");
+            logBus("⚠️ Bus Contention: 100%. System bus is heavily congested.");
+
+            // Start shooting polling dots
+            let pollInterval = setInterval(() => {
+                for (let i = 2; i <= 4; i++) {
+                    shootPollingDot(i);
+                }
+            }, 300);
+            busActiveIntervals.push(pollInterval);
+
+            // Try a memory write from CPU 1 under heavy traffic
+            let writeDelayTimeout = setTimeout(() => {
+                logBus("CPU 1 is trying to write data to RAM. Fighting through bus congestion...");
+                const dot = document.getElementById("bus-write-dot");
+                if (dot) {
+                    dot.classList.remove("hidden");
+                    dot.style.top = "0%";
+                    dot.style.transition = "top 4.0s cubic-bezier(0.25, 0.1, 0.25, 1)";
+                    let t3 = setTimeout(() => {
+                        dot.style.top = "100%";
+                        let t4 = setTimeout(() => {
+                            dot.classList.add("hidden");
+                            logBus("🐢 CPU 1 write completed (Duration: 4000ms - HEAVILY DELAYED!).");
+                        }, 4000);
+                        busActiveIntervals.push(t4);
+                    }, 100);
+                    busActiveIntervals.push(t3);
+                }
+            }, 1000);
+            busActiveIntervals.push(writeDelayTimeout);
+        }
+
+        function shootPollingDot(cpuId) {
+            const dotsContainer = document.getElementById("bus-polling-dots");
+            if (!dotsContainer) return;
+            
+            const dot = document.createElement("div");
+            dot.className = "absolute w-2 h-2 bg-red-650 rounded-full transition-all duration-[600ms] ease-in";
+            
+            let startRight = 87.5 - (cpuId - 1) * 25;
+            dot.style.right = `${startRight}%`;
+            dot.style.top = "0%";
+            dotsContainer.appendChild(dot);
+            
+            let t = setTimeout(() => {
+                dot.style.top = "100%";
+                let t2 = setTimeout(() => {
+                    dot.style.right = "50%";
+                    dot.style.transform = "scale(0.5)";
+                    let t3 = setTimeout(() => {
+                        dot.remove();
+                    }, 300);
+                    busActiveIntervals.push(t3);
+                }, 300);
+                busActiveIntervals.push(t2);
+            }, 50);
+            busActiveIntervals.push(t);
+        }
+
+        function busReleaseLock() {
+            busLock = 0;
+            resetBusSim();
+            logBus("Lock released. All CPUs returned to normal.");
+        }
+
+        // ==========================================
+        // 4. CACHE AFFINITY GAME LOGIC
+        // ==========================================
+        let affinityScore = 0;
+        let affinityDelay = 0;
+        let affinityGamePlaying = true;
+
+        function affinityDragStart(ev) {
+            ev.dataTransfer.setData("text/plain", "P1");
+        }
+
+        function affinityAllowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function affinityDrop(ev, cpuId) {
+            ev.preventDefault();
+            if (!affinityGamePlaying) return;
+            
+            const p1 = document.getElementById("affinity-process");
+            if (p1) p1.style.visibility = "hidden";
+            affinityGamePlaying = false;
+            
+            const feedback = document.getElementById("affinity-feedback");
+            const progress = document.getElementById(`affinity-progress-${cpuId}`);
+            const result = document.getElementById(`affinity-cpu-result-${cpuId}`);
+
+            if (cpuId === 1) {
+                if (progress) progress.style.width = "100%";
+                if (result) {
+                    result.textContent = "רץ (0ms delay)";
+                    result.className = "text-xs font-black text-orange-600 relative z-10";
+                }
+                
+                affinityScore += 10;
+                document.getElementById("affinity-score").textContent = affinityScore;
+                
+                if (feedback) {
+                    feedback.className = "mt-6 p-4 rounded-xl text-center text-sm font-bold bg-emerald-50 border border-emerald-250 text-emerald-800";
+                    feedback.innerHTML = "🎯 <strong>מעולה! זיקת מטמון (Cache Affinity) מושלמת!</strong> הנתונים של P1 כבר היו קיימים במטמון של CPU 1, לכן הוא מופעל מיידית ללא שום השהייה.";
+                }
+            } else {
+                if (progress) {
+                    progress.style.transition = "width 2.0s linear";
+                    progress.style.width = "100%";
+                }
+                if (result) {
+                    result.textContent = "טוען RAM...";
+                    result.className = "text-xs font-bold text-blue-600 relative z-10 animate-pulse";
+                }
+                if (feedback) {
+                    feedback.className = "mt-6 p-4 rounded-xl text-center text-sm font-bold bg-blue-50 border border-blue-200 text-blue-800";
+                    feedback.innerHTML = "⏳ <strong>מטמון קר!</strong> המעבד שנבחר אינו מכיל את הנתונים במטמון שלו. ה-System מעכבת את הריצה כדי להעתיק את הנתונים מ-RAM...";
+                }
+
+                setTimeout(() => {
+                    if (result) {
+                        result.textContent = "רץ (200ms delay)";
+                        result.className = "text-xs font-black text-red-650 relative z-10";
+                    }
+                    affinityScore += 2;
+                    affinityDelay += 200;
+                    document.getElementById("affinity-score").textContent = affinityScore;
+                    document.getElementById("affinity-delay").textContent = `${affinityDelay}ms`;
+                    
+                    if (feedback) {
+                        feedback.className = "mt-6 p-4 rounded-xl text-center text-sm font-bold bg-rose-50 border border-rose-250 text-rose-800";
+                        feedback.innerHTML = "🐌 <strong>הריצה הושלמה באיחור!</strong> המעבד נאלץ לטעון את הנתונים של P1 מהזיכרון הראשי. הדבר גרם לעיכוב של 200ms.";
+                    }
+                }, 2000);
+            }
+        }
+
+        function resetAffinityGame() {
+            affinityGamePlaying = true;
+            
+            const p1 = document.getElementById("affinity-process");
+            if (p1) p1.style.visibility = "visible";
+            
+            for (let i = 1; i <= 4; i++) {
+                const progress = document.getElementById(`affinity-progress-${i}`);
+                const result = document.getElementById(`affinity-cpu-result-${i}`);
+                if (progress) {
+                    progress.style.transition = "none";
+                    progress.style.width = "0%";
+                }
+                if (result) {
+                    result.textContent = "פנוי לקבלה";
+                    result.className = "text-xs font-bold text-slate-400 relative z-10";
+                }
+            }
+            
+            const feedback = document.getElementById("affinity-feedback");
+            if (feedback) {
+                feedback.className = "mt-6 p-4 rounded-xl text-center text-sm font-bold bg-slate-100 border border-slate-200 text-slate-700";
+                feedback.textContent = "המשחק ממתין לתחילת ריצה. גררו את P1.";
+            }
+        }
+
+        // ==========================================
+        // 5. GANG SCHEDULING LOGIC
+        // ==========================================
+        let gangMode = 'ind'; // 'ind' or 'gang'
+        let gangIntervals = [];
+
+        function setGangMode(mode) {
+            gangMode = mode;
+            resetGangSim();
+            
+            const btnInd = document.getElementById("gang-mode-ind");
+            const btnGang = document.getElementById("gang-mode-gang");
+            const cpu2Container = document.getElementById("gang-cpu-2-container");
+            const cpu2Status = document.getElementById("gang-cpu-task-2");
+
+            if (mode === 'ind') {
+                btnInd.className = "bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95";
+                btnGang.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                if (cpu2Container) cpu2Container.className = "opacity-40 transition-opacity";
+                if (cpu2Status) cpu2Status.textContent = "מצב: מנוטרל (במצב עצמאי)";
+                logGang("Switched to Independent Scheduling (No Gang). T1 and T2 run sequentially on CPU 1.");
+            } else {
+                btnInd.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                btnGang.className = "bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95";
+                if (cpu2Container) cpu2Container.className = "opacity-100 transition-opacity";
+                if (cpu2Status) cpu2Status.textContent = "מצב: Idle";
+                logGang("Switched to Gang Scheduling. CPU 1 & CPU 2 will run T1 & T2 concurrently.");
+            }
+        }
+
+        function logGang(msg) {
+            const consoleEl = document.getElementById("gang-console");
+            if (!consoleEl) return;
+            consoleEl.innerHTML += `<br>&gt; ${msg}`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function resetGangSim() {
+            gangIntervals.forEach(clearTimeout);
+            gangIntervals = [];
+
+            const t11 = document.getElementById("gang-track-1-1");
+            const t12 = document.getElementById("gang-track-1-2");
+            const t21 = document.getElementById("gang-track-2-1");
+
+            if (t11) {
+                t11.style.transition = "none";
+                t11.style.width = "0%";
+            }
+            if (t12) {
+                t12.style.transition = "none";
+                t12.style.width = "0%";
+                t12.style.left = "0%";
+                t12.textContent = "T2 (Spinning...)";
+            }
+            if (t21) {
+                t21.style.transition = "none";
+                t21.style.width = "0%";
+                t21.style.left = "0%";
+            }
+
+            document.getElementById("gang-stat-waste").textContent = "0%";
+            document.getElementById("gang-stat-progress").textContent = "0%";
+            document.getElementById("gang-cpu-task-1").textContent = "מצב: Idle";
+            if (gangMode === 'gang') {
+                document.getElementById("gang-cpu-task-2").textContent = "מצב: Idle";
+            } else {
+                document.getElementById("gang-cpu-task-2").textContent = "מצב: מנוטרל (במצב עצמאי)";
+            }
+            
+            const consoleEl = document.getElementById("gang-console");
+            if (consoleEl) consoleEl.innerHTML = "&gt; Simulator reset.";
+        }
+
+        function triggerGangSim() {
+            resetGangSim();
+            
+            const t11 = document.getElementById("gang-track-1-1");
+            const t12 = document.getElementById("gang-track-1-2");
+            const t21 = document.getElementById("gang-track-2-1");
+
+            if (gangMode === 'ind') {
+                logGang("Starting Independent simulation (Seq execution)...");
+                
+                document.getElementById("gang-cpu-task-1").textContent = "פרוסת זמן 1: T1 רץ";
+                if (t11) {
+                    t11.style.transition = "width 1.0s linear";
+                    t11.style.width = "50%";
+                }
+                logGang("Time Slice 1: T1 runs on CPU 1, acquires the lock.");
+
+                let t2 = setTimeout(() => {
+                    document.getElementById("gang-cpu-task-1").textContent = "פרוסת זמן 2: T2 מתוזמן";
+                    logGang("Time Slice 2: T1 is preempted while still holding lock. T2 is scheduled.");
+                    logGang("⚠️ T2 tries to get lock. Fails. Enters Spinlock loop.");
+                    
+                    if (t12) {
+                        t12.style.left = "50%";
+                        t12.style.transition = "width 1.0s linear";
+                        t12.style.width = "50%";
+                        t12.className = "absolute top-0 bottom-0 bg-red-500/80 transition-all duration-1000 flex items-center justify-center text-white text-xs font-black shadow-inner animate-pulse";
+                    }
+                    document.getElementById("gang-stat-waste").textContent = "50%";
+                    
+                }, 1200);
+                gangIntervals.push(t2);
+
+                let t3 = setTimeout(() => {
+                    document.getElementById("gang-cpu-task-1").textContent = "פרוסת זמן 3: T1 חוזר ומסיים";
+                    logGang("Time Slice 3: T2 time slice ended with 100% spinlock waste. T1 scheduled again, releases lock.");
+                    
+                    if (t11) {
+                        t11.style.transition = "width 2.0s linear";
+                        t11.style.width = "100%";
+                    }
+                    if (t12) {
+                        t12.style.transition = "none";
+                        t12.style.width = "0%";
+                    }
+                    
+                    document.getElementById("gang-stat-progress").textContent = "100%";
+                    logGang("Work completed. Total CPU capacity wasted: 50% on CPU 1.");
+                }, 2400);
+                gangIntervals.push(t3);
+
+            } else {
+                logGang("Starting Gang Scheduling simulation (Concurrent execution)...");
+                
+                document.getElementById("gang-cpu-task-1").textContent = "T1 רץ על CPU 1";
+                document.getElementById("gang-cpu-task-2").textContent = "T2 רץ על CPU 2";
+                logGang("Gang Scheduling: T1 and T2 scheduled together on separate CPUs.");
+
+                if (t11) {
+                    t11.style.transition = "width 1.5s linear";
+                    t11.style.width = "100%";
+                }
+
+                if (t21) {
+                    t21.style.transition = "width 1.5s linear";
+                    t21.style.width = "100%";
+                }
+                
+                let doneTimeout = setTimeout(() => {
+                    document.getElementById("gang-cpu-task-1").textContent = "T1 הושלם";
+                    document.getElementById("gang-cpu-task-2").textContent = "T2 הושלם";
+                    document.getElementById("gang-stat-progress").textContent = "100%";
+                    document.getElementById("gang-stat-waste").textContent = "0%";
+                    logGang("T2 requested lock. Since T1 was running concurrently, T1 released it quickly.");
+                    logGang("Success! All threads finished with 0% Spinlock waste.");
+                }, 1500);
+                gangIntervals.push(doneTimeout);
+            }
+        }
+
+        // ==========================================
+        // 6. FLASHCARD DECK LOGIC (GLOSSARY)
+        // ==========================================
+        let flashcardMode = 'study'; // 'study' or 'test'
+        let flashcardActiveCategory = 'הכל';
+        let openedFlashcards = new Set();
+
+        const flashcardData = [
+            {
+                "term": "מערכת מרובת מעבדים (Multiprocessor System)",
+                "definition": "מערכת מחשב המכילה שני מעבדים או יותר העובדים יחד כדי להגדיל את תפוקת המערכת וביצועיה.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "ליבות / ריבוי ליבות (Cores / Multi-core)",
+                "definition": "מעבדים עצמאיים הבנויים יחד על אותו מצע פיזי (Die) של שבב סיליקון בודד.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "זיכרון ראשי משותף (Shared Memory)",
+                "definition": "ארכיקטורה שבה כל המעבדים או הליבות במערכת חולקים את אותו מרחב זיכרון RAM וניגשים אליו.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "אפיק (Bus)",
+                "definition": "ערוץ תקשורת משותף המחבר בין המעבדים לזיכרון הראשי.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "מתג צולב (Crossbar Switch)",
+                "definition": "רשת חיבורים בחומרה המאפשרת למספר מעבדים לגשת למספר יחידות זיכרון בו-זמנית, ללא צוואר הבקבוק של אפיק בודד.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "רשת מיתוג רב-שלבית (Multistage Network)",
+                "definition": "ארכיטקטורת רשת מורכבת יותר לחיבור מעבדים לזיכרון במערכות גדולות מאוד.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "ריבוי מעבדים סימטרי (SMP)",
+                "definition": "תצורת מ\"ה שבה קיים רק עותק אחד של מ\"ה בזיכרון, והוא משרת את כל המעבדים בצורה שווה.",
+                "category": "מערכות הפעלה וסנכרון"
+            },
+            {
+                "term": "מוביל-נגרר (Master-Slave)",
+                "definition": "תצורה אסימטרית שבה מעבד אחד מוגדר כ\"מוביל\" ומריץ את כל מ\"ה, בעוד שאר המעבדים מריצים יישומי משתמש בלבד.",
+                "category": "מערכות הפעלה וסנכרון"
+            },
+            {
+                "term": "המתנה פעילה (Busy Waiting / Spinlock)",
+                "definition": "מצב שבו מעבד המנסה להשיג מנעול תפוס נשאר בלולאה רציפה ודוגם את המנעול שוב ושוב עד שיתפנה.",
+                "category": "מערכות הפעלה וסנכרון"
+            },
+            {
+                "term": "החלפת הקשר (Context Switch)",
+                "definition": "כאשר מנעול לא זמין, המעבד מפסיק את התהליך הנוכחי, שומר מצב, ועובר להריץ תהליך אחר מהתור (במקום ספין).",
+                "category": "מערכות הפעלה וסנכרון"
+            },
+            {
+                "term": "סנכרון ומנעולים (Sync & Locks)",
+                "definition": "מנגנונים להגנה על מבני נתונים של מ\"ה מפני גישה בו-זמנית ודורסנית של מספר מעבדים.",
+                "category": "מערכות הפעלה וסנכרון"
+            },
+            {
+                "term": "שיתוף מרחב (Space Sharing)",
+                "definition": "חלוקת המעבדים הפנויים והקצאת קבוצת מעבדים שלמה לטובת משימה בודדת הדורשת מקביליות.",
+                "category": "תזמון"
+            },
+            {
+                "term": "שיתוף זמן (Timesharing)",
+                "definition": "חלוקת משאבי המעבדים על פני ציר הזמן ע\"י \"פרוסות זמן\" לתהליכים שונים.",
+                "category": "תזמון"
+            },
+            {
+                "term": "תזמון כנופיות (Gang Scheduling)",
+                "definition": "תזמון שבו כל התהליכונים של תהליך מתחילים לרוץ יחד, באותו הזמן, למניעת המתנה למידע מתהליכון רדום.",
+                "category": "תזמון"
+            },
+            {
+                "term": "זיקה למעבד (Processor Affinity / Cache Affinity)",
+                "definition": "העדפה להריץ תהליך על הליבה שבה רץ קודם לכן, כדי לנצל נתונים שכבר נטענו למטמון (Cache) שלה.",
+                "category": "תזמון"
+            },
+            {
+                "term": "UMA (Uniform Memory Access)",
+                "definition": "ארכיטקטורת זיכרון שבה זמן הגישה של כל מעבד לכל תא בזיכרון הראשי הוא זהה ואחיד.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "NUMA (Non-Uniform Memory Access)",
+                "definition": "ארכיטקטורת זיכרון שבה לכל מעבד יש זיכרון מקומי הנגיש לו במהירות, אך גישה לזיכרון המשויך למעבד אחר דורשת זמן רב יותר.",
+                "category": "חומרה וארכיטקטורה"
+            },
+            {
+                "term": "ריבוי תהליכונים חומרתי (Hyper-threading)",
+                "definition": "טכנולוגיה המאפשרת לליבה פיזית בודדת להריץ מספר תהליכונים בו-זמנית על ידי שכפול חלק ממשאבי הליבה (כמו אוגרים) ושיתוף יחידות הביצוע.",
+                "category": "חומרה וארכיטקטורה"
+            }
+        ];
+
+        const catMap = {
+            "חומרה וארכיטקטורה": "חומרה וארכיטקטורה",
+            "מערכות הפעלה וסנכרון": "מערכות הפעלה וסנכרון",
+            "תזמון": "תזמון"
+        };
+
+        function initFlashcards() {
+            const categories = ['הכל', ...new Set(flashcardData.map(item => catMap[item.category] || item.category))];
+            const tabsContainer = document.getElementById("flashcard-categories-tabs");
+            if (!tabsContainer) return;
+            tabsContainer.innerHTML = "";
+
+            categories.forEach(cat => {
+                const tabBtn = document.createElement("button");
+                tabBtn.className = cat === flashcardActiveCategory
+                    ? "bg-slate-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                tabBtn.textContent = cat;
+                tabBtn.onclick = () => filterFlashcards(cat);
+                tabsContainer.appendChild(tabBtn);
+            });
+
+            renderFlashcards();
+        }
+
+        function setFlashcardMode(mode) {
+            flashcardMode = mode;
+
+            const btnStudy = document.getElementById("flashcard-mode-study");
+            const btnTest = document.getElementById("flashcard-mode-test");
+            const statsEl = document.getElementById("flashcard-stats-container");
+
+            if (mode === 'study') {
+                btnStudy.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                btnTest.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                if (statsEl) statsEl.classList.add("hidden");
+            } else {
+                btnStudy.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                btnTest.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                if (statsEl) statsEl.classList.remove("hidden");
+            }
+
+            renderFlashcards();
+        }
+
+        function filterFlashcards(category) {
+            flashcardActiveCategory = category;
+
+            const tabs = document.getElementById("flashcard-categories-tabs").children;
+            for (let tab of tabs) {
+                if (tab.textContent === category) {
+                    tab.className = "bg-slate-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95";
+                } else {
+                    tab.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                }
+            }
+
+            renderFlashcards();
+        }
+
+        function renderFlashcards() {
+            const deck = document.getElementById("flashcard-deck");
+            if (!deck) return;
+            deck.innerHTML = "";
+
+            const filteredData = flashcardData.filter(item => {
+                const mappedCat = catMap[item.category] || item.category;
+                return flashcardActiveCategory === 'הכל' || mappedCat === flashcardActiveCategory;
+            });
+
+            const totalEl = document.getElementById("flashcard-total-count");
+            const openedEl = document.getElementById("flashcard-opened-count");
+
+            if (totalEl) totalEl.textContent = filteredData.length;
+
+            let openedFiltered = 0;
+            filteredData.forEach(item => {
+                if (openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            if (openedEl) openedEl.textContent = openedFiltered;
+
+            filteredData.forEach((item, index) => {
+                const cardScene = document.createElement("div");
+
+                if (flashcardMode === 'study') {
+                    cardScene.className = "flashcard-scene flat-mode";
+                    cardScene.innerHTML = `
+                        <div class="flashcard-card">
+                            <div class="flashcard-face flashcard-front">
+                                <div>
+                                    <span class="text-[9px] font-bold text-blue-600 bg-blue-100/60 border border-blue-200/50 px-2 py-0.5 rounded-full mb-2 inline-block">${catMap[item.category] || item.category}</span>
+                                    <h4 class="text-sm font-black text-slate-800 leading-tight">${item.term}</h4>
+                                </div>
+                            </div>
+                            <div class="flashcard-face flashcard-back">
+                                <p class="text-xs text-slate-600 leading-relaxed">${item.definition}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const isFlipped = openedFlashcards.has(item.term);
+                    cardScene.className = isFlipped ? "flashcard-scene flipped" : "flashcard-scene";
+                    cardScene.onclick = () => toggleFlashcard(cardScene, item.term);
+
+                    cardScene.innerHTML = `
+                        <div class="flashcard-card">
+                            <div class="flashcard-face flashcard-front flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[9px] font-bold text-blue-600 bg-blue-100/60 border border-blue-200/50 px-2 py-0.5 rounded-full mb-2 inline-block">${catMap[item.category] || item.category}</span>
+                                    <h4 class="text-sm font-black text-slate-800 leading-tight mt-1">${item.term}</h4>
+                                </div>
+                                <div class="text-[9px] text-slate-400 font-bold border-t pt-2 border-slate-100 flex items-center justify-between">
+                                    <span>לחיצה לחשיפה</span>
+                                    <span>❓</span>
+                                </div>
+                            </div>
+                            <div class="flashcard-face flashcard-back flex flex-col justify-between font-sans">
+                                <div class="overflow-y-auto pr-1">
+                                    <span class="text-[9px] font-bold text-slate-400 bg-slate-100 border border-slate-200/50 px-2 py-0.5 rounded-full mb-2 inline-block">${catMap[item.category] || item.category}</span>
+                                    <h5 class="text-xs font-black text-slate-700 leading-tight mt-1">${item.term}</h5>
+                                    <p class="text-[11px] text-slate-600 leading-relaxed mt-2" dir="rtl">${item.definition}</p>
+                                </div>
+                                <div class="text-[9px] text-blue-500 font-bold border-t pt-1.5 border-slate-200 flex items-center justify-between select-none">
+                                    <span>נחשף</span>
+                                    <span>✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                deck.appendChild(cardScene);
+            });
+        }
+
+        function toggleFlashcard(el, term) {
+            if (flashcardMode === 'study') return;
+
+            const openedEl = document.getElementById("flashcard-opened-count");
+
+            if (openedFlashcards.has(term)) {
+                openedFlashcards.delete(term);
+                el.classList.remove("flipped");
+            } else {
+                openedFlashcards.add(term);
+                el.classList.add("flipped");
+            }
+
+            let openedFiltered = 0;
+            flashcardData.forEach(item => {
+                const mappedCat = catMap[item.category] || item.category;
+                const isInCategory = (flashcardActiveCategory === 'הכל' || mappedCat === flashcardActiveCategory);
+                if (isInCategory && openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            if (openedEl) openedEl.textContent = openedFiltered;
+        }
+
+        function resetFlashcards() {
+            openedFlashcards.clear();
+            renderFlashcards();
+        }
+
+        // Expose functions to window
+        window.showTab = showTab;
+        window.toggleSidebar = toggleSidebar;
+        window.toggleAnswer = toggleAnswer;
         
-        <!-- Header Section -->
-        <header class="bg-indigo-900 text-white rounded-2xl p-8 mb-10 shadow-lg">
-            <h1 class="text-4xl font-extrabold mb-4">פרק 8: מערכות מרובות מעבדים</h1>
-            <p class="text-lg text-indigo-100 max-w-3xl">
-                פרק זה עוסק במערכות הכוללות יותר ממעבד אחד (או יותר מליבה אחת), ובאתגרים הניצבים בפני מערכת ההפעלה בניהול מערכות אלו.
-            </p>
-        </header>
+        window.toggleCoherenceMesi = toggleCoherenceMesi;
+        window.resetCoherenceSim = resetCoherenceSim;
+        window.coherenceRead = coherenceRead;
+        window.coherenceWrite = coherenceWrite;
 
-        <!-- 8.1 Intro -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-indigo-600 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">8.1 ריבוי מעבדים</h2>
-            </div>
-            <p class="text-slate-700 bg-white p-5 rounded-xl shadow-sm border border-slate-100">
-                סעיף זה מהווה הקדמה לנושא ריבוי המעבדים ובוחן את החומרה ואת סוגי מערכות ההפעלה התומכות בה.
-            </p>
-        </section>
+        window.setMsMode = setMsMode;
+        window.resetMsSim = resetMsSim;
+        window.triggerMsWorkload = triggerMsWorkload;
 
-        <!-- 8.1.1 Hardware -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-blue-500 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">8.1.1 חומרת ריבוי ליבות</h2>
-            </div>
-            <p class="text-slate-700 mb-6">סעיף זה מתמקד במאפיינים הפיזיים והארכיטקטוניים של מעבדים מרובי ליבות:</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Point 1 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-blue-700">1. גישה לזיכרון</h3>
-                    <p class="text-sm text-slate-600 mb-3">אף על פי שבמערכות אלו לכל המעבדים יש יכולת לגשת לכל מרחב הזיכרון, קיימות שתי צורות מימוש עיקריות:</p>
-                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
-                        <li><strong>UMA (Uniform Memory Access):</strong> גישה אחידה לזיכרון.</li>
-                        <li><strong>NUMA (Non-Uniform Memory Access):</strong> גישה לא אחידה לזיכרון.</li>
-                    </ul>
-                </article>
+        window.busAcquireLock = busAcquireLock;
+        window.busTriggerSpinlock = busTriggerSpinlock;
+        window.busReleaseLock = busReleaseLock;
+        window.resetBusSim = resetBusSim;
 
-                <!-- Point 2 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-blue-700">2. בעיית עקביות המטמון (Cache Coherence)</h3>
-                    <p class="text-sm text-slate-700 mb-2">זהו אתגר קריטי. כאשר ליבה אחת משנה ערך של משתנה משותף (למשל, תהליכונים שונים על ליבות שונות משתפים נתונים), השינוי חייב להיות "נראה" גם לליבות האחרות.</p>
-                    <p class="text-sm text-slate-600 bg-blue-50 p-2 rounded">לרוב קיים במעבד מנגנון חומרתי שמבטיח זאת. במידה ואין, המתכנת חייב להביא זאת בחשבון, שכן אלגוריתמים מסוימים (כמו פתרון פטרסון) לא יעבדו תקין בלעדיו.</p>
-                </article>
+        window.affinityDragStart = affinityDragStart;
+        window.affinityAllowDrop = affinityAllowDrop;
+        window.affinityDrop = affinityDrop;
+        window.resetAffinityGame = resetAffinityGame;
 
-                <!-- Point 3 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-blue-700">3. סוגי שבבים מרובי ליבות</h3>
-                    <ul class="space-y-3 text-sm text-slate-700">
-                        <li><strong class="text-slate-900 block">שבב רב-ליבתי (Multicore chip):</strong> מכיל לרוב 4-16 ליבות. מבחינת המתכנת, אין כמעט הבדל בינו למערכת מרובת מעבדים נפרדים. כולן ניגשות לכל הזיכרון (לרוב ישירות). לעיתים יש מטמון פרטי ולעיתים משותף.</li>
-                        <li><strong class="text-slate-900 block">שבב מרובה ליבות (Manycore chip):</strong> מכילים כמות עצומה של ליבות (עשרות עד אלפים). מאפשרים ביצוע מקבילי המעניק מהירות רבה לחישובים מורכבים.</li>
-                    </ul>
-                </article>
+        window.setGangMode = setGangMode;
+        window.resetGangSim = resetGangSim;
+        window.triggerGangSim = triggerGangSim;
 
-                <!-- Point 4 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-blue-700">4. חלוקת העבודה בין הליבות</h3>
-                    <p class="text-sm text-slate-600 mb-3">קיימות שתי גישות:</p>
-                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-2">
-                        <li><strong>הומוגנית:</strong> כל הליבות זהות לחלוטין ויכולות למלא כל תפקיד או להריץ כל קוד באותה יעילות.</li>
-                        <li><strong>הטרוגנית:</strong> הליבות שונות ויש להן תכונות שונות, מה שהופך ליבות מסוימות למתאימות יותר לתפקידים ספציפיים.</li>
-                    </ul>
-                </article>
+        window.setFlashcardMode = setFlashcardMode;
+        window.filterFlashcards = filterFlashcards;
+        window.toggleFlashcard = toggleFlashcard;
+        window.resetFlashcards = resetFlashcards;
 
-                <!-- Point 5 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-blue-700">5. ריבוי תהליכונים חומרתי (Hyper-threading)</h3>
-                    <p class="text-sm text-slate-700 mb-2">טכנולוגיה המאפשרת לכל ליבה בודדת להריץ כמה תהליכונים (Threads) כמעט במקביל.</p>
-                    <p class="text-sm text-slate-600 mb-2">חלק מהמשאבים משוכפלים (למשל, קבוצת אוגרים נפרדת), ומשאבים אחרים (מטמון, יחידת ביצוע) משותפים לכל התהליכונים באותה ליבה.</p>
-                    <div class="bg-yellow-50 text-yellow-800 text-xs p-2 rounded font-medium">
-                        חשוב: טכניקה זו אינה מכפילה את כוח העיבוד כמו הוספת ליבה פיזית, ולרוב מוסיפה לתפוקה מקסימום של כ-30%.
-                    </div>
-                </article>
+        // ==========================================
+        // DOCUMENT INITIALIZATION
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. Create and inject sidebar toggle button
+            const toggleBtn = document.createElement('button');
+            toggleBtn.id = 'sidebar-toggle-btn';
+            toggleBtn.className = 'fixed top-6 p-2 rounded-lg bg-white/80 backdrop-blur-md hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-md z-30 flex items-center justify-center w-10 h-10 transition-all duration-300 active:scale-95 cursor-pointer';
+            toggleBtn.title = 'הצג/הסתר תפריט ניווט';
+            toggleBtn.onclick = toggleSidebar;
+            toggleBtn.innerHTML = '<svg id="sidebar-toggle-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"></svg>';
+            document.body.appendChild(toggleBtn);
 
-                <!-- Point 6 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-blue-700">6. תכנות עם ריבוי ליבות</h3>
-                    <p class="text-sm text-slate-700 mb-3">החומרה ומערכת ההפעלה <strong>אינן</strong> מסוגלות לקחת קוד סדרתי רגיל ולפצל אותו באופן קסום לביצוע מקבילי.</p>
-                    <p class="text-sm text-slate-600">האחריות לכתוב קוד המאפשר ביצוע מקבילי (ע"י חלוקה לתהליכים/תהליכונים) מוטלת כולה על המתכנת. ישנן שפות וספריות המציעות כלים להקלת יצירת מבנה מקבילי.</p>
-                </article>
-            </div>
-        </section>
+            // 2. Load sidebar collapsed state from localStorage
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+            updateToggleBtnIcon(isCollapsed);
 
-        <!-- 8.1.2 OS Types -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-emerald-500 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">8.1.2 סוגי מערכות הפעלה לריבוי מעבדים</h2>
-            </div>
-            <p class="text-slate-700 mb-6">כאשר מתכננים מערכת מחשב הכוללת מספר מעבדים (או מספר רב של ליבות), השאלה המרכזית היא כיצד ננהל את החומרה. נתמקד ב-3 מודלים המתאימים למעבדים פיזיים נפרדים ולמעבדים מרובי ליבות (Multicore).</p>
-            
-            <div class="space-y-6">
-                <!-- Model 1 -->
-                <div class="bg-white rounded-xl shadow-sm border-l-4 border-l-slate-400 p-6">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">1. לכל מעבד מערכת הפעלה משלו <span class="text-sm font-normal text-slate-500">(Each CPU has its own OS)</span></h3>
-                    <p class="text-slate-600 mb-4">זוהי הדרך הפשוטה והנאיבית ביותר לגשת לבעיה.</p>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-900">איך זה עובד?</h4>
-                            <p class="text-sm text-slate-700">הזיכרון הראשי מחולק מראש (סטטית) למספר מחיצות כשווה למספר המעבדים. כל מעבד מקבל מחיצה פרטית ובה נטען עותק שלם ופרטי של מ"ה. כל מעבד מתפקד כמחשב עצמאי לחלוטין.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-900">אופטימיזציה אפשרית</h4>
-                            <p class="text-sm text-slate-700">במקום לטעון את קוד מ"ה שוב ושוב (בזבוז RAM), המעבדים יכולים לשתף עותק יחיד של קוד המערכת (לקריאה בלבד), אך כל אחד מחזיק עותק פרטי של מבני הנתונים (Data).</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 bg-red-50 text-red-800 p-3 rounded-lg text-sm">
-                        <strong class="block mb-1">החיסרון:</strong> בשל הכפילות וחוסר היכולת לשתף עומסים בצורה חכמה (תהליך לא יכול לעבור ממעבד עמוס לפנוי), גישה זו אינה נפוצה כיום.
-                    </div>
-                </div>
+            // 3. Setup tabs hash routing or load from localStorage
+            const hashTab = window.location.hash ? window.location.hash.substring(1) : null;
+            const savedTab = localStorage.getItem('activeTab_ch8');
+            const defaultTab = 'intro-hardware';
+            const finalTab = hashTab || savedTab || defaultTab;
+            showTab(finalTab);
 
-                <!-- Model 2 -->
-                <div class="bg-white rounded-xl shadow-sm border-l-4 border-l-orange-500 p-6">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">2. מבנה מוביל-נגרר <span class="text-sm font-normal text-slate-500">(Master-Slave / Leader-Follower)</span></h3>
-                    <p class="text-slate-600 mb-4">מודל המנסה לפתור את בעיית הכפילות על ידי יצירת היררכיה ברורה בין המעבדים.</p>
-                    
-                    <h4 class="font-bold text-sm text-slate-900 mb-1">איך זה עובד? וטיפול בקריאות מערכת</h4>
-                    <p class="text-sm text-slate-700 mb-4">
-                        קיים עותק יחיד בלבד של מ"ה בזיכרון. אך <strong>רק מעבד אחד ספציפי (CPU 1 - המוביל)</strong> מורשה להריץ את קוד המערכת. שאר המעבדים (הנגררים) מריצים אך ורק תוכניות משתמש. 
-                        כאשר תהליך בנגרר זקוק לשירות ממערכת ההפעלה (System Call, קלט/פלט), הוא מעביר את הבקשה ל-CPU 1, שמבצע את העבודה ומחזיר תשובה. (CPU 1 יכול גם להריץ תהליכי משתמש בזמנו הפנוי).
-                    </p>
-                    
-                    <div class="bg-orange-50 text-orange-900 p-4 rounded-lg text-sm border border-orange-200">
-                        <div class="font-bold text-orange-800 flex items-center gap-2 mb-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            החיסרון הארכיטקטוני המרכזי: צוואר בקבוק (Bottleneck)
-                        </div>
-                        <p>המודל הופך את CPU 1 לצוואר בקבוק עצום. ככל שנוסיף מעבדים, כך ייווצר עומס כבד יותר על המעבד המוביל, והנגררים ייאלצו להמתין בתור זמן רב לפעולות פשוטות. מודל זה גרוע מאוד למערכות עם מעבדים רבים.</p>
-                    </div>
-                </div>
+            // Initialize Flashcards Glossary
+            initFlashcards();
 
-                <!-- Model 3 -->
-                <div class="bg-white rounded-xl shadow-sm border-l-4 border-l-emerald-500 p-6">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">3. ריבוי מעבדים סימטרי <span class="text-sm font-normal text-slate-500">(Symmetric Multiprocessing - SMP)</span></h3>
-                    <p class="text-slate-600 mb-4">זהו הפתרון המודרני, המורכב והנפוץ ביותר כיום (Windows, Linux, macOS).</p>
-                    
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-900 mb-1">איך זה עובד?</h4>
-                            <p class="text-sm text-slate-700">קיים עותק יחיד של מ"ה בזיכרון, אך כל אחד מהמעבדים יכול להריץ את קוד מערכת ההפעלה. <strong>אין מעבד 'מנהל' (Master) יחיד – לכל המעבדים גישה שוויונית למערכת ההפעלה.</strong></p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-900 mb-1">האתגר: מרוץ וסנכרון</h4>
-                            <p class="text-sm text-slate-700">אם כולם יכולים להריץ מ"ה בו-זמנית, <strong>עלול להיווצר חוסר עקביות בנתונים (תנאי מרוץ - Race Condition)</strong> (למשל, שני מעבדים מעדכנים יחד טבלת תהליכים).</p>
-                        </div>
-                    </div>
+            // 4. Inject navigation buttons at the bottom of each tab
+            const tabs = [];
+            const seenIds = new Set();
+            document.querySelectorAll('.tab-content').forEach(el => {
+                const id = el.id;
+                if (id && !seenIds.has(id)) {
+                    seenIds.add(id);
+                    tabs.push(el);
+                }
+            });
 
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6">
-                        <h4 class="font-bold text-slate-900 mb-2">הפתרון: פיצול למנעולים</h4>
-                        <p class="text-sm text-slate-700">מהנדסי המערכת מפצלים את הקוד לאזורים קריטיים עצמאיים. (למשל: מעבד א' במתזמן, מעבד ב' במערכת הקבצים, מעבד ג' בפסיקת רשת - פעולות לא תלויות). כל אזור קריטי מוגן על ידי <strong>מנעול (Lock)</strong> נפרד. רק מעבד אחד בכל פעם יכול להחזיק במנעול המסוים.</p>
-                    </div>
+            tabs.forEach((tab, index) => {
+                const navContainer = document.createElement('div');
+                navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
 
-                    <div>
-                        <h4 class="font-bold text-slate-900 mb-3 border-b pb-2">הקושי ההנדסי ב-SMP (תכנון מערך המנעולים):</h4>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div class="bg-blue-50 p-3 rounded text-sm text-blue-900">
-                                <strong>מקביליות מול סדר:</strong> יש לפצל את המערכת לחלקים קטנים כדי לאפשר עבודה מקבילית מקסימלית (ולא לנעול את כל הזיכרון בבת אחת).
-                            </div>
-                            <div class="bg-red-50 p-3 rounded text-sm text-red-900">
-                                <strong>סכנת הקיפאון (Deadlock):</strong> שימוש בהרבה מנעולים חושף אותנו לקיפאון. אם מעבד א' נועל זיכרון ומבקש קבצים, ומעבד ב' נועל קבצים ומבקש זיכרון – שניהם ימתינו לנצח והמחשב יקפא. יש לתכנן בקפידה את סדר תפיסת המנעולים.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                // Previous Button
+                if (index > 0) {
+                    const prevTabId = tabs[index - 1].id;
+                    const prevBtn = document.createElement('button');
+                    prevBtn.onclick = () => showTab(prevTabId);
+                    prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    prevBtn.innerHTML = `
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>הקודם</span>
+                    `;
+                    navContainer.appendChild(prevBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
 
-        <!-- 8.1.3 Synchronization -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-purple-500 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">8.1.3 סנכרון עם ריבוי מעבדים</h2>
-            </div>
-            
-            <p class="text-slate-700 text-lg mb-6 leading-relaxed">
-                במודל ה-SMP, האתגר המרכזי הוא להבטיח שמעבדים לא "ידרסו" אחד את עבודתו של השני. כדי למנוע תקלות, המעבדים חייבים להסתנכרן ביניהם. אולם, שיטות הסנכרון הפשוטות של מעבד בודד מאבדות את כוחן:
-            </p>
+                // Next Button
+                if (index < tabs.length - 1) {
+                    const nextTabId = tabs[index + 1].id;
+                    const nextBtn = document.createElement('button');
+                    nextBtn.onclick = () => showTab(nextTabId);
+                    nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                    nextBtn.innerHTML = `
+                        <span>הבא</span>
+                        <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    `;
+                    navContainer.appendChild(nextBtn);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-10 invisible';
+                    navContainer.appendChild(placeholder);
+                }
 
-            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8 border border-slate-200">
-                <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
-                    <h3 class="font-bold text-lg text-slate-800">מדוע אי אפשר פשוט לחסום פסיקות?</h3>
-                </div>
-                <div class="p-6 grid md:grid-cols-2 gap-6 text-sm">
-                    <div>
-                        <h4 class="font-bold text-indigo-700 mb-2">במעבד בודד (Uniprocessor)</h4>
-                        <p class="text-slate-600">מערכת ההפעלה מבטיחה מניעה הדדית (Mutual Exclusion) בקלות: כניסה לקטע קריטי מלווה בהשבתת פסיקות (Disable Interrupts). <strong>המעבד חוסם קבלת פסיקות חומרה (Disables Interrupts)</strong>, אין מתזמן, ואף תהליך לא מפקיע את המעבד עד סיום הפעולה.</p>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-red-600 mb-2">בריבוי מעבדים</h4>
-                        <p class="text-slate-600">פקודת השבתת הפסיקות משפיעה <strong>רק על המעבד הספציפי שביצע אותה</strong>. שאר המעבדים ממשיכים לפעול כרגיל ויכולים לגשת במקביל לאותם נתונים בזיכרון המשותף. מסקנה: אי אפשר להסתמך על חסימת פסיקות לסנכרון אמיתי.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TSL & Hardware Locks -->
-            <div class="space-y-6">
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="text-xl font-bold text-indigo-900 mb-3">הפתרון: מנעולי חומרה (TSL) ונעילת אפיק הזיכרון</h3>
-                    <p class="text-slate-700 mb-4">כדי להשיג סנכרון אמיתי, חייבים לציית לפרוטוקול מנעולים הנשען על <strong>הוראות מכונה מיוחדות אטומיות</strong> (רציפות ולא ניתנות לחלוקה), כמו הוראת <strong class="text-indigo-600">TSL (Test and Set Lock)</strong>.</p>
-                    
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-5 mt-4">
-                        <h4 class="font-bold text-red-800 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            הסכנה הקריטית ברמת החומרה - התרחיש הגרוע ביותר
-                        </h4>
-                        <p class="text-sm text-red-900 mb-3">מדוע TSL חייבת להיות מושלמת? נדמיין את התרחיש הבא (כאשר המניעה ההדדית נכשלת):</p>
-                        <ol class="list-decimal list-inside space-y-2 text-sm text-red-900 bg-white/60 p-4 rounded font-medium">
-                            <li>מילת הזיכרון שמשמשת כמנעול שווה כעת ל-0 (המנעול פתוח).</li>
-                            <li>מעבד 1 קורא את המילה (פעולת Test) ומקבל 0.</li>
-                            <li><strong>בדיוק באותו שבריר שנייה</strong> (לפני שמעבד 1 כותב 1), מעבד 2 קורא גם הוא את המילה ומקבל 0.</li>
-                            <li>כעת מעבד 1 כותב 1 לתוך המנעול, ומיד אחריו מעבד 2 כותב גם הוא 1.</li>
-                        </ol>
-                        <p class="text-sm font-bold text-red-900 mt-3">התוצאה הקטלנית: שני המעבדים קיבלו ערך 0, בטוחים שזכו במנעול, ושניהם ייכנסו לקטע הקריטי יחד!</p>
-                    </div>
-                </article>
-
-                <article class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="text-xl font-bold text-emerald-800 mb-3">איך החומרה מונעת את הכישלון הזה? (Bus Locking)</h3>
-                    <p class="text-slate-700 mb-4">כדי ש-TSL תהיה באמת אטומית, היא נעזרת בנעילת אפיק:</p>
-                    <div class="flex flex-col space-y-3">
-                        <div class="flex items-start gap-3">
-                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">1</span>
-                            <p class="text-slate-700">מעבד 1 מבצע הוראת TSL, ושולח פקודה אלקטרונית ש<strong>נועלת פיזית את אפיק הזיכרון הראשי (System Bus)</strong>.</p>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">2</span>
-                            <p class="text-slate-700">בזמן שהאפיק נעול, <strong>אף מעבד אחר אינו יכול לגשת לזיכרון הראשי</strong>.</p>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">3</span>
-                            <p class="text-slate-700">מעבד 1 מבצע את הקריאה והכתיבה של המנעול בשלווה.</p>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="flex-shrink-0 bg-emerald-100 text-emerald-800 w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">4</span>
-                            <p class="text-slate-700">רק לאחר שסיים, מעבד 1 משחרר את האפיק ומאפשר גישה לאחרים.</p>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="bg-slate-800 text-white p-6 rounded-xl shadow-md border-b-4 border-b-purple-500">
-                    <h3 class="text-xl font-bold text-purple-300 mb-3">המחיר של מנעולי ספין (Spinlocks) ובעיית תעבורת האפיק</h3>
-                    <p class="text-slate-200 mb-4">
-                        מנעולים המבוססים על TSL נקראים Spinlocks ופועלים על המתנה פעילה. מעבד שמנסה לתפוס מנעול תפוס נכנס ללולאה ודוגם את המנעול בקצב מהיר. הדבר יוצר בעיית ביצועים כפולה:
-                    </p>
-                    <ul class="list-disc list-inside text-slate-300 space-y-2 mb-4">
-                        <li><strong>בזבוז זמן עיבוד:</strong> המעבד הממתין מסתובב סביב עצמו באפס מעשה.</li>
-                        <li><strong>עומס על אפיק הזיכרון (Bus Contention):</strong> כל דגימה בלולאה מייצרת תעבורה על האפיק הפיזי.</li>
-                    </ul>
-                    <p class="text-slate-300 text-sm bg-slate-700 p-4 rounded-lg">
-                        האפיק הופך עמוס, מה שמאט את כל המעבדים האחרים שמנסים לבצע עבודה שגרתית. (אמנם מעבדים יוכלו אולי להמשיך להריץ פקודות ממטמון L1/L2 פנימי, אך כל גישה ל-RAM תיתקע בפקק).<br><br>
-                        <strong class="text-white">לכן:</strong> חובה לתכנן את המנעולים כך שזמן השהייה בהם (הזמן בו המנעול מוחזק) יהיה קצר ככל האפשר, כדי למזער המתנה ופגיעה בביצועי המערכת.
-                    </p>
-                </article>
-            </div>
-        </section>
-
-        <!-- 8.1.4 Scheduling -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-cyan-500 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">8.1.4 תזמון במערכות ריבוי מעבדים</h2>
-            </div>
-            
-            <p class="text-slate-700 text-lg mb-6 leading-relaxed bg-white p-5 rounded-xl shadow-sm border border-slate-100">
-                במערכות בעלות מספר מעבדים (או מספר ליבות), החלטות התזמון של מערכת ההפעלה הופכות למורכבות בהרבה מאשר במחשב בעל מעבד יחיד. סעיף זה סוקר מספר גישות ומושגים מרכזיים להתמודדות עם אתגר התזמון בסביבה מרובת מעבדים:
-            </p>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Concept 1 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-cyan-500 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-cyan-900">1. זיקת מטמון (Cache Affinity)</h3>
-                    <p class="text-sm text-slate-700 mb-3">כאשר תהליכון רץ על מעבד מסוים, זיכרון המטמון (Cache) של אותו מעבד מתמלא בנתונים ובהוראות הרלוונטיים אליו.</p>
-                    <div class="space-y-2 mb-3">
-                        <div class="bg-cyan-50 p-2 rounded text-sm text-cyan-800">
-                            <strong>מטמון "חם":</strong> אם התהליכון יושהה ויחזור לרוץ על <em>אותו</em> מעבד, חלק מהמידע שלו עדיין במטמון, מה שיאפשר לו לרוץ ביעילות.
-                        </div>
-                        <div class="bg-slate-100 p-2 rounded text-sm text-slate-600">
-                            <strong>מטמון "קר":</strong> העברתו למעבד אחר תדרוש הבאת הנתונים מחדש מהזיכרון הראשי האיטי יותר.
-                        </div>
-                    </div>
-                    <p class="text-sm text-slate-700">לכן, מתזמנים מודרניים משתדלים לשמור על "זיקת מטמון" ולהחזיר תהליכון לאותו מעבד. <strong>אך נדרש איזון:</strong> אם למעבד מסוים אין תהליכונים, המתזמן יעדיף לקחת תהליכון ממעבד אחר (Load Balancing) מאשר להשאיר את המעבד בטל.</p>
-                </article>
-
-                <!-- Concept 2 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-blue-500 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-blue-900">2. שיתוף מרחבי (Space Sharing)</h3>
-                    <p class="text-sm text-slate-700 mb-3">מיועד למצבים שבהם קיימת קבוצת תהליכונים הקשורים זה לזה ומרבים לתקשר ביניהם. יש יתרון שיפעלו בו-זמנית.</p>
-                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 mb-4">
-                        <li>המתזמן בודק אם יש מספיק מעבדים פנויים בכמות התואמת למספר התהליכונים.</li>
-                        <li><strong>אם יש:</strong> כל תהליכון יקבל מעבד ייעודי משלו שישמש אותו ברציפות עד שיסיים.</li>
-                        <li><strong>אם אין:</strong> אף תהליכון לא יופעל עד שיתפנו משאבים.</li>
-                    </ul>
-                    <div class="bg-slate-50 border border-slate-200 p-3 rounded text-sm flex flex-col gap-2">
-                        <span class="text-emerald-700"><strong>יתרון:</strong> ביטול התקורה של החלפות הקשר (Context Switches).</span>
-                        <span class="text-rose-700"><strong>חיסרון:</strong> בזבוז זמן: אם תהליכון נחסם (למשל, קלט/פלט), המעבד שלו נותר בטל עד שיתעורר.</span>
-                    </div>
-                </article>
-
-                <!-- Concept 3 -->
-                <article class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-indigo-500 hover:shadow-md transition">
-                    <h3 class="font-bold text-lg mb-3 text-indigo-900">3. תזמון כנופיות (Gang Scheduling)</h3>
-                    <p class="text-sm text-slate-700 mb-3">פותר את זמני ההמתנה המבוזבזים כשעובדים באופן עצמאי. (למשל, A0 שולח הודעה ל-A1 ונאלץ להמתין כי A1 טרם קיבל זמן מעבד).</p>
-                    <p class="text-sm font-bold text-slate-800 mb-2">שלושת העקרונות:</p>
-                    <ol class="list-decimal list-inside text-sm text-slate-700 space-y-1 mb-4 bg-indigo-50 p-3 rounded">
-                        <li>קבוצת תהליכונים קשורים מתוזמנת כיחידה אחת ("כנופייה").</li>
-                        <li>כל חברי הכנופייה רצים בבת אחת על גבי מעבדים שונים.</li>
-                        <li>כל החברים מתחילים ומסיימים את יחידות הזמן (קוונטות) שלהם ביחד.</li>
-                    </ol>
-                    <p class="text-sm text-slate-700">
-                        המעבדים מתוזמנים סינכרונית. אם חבר נחסם, המעבד שלו נותר בטל עד סיום הקוונטה. הרעיון: <strong>הבטחת זמינות הדדית</strong> – כולם רצים באותו הזמן, לתקשורת מהירה ונטולת חסימות.
-                    </p>
-                </article>
-            </div>
-        </section>
-
-        <!-- 8.5 Summary -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-slate-800 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">8.5 סיכום: מערכות מרובות מעבדים</h2>
-            </div>
-            
-            <div class="bg-white rounded-xl shadow-md p-8 border border-slate-200">
-                <p class="text-slate-700 text-lg mb-6 border-b border-slate-100 pb-4">
-                    ניתן להאיץ מערכות מחשב ולשפר את מהירותן על ידי שימוש במספר מעבדים, אשר לרוב חולקים זיכרון ראשי (RAM) משותף. מערכות אלו, המורכבות משני מעבדים או יותר, או מעבדים המורכבים בעצמם ממספר ליבות, מציגות אתגרים ואפשרויות שונות של ארכיטקטורה וניהול.
-                </p>
-                
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="flex gap-4">
-                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">1</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900 mb-1">אפשרויות חיבור (Hardware Topologies)</h3>
-                            <p class="text-sm text-slate-600">המעבדים או הליבות יכולים להיות מחוברים ביניהם במספר תצורות: באמצעות אפיק (Bus), מתג צולב (Crossbar Switch), או רשת מיתוג רב-שלבית.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-4">
-                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">2</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900 mb-1">תצורות מערכת הפעלה</h3>
-                            <p class="text-sm text-slate-600">שירותי מ"ה ניתנים בדרכים שונות: לכל מעבד מערכת משלו, ריבוי מעבדים סימטרי (SMP) שבו עותק אחד משרת את כולם, או מערכת אסימטרית (Master-Slave).</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">3</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900 mb-1">סנכרון מול משאבים משותפים</h3>
-                            <p class="text-sm text-slate-600">נעשה שימוש במנעולים להבטחת סנכרון. במקרה שמנעול תפוס, המעבד יכול לבצע המתנה פעילה (Busy Waiting) או החלפת הקשר (Context Switch).</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <div class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-slate-500">4</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900 mb-1">תזמון תהליכים</h3>
-                            <p class="text-sm text-slate-600">אפשרויות התזמון במערכות אלו כוללות שיתוף זמן (Timesharing), שיתוף מרחב (Space Sharing), ותזמון כנופיות (Gang Scheduling).</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 8.6.2 Review Questions -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-amber-500 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">שאלות לחזרה ויישום</h2>
-            </div>
-            <p class="text-slate-700 mb-6">בחלק זה, נבחן את ההבנה של התנהגות החומרה ומנגנוני הסנכרון בסביבה מרובת ליבות.</p>
-            
-            <div class="space-y-6">
-                <!-- Question 1 -->
-                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                    <div class="bg-amber-50 p-5 border-b border-amber-100">
-                        <h3 class="font-bold text-amber-900 text-lg flex items-start gap-2">
-                            <span class="bg-amber-200 text-amber-800 rounded px-2 py-0.5 text-sm mt-0.5">שאלה 1</span>
-                            מה קורה בדיוק בזמן שבו כל ארבע הליבות במעבד מנסות לגשת לאותה כתובת זיכרון באותו הזמן?
-                        </h3>
-                    </div>
-                    <div class="p-6 text-slate-700 text-sm space-y-3 leading-relaxed">
-                        <p>
-                            כאשר מספר ליבות מנסות לגשת לאותה כתובת פיזית בדיוק באותו שבריר שנייה (מחזור שעון), החומרה נכנסת לפעולה למניעת התנגשות (Memory Contention). 
-                            אפיק הזיכרון או בקר הזיכרון מבצעים <strong>סריאליזציה (סידור טורי)</strong> של הבקשות. כלומר, הבקשות יסודרו בתור ויטופלו בזו אחר זו, ולא במקביל.
-                        </p>
-                        <p>
-                            בנוסף, אם לפחות ליבה אחת מנסה <strong>לכתוב</strong> לכתובת זו, פרוטוקולי עקביות מטמון (Cache Coherence Protocols, כגון MESI) בחומרה ידאגו להודיע לשאר הליבות שהעותק ששמור אצלן בזיכרון המטמון המקומי (L1/L2) אינו עדכני עוד ויש לפסול אותו (Invalidate), כדי להבטיח שאף ליבה לא תעבוד עם מידע "מלוכלך" או מיושן.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Question 2 -->
-                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                    <div class="bg-amber-50 p-5 border-b border-amber-100">
-                        <h3 class="font-bold text-amber-900 text-lg flex items-start gap-2">
-                            <span class="bg-amber-200 text-amber-800 rounded px-2 py-0.5 text-sm mt-0.5">שאלה 2</span>
-                            האם ניתן לממש סנכרון בין כמה ליבות בעזרת פקודת SWP המבצעת החלפה בצורה אטומית?
-                        </h3>
-                    </div>
-                    <div class="p-6 text-slate-700 text-sm space-y-3 leading-relaxed">
-                        <p>
-                            <strong>כן, בהחלט.</strong> פקודת SWP (Swap) או פקודות דומות כמו XCHG, מאפשרות להחליף ערך של אוגר במעבד עם ערך בכתובת זיכרון – כפעולה אטומית אחת שלא ניתנת להפרעה.
-                        </p>
-                        <p>
-                            השימוש זהה לפקודת TSL: הליבה רושמת באוגר שלה את הערך '1' ("נעול"), ואז מבצעת SWP עם מילת המנעול בזיכרון המשותף. 
-                        </p>
-                        <ul class="list-disc list-inside bg-slate-50 p-3 rounded">
-                            <li>אם הערך שחזר לאוגר הוא <strong>'0'</strong>: הליבה "זכתה" במנעול ונכנסת לקטע הקריטי.</li>
-                            <li>אם חזר <strong>'1'</strong>: ליבה אחרת מחזיקה במנעול, והליבה תיכנס להמתנה פעילה (Spinlock) או תוותר על המעבד (Context Switch).</li>
-                        </ul>
-                        <p>מכיוון שההחלפה אטומית (תוך כדי נעילת האפיק), אין סכנה שתי ליבות יקראו '0' באותו הזמן.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 8.6.3 Glossary -->
-        <section class="mb-12">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-rose-500 w-2 h-8 rounded-full"></div>
-                <h2 class="text-2xl font-bold text-slate-900">רשימת מושגים מסכמת</h2>
-            </div>
-            <p class="text-slate-700 mb-6">ריכוז המושגים המרכזיים שהוזכרו בפרק בנוגע למערכות מרובות מעבדים וליבות, להבטחת הבנת הארכיטקטורה והתזמון:</p>
-            
-            <dl class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">מערכת מרובת מעבדים (Multiprocessor System)</dt>
-                    <dd class="text-sm text-slate-600">מערכת מחשב המכילה שני מעבדים או יותר העובדים יחד כדי להגדיל את תפוקת המערכת וביצועיה.</dd>
-                </div>
-                
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">ליבות / ריבוי ליבות (Cores / Multi-core)</dt>
-                    <dd class="text-sm text-slate-600">מעבדים עצמאיים הבנויים יחד על אותו מצע פיזי (Die) של שבב סיליקון בודד.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">זיכרון ראשי משותף (Shared Memory)</dt>
-                    <dd class="text-sm text-slate-600">ארכיטקטורה שבה כל המעבדים או הליבות במערכת חולקים את אותו מרחב זיכרון RAM וניגשים אליו.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">אפיק (Bus)</dt>
-                    <dd class="text-sm text-slate-600">ערוץ תקשורת משותף המחבר בין המעבדים לזיכרון הראשי.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">מתג צולב (Crossbar Switch)</dt>
-                    <dd class="text-sm text-slate-600">רשת חיבורים בחומרה המאפשרת למספר מעבדים לגשת למספר יחידות זיכרון בו-זמנית, ללא צוואר הבקבוק של אפיק בודד.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">רשת מיתוג רב-שלבית (Multistage Network)</dt>
-                    <dd class="text-sm text-slate-600">ארכיטקטורת רשת מורכבת יותר לחיבור מעבדים לזיכרון במערכות גדולות מאוד.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">ריבוי מעבדים סימטרי (SMP)</dt>
-                    <dd class="text-sm text-slate-600">תצורת מ"ה שבה קיים רק עותק אחד של מ"ה בזיכרון, והוא משרת את כל המעבדים בצורה שווה.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">מוביל-נגרר (Master-Slave)</dt>
-                    <dd class="text-sm text-slate-600">תצורה אסימטרית שבה מעבד אחד מוגדר כ"מוביל" ומריץ את כל מ"ה, בעוד שאר המעבדים מריצים יישומי משתמש בלבד.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">המתנה פעילה (Busy Waiting / Spinlock)</dt>
-                    <dd class="text-sm text-slate-600">מצב שבו מעבד המנסה להשיג מנעול תפוס נשאר בלולאה רציפה ודוגם את המנעול שוב ושוב עד שיתפנה.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">החלפת הקשר (Context Switch)</dt>
-                    <dd class="text-sm text-slate-600">כאשר מנעול לא זמין, המעבד מפסיק את התהליך הנוכחי, שומר מצב, ועובר להריץ תהליך אחר מהתור (במקום ספין).</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">סנכרון ומנעולים (Sync & Locks)</dt>
-                    <dd class="text-sm text-slate-600">מנגנונים להגנה על מבני נתונים של מ"ה מפני גישה בו-זמנית ודורסנית של מספר מעבדים.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">שיתוף מרחב (Space Sharing)</dt>
-                    <dd class="text-sm text-slate-600">חלוקת המעבדים הפנויים והקצאת קבוצת מעבדים שלמה לטובת משימה בודדת הדורשת מקביליות.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">שיתוף זמן (Timesharing)</dt>
-                    <dd class="text-sm text-slate-600">חלוקת משאבי המעבדים על פני ציר הזמן ע"י "פרוסות זמן" לתהליכים שונים.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">תזמון כנופיות (Gang Scheduling)</dt>
-                    <dd class="text-sm text-slate-600">תזמון שבו כל התהליכונים של תהליך מתחילים לרוץ יחד, באותו הזמן, למניעת המתנה למידע מתהליכון רדום.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">זיקה למעבד (Processor Affinity / זיקת מטמון - Cache Affinity)</dt>
-                    <dd class="text-sm text-slate-600">העדפה להריץ תהליך על הליבה שבה רץ קודם לכן, כדי לנצל נתונים שכבר נטענו למטמון (Cache) שלה.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">UMA (Uniform Memory Access)</dt>
-                    <dd class="text-sm text-slate-600">ארכיטקטורת זיכרון שבה זמן הגישה של כל מעבד לכל תא בזיכרון הראשי הוא זהה ואחיד.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">NUMA (Non-Uniform Memory Access)</dt>
-                    <dd class="text-sm text-slate-600">ארכיטקטורת זיכרון שבה לכל מעבד יש זיכרון מקומי הנגיש לו במהירות, אך גישה לזיכרון המשויך למעבד אחר דורשת זמן רב יותר.</dd>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                    <dt class="font-bold text-rose-900 mb-1">ריבוי תהליכונים חומרתי (Hyper-threading)</dt>
-                    <dd class="text-sm text-slate-600">טכנולוגיה המאפשרת לליבה פיזית בודדת להריץ מספר תהליכונים בו-זמנית על ידי שכפול חלק ממשאבי הליבה (כמו אוגרים) ושיתוף יחידות הביצוע.</dd>
-                </div>
-            </dl>
-        </section>
-
-    </div>
-
+                tab.appendChild(navContainer);
+            });
+        });
+    </script>
 </body>
+
 </html>

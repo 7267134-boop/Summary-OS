@@ -70,6 +70,99 @@
         .grammar-box { background: #eff6ff; border-right: 4px solid #3b82f6; padding: 1.5rem; border-radius: 0.5rem; margin: 1.5rem 0; font-family: 'Consolas', monospace; direction: ltr; text-align: left; }
         .concept-box { background: #f0fdf4; border-right: 4px solid #22c55e; padding: 1.5rem; border-radius: 0.5rem; margin: 1.5rem 0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); }
         .deep-dive { background: #f8fafc; border: 1px solid #cbd5e1; border-right: 4px solid #64748b; padding: 1.5rem; border-radius: 0.5rem; margin: 1.5rem 0; }
+        /* 3D Flashcards */
+        .flashcard-scene {
+            perspective: 1000px;
+            cursor: pointer;
+            min-height: 180px;
+        }
+
+        .flashcard-card {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard-scene.flipped .flashcard-card {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .flashcard-front {
+            background-color: #ffffff;
+            color: #1e293b;
+            border-top: 4px solid #2563eb;
+        }
+
+        .flashcard-back {
+            background-color: #f8fafc;
+            color: #334155;
+            transform: rotateY(180deg);
+            border-top: 4px solid #94a3b8;
+        }
+
+        .flashcard-scene.flat-mode {
+            min-height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-card {
+            transform: none !important;
+            transform-style: flat;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .flashcard-scene.flat-mode .flashcard-face {
+            position: static;
+            backface-visibility: visible;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-front {
+            background-color: #eff6ff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-back {
+            transform: none;
+            background-color: #ffffff;
+            padding: 0.85rem 1.25rem;
+        }
+
+        /* RAG & Simulators Styles */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        .livelock-shake { animation: shake 0.5s ease-in-out; }
+        .rag-deadlock { stroke: #ef4444 !important; filter: drop-shadow(0px 0px 3px rgba(239, 68, 68, 0.5)); stroke-width: 3px !important; }
+        .rag-node-deadlock { stroke: #ef4444 !important; fill: #fef2f2 !important; }
+        .rag-node-active { fill: #f0fdf4 !important; stroke: #22c55e !important; }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex selection:bg-blue-200 selection:text-blue-900">
@@ -426,6 +519,114 @@
                                 <p class="mb-3 text-slate-700 leading-relaxed">
                                     אם אפשר לטייל לאורך החצים מעיגול לריבוע, לעיגול הבא, לריבוע הבא ולחזור חזרה לעיגול המקורי – המערכת תקועה. אם אין מעגל, אין קיפאון, ואחד התהליכים בסופו של דבר יסיים את עבודתו, ישחרר את המשאבים שלו, ויאפשר לשאר התהליכים להתקדם בשרשרת.
                                 </p>
+                            </div>
+                        </section>
+
+                        <!-- סימולטור 6.1: סימולטור גרף הקצאת משאבים וגילוי קיפאון -->
+                        <section id="rag-simulator-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mt-8">
+                            <h3 class="text-2xl font-black text-slate-900 mb-2 flex items-center gap-3">
+                                <span>🎮</span> סימולטור 6.1: סימולטור גרף הקצאת משאבים וגילוי קיפאון
+                            </h3>
+                            <p class="text-slate-600 mb-6 leading-relaxed">
+                                הדמיה אינטראקטיבית של גרף הקצאת משאבים (Resource Allocation Graph). הוסיפו תהליכים ומשאבים (עם מספר מופעים), ציירו קשתות בקשה או הקצאה, והפעילו את אלגוריתם הגילוי צעד-אחר-צעד.
+                            </p>
+
+                            <div class="grid lg:grid-cols-5 gap-6">
+                                <!-- SVG Graph Display -->
+                                <div class="lg:col-span-3 border border-slate-200 rounded-xl bg-slate-50 p-4 flex flex-col justify-between" style="min-height: 380px;">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">גרף הקצאת משאבים (RAG)</span>
+                                        <span id="rag-status-badge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700">ממתין לפעולה</span>
+                                    </div>
+                                    <div class="flex-1 bg-white rounded-lg border border-slate-100 relative overflow-hidden flex items-center justify-center">
+                                        <svg id="rag-svg" class="w-full h-full" style="min-height: 300px; max-height: 320px;" viewBox="0 0 500 320">
+                                            <defs>
+                                                <!-- Arrow marker definition -->
+                                                <marker id="arrow" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                                    <path d="M 0 2 L 10 5 L 0 8 z" fill="#64748b" />
+                                                </marker>
+                                                <marker id="arrow-request" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                                    <path d="M 0 2 L 10 5 L 0 8 z" fill="#f43f5e" />
+                                                </marker>
+                                                <marker id="arrow-alloc" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                                    <path d="M 0 2 L 10 5 L 0 8 z" fill="#10b981" />
+                                                </marker>
+                                                <marker id="arrow-deadlock" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                                    <path d="M 0 2 L 10 5 L 0 8 z" fill="#ef4444" />
+                                                </marker>
+                                            </defs>
+                                            <g id="rag-edges"></g>
+                                            <g id="rag-nodes"></g>
+                                        </svg>
+                                        <div id="rag-empty-state" class="absolute inset-0 flex flex-col items-center justify-center bg-white/90 text-slate-400">
+                                            <span class="text-4xl mb-2">🕸️</span>
+                                            <p class="text-sm">הגרף ריק. הוסיפו תהליכים ומשאבים להתחלה.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-4 mt-3 text-xs text-slate-500 justify-center">
+                                        <div class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-50 border border-blue-600 rounded-full"></span><span>תהליך</span></div>
+                                        <div class="flex items-center gap-1"><span class="w-3 h-3 bg-slate-50 border border-slate-600 rounded"></span><span>משאב (מלבן)</span></div>
+                                        <div class="flex items-center gap-1"><span class="w-3.5 h-0.5 bg-rose-500"></span><span>קשת בקשה (P &rarr; R)</span></div>
+                                        <div class="flex items-center gap-1"><span class="w-3.5 h-0.5 bg-emerald-500"></span><span>קשת הקצאה (R &rarr; P)</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Controls & Terminal -->
+                                <div class="lg:col-span-2 flex flex-col gap-4">
+                                    <!-- Control Panel -->
+                                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-4">
+                                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">לוח בקרה</span>
+                                        
+                                        <!-- Add Node Form -->
+                                        <div class="space-y-2">
+                                            <label class="text-xs font-semibold text-slate-700 block">הוספת צומת חדש:</label>
+                                            <div class="flex gap-2">
+                                                <select id="rag-node-type" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1">
+                                                    <option value="process">תהליך (Process)</option>
+                                                    <option value="resource">משאב (Resource)</option>
+                                                </select>
+                                                <input id="rag-node-instances" type="number" min="1" max="5" value="1" title="מספר מופעים (רק למשאבים)" class="text-xs w-12 bg-white border border-slate-200 rounded px-1.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 hidden" />
+                                                <button onclick="ragAddNode()" class="text-xs bg-blue-600 text-white font-bold px-3 py-1.5 rounded hover:bg-blue-700 active:scale-95 transition-all cursor-pointer">הוסף</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Add Edge Form -->
+                                        <div class="space-y-2">
+                                            <label class="text-xs font-semibold text-slate-700 block">הוספת קשת (קשר):</label>
+                                            <div class="flex gap-2 items-center">
+                                                <select id="rag-edge-from" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1">
+                                                    <option value="">מקור...</option>
+                                                </select>
+                                                <span class="text-slate-400 text-xs">&larr;</span>
+                                                <select id="rag-edge-to" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1">
+                                                    <option value="">יעד...</option>
+                                                </select>
+                                                <button onclick="ragAddEdge()" class="text-xs bg-indigo-600 text-white font-bold px-3 py-1.5 rounded hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer">חבר</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex gap-2 pt-2">
+                                            <button onclick="ragRunDetection()" class="flex-1 text-xs bg-emerald-600 text-white font-bold py-2 rounded hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1 shadow-sm">
+                                                <span>🔍</span> הרץ גילוי קיפאון
+                                            </button>
+                                            <button onclick="ragReset()" class="text-xs bg-white border border-slate-200 text-slate-600 py-2 px-3 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer">
+                                                איפוס
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Output terminal -->
+                                    <div class="border border-slate-200 rounded-xl bg-slate-900 text-slate-200 p-4 flex flex-col justify-between h-48">
+                                        <div class="flex justify-between items-center mb-2 border-b border-slate-800 pb-1.5">
+                                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">פלט אלגוריתם (RAG Log)</span>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                                        </div>
+                                        <div id="rag-log" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-1 leading-relaxed dark-scroll" style="direction: ltr; text-align: left;">
+                                            <div class="text-slate-500">[System] RAG simulator ready. Add nodes to begin.</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </section>
                     </div>
@@ -867,6 +1068,124 @@
                                 </p>
                             </div>
                         </section>
+
+                        <!-- סימולטור 6.2: סימולטור אלגוריתם הבנקאי -->
+                        <section id="banker-simulator-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mt-8">
+                            <h3 class="text-2xl font-black text-slate-900 mb-2 flex items-center gap-3">
+                                <span>🚦</span> סימולטור 6.2: אלגוריתם הבנקאי וניתוח מצב בטוח
+                            </h3>
+                            <p class="text-slate-600 mb-6 leading-relaxed">
+                                סימולטור של אלגוריתם הבנקאי (Banker's Algorithm) עבור מספר תהליכים ומשאבים מרובים. ערכו את המטריצות, הריצו בדיקת בטיחות (Safety Check) או בצעו בקשת משאב כדי לראות אם היא בטוחה לאישור.
+                            </p>
+
+                            <div class="space-y-6">
+                                <!-- Tables Layout -->
+                                <div class="overflow-x-auto border border-slate-200 rounded-xl bg-slate-50 p-4">
+                                    <div class="flex flex-col md:flex-row gap-6 min-w-[760px]">
+                                        <!-- Matrix Max -->
+                                        <div class="flex-1 bg-white rounded-lg p-3 border border-slate-100">
+                                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-2 border-b pb-1 text-center">מטריצת מקסימום (Max)</h4>
+                                            <table class="w-full text-xs text-center border-collapse">
+                                                <thead>
+                                                    <tr class="border-b text-slate-400"><th class="py-1">תהליך</th><th>A</th><th>B</th><th>C</th></tr>
+                                                </thead>
+                                                <tbody id="banker-max-table">
+                                                    <!-- Dynamic rows -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Matrix Allocation -->
+                                        <div class="flex-1 bg-white rounded-lg p-3 border border-slate-100">
+                                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-2 border-b pb-1 text-center">הקצאה נוכחית (Allocation)</h4>
+                                            <table class="w-full text-xs text-center border-collapse">
+                                                <thead>
+                                                    <tr class="border-b text-slate-400"><th class="py-1">תהליך</th><th>A</th><th>B</th><th>C</th></tr>
+                                                </thead>
+                                                <tbody id="banker-alloc-table">
+                                                    <!-- Dynamic rows -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Matrix Need -->
+                                        <div class="flex-1 bg-indigo-50/50 rounded-lg p-3 border border-indigo-100">
+                                            <h4 class="text-xs font-bold text-indigo-500 uppercase mb-2 border-b border-indigo-200 pb-1 text-center">צורך נותר (Need)</h4>
+                                            <table class="w-full text-xs text-center border-collapse">
+                                                <thead>
+                                                    <tr class="border-b text-indigo-300"><th class="py-1">תהליך</th><th>A</th><th>B</th><th>C</th></tr>
+                                                </thead>
+                                                <tbody id="banker-need-table" class="font-semibold text-indigo-900">
+                                                    <!-- Dynamic rows computed automatically -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Available and Existing Vector -->
+                                        <div class="w-48 bg-white rounded-lg p-3 border border-slate-100 flex flex-col gap-4">
+                                            <div>
+                                                <h4 class="text-xs font-bold text-slate-500 uppercase mb-1 border-b pb-1">פנוי (Available)</h4>
+                                                <div class="flex gap-2 justify-center items-center py-1">
+                                                    <div class="text-center"><span class="text-[10px] text-slate-400 font-bold block">A</span><input id="banker-avail-a" type="number" min="0" value="3" class="w-10 text-center border rounded px-0.5 py-0.5 text-xs focus:ring-1 focus:ring-blue-500" /></div>
+                                                    <div class="text-center"><span class="text-[10px] text-slate-400 font-bold block">B</span><input id="banker-avail-b" type="number" min="0" value="3" class="w-10 text-center border rounded px-0.5 py-0.5 text-xs focus:ring-1 focus:ring-blue-500" /></div>
+                                                    <div class="text-center"><span class="text-[10px] text-slate-400 font-bold block">C</span><input id="banker-avail-c" type="number" min="0" value="2" class="w-10 text-center border rounded px-0.5 py-0.5 text-xs focus:ring-1 focus:ring-blue-500" /></div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-auto pt-2 border-t text-center">
+                                                <span class="text-[10px] font-bold text-slate-400 block uppercase">ניהול שורות</span>
+                                                <div class="flex gap-1 justify-center mt-1">
+                                                    <button onclick="bankerAddProcess()" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded hover:bg-blue-700 active:scale-95 transition-all cursor-pointer">הוסף P</button>
+                                                    <button onclick="bankerRemoveProcess()" class="bg-white border text-slate-600 text-[10px] px-2 py-1 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer">הסר P</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons and Simulation Request -->
+                                <div class="grid lg:grid-cols-5 gap-6">
+                                    <!-- Left: Simulate Request -->
+                                    <div class="lg:col-span-2 border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+                                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">סימולציית בקשת משאבים חדשה</span>
+                                        <div class="flex gap-2 items-center">
+                                            <select id="banker-req-proc" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1">
+                                                <!-- Process options dynamic -->
+                                            </select>
+                                            <span class="text-slate-400 text-xs">מבקש:</span>
+                                            <input id="banker-req-a" type="number" min="0" value="1" title="משאב A" class="w-8 text-center border rounded py-1 text-xs" />
+                                            <input id="banker-req-b" type="number" min="0" value="0" title="משאב B" class="w-8 text-center border rounded py-1 text-xs" />
+                                            <input id="banker-req-c" type="number" min="0" value="2" title="משאב C" class="w-8 text-center border rounded py-1 text-xs" />
+                                        </div>
+                                        <button onclick="bankerSimulateRequest()" class="w-full text-xs bg-indigo-600 text-white font-bold py-2 rounded hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1 shadow-sm">
+                                            <span>⚡</span> בדוק אישור בקשה
+                                        </button>
+                                    </div>
+
+                                    <!-- Right: Run Safety & Terminal -->
+                                    <div class="lg:col-span-3 flex flex-col gap-3">
+                                        <div class="flex gap-2">
+                                            <button onclick="bankerRunSafety()" class="flex-1 text-xs bg-emerald-600 text-white font-bold py-2.5 rounded hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1 shadow-sm">
+                                                <span>🚦</span> בדוק יציבות מערכת (Safety Check)
+                                            </button>
+                                            <button onclick="bankerLoadSample()" class="text-xs bg-white border border-slate-200 text-slate-600 py-2.5 px-4 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer">
+                                                טען דוגמה פתורה
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Banker Log Terminal -->
+                                        <div class="border border-slate-200 rounded-xl bg-slate-900 text-slate-200 p-3 h-32 flex flex-col justify-between">
+                                            <div class="flex justify-between items-center mb-1 border-b border-slate-800 pb-1">
+                                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">מעקב הבנקאי (Step-by-step trace)</span>
+                                                <span id="banker-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                                            </div>
+                                            <div id="banker-log" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-1 leading-relaxed dark-scroll" style="direction: rtl; text-align: right;">
+                                                <div class="text-slate-500">[הבנקאי] הסימולטור מוכן. הזינו נתונים או טענו דוגמה.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
 
@@ -1046,6 +1365,73 @@
                             </div>
                         </div>
 
+                                 <!-- סימולטור Livelock: הולכי רגל במסדרון -->
+                                 <div id="livelock-simulator" class="mt-6 border-t border-slate-200 pt-6">
+                                     <h4 class="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
+                                         <span>🏃‍♂️🏃</span> הדמיה אינטראקטיבית: Livelock במסדרון
+                                     </h4>
+                                     <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                                         ראו כיצד שני אנשים (אלכס ובני) במסדרון צר נכנסים למצב של Livelock כאשר שניהם מנומסים מדי ומנסים לזוז באותו זמן לאותו צד, וכיצד הכנסת אקראיות או הפחתת הנימוס עוזרת להם לעבור.
+                                     </p>
+
+                                     <div class="grid md:grid-cols-5 gap-4">
+                                         <!-- Corridor Animation Area -->
+                                         <div class="md:col-span-3 border border-slate-200 rounded-xl bg-slate-50 p-4 flex flex-col justify-between" style="min-height: 220px;">
+                                             <div class="flex justify-between items-center mb-2">
+                                                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">מסדרון הדמיה</span>
+                                                 <span id="livelock-state-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-200 text-slate-700">בסדר</span>
+                                             </div>
+                                             <!-- Corridor representation -->
+                                             <div class="bg-white rounded-lg border border-slate-200 relative h-24 overflow-hidden flex flex-col justify-between py-2 border-y-4 border-y-slate-400 mx-auto" style="width: 400px;">
+                                                 <!-- Visual lanes -->
+                                                 <div class="absolute inset-x-0 top-1/2 border-t border-dashed border-slate-200 -translate-y-1/2"></div>
+                                                 <!-- Pedestrians -->
+                                                 <div id="pedestrian-alex" class="absolute w-10 h-10 flex flex-col items-center justify-center transition-all duration-300" style="left: 40px; top: 8px;">
+                                                     <div class="text-2xl">🏃‍♂️</div>
+                                                     <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 rounded border border-blue-200">אלכס</span>
+                                                 </div>
+                                                 <div id="pedestrian-benny" class="absolute w-10 h-10 flex flex-col items-center justify-center transition-all duration-300" style="left: 320px; top: 8px;">
+                                                     <div class="text-2xl" style="transform: scaleX(-1);">🏃</div>
+                                                     <span class="text-[9px] font-bold text-amber-600 bg-amber-50 px-1 rounded border border-amber-200">בני</span>
+                                                 </div>
+                                             </div>
+                                             <!-- Stats / Distance -->
+                                             <div class="flex justify-between text-[10px] text-slate-500 mt-2 px-1">
+                                                 <span>צעדים שבוצעו: <strong id="livelock-step-count" class="text-slate-800">0</strong></span>
+                                                 <span id="livelock-info-text">בצעו צעד כדי לראות את ההתנהגות.</span>
+                                             </div>
+                                         </div>
+
+                                         <!-- Controls panel -->
+                                         <div class="md:col-span-2 flex flex-col justify-between border border-slate-200 rounded-xl p-4 bg-slate-50 gap-3">
+                                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">הגדרות ושליטה</span>
+                                             
+                                             <!-- Slider: Politeness -->
+                                             <div class="space-y-1">
+                                                 <div class="flex justify-between text-xs">
+                                                     <span class="font-semibold text-slate-700">רמת נימוס (סימטריה):</span>
+                                                     <span id="livelock-politeness-val" class="font-mono text-blue-600 font-bold">100%</span>
+                                                 </div>
+                                                 <input id="livelock-politeness" type="range" min="0" max="100" value="100" oninput="livelockUpdateParams()" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
+                                                 <span class="text-[9px] text-slate-400 block leading-tight">ב-100%, שניהם מגיבים מיידית בסימטריה מלאה. רמה נמוכה יותר מאפשרת לקבל החלטות עצמאיות.</span>
+                                             </div>
+
+                                             <!-- Controls -->
+                                             <div class="flex gap-2 pt-1.5">
+                                                 <button id="livelock-step-btn" onclick="livelockStep()" class="flex-1 text-xs bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 active:scale-95 transition-all cursor-pointer">
+                                                     צעד הבא
+                                                 </button>
+                                                 <button id="livelock-play-btn" onclick="livelockTogglePlay()" class="text-xs bg-emerald-600 text-white font-bold py-2 px-3 rounded hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer">
+                                                     הרץ
+                                                 </button>
+                                                 <button onclick="livelockReset()" class="text-xs bg-white border border-slate-200 text-slate-600 py-2 px-3 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer">
+                                                     איפוס
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
                         <!-- 6.7.4 Starvation -->
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 flex flex-col md:flex-row gap-6 items-start">
                             <div class="bg-blue-100 text-blue-700 rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0 text-2xl font-bold">4</div>
@@ -1074,103 +1460,25 @@
                         </p>
                     </header>
 
-                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">קיפאון (Deadlock)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">מצב בו קבוצת תהליכים חסומה לחלוטין כי כל אחד ממתין למשאב המוחזק ע"י אחר בקבוצה.</div>
+                    <!-- Interactive Flashcard Widget Controls -->
+                    <div class="flex justify-between items-center mb-6 bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm flex-wrap gap-4">
+                        <div class="inline-flex bg-slate-200 p-1 rounded-lg">
+                            <button id="ch6-flashcard-mode-study" onclick="ch6_setFlashcardMode('study')" class="bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95">📖 מצב למידה (כרטיסים גלויים)</button>
+                            <button id="ch6-flashcard-mode-test" onclick="ch6_setFlashcardMode('test')" class="bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">❓ מצב בחינה (לחיצה להפיכה)</button>
                         </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">משאב (Resource)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">רכיב חומרה/לוגיקה (מדפסת, זיכרון) שתהליך זקוק לו לעבודתו.</div>
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <div id="ch6-flashcard-stats-container" class="hidden text-xs font-bold text-slate-500 bg-slate-200 px-3 py-1.5 rounded-md">נחשפו: <span id="ch6-flashcard-opened-count" class="text-blue-600 font-extrabold text-sm">0</span> מתוך <span id="ch6-flashcard-total-count" class="font-bold">24</span></div>
+                            <button onclick="ch6_resetFlashcards()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-1.5 px-4 rounded-lg text-xs transition-colors cursor-pointer active:scale-95">איפוס כרטיסיות</button>
                         </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">משאב הניתן לחילוץ (Preemptable)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">ניתן להפקעה והחזרה מבלי לפגוע בחישוב (מעבד, RAM).</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">משאב שאינו ניתן לחילוץ</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">הפקעתו תגרום להרס הנתונים (מדפסת, צורב). המקור העיקרי לקיפאון.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">תנאי המניעה ההדדית</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">משאב מוקצה בשימוש בלעדי לאחד או פנוי.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">תנאי החזק והמתן</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">תהליך מחזיק משאב וממתין בתור לאחר המוחזק ע"י אחר.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">תנאי אי-חילוץ משאבים</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">המערכת לא לוקחת משאב בכוח, רק התהליך משחרר בהתנדבות.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">תנאי המתנה מעגלית</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">שרשרת סגורה שבה כל תהליך ממתין למשאב שמוחזק ע"י הבא אחריו.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">גרף הקצאת משאבים</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">מודל מתמטי (עיגולים-תהליכים, ריבועים-משאבים). מעגל בגרף מוכיח קיפאון.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">גילוי קיפאון (Detection)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">המערכת מחלקת חופשי וסורקת מדי פעם כדי למצוא מעגלים של קיפאון שהתהוו.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">התאוששות מקיפאון (Recovery)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">פעולות אקטיביות לשבירת קיפאון שהתגלה: חיסול, חילוץ או נסיגה לאחור.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">נסיגה לאחור (Rollback)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">החזרת תהליך למצב שמירה (Checkpoint) קודם וביטול עבודתו כדי לשחרר את מצב הקיפאון.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">אלגוריתם בת היענה (Ostrich)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">התעלמות מוחלטת מהבעיה מתוך הנחה נכונה סטטיסטית שהתקורה למניעה לא שווה את הפגיעה בביצועים.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">התחמקות מקיפאון (Avoidance)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">המערכת דורשת הצהרת משאבים מראש, ומאשרת בזמן אמת רק עסקאות בטוחות שמונעות את התקלה.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מסלול משאבים (Trajectory)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">גרף המתאר התקדמות תהליכים לאורך זמן אל מול "אזורים אסורים" משותפים במשאבים.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מצב בטוח (Safe State)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">מצב שבו יש סדר הרצה ודאי שיספק את כל התהליכים עד לסיום מוצלח.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מצב לא בטוח (Unsafe State)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">מצב בו אבדה הערובה למניעת הקיפאון. אם התהליכים ידרשו הכל כעת – הם יתקעו.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">אלגוריתם הבנקאי</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">מדמה בנקאי המאשר הלוואות (משאבים) רק כשיש מספיק פנוי לאפשר לפחות לאחר לסיים ולהחזיר.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">מניעת קיפאון (Prevention)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">שבירה ארכיטקטונית מראש של לפחות אחד מ-4 תנאי קופמן (כמו מספור משאבים).</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">ספולר (Spooling)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">שימוש בקובצי דיסק זמניים כחוצץ למדפסת כדי לבטל את המניעה ההדדית הישירה בחומרה.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">נעילה דו-שלבית</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">במסדי נתונים: קודם נועלים הכל, אם נתקעים - משחררים ומתחילים מחדש. השלב השני מעדכן.</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">קיפאון תקשורת</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">חסימה של תהליכים הממתינים למידע ברשת שאבד. נפתר באמצעות Timeout (פסק זמן).</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">Livelock / קיפאון חי</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">תהליכים לא חסומים אך בלולאה אינסופית של שחרור ותפיסת משאב (כמו שני אנשים מנומסים מדי במסדרון).</div>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            <div class="font-bold text-blue-700 text-base mb-2 border-b border-slate-200 pb-2">הרעבה (Starvation)</div>
-                            <div class="text-sm text-slate-600 leading-relaxed flex-1">תהליך נדחה באופן שיטתי עקב אלגוריתם תזמון לא הוגן, נפתר על ידי מנגנון התיישנות (Aging).</div>
-                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-8 border-b pb-4 border-slate-150" id="ch6-flashcard-categories-tabs">
+                        <!-- Dynamic Categories -->
+                    </div>
+
+                    <!-- Flashcard Grid Deck -->
+                    <div id="ch6-flashcard-deck" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                        <!-- Dynamic Cards -->
                     </div>
                 </div>
 
@@ -1658,6 +1966,1163 @@
                 });
             });
         });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                const cachedCollapsed = localStorage.getItem('sidebarCollapsed');
+                if (cachedCollapsed !== 'true') {
+                    document.body.classList.remove('sidebar-collapsed');
+                }
+                document.getElementById('mobile-overlay').classList.add('hidden');
+            } else {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        });
+
+
+        // ==================== RAG Simulator Script (Section 6.2.2) ====================
+        {
+            let nodes = [
+                { id: 'P1', type: 'process', name: 'P1' },
+                { id: 'P2', type: 'process', name: 'P2' },
+                { id: 'R1', type: 'resource', name: 'R1', instances: 1 },
+                { id: 'R2', type: 'resource', name: 'R2', instances: 1 }
+            ];
+            let edges = [
+                { from: 'P1', to: 'R1', type: 'request' },
+                { from: 'R1', to: 'P2', type: 'allocation' },
+                { from: 'P2', to: 'R2', type: 'request' },
+                { from: 'R2', to: 'P1', type: 'allocation' }
+            ];
+
+            function updateDropdowns() {
+                const fromSelect = document.getElementById('rag-edge-from');
+                const toSelect = document.getElementById('rag-edge-to');
+                if (!fromSelect || !toSelect) return;
+
+                let fromHtml = '<option value="">מקור...</option>';
+                let toHtml = '<option value="">יעד...</option>';
+
+                nodes.forEach(n => {
+                    fromHtml += `<option value="${n.id}">${n.name} (${n.type === 'process' ? 'תהליך' : 'משאב'})</option>`;
+                    toHtml += `<option value="${n.id}">${n.name} (${n.type === 'process' ? 'תהליך' : 'משאב'})</option>`;
+                });
+
+                fromSelect.innerHTML = fromHtml;
+                toSelect.innerHTML = toHtml;
+            }
+
+            function drawGraph() {
+                const edgesGroup = document.getElementById('rag-edges');
+                const nodesGroup = document.getElementById('rag-nodes');
+                const emptyState = document.getElementById('rag-empty-state');
+                if (!edgesGroup || !nodesGroup || !emptyState) return;
+
+                if (nodes.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    edgesGroup.innerHTML = '';
+                    nodesGroup.innerHTML = '';
+                    return;
+                } else {
+                    emptyState.classList.add('hidden');
+                }
+
+                // Calculate positions dynamically
+                const processes = nodes.filter(n => n.type === 'process');
+                const resources = nodes.filter(n => n.type === 'resource');
+
+                const height = 320;
+                const width = 500;
+
+                processes.forEach((p, idx) => {
+                    p.x = 80;
+                    p.y = processes.length === 1 ? height / 2 : 40 + idx * ((height - 80) / (processes.length - 1));
+                });
+
+                resources.forEach((r, idx) => {
+                    r.x = 380;
+                    r.y = resources.length === 1 ? height / 2 : 40 + idx * ((height - 80) / (resources.length - 1));
+                });
+
+                // Draw nodes
+                let nodesHtml = '';
+                nodes.forEach(n => {
+                    if (n.type === 'process') {
+                        nodesHtml += `
+                            <g id="node-${n.id}" class="rag-node" onclick="window.ragDeleteNode('${n.id}')" title="לחץ להסרה">
+                                <circle cx="${n.x}" cy="${n.y}" r="18" class="fill-blue-50 stroke-blue-600 stroke-2" />
+                                <text x="${n.x}" y="${n.y + 4}" text-anchor="middle" class="text-[10px] font-bold fill-blue-900 pointer-events-none">${n.name}</text>
+                            </g>
+                        `;
+                    } else {
+                        // Resource - draw dots for instances
+                        let dotsHtml = '';
+                        const insts = n.instances;
+                        const rSize = 34;
+                        const rx = n.x - rSize / 2;
+                        const ry = n.y - rSize / 2;
+
+                        if (insts === 1) {
+                            dotsHtml += `<circle cx="${n.x}" cy="${n.y}" r="3.5" class="fill-slate-600" />`;
+                        } else if (insts === 2) {
+                            dotsHtml += `
+                                <circle cx="${n.x - 6}" cy="${n.y}" r="3.5" class="fill-slate-600" />
+                                <circle cx="${n.x + 6}" cy="${n.y}" r="3.5" class="fill-slate-600" />
+                            `;
+                        } else if (insts === 3) {
+                            dotsHtml += `
+                                <circle cx="${n.x}" cy="${n.y - 5}" r="3" class="fill-slate-600" />
+                                <circle cx="${n.x - 7}" cy="${n.y + 5}" r="3" class="fill-slate-600" />
+                                <circle cx="${n.x + 7}" cy="${n.y + 5}" r="3" class="fill-slate-600" />
+                            `;
+                        } else {
+                            dotsHtml += `
+                                <circle cx="${n.x - 7}" cy="${n.y - 7}" r="3" class="fill-slate-600" />
+                                <circle cx="${n.x + 7}" cy="${n.y - 7}" r="3" class="fill-slate-600" />
+                                <circle cx="${n.x - 7}" cy="${n.y + 7}" r="3" class="fill-slate-600" />
+                                <circle cx="${n.x + 7}" cy="${n.y + 7}" r="3" class="fill-slate-600" />
+                            `;
+                        }
+
+                        nodesHtml += `
+                            <g id="node-${n.id}" class="rag-node" onclick="window.ragDeleteNode('${n.id}')" title="לחץ להסרה">
+                                <rect x="${rx}" y="${ry}" width="${rSize}" height="${rSize}" rx="4" class="fill-slate-50 stroke-slate-500 stroke-2" />
+                                ${dotsHtml}
+                                <text x="${n.x}" y="${n.y - 22}" text-anchor="middle" class="text-[9px] font-bold fill-slate-700 pointer-events-none">${n.name}</text>
+                            </g>
+                        `;
+                    }
+                });
+                nodesGroup.innerHTML = nodesHtml;
+
+                // Draw edges
+                let edgesHtml = '';
+                edges.forEach((e, idx) => {
+                    const fromNode = nodes.find(n => n.id === e.from);
+                    const toNode = nodes.find(n => n.id === e.to);
+                    if (!fromNode || !toNode) return;
+
+                    // Determine line start/end
+                    let x1 = fromNode.x;
+                    let y1 = fromNode.y;
+                    let x2 = toNode.x;
+                    let y2 = toNode.y;
+
+                    // Straight lines with marker
+                    let marker = 'url(#arrow)';
+                    let strokeColor = 'stroke-slate-400';
+
+                    if (e.type === 'request') {
+                        marker = 'url(#arrow-request)';
+                        strokeColor = 'stroke-rose-500';
+                    } else {
+                        marker = 'url(#arrow-alloc)';
+                        strokeColor = 'stroke-emerald-500';
+                    }
+
+                    // Path offset to avoid overlapping arrows
+                    edgesHtml += `
+                        <g onclick="window.ragDeleteEdge(${idx})" title="לחץ למחיקת קשת" class="cursor-pointer">
+                            <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${strokeColor} stroke-[2px]" marker-end="${marker}" />
+                            <!-- Hidden fat line for easier clicking -->
+                            <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="stroke-transparent stroke-[8px] hover:stroke-blue-200/30" />
+                        </g>
+                    `;
+                });
+                edgesGroup.innerHTML = edgesHtml;
+            }
+
+            function logTerminal(msg, type = 'info') {
+                const log = document.getElementById('rag-log');
+                if (!log) return;
+                let colorClass = 'text-slate-300';
+                if (type === 'success') colorClass = 'text-emerald-400';
+                if (type === 'danger') colorClass = 'text-rose-400';
+                if (type === 'warning') colorClass = 'text-amber-400';
+
+                log.innerHTML += `<div class="${colorClass}">[System] ${msg}</div>`;
+                log.scrollTop = log.scrollHeight;
+            }
+
+            window.ragAddNode = function() {
+                const typeSelect = document.getElementById('rag-node-type');
+                const instInput = document.getElementById('rag-node-instances');
+                if (!typeSelect || !instInput) return;
+
+                const type = typeSelect.value;
+                const instances = parseInt(instInput.value) || 1;
+
+                // Auto name
+                const prefix = type === 'process' ? 'P' : 'R';
+                const typeNodes = nodes.filter(n => n.type === type);
+                let maxNum = 0;
+                typeNodes.forEach(n => {
+                    const num = parseInt(n.name.substring(1));
+                    if (!isNaN(num) && num > maxNum) maxNum = num;
+                });
+                const name = prefix + (maxNum + 1);
+
+                nodes.push({ id: name, type, name, instances });
+                logTerminal(`Added node ${name} (${type === 'process' ? 'Process' : 'Resource with ' + instances + ' instances'})`);
+                
+                drawGraph();
+                updateDropdowns();
+            };
+
+            window.ragDeleteNode = function(nodeId) {
+                // Remove node
+                nodes = nodes.filter(n => n.id !== nodeId);
+                // Remove connected edges
+                edges = edges.filter(e => e.from !== nodeId && e.to !== nodeId);
+                logTerminal(`Removed node ${nodeId}`);
+                drawGraph();
+                updateDropdowns();
+            };
+
+            window.ragAddEdge = function() {
+                const fromSelect = document.getElementById('rag-edge-from');
+                const toSelect = document.getElementById('rag-edge-to');
+                if (!fromSelect || !toSelect) return;
+
+                const from = fromSelect.value;
+                const to = toSelect.value;
+
+                if (!from || !to) {
+                    logTerminal('Select both source and target nodes!', 'warning');
+                    return;
+                }
+
+                if (from === to) {
+                    logTerminal('Cannot connect node to itself!', 'warning');
+                    return;
+                }
+
+                const fromNode = nodes.find(n => n.id === from);
+                const toNode = nodes.find(n => n.id === to);
+
+                if (fromNode.type === toNode.type) {
+                    logTerminal('Cannot connect processes to processes, or resources to resources!', 'warning');
+                    return;
+                }
+
+                // Determine edge type:
+                // Process -> Resource is request
+                // Resource -> Process is allocation
+                const type = fromNode.type === 'process' ? 'request' : 'allocation';
+
+                // Check if edge already exists
+                const exists = edges.some(e => e.from === from && e.to === to);
+                if (exists) {
+                    logTerminal('Edge already exists!', 'warning');
+                    return;
+                }
+
+                // For allocation (Resource -> Process), ensure we don't exceed resource instances
+                if (type === 'allocation') {
+                    const currentAllocations = edges.filter(e => e.from === from && e.type === 'allocation').length;
+                    if (currentAllocations >= fromNode.instances) {
+                        logTerminal(`Resource ${fromNode.name} has only ${fromNode.instances} instances and all are allocated!`, 'warning');
+                        return;
+                    }
+                }
+
+                edges.push({ from, to, type });
+                logTerminal(`Added edge: ${fromNode.name} &rarr; ${toNode.name} (${type})`);
+                drawGraph();
+            };
+
+            window.ragDeleteEdge = function(idx) {
+                logTerminal(`Removed edge: ${nodes.find(n => n.id === edges[idx].from).name} &rarr; ${nodes.find(n => n.id === edges[idx].to).name}`);
+                edges.splice(idx, 1);
+                drawGraph();
+            };
+
+            window.ragReset = function() {
+                nodes = [];
+                edges = [];
+                const log = document.getElementById('rag-log');
+                if (log) log.innerHTML = '<div class="text-slate-500">[System] RAG simulator reset.</div>';
+                
+                const badge = document.getElementById('rag-status-badge');
+                if (badge) {
+                    badge.className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700';
+                    badge.textContent = 'ממתין לפעולה';
+                }
+
+                drawGraph();
+                updateDropdowns();
+            };
+
+            window.ragRunDetection = function() {
+                if (nodes.length === 0) return;
+                
+                const log = document.getElementById('rag-log');
+                if (log) log.innerHTML = ''; // Clear log for clean run
+
+                logTerminal('--- Starting Deadlock Detection ---', 'warning');
+
+                const processes = nodes.filter(n => n.type === 'process');
+                const resources = nodes.filter(n => n.type === 'resource');
+
+                // 1. Initialize Work vector
+                let work = {};
+                resources.forEach(r => {
+                    const allocated = edges.filter(e => e.from === r.id && e.type === 'allocation').length;
+                    work[r.id] = r.instances - allocated;
+                    logTerminal(`Work[${r.name}] = ${r.instances} (total) - ${allocated} (allocated) = ${work[r.id]} free`);
+                });
+
+                // 2. Initialize Finish vector
+                let finish = {};
+                processes.forEach(p => {
+                    finish[p.id] = false;
+                });
+
+                let changes = true;
+                let stepCount = 1;
+
+                while (changes) {
+                    changes = false;
+                    
+                    for (let i = 0; i < processes.length; i++) {
+                        const p = processes[i];
+                        if (finish[p.id]) continue;
+
+                        const pRequests = edges.filter(e => e.from === p.id && e.type === 'request');
+                        
+                        let reqCount = {};
+                        resources.forEach(r => { reqCount[r.id] = 0; });
+                        pRequests.forEach(e => { reqCount[e.to]++; });
+
+                        let canFinish = true;
+                        for (let rId in reqCount) {
+                            if (reqCount[rId] > work[rId]) {
+                                canFinish = false;
+                                break;
+                            }
+                        }
+
+                        if (canFinish) {
+                            const pAllocations = edges.filter(e => e.to === p.id && e.type === 'allocation');
+                            
+                            let releaseStr = '';
+                            pAllocations.forEach(e => {
+                                work[e.from]++;
+                                releaseStr += `${nodes.find(n => n.id === e.from).name} `;
+                            });
+
+                            finish[p.id] = true;
+                            changes = true;
+                            logTerminal(`Step ${stepCount++}: Process ${p.name} runs to completion. Releases: ${releaseStr || 'none'}. New Work vector: ` + 
+                                resources.map(r => `${r.name}:${work[r.id]}`).join(', '), 'success');
+                            break;
+                        }
+                    }
+                }
+
+                // 3. Check for deadlocks
+                let deadlocked = [];
+                processes.forEach(p => {
+                    if (!finish[p.id]) {
+                        deadlocked.push(p.name);
+                    }
+                });
+
+                const badge = document.getElementById('rag-status-badge');
+                
+                // Remove prior deadlock styling
+                document.querySelectorAll('.rag-node circle, .rag-node rect').forEach(el => {
+                    el.classList.remove('stroke-red-600', 'fill-red-50', 'stroke-emerald-500', 'fill-emerald-50');
+                });
+                document.querySelectorAll('#rag-edges line').forEach(el => {
+                    el.classList.remove('stroke-red-600', 'stroke-[3px]');
+                });
+
+                if (deadlocked.length > 0) {
+                    logTerminal(`DEADLOCK DETECTED! Deadlocked processes: ${deadlocked.join(', ')}`, 'danger');
+                    if (badge) {
+                        badge.className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-rose-100 text-rose-700 animate-pulse';
+                        badge.textContent = 'קיים קיפאון!';
+                    }
+
+                    deadlocked.forEach(pName => {
+                        const nodeGroup = document.getElementById(`node-${pName}`);
+                        if (nodeGroup) {
+                            const c = nodeGroup.querySelector('circle');
+                            if (c) {
+                                c.setAttribute('class', 'fill-red-50 stroke-red-600 stroke-2');
+                            }
+                        }
+                    });
+
+                    edges.forEach((e, idx) => {
+                        if (deadlocked.includes(e.from) || deadlocked.includes(e.to)) {
+                            const edgeLines = document.querySelectorAll('#rag-edges g')[idx].querySelectorAll('line');
+                            edgeLines.forEach(l => {
+                                if (!l.classList.contains('stroke-transparent')) {
+                                    l.setAttribute('class', 'stroke-red-600 stroke-[3px]');
+                                }
+                            });
+                        }
+                    });
+
+                } else {
+                    logTerminal('NO DEADLOCK FOUND. All processes can successfully complete.', 'success');
+                    if (badge) {
+                        badge.className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-700';
+                        badge.textContent = 'מצב בטוח';
+                    }
+                    
+                    processes.forEach(p => {
+                        const nodeGroup = document.getElementById(`node-${p.id}`);
+                        if (nodeGroup) {
+                            const c = nodeGroup.querySelector('circle');
+                            if (c) c.setAttribute('class', 'fill-emerald-50 stroke-emerald-600 stroke-2');
+                        }
+                    });
+                }
+            };
+
+            // Toggle resource instances hidden input
+            document.getElementById('rag-node-type').addEventListener('change', (e) => {
+                const instInput = document.getElementById('rag-node-instances');
+                if (instInput) {
+                    if (e.target.value === 'resource') {
+                        instInput.classList.remove('hidden');
+                    } else {
+                        instInput.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Initial draw
+            drawGraph();
+            updateDropdowns();
+        }
+
+        // ==================== Banker's Simulator Script (Section 6.5) ====================
+        {
+            let processes = ['P0', 'P1', 'P2', 'P3', 'P4'];
+            let max = [
+                [7, 5, 3],
+                [3, 2, 2],
+                [9, 0, 2],
+                [2, 2, 2],
+                [4, 3, 3]
+            ];
+            let alloc = [
+                [0, 1, 0],
+                [2, 0, 0],
+                [3, 0, 2],
+                [2, 1, 1],
+                [0, 0, 2]
+            ];
+            let avail = [3, 3, 2];
+
+            function renderTables() {
+                const maxTable = document.getElementById('banker-max-table');
+                const allocTable = document.getElementById('banker-alloc-table');
+                const needTable = document.getElementById('banker-need-table');
+                const reqSelect = document.getElementById('banker-req-proc');
+                if (!maxTable || !allocTable || !needTable) return;
+
+                let maxHtml = '';
+                let allocHtml = '';
+                let needHtml = '';
+                let selectHtml = '';
+
+                processes.forEach((p, idx) => {
+                    selectHtml += `<option value="${idx}">${p}</option>`;
+
+                    maxHtml += `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="py-1.5 font-bold text-slate-700">${p}</td>
+                            <td><input type="number" min="0" value="${max[idx][0]}" onchange="window.bankerUpdateVal('max', ${idx}, 0, this.value)" class="w-8 text-center border rounded" /></td>
+                            <td><input type="number" min="0" value="${max[idx][1]}" onchange="window.bankerUpdateVal('max', ${idx}, 1, this.value)" class="w-8 text-center border rounded" /></td>
+                            <td><input type="number" min="0" value="${max[idx][2]}" onchange="window.bankerUpdateVal('max', ${idx}, 2, this.value)" class="w-8 text-center border rounded" /></td>
+                        </tr>
+                    `;
+
+                    allocHtml += `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="py-1.5 font-bold text-slate-700">${p}</td>
+                            <td><input type="number" min="0" value="${alloc[idx][0]}" onchange="window.bankerUpdateVal('alloc', ${idx}, 0, this.value)" class="w-8 text-center border rounded" /></td>
+                            <td><input type="number" min="0" value="${alloc[idx][1]}" onchange="window.bankerUpdateVal('alloc', ${idx}, 1, this.value)" class="w-8 text-center border rounded" /></td>
+                            <td><input type="number" min="0" value="${alloc[idx][2]}" onchange="window.bankerUpdateVal('alloc', ${idx}, 2, this.value)" class="w-8 text-center border rounded" /></td>
+                        </tr>
+                    `;
+
+                    const nA = Math.max(0, max[idx][0] - alloc[idx][0]);
+                    const nB = Math.max(0, max[idx][1] - alloc[idx][1]);
+                    const nC = Math.max(0, max[idx][2] - alloc[idx][2]);
+                    needHtml += `
+                        <tr class="border-b hover:bg-indigo-50/20">
+                            <td class="py-1.5 font-bold text-indigo-800">${p}</td>
+                            <td class="py-1">${nA}</td>
+                            <td class="py-1">${nB}</td>
+                            <td class="py-1">${nC}</td>
+                        </tr>
+                    `;
+                });
+
+                maxTable.innerHTML = maxHtml;
+                allocTable.innerHTML = allocHtml;
+                needTable.innerHTML = needHtml;
+                if (reqSelect) reqSelect.innerHTML = selectHtml;
+
+                document.getElementById('banker-avail-a').value = avail[0];
+                document.getElementById('banker-avail-b').value = avail[1];
+                document.getElementById('banker-avail-c').value = avail[2];
+            }
+
+            window.bankerUpdateVal = function(type, pIdx, rIdx, val) {
+                const intVal = parseInt(val) || 0;
+                if (type === 'max') {
+                    max[pIdx][rIdx] = intVal;
+                } else {
+                    alloc[pIdx][rIdx] = intVal;
+                }
+                renderTables();
+            };
+
+            window.bankerAddProcess = function() {
+                const idx = processes.length;
+                processes.push('P' + idx);
+                max.push([0, 0, 0]);
+                alloc.push([0, 0, 0]);
+                renderTables();
+            };
+
+            window.bankerRemoveProcess = function() {
+                if (processes.length > 1) {
+                    processes.pop();
+                    max.pop();
+                    alloc.pop();
+                    renderTables();
+                }
+            };
+
+            window.bankerLoadSample = function() {
+                processes = ['P0', 'P1', 'P2', 'P3', 'P4'];
+                max = [
+                    [7, 5, 3],
+                    [3, 2, 2],
+                    [9, 0, 2],
+                    [2, 2, 2],
+                    [4, 3, 3]
+                ];
+                alloc = [
+                    [0, 1, 0],
+                    [2, 0, 0],
+                    [3, 0, 2],
+                    [2, 1, 1],
+                    [0, 0, 2]
+                ];
+                avail = [3, 3, 2];
+                
+                const log = document.getElementById('banker-log');
+                if (log) log.innerHTML = '<div class="text-slate-500">[הבנקאי] דוגמת ספר הלימוד נטענה בהצלחה.</div>';
+                
+                const dot = document.getElementById('banker-status-dot');
+                if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500';
+
+                renderTables();
+            };
+
+            function bankerLog(msg, type = 'info') {
+                const log = document.getElementById('banker-log');
+                if (!log) return;
+                let colorClass = 'text-slate-300';
+                if (type === 'success') colorClass = 'text-emerald-400 font-bold';
+                if (type === 'danger') colorClass = 'text-rose-400 font-bold';
+                if (type === 'warning') colorClass = 'text-amber-400';
+
+                log.innerHTML += `<div class="${colorClass}">[הבנקאי] ${msg}</div>`;
+                log.scrollTop = log.scrollHeight;
+            }
+
+            function checkSafetyAlgorithm(workVec, allocMat, needMat) {
+                let work = [...workVec];
+                let finish = new Array(processes.length).fill(false);
+                let safeSeq = [];
+
+                let step = 1;
+                let changes = true;
+
+                while (changes) {
+                    changes = false;
+                    for (let i = 0; i < processes.length; i++) {
+                        if (finish[i]) continue;
+
+                        let canExecute = true;
+                        for (let j = 0; j < 3; j++) {
+                            if (needMat[i][j] > work[j]) {
+                                canExecute = false;
+                                break;
+                            }
+                        }
+
+                        if (canExecute) {
+                            for (let j = 0; j < 3; j++) {
+                                work[j] += allocMat[i][j];
+                            }
+                            finish[i] = true;
+                            safeSeq.push(processes[i]);
+                            changes = true;
+                            bankerLog(`שלב ${step++}: תהליך ${processes[i]} יכול לסיים (Need: [${needMat[i]}], Work: [${workVec.map((v, idx) => work[idx]-allocMat[i][idx]).join(',')}], Available: [${workVec.join(',')}]). תהליך זה משלים ומחזיר הקצאה של [${allocMat[i]}]. וקטור פנוי חדש: [${work.join(',')}]`, 'info');
+                            break;
+                        }
+                    }
+                }
+
+                const isSafe = finish.every(f => f);
+                return { isSafe, safeSeq };
+            }
+
+            window.bankerRunSafety = function() {
+                const log = document.getElementById('banker-log');
+                if (log) log.innerHTML = '';
+
+                avail[0] = parseInt(document.getElementById('banker-avail-a').value) || 0;
+                avail[1] = parseInt(document.getElementById('banker-avail-b').value) || 0;
+                avail[2] = parseInt(document.getElementById('banker-avail-c').value) || 0;
+
+                bankerLog('--- התחלת בדיקת יציבות ומצב בטוח ---', 'warning');
+                bankerLog(`וקטור Available נוכחי: [${avail.join(', ')}]`, 'info');
+
+                let need = [];
+                for (let i = 0; i < processes.length; i++) {
+                    need.push([
+                        Math.max(0, max[i][0] - alloc[i][0]),
+                        Math.max(0, max[i][1] - alloc[i][1]),
+                        Math.max(0, max[i][2] - alloc[i][2])
+                    ]);
+                }
+
+                const res = checkSafetyAlgorithm(avail, alloc, need);
+                const dot = document.getElementById('banker-status-dot');
+
+                if (res.isSafe) {
+                    bankerLog(`המערכת במצב בטוח (Safe State)! סדר הרצה בטוח: [${res.safeSeq.join(' &rarr; ')}]`, 'success');
+                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
+                } else {
+                    bankerLog('המערכת במצב לא בטוח (Unsafe State)! לא קיים סדר הרצה שמבטיח מניעת קיפאון במקרה של דרישת מקסימום.', 'danger');
+                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse';
+                }
+            };
+
+            window.bankerSimulateRequest = function() {
+                const log = document.getElementById('banker-log');
+                if (log) log.innerHTML = '';
+
+                const pIdx = parseInt(document.getElementById('banker-req-proc').value);
+                const reqA = parseInt(document.getElementById('banker-req-a').value) || 0;
+                const reqB = parseInt(document.getElementById('banker-req-b').value) || 0;
+                const reqC = parseInt(document.getElementById('banker-req-c').value) || 0;
+                const request = [reqA, reqB, reqC];
+
+                bankerLog(`--- סימולציית בקשת משאבים: תהליך ${processes[pIdx]} מבקש [${request.join(',')}] ---`, 'warning');
+
+                const pNeed = [
+                    Math.max(0, max[pIdx][0] - alloc[pIdx][0]),
+                    Math.max(0, max[pIdx][1] - alloc[pIdx][1]),
+                    Math.max(0, max[pIdx][2] - alloc[pIdx][2])
+                ];
+
+                for (let j = 0; j < 3; j++) {
+                    if (request[j] > pNeed[j]) {
+                        bankerLog(`נכשל: הבקשה [${request.join(',')}] חורגת מהצורך הנותר המוצהר של התהליך [${pNeed.join(',')}].`, 'danger');
+                        return;
+                    }
+                }
+
+                for (let j = 0; j < 3; j++) {
+                    if (request[j] > avail[j]) {
+                        bankerLog(`נכשל: אין מספיק עותקים פנויים בכספת. פנוי: [${avail.join(',')}], מבוקש: [${request.join(',')}]. התהליך ימתין.`, 'danger');
+                        return;
+                    }
+                }
+
+                let tempAvail = [avail[0] - request[0], avail[1] - request[1], avail[2] - request[2]];
+                let tempAlloc = JSON.parse(JSON.stringify(alloc));
+                tempAlloc[pIdx] = [tempAlloc[pIdx][0] + request[0], tempAlloc[pIdx][1] + request[1], tempAlloc[pIdx][2] + request[2]];
+
+                let tempNeed = [];
+                for (let i = 0; i < processes.length; i++) {
+                    tempNeed.push([
+                        Math.max(0, max[i][0] - tempAlloc[i][0]),
+                        Math.max(0, max[i][1] - tempAlloc[i][1]),
+                        Math.max(0, max[i][2] - tempAlloc[i][2])
+                    ]);
+                }
+
+                bankerLog(`הקצאה וירטואלית בוצעה. פנוי זמני: [${tempAvail.join(',')}]. נריץ בדיקת בטיחות...`, 'info');
+                const res = checkSafetyAlgorithm(tempAvail, tempAlloc, tempNeed);
+
+                if (res.isSafe) {
+                    bankerLog(`אישור: הבקשה מאושרת! המצב החדש בטוח. סדר הרצה בטוח: [${res.safeSeq.join(' &rarr; ')}]`, 'success');
+                    avail = tempAvail;
+                    alloc = tempAlloc;
+                    renderTables();
+                } else {
+                    bankerLog(`סירוב: הבקשה נדחית! הקצאה זו תוביל למצב לא בטוח (סכנת קיפאון). התהליך מועבר לחסימה.`, 'danger');
+                }
+            };
+
+            bankerLoadSample();
+        }
+
+        // ==================== Livelock Simulator Script (Section 6.7.3) ====================
+        {
+            let alex = { x: 40, lane: 1, element: null };
+            let benny = { x: 320, lane: 1, element: null };
+            let steps = 0;
+            let politeness = 1.0;
+            let isPlaying = false;
+            let playInterval = null;
+
+            function init() {
+                alex.x = 40;
+                alex.lane = 1;
+                benny.x = 320;
+                benny.lane = 1;
+                steps = 0;
+                isPlaying = false;
+                if (playInterval) clearInterval(playInterval);
+                
+                alex.element = document.getElementById('pedestrian-alex');
+                benny.element = document.getElementById('pedestrian-benny');
+                
+                updateDom();
+                
+                const info = document.getElementById('livelock-info-text');
+                if (info) info.textContent = 'אלכס ובני מתחילים לצעוד במסדרון.';
+                
+                const badge = document.getElementById('livelock-state-badge');
+                if (badge) {
+                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-200 text-slate-700';
+                    badge.textContent = 'בסדר';
+                }
+                
+                const playBtn = document.getElementById('livelock-play-btn');
+                if (playBtn) playBtn.textContent = 'הרץ';
+                
+                const stepBtn = document.getElementById('livelock-step-btn');
+                if (stepBtn) stepBtn.disabled = false;
+            }
+
+            function updateDom() {
+                if (alex.element) {
+                    alex.element.style.left = `${alex.x}px`;
+                    alex.element.style.top = alex.lane === 1 ? '8px' : '48px';
+                }
+                if (benny.element) {
+                    benny.element.style.left = `${benny.x}px`;
+                    benny.element.style.top = benny.lane === 1 ? '8px' : '48px';
+                }
+                const sc = document.getElementById('livelock-step-count');
+                if (sc) sc.textContent = steps;
+            }
+
+            window.livelockUpdateParams = function() {
+                const slider = document.getElementById('livelock-politeness');
+                const valSpan = document.getElementById('livelock-politeness-val');
+                if (slider && valSpan) {
+                    politeness = parseInt(slider.value) / 100;
+                    valSpan.textContent = slider.value + '%';
+                }
+            };
+
+            window.livelockReset = function() {
+                init();
+            };
+
+            window.livelockStep = function() {
+                if (alex.x >= 400 || benny.x <= 0) {
+                    if (isPlaying) window.livelockTogglePlay();
+                    return;
+                }
+
+                steps++;
+                const info = document.getElementById('livelock-info-text');
+                const badge = document.getElementById('livelock-state-badge');
+
+                const dist = benny.x - alex.x;
+
+                if (alex.x >= benny.x) {
+                    alex.x += 40;
+                    benny.x -= 40;
+                    if (info) info.textContent = 'הם חלפו זה על פני זה בהצלחה!';
+                    if (badge) {
+                        badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-700';
+                        badge.textContent = 'הצליח!';
+                    }
+                    updateDom();
+                    if (isPlaying) window.livelockTogglePlay();
+                    const stepBtn = document.getElementById('livelock-step-btn');
+                    if (stepBtn) stepBtn.disabled = true;
+                    return;
+                }
+
+                if (dist > 40) {
+                    alex.x += 40;
+                    benny.x -= 40;
+                    if (info) info.textContent = 'מתקרבים זה לזה במסדרון...';
+                    updateDom();
+                } else {
+                    if (alex.lane === benny.lane) {
+                        if (alex.element) {
+                            alex.element.classList.add('livelock-shake');
+                            setTimeout(() => alex.element.classList.remove('livelock-shake'), 500);
+                        }
+                        if (benny.element) {
+                            benny.element.classList.add('livelock-shake');
+                            setTimeout(() => benny.element.classList.remove('livelock-shake'), 500);
+                        }
+
+                        const alexYields = Math.random() < politeness;
+                        const bennyYields = Math.random() < politeness;
+
+                        if (alexYields && bennyYields) {
+                            alex.lane = 3 - alex.lane;
+                            benny.lane = 3 - benny.lane;
+                            if (info) info.textContent = 'Livelock! שניהם זזו יחד לנתיב הנגדי באותו זמן.';
+                            if (badge) {
+                                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-rose-100 text-rose-700 animate-pulse';
+                                badge.textContent = 'Livelock!';
+                            }
+                        } else if (alexYields && !bennyYields) {
+                            alex.lane = 3 - alex.lane;
+                            if (info) info.textContent = 'הסימטריה נשברה! אלכס זז נתיב ובני נשאר במקום.';
+                            if (badge) {
+                                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700';
+                                badge.textContent = 'שבירת סימטריה';
+                            }
+                        } else if (!alexYields && bennyYields) {
+                            benny.lane = 3 - benny.lane;
+                            if (info) info.textContent = 'הסימטריה נשברה! בני זז נתיב ואלכס נשאר במקום.';
+                            if (badge) {
+                                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700';
+                                badge.textContent = 'שבירת סימטריה';
+                            }
+                        } else {
+                            if (info) info.textContent = 'שניהם היססו ונשארו באותו נתיב.';
+                        }
+                        updateDom();
+                    } else {
+                        alex.x += 40;
+                        benny.x -= 40;
+                        if (info) info.textContent = 'עוקפים זה את זה בנתיבים שונים.';
+                        updateDom();
+                    }
+                }
+            }
+
+            window.livelockTogglePlay = function() {
+                const playBtn = document.getElementById('livelock-play-btn');
+                if (!playBtn) return;
+
+                if (isPlaying) {
+                    isPlaying = false;
+                    playBtn.textContent = 'הרץ';
+                    playBtn.className = 'text-xs bg-emerald-600 text-white font-bold py-2 px-3 rounded hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer';
+                    if (playInterval) clearInterval(playInterval);
+                } else {
+                    isPlaying = true;
+                    playBtn.textContent = 'עצור';
+                    playBtn.className = 'text-xs bg-red-600 text-white font-bold py-2 px-3 rounded hover:bg-red-700 active:scale-95 transition-all cursor-pointer';
+                    playInterval = setInterval(window.livelockStep, 600);
+                }
+            };
+
+            window.addEventListener('load', () => {
+                init();
+            });
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                const cachedCollapsed = localStorage.getItem('sidebarCollapsed');
+                if (cachedCollapsed !== 'true') {
+                    document.body.classList.remove('sidebar-collapsed');
+                }
+                document.getElementById('mobile-overlay').classList.add('hidden');
+            } else {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        });
+
+
+        // ==================== Chapter 6 Flashcard Glossary Logic ====================
+        {
+            let flashcardMode = 'study'; // 'study' or 'test'
+            let openedFlashcards = new Set();
+            const flashcardData = [
+                {
+                    "term": "קיפאון (Deadlock)",
+                    "definition": "מצב בו קבוצת תהליכים חסומה לחלוטין כי כל אחד ממתין למשאב המוחזק על ידי תהליך אחר באותה קבוצה.",
+                    "category": "קיפאון ומשאבים"
+                },
+                {
+                    "term": "משאב (Resource)",
+                    "definition": "רכיב חומרה או לוגיקה (כמו מדפסת או זיכרון) שתהליך זקוק לו לצורך ביצוע עבודתו.",
+                    "category": "קיפאון ומשאבים"
+                },
+                {
+                    "term": "משאב הניתן לחילוץ (Preemptable)",
+                    "definition": "משאב שניתן להפקיע אותו מתהליך המחזיק בו ולהעבירו לאחר ללא פגיעה בחישוב (למשל מעבד, זיכרון RAM).",
+                    "category": "קיפאון ומשאבים"
+                },
+                {
+                    "term": "משאב שאינו ניתן לחילוץ",
+                    "definition": "משאב שהפקעתו בכוח תגרום להרס הנתונים (למשל מדפסת, צורב). מהווה את המקור העיקרי לקיפאון.",
+                    "category": "קיפאון ומשאבים"
+                },
+                {
+                    "term": "תנאי המניעה ההדדית",
+                    "definition": "כל משאב המעורב בקיפאון מוקצה בשימוש בלעדי לתהליך אחד או שהוא פנוי לחלוטין (תנאי 1 של קופמן).",
+                    "category": "תנאי קופמן"
+                },
+                {
+                    "term": "תנאי החזק והמתן",
+                    "definition": "תהליך מחזיק משאב אחד לפחות וממתין בתור לקבלת משאב נוסף המוחזק על ידי תהליך אחר (תנאי 2 של קופמן).",
+                    "category": "תנאי קופמן"
+                },
+                {
+                    "term": "תנאי אי-חילוץ משאבים",
+                    "definition": "המערכת אינה יכולה להפקיע משאב בכוח מידי תהליך; המשאב ישוחרר רק בהתנדבות על ידי התהליך (תנאי 3 של קופמן).",
+                    "category": "תנאי קופמן"
+                },
+                {
+                    "term": "תנאי המתנה מעגלית",
+                    "definition": "קיימת שרשרת סגורה (מעגל) שבה כל תהליך ממתין למשאב שמוחזק על ידי התהליך הבא אחריו (תנאי 4 של קופמן).",
+                    "category": "תנאי קופמן"
+                },
+                {
+                    "term": "גרף הקצאת משאבים",
+                    "definition": "מודל מתמטי חזותי הממפה תהליכים (עיגולים) ומשאבים (ריבועים). קיומו של מעגל בגרף מוכיח קיפאון במשאבים בעלי עותק יחיד.",
+                    "category": "גרף הקצאה"
+                },
+                {
+                    "term": "גילוי קיפאון (Detection)",
+                    "definition": "גישה המאפשרת לקיפאון להתרחש, ומריצה אלגוריתמים תקופתיים לסריקת המערכת במטרה לגלות מעגלי קיפאון שהתהוו.",
+                    "category": "גילוי והתאוששות"
+                },
+                {
+                    "term": "התאוששות מקיפאון (Recovery)",
+                    "definition": "פעולות אקטיביות לשבירת קיפאון שהתגלה במערכת, כגון חיסול תהליכים, הפקעת משאבים או נסיגה לאחור.",
+                    "category": "גילוי והתאוששות"
+                },
+                {
+                    "term": "נסיגה לאחור (Rollback)",
+                    "definition": "החזרת תהליך למצב שמירה קודם (Checkpoint) וביטול ריצתו מאותה נקודה כדי לשחרר את משאביו ולפתור את הקיפאון.",
+                    "category": "גילוי והתאוששות"
+                },
+                {
+                    "term": "אלגוריתם בת היענה (Ostrich)",
+                    "definition": "התעלמות מוחלטת מבעיית הקיפאון מתוך הנחה כלכלית/הנדסית שהעלות של בדיקה ומניעה קבועה גבוהה מהנזק של תקיעה נדירה.",
+                    "category": "אסטרטגיות"
+                },
+                {
+                    "term": "התחמקות מקיפאון (Avoidance)",
+                    "definition": "גישה דינמית הדורשת הצהרת משאבים מראש ומאשרת הקצאות רק אם הן מובילות למצב בטוח (Safe State) שמונע קיפאון.",
+                    "category": "התחמקות מקיפאון"
+                },
+                {
+                    "term": "מסלול משאבים (Trajectory)",
+                    "definition": "גרף דו-מימדי המתאר התקדמות תהליכים לאורך זמן ביחס לאזורים אסורים של משאבים משותפים.",
+                    "category": "התחמקות מקיפאון"
+                },
+                {
+                    "term": "מצב בטוח (Safe State)",
+                    "definition": "מצב מערכת שבו קיים סדר הרצה ודאי (Safe Sequence) שיבטיח שכל תהליך יקבל את צרכיו המקסימליים ויסיים בהצלחה.",
+                    "category": "התחמקות מקיפאון"
+                },
+                {
+                    "term": "מצב לא בטוח (Unsafe State)",
+                    "definition": "מצב מערכת שבו לא מובטחת מניעת קיפאון; אם התהליכים יבקשו את כל הצהרת המקסימום שלהם כעת, יתרחש קיפאון.",
+                    "category": "התחמקות מקיפאון"
+                },
+                {
+                    "term": "אלגוריתם הבנקאי",
+                    "definition": "אלגוריתם של דיקסטרה המדמה בנקאי המאשר הלוואות (משאבים) רק אם המלאי שנותר מספיק כדי לאפשר לפחות ללקוח אחד לסיים.",
+                    "category": "התחמקות מקיפאון"
+                },
+                {
+                    "term": "מניעת קיפאון (Prevention)",
+                    "definition": "שבירה מבנית וקשיחה של לפחות אחד מארבעת תנאי קופמן מראש בתכנון המערכת (למשל מספור משאבים).",
+                    "category": "מניעת קיפאון"
+                },
+                {
+                    "term": "ספולר (Spooling)",
+                    "definition": "שימוש בקבצי דיסק זמניים כחוצץ עבור התקן ייעודי (כמו מדפסת) כדי למנוע נעילת חומרה ישירה ובלעדית על ידי תהליכים.",
+                    "category": "מניעת קיפאון"
+                },
+                {
+                    "term": "נעילה דו-שלבית",
+                    "definition": "שיטה במסדי נתונים שבה בשלב הראשון נועלים את כל הרשומות הנדרשות, ואם נכשלים - משחררים הכל ומתחילים מחדש.",
+                    "category": "נושאים נוספים"
+                },
+                {
+                    "term": "קיפאון תקשורת",
+                    "definition": "חסימה של תהליכים הממתינים למידע ברשת שאבד. נפתר באמצעות Timeout (פסק זמן) המעיר את התהליך.",
+                    "category": "נושאים נוספים"
+                },
+                {
+                    "term": "Livelock / קיפאון חי",
+                    "definition": "תהליכים פעילים שצורכים זמן מעבד ומשנים מצב ללא התקדמות, עקב סנכרון הרסני (כמו הליכה מצד לצד במסדרון).",
+                    "category": "נושאים נוספים"
+                },
+                {
+                    "term": "הרעבה (Starvation)",
+                    "definition": "מצב שבו תהליך תקין נדחה ללא הגבלה עקב מדיניות תזמון לא הוגנת המעדיפה אחרים. נפתר על ידי מנגנון התיישנות (Aging).",
+                    "category": "נושאים נוספים"
+                }
+            ];
+
+            function initFlashcards() {
+                const categoriesTabs = document.getElementById("ch6-flashcard-categories-tabs");
+                if (categoriesTabs) {
+                    categoriesTabs.innerHTML = "";
+                    const categories = ['הכל', ...new Set(flashcardData.map(item => item.category))];
+                    categories.forEach(cat => {
+                        const tabBtn = document.createElement("button");
+                        tabBtn.className = cat === 'הכל' 
+                            ? "px-3 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs font-bold transition-all border border-blue-200 cursor-pointer" 
+                            : "px-3 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition-all border border-slate-200 cursor-pointer";
+                        tabBtn.textContent = cat;
+                        tabBtn.onclick = () => {
+                            document.querySelectorAll("#ch6-flashcard-categories-tabs button").forEach(btn => {
+                                btn.className = "px-3 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition-all border border-slate-200 cursor-pointer";
+                            });
+                            tabBtn.className = "px-3 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs font-bold transition-all border border-blue-200 cursor-pointer";
+                            filterFlashcards(cat);
+                        };
+                        categoriesTabs.appendChild(tabBtn);
+                    });
+                }
+                renderFlashcards(flashcardData);
+            }
+
+            function filterFlashcards(category) {
+                const filtered = category === 'הכל' 
+                    ? flashcardData 
+                    : flashcardData.filter(item => item.category === category);
+                renderFlashcards(filtered);
+            }
+
+            function setFlashcardMode(mode) {
+                flashcardMode = mode;
+                const btnStudy = document.getElementById("ch6-flashcard-mode-study");
+                const btnTest = document.getElementById("ch6-flashcard-mode-test");
+                const statsEl = document.getElementById("ch6-flashcard-stats-container");
+
+                if (mode === 'study') {
+                    btnStudy.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                    btnTest.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                    statsEl.classList.add("hidden");
+                } else {
+                    btnStudy.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                    btnTest.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                    statsEl.classList.remove("hidden");
+                }
+                renderFlashcards(flashcardData);
+            }
+
+            function renderFlashcards(data) {
+                const deck = document.getElementById("ch6-flashcard-deck");
+                if (!deck) return;
+                deck.innerHTML = "";
+
+                const totalEl = document.getElementById("ch6-flashcard-total-count");
+                if (totalEl) totalEl.textContent = data.length;
+
+                let openedFiltered = 0;
+                data.forEach(item => {
+                    if (openedFlashcards.has(item.term)) openedFiltered++;
+                });
+                const openedEl = document.getElementById("ch6-flashcard-opened-count");
+                if (openedEl) openedEl.textContent = openedFiltered;
+
+                data.forEach((item, index) => {
+                    const cardScene = document.createElement("div");
+
+                    if (flashcardMode === 'study') {
+                        cardScene.className = "flashcard-scene flat-mode";
+                        cardScene.innerHTML = `
+                            <div class="flashcard-card">
+                                <div class="flashcard-face flashcard-front">
+                                    <div>
+                                        <h4 class="text-sm font-black text-slate-800 leading-tight">${item.term}</h4>
+                                    </div>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <p class="text-xs text-slate-650 leading-relaxed">${item.definition}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        const isFlipped = openedFlashcards.has(item.term);
+                        cardScene.className = isFlipped ? "flashcard-scene flipped" : "flashcard-scene";
+                        cardScene.onclick = () => toggleFlashcard(cardScene, item.term);
+
+                        cardScene.innerHTML = `
+                            <div class="flashcard-card">
+                                <div class="flashcard-face flashcard-front flex flex-col justify-center items-center text-center">
+                                    <h4 class="text-base font-black text-slate-800 leading-tight mt-1">${item.term}</h4>
+                                    <div class="text-[9px] text-slate-400 font-bold mt-4 animate-pulse">
+                                        לחיצה לחשיפה ❓
+                                    </div>
+                                </div>
+                                <div class="flashcard-face flashcard-back flex flex-col justify-between font-sans">
+                                    <div class="overflow-y-auto pr-1">
+                                        <h5 class="text-xs font-black text-slate-700 leading-tight mt-1">${item.term}</h5>
+                                        <p class="text-[11px] text-slate-650 leading-relaxed mt-2" dir="rtl">${item.definition}</p>
+                                    </div>
+                                    <div class="text-[9px] text-blue-500 font-bold border-t pt-1.5 border-slate-200 flex items-center justify-between select-none">
+                                        <span>נחשף</span>
+                                        <span>✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    deck.appendChild(cardScene);
+                });
+            }
+
+            function toggleFlashcard(el, term) {
+                if (flashcardMode === 'study') return;
+
+                if (openedFlashcards.has(term)) {
+                    openedFlashcards.delete(term);
+                    el.classList.remove("flipped");
+                } else {
+                    openedFlashcards.add(term);
+                    el.classList.add("flipped");
+                }
+
+                let openedFiltered = 0;
+                flashcardData.forEach(item => {
+                    if (openedFlashcards.has(item.term)) openedFiltered++;
+                });
+                document.getElementById("ch6-flashcard-opened-count").textContent = openedFiltered;
+            }
+
+            function resetFlashcards() {
+                openedFlashcards.clear();
+                renderFlashcards(flashcardData);
+            }
+
+            window.ch6_setFlashcardMode = setFlashcardMode;
+            window.ch6_resetFlashcards = resetFlashcards;
+
+            window.addEventListener('load', () => {
+                initFlashcards();
+            });
+        }
 
         // Handle window resize
         window.addEventListener('resize', () => {
