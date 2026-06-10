@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="h-full overflow-x-hidden">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הכנה לבחינה - שפות תכנות</title>
+    <!-- Heebo and Assistant Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        calmBg: '#f4f7fb',
+                        cardBg: '#ffffff',
+                        textMain: '#334155',
+                        textMuted: '#64748b',
+                        accentSoft: '#38bdf8',
+                        accentStrong: '#0284c7',
+                        accentHover: '#e0f2fe',
+                        racket: '#9e0000',
+                        primary: '#1d4ed8',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        codebg: '#1e293b',
+                        highlight: '#38bdf8'
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'Assistant', 'sans-serif']
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f4f7fb;
+            background-image:
+                radial-gradient(#cbd5e1 1px, transparent 1px),
+                linear-gradient(135deg, #f8fafc 0%, #f0f9ff 50%, #e0f2fe 100%);
+            background-size: 32px 32px, cover;
+            background-attachment: fixed;
+            font-family: 'Heebo', 'Assistant', 'sans-serif';
+        }
+
+        .view-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.35s ease-in-out;
+        }
+
+        .view-container.active {
+            display: flex;
+            opacity: 1;
+            animation: viewFadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes viewFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-100 {
+            animation-delay: 100ms;
+        }
+
+        .delay-200 {
+            animation-delay: 200ms;
+        }
+
+        .delay-300 {
+            animation-delay: 300ms;
+        }
+
+        /* Custom scrollbar for main page */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="text-textMain min-h-screen relative flex flex-col overflow-y-auto">
+
+    <!-- Background lighting blobs (highly visible for glassmorphism) -->
+    <div
+        class="absolute top-0 right-[-10%] w-96 h-96 bg-sky-300/30 rounded-full filter blur-[100px] animate-blob pointer-events-none z-0">
+    </div>
+    <div class="absolute bottom-[20%] left-[-10%] w-80 h-80 bg-indigo-300/25 rounded-full filter blur-[100px] animate-blob pointer-events-none z-0"
+        style="animation-delay: 2s;"></div>
+    <div class="absolute top-[40%] left-[20%] w-72 h-72 bg-pink-300/15 rounded-full filter blur-[90px] animate-blob pointer-events-none z-0"
+        style="animation-delay: 4s;"></div>
+
+    <!-- Sticky Top Navigation Bar -->
+    <header
+        class="sticky top-0 bg-white/70 backdrop-blur-md border-b border-slate-200/50 z-50 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+                <i class="fa-solid fa-graduation-cap text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-black text-slate-800 tracking-tight leading-none font-sans">הכנה לבחינה</h1>
+                <p class="text-[10px] text-slate-500 mt-1 font-medium">תרגול שאלות, מבחנים ואלגוריתמים</p>
+            </div>
+        </div>
+
+        <nav class="flex items-center gap-1 sm:gap-3">
+            <button onclick="showView('dashboard')" id="navbtn-dashboard"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-sky-50 text-sky-700 border border-sky-200/50">
+                <i class="fa-solid fa-table-columns ml-1.5"></i>לוח בקרה
+            </button>
+            <a href="general_algorithms.html" id="navbtn-algorithms"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-gears ml-1.5"></i>מדריך אלגוריתמים
+            </a>
+            <button onclick="showView('questions')" id="navbtn-questions"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-circle-question ml-1.5"></i> חלוקה לפי שאלות
+            </button>
+            <button onclick="showView('exams')" id="navbtn-exams"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-file-invoice ml-1.5"></i>חלוקה לפי מבחנים
+            </button>
+            <a href="index.html"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-transparent hover:border-slate-200/50">
+                <i class="fa-solid fa-house ml-1.5"></i>חזרה לתפריט הראשי
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow relative z-10 flex flex-col">
+
+        <!-- ========================================================
+             VIEW 1: DASHBOARD (GATE PAGE WITH 3 BUBBLES)
+             ======================================================== -->
+        <section id="view-dashboard" class="view-container active flex-col items-center justify-center py-12 px-6">
+            <div class="max-w-4xl w-full text-center mb-16 opacity-0 animate-fade-in-up">
+                <h2
+                    class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-900 to-sky-600 tracking-tight mt-6 mb-4 font-sans">
+                    הכנה למבחן- מאיפה מתחילים
+                </h2>
+                <p class="text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-medium">
+                    אז איך מתחילים ללמוד למבחן בעזרת האתר? תתחילו במדריך אלגוריתמים בשביל לקבל מושג על מבנה השאלות ואיך
+                    לגשת לכל שאלה, ואחכ תתקדמו כמו בכל קורס לפתירת מבחנים, החלוקה באתר היא או לפי מבחנים או לפי שאלות,
+                    כל אחד מה שנוח לו, אני ממליץ לקחת מסך שני ולפתוח ליד את הקובץ PDF של המבחן שלומדים באותו זמן באתר,
+                    השילוב של איך שהכתיבה מתבצעת בפועל במבחן עם האתר מכניס טוב לראש את הדרך פיתרון, ולסיום- נכון שכמו
+                    שלא קשה לראות שבניית האתר והרבה מהכתיבה נעשו על ידי AI אבל עברתי על החומר מכל הכיוונים, דייקתי
+                    סיננתי
+                    וניסיתי לנפות טעויות כמיטב יכולתי, אם בכל זאת נתקלתם בטעות- אני אשמח שתעדכנו אותי שאוכל לתקן,
+                    בהצלחה!
+                </p>
+            </div>
+
+            <!-- Cards Grid (3 bubbles styled like index.html) -->
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+
+                <!-- Bubble 1: Algorithms (Links to general_algorithms.html) -->
+                <a href="general_algorithms.html"
+                    class="group text-right relative overflow-hidden block bg-gradient-to-br from-white/20 to-white/10 hover:from-sky-400/40 hover:to-indigo-500/40 rounded-[24px] p-[2px] transition-all duration-500 hover:shadow-2xl hover:shadow-sky-300/30 hover:-translate-y-2 hover:scale-[1.02] opacity-0 animate-fade-in-up delay-100 cursor-pointer">
+                    <div
+                        class="bg-white/15 backdrop-blur-xl rounded-[22px] p-8 h-full relative z-10 flex flex-col border border-white/25 hover:bg-white/25 transition-all duration-500 shadow-[0_8px_32px_rgba(255,255,255,0.03)]">
+                        <svg class="absolute bottom-[-5%] left-[-5%] w-40 h-40 text-sky-50 opacity-20 group-hover:opacity-40 group-hover:-rotate-12 transition-all duration-700 pointer-events-none z-0"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                        </svg>
+
+                        <div class="flex items-start justify-between mb-6 relative z-10">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-sky-600 group-hover:bg-gradient-to-br group-hover:from-sky-400 group-hover:to-indigo-500 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-200 shadow-inner">
+                                <i class="fa-solid fa-gears text-2xl"></i>
+                            </div>
+                            <span
+                                class="bg-white/10 border border-white/20 text-xs px-3 py-1.5 rounded-full text-slate-700 font-bold tracking-wide group-hover:bg-sky-50 group-hover:text-sky-700 group-hover:border-sky-200 transition-colors">פתיחה
+                            </span>
+                        </div>
+                        <h2
+                            class="text-2xl font-bold text-slate-800 mb-3 group-hover:text-sky-600 transition-colors relative z-10 font-sans">
+                            מדריך אלגוריתמי לפתירת שאלות</h2>
+                        <p class="text-slate-500 leading-relaxed font-medium relative z-10 flex-grow">
+                            *הקובץ בהכנה ויתכן (וכנראה) שהנוכחי מכיל שגיאות*, כבר הכנתי קובץ מושלם ואז הוא נמחק ונדרס
+                            כולו, כל הבאסה. בעזה" נכין חדש אפילו יותר טוב :)
+                        </p>
+                        <div
+                            class="mt-6 flex items-center text-sm font-bold text-slate-400 group-hover:text-sky-600 transition-colors duration-300 relative z-10 font-sans font-bold">
+                            פתח את המדריך
+                            <i
+                                class="fa-solid fa-arrow-left mr-2 transform transition-transform duration-300 group-hover:-translate-x-2 text-xs"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bubble 2: Questions & Answers (Internal view switching) -->
+                <button onclick="showView('questions')"
+                    class="group text-right relative overflow-hidden block bg-gradient-to-br from-white/20 to-white/10 hover:from-emerald-400/40 hover:to-teal-500/40 rounded-[24px] p-[2px] transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-300/30 hover:-translate-y-2 hover:scale-[1.02] opacity-0 animate-fade-in-up delay-200 cursor-pointer font-sans">
+                    <div
+                        class="bg-white/15 backdrop-blur-xl rounded-[22px] p-8 h-full relative z-10 flex flex-col text-right border border-white/25 hover:bg-white/25 transition-all duration-500 shadow-[0_8px_32px_rgba(255,255,255,0.03)]">
+                        <svg class="absolute bottom-[-5%] left-[-5%] w-40 h-40 text-emerald-50 opacity-20 group-hover:opacity-40 group-hover:rotate-12 transition-all duration-700 pointer-events-none z-0"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H5c0-3.87 3.13-7 7-7s7 3.13 7 7c0 1.11-.45 2.12-1.17 2.85z" />
+                        </svg>
+
+                        <div class="flex items-start justify-between mb-6 relative z-10">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-emerald-600 group-hover:bg-gradient-to-br group-hover:from-emerald-400 group-hover:to-teal-500 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-emerald-200 shadow-inner">
+                                <i class="fa-solid fa-circle-question text-2xl"></i>
+                            </div>
+                            <span
+                                class="bg-white/10 border border-white/20 text-xs px-3 py-1.5 rounded-full text-slate-700 font-bold tracking-wide group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border-emerald-200 transition-colors">לתרגול
+                                לפי מספר שאלה
+                            </span>
+                        </div>
+                        <h2
+                            class="text-2xl font-bold text-slate-800 mb-3 group-hover:text-emerald-600 transition-colors relative z-10 font-sans">
+                            הכנה לפי תשובות</h2>
+                        <p class="text-slate-500 leading-relaxed font-medium relative z-10 flex-grow font-sans">
+                            כל השאלות והפתרונות המורחבים מהמאגר, מחולקים באופן מסודר ונוח לפי סוג השאלה: הרחבת מפרש
+                            (Q1), זיכרון וסביבות (Q2) ומערכות טיפוסים (Q3).
+                        </p>
+                        <div
+                            class="mt-6 flex items-center text-sm font-bold text-slate-400 group-hover:text-emerald-600 transition-colors duration-300 relative z-10 font-bold">
+                            פתח מאגר שאלות
+                            <i
+                                class="fa-solid fa-arrow-left mr-2 transform transition-transform duration-300 group-hover:-translate-x-2 text-xs"></i>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Bubble 3: Exams (Internal view switching) -->
+                <button onclick="showView('exams')"
+                    class="group text-right relative overflow-hidden block bg-gradient-to-br from-white/20 to-white/10 hover:from-violet-400/40 hover:to-fuchsia-500/40 rounded-[24px] p-[2px] transition-all duration-500 hover:shadow-2xl hover:shadow-violet-300/30 hover:-translate-y-2 hover:scale-[1.02] opacity-0 animate-fade-in-up delay-300 cursor-pointer font-sans">
+                    <div
+                        class="bg-white/15 backdrop-blur-xl rounded-[22px] p-8 h-full relative z-10 flex flex-col text-right border border-white/25 hover:bg-white/25 transition-all duration-500 shadow-[0_8px_32px_rgba(255,255,255,0.03)]">
+                        <svg class="absolute bottom-[-5%] left-[-5%] w-40 h-40 text-violet-50 opacity-20 group-hover:opacity-40 group-hover:-rotate-12 transition-all duration-700 pointer-events-none z-0"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                        </svg>
+
+                        <div class="flex items-start justify-between mb-6 relative z-10">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-violet-600 group-hover:bg-gradient-to-br group-hover:from-violet-400 group-hover:to-fuchsia-500 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-violet-200 shadow-inner">
+                                <i class="fa-solid fa-file-invoice text-2xl"></i>
+                            </div>
+                            <span
+                                class="bg-white/10 border border-white/20 text-xs px-3 py-1.5 rounded-full text-slate-700 font-bold tracking-wide group-hover:bg-violet-50 group-hover:text-violet-700 group-hover:border-violet-200 transition-colors">לתרגול
+                                לפי מבחנים</span>
+                        </div>
+                        <h2
+                            class="text-2xl font-bold text-slate-800 mb-3 group-hover:text-violet-600 transition-colors relative z-10 font-sans">
+                            ריכוז לפי מבחנים</h2>
+                        <p class="text-slate-500 leading-relaxed font-medium relative z-10 flex-grow font-sans">
+                            שאלות משנים קודמות מרוכזות ומאוגדות ביחד לפי מועדי הבחינות, ומאפשרות תרגול מלא ושלם של
+                            שאלוני מבחן לפי סדר שנים כרונולוגי.
+                        </p>
+                        <div
+                            class="mt-6 flex items-center text-sm font-bold text-slate-400 group-hover:text-violet-600 transition-colors duration-300 relative z-10 font-bold font-sans">
+                            עבור למבחנים
+                            <i
+                                class="fa-solid fa-arrow-left mr-2 transform transition-transform duration-300 group-hover:-translate-x-2 text-xs"></i>
+                        </div>
+                    </div>
+                </button>
+
+            </div>
+        </section>
+
+        <!-- ========================================================
+             VIEW 2: QUESTIONS (BY Q1, Q2, Q3)
+             ======================================================== -->
+        <section id="view-questions" class="view-container flex-col w-full min-h-full pb-20">
+
+            <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <div class="mb-10 text-center md:text-right">
+                    <h2
+                        class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-800 to-teal-600 tracking-tight mb-2 font-sans">
+                        מאגר פתרונות לפי שאלות
+                    </h2>
+                    <p class="text-lg text-slate-600 font-medium">בחר שאלה מתוך שלוש העמודות כדי לפתוח את פתרון הבחינה
+                        המלא בלשונית חדשה.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                    <!-- Column 1: Q1 -->
+                    <div
+                        class="bg-white/50 backdrop-blur-lg border-2 border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-full h-1.5 bg-blue-400"></div>
+                        <div class="text-center border-b border-slate-300/60 pb-3">
+                            <h3 class="font-black text-slate-800 text-xl leading-tight">שאלה 1</h3>
+                            <p class="text-[10px] text-slate-500 font-medium mt-1">הרחבת שפה ומפרש</p>
+                        </div>
+                        <div class="flex flex-col gap-3">
+
+                            <a href="q1_2025c_83.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-blue-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ג מועד 83
+                            </a>
+
+                            <a href="q1_2025b_91.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-blue-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ב מועד 91
+                            </a>
+
+                            <a href="Q1_2025b_84.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-blue-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ב מועד 84
+                            </a>
+
+                            <a href="Q1_2024b_98.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-blue-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2024ב מועד 98
+                            </a>
+
+                            <a href="Q1_2024b_87.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-blue-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2024ב מועד 87
+                            </a>
+
+                            <a href="Q1_2021b_78.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-blue-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2021ב מועד 78
+                            </a>
+
+                            <a href="Q1_2021b_57.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-blue-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2021ב מועד 57
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Q2 -->
+                    <div
+                        class="bg-white/50 backdrop-blur-lg border-2 border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-full h-1.5 bg-indigo-400"></div>
+                        <div class="text-center border-b border-slate-300/60 pb-3">
+                            <h3 class="font-black text-slate-800 text-xl leading-tight">שאלה 2</h3>
+                            <p class="text-[10px] text-slate-500 font-medium mt-1">ניהול זיכרון וסביבות</p>
+                        </div>
+                        <div class="flex flex-col gap-3">
+
+                            <a href="Q2_2025c_83.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ג מועד 83
+                            </a>
+
+                            <a href="q2_2025b_91.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ב מועד 91
+                            </a>
+
+                            <a href="Q2_2025b_84.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ב מועד 84
+                            </a>
+
+                            <a href="Q2_2024b_98.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2024ב מועד 98
+                            </a>
+
+                            <a href="Q2_2024b_87.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2024ב מועד 87
+                            </a>
+
+                            <a href="Q2_2021b_78.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2021ב מועד 78
+                            </a>
+
+                            <a href="Q2_2021b_57.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2021ב מועד 57
+                            </a>
+
+                            <a href="q2_unknown.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-indigo-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                מועד לא ידוע
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Q3 -->
+                    <div
+                        class="bg-white/50 backdrop-blur-lg border-2 border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-full h-1.5 bg-violet-400"></div>
+                        <div class="text-center border-b border-slate-300/60 pb-3">
+                            <h3 class="font-black text-slate-800 text-xl leading-tight">שאלה 3</h3>
+                            <p class="text-[10px] text-slate-500 font-medium mt-1">מערכות טיפוסים והסקה</p>
+                        </div>
+                        <div class="flex flex-col gap-3">
+
+                            <a href="q3_2025c_93.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ג מועד 93
+                            </a>
+
+                            <a href="q3_2025c_83.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ג מועד 83
+                            </a>
+
+                            <a href="q3_2025b_91.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ב מועד 91
+                            </a>
+
+                            <a href="q3_2025b_84.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2025ב מועד 84
+                            </a>
+
+                            <a href="q3_2023b_87.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2023ב מועד 87
+                            </a>
+
+                            <a href="q3_2021b_87.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2021ב מועד 87
+                            </a>
+
+                            <a href="q3_2021b_78.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2021ב מועד 78
+                            </a>
+
+                            <a href="q3_2021b_57.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2021ב מועד 57
+                            </a>
+
+                            <a href="q3_2020b_88.html" target="_blank"
+                                class="block w-full text-center py-3.5 px-4 bg-white/40 hover:bg-white/70 backdrop-blur-md rounded-xl border border-white/60 hover:border-violet-400/60 hover:bg-white/60 text-slate-800 font-bold text-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer shadow-sm">
+                                2020ב מועד 88
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================================
+             VIEW 3: EXAMS (BY EXAM PACKAGE)
+             ======================================================== -->
+        <section id="view-exams" class="view-container flex-col w-full min-h-full pb-20">
+
+            <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <div class="mb-10 text-center md:text-right">
+                    <h2
+                        class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-800 to-indigo-600 tracking-tight mb-2 font-sans">
+                        פתרון מבחנים משנים קודמות
+                    </h2>
+                    <p class="text-lg text-slate-600 font-medium">כל השאלות והפתרונות המלאים מרוכזים ומאורגנים לפי שנות
+                        הלימוד בסדר כרונולוגי.</p>
+                </div>
+
+                <div class="flex flex-col">
+
+                    <div class="mb-12 w-full">
+                        <div class="flex items-center gap-4 mb-6">
+                            <h3
+                                class="text-2xl font-black text-slate-700 bg-white/60 px-4 py-1.5 rounded-xl border border-slate-200/50 shadow-sm">
+                                2025</h3>
+                            <div class="h-px bg-slate-300/70 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ג' מועד 93</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 1
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="q3_2025c_93.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ג' מועד 83</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 2
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="q1_2025c_83.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-blue-50/50 hover:border-blue-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-blue-500/10 text-blue-700 border border-blue-500/25">
+                                                Q1
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                1: הרחבת מפרש</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="Q2_2025c_83.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: ניהול זיכרון ומוטציות בסביבות</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="q3_2025c_83.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 91</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 3
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="q1_2025b_91.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-blue-50/50 hover:border-blue-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-blue-500/10 text-blue-700 border border-blue-500/25">
+                                                Q1
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                1: הרחבת מפרש</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="q2_2025b_91.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: ניהול זיכרון, הפניות משתמעות</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="q3_2025b_91.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 84</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 4
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="Q1_2025b_84.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-blue-50/50 hover:border-blue-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-blue-500/10 text-blue-700 border border-blue-500/25">
+                                                Q1
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                1: הרחבת מפרש</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="Q2_2025b_84.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: מוטציות והפניות משתמעות</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="q3_2025b_84.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mb-12 w-full">
+                        <div class="flex items-center gap-4 mb-6">
+                            <h3
+                                class="text-2xl font-black text-slate-700 bg-white/60 px-4 py-1.5 rounded-xl border border-slate-200/50 shadow-sm">
+                                2024</h3>
+                            <div class="h-px bg-slate-300/70 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 98</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 5
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="Q1_2024b_98.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-blue-50/50 hover:border-blue-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-blue-500/10 text-blue-700 border border-blue-500/25">
+                                                Q1
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                1: הרחבת מפרש</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="Q2_2024b_98.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: ניהול זיכרון ומוטציות</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 87</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 6
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="Q1_2024b_87.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-blue-50/50 hover:border-blue-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-blue-500/10 text-blue-700 border border-blue-500/25">
+                                                Q1
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                1: הרחבת מפרש</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="Q2_2024b_87.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: מוטציות וסביבות</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mb-12 w-full">
+                        <div class="flex items-center gap-4 mb-6">
+                            <h3
+                                class="text-2xl font-black text-slate-700 bg-white/60 px-4 py-1.5 rounded-xl border border-slate-200/50 shadow-sm">
+                                2023</h3>
+                            <div class="h-px bg-slate-300/70 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 87</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 7
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="q3_2023b_87.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mb-12 w-full">
+                        <div class="flex items-center gap-4 mb-6">
+                            <h3
+                                class="text-2xl font-black text-slate-700 bg-white/60 px-4 py-1.5 rounded-xl border border-slate-200/50 shadow-sm">
+                                2021</h3>
+                            <div class="h-px bg-slate-300/70 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 87</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 8
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="q3_2021b_87.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 78</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 9
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="Q1_2021b_78.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-blue-50/50 hover:border-blue-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-blue-500/10 text-blue-700 border border-blue-500/25">
+                                                Q1
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                1: הרחבת מפרש</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="Q2_2021b_78.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: ניהול זיכרון וסביבות</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="q3_2021b_78.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 57</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 10
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="Q1_2021b_57.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-blue-50/50 hover:border-blue-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-blue-500/10 text-blue-700 border border-blue-500/25">
+                                                Q1
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                1: הרחבת מפרש</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="Q2_2021b_57.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: ניהול זיכרון וסביבות</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                    <a href="q3_2021b_57.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mb-12 w-full">
+                        <div class="flex items-center gap-4 mb-6">
+                            <h3
+                                class="text-2xl font-black text-slate-700 bg-white/60 px-4 py-1.5 rounded-xl border border-slate-200/50 shadow-sm">
+                                2020</h3>
+                            <div class="h-px bg-slate-300/70 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">סמסטר ב' מועד 88</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 11
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="q3_2020b_88.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-violet-50/50 hover:border-violet-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-violet-500/10 text-violet-700 border border-violet-500/25">
+                                                Q3
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                3: הסקת טיפוסים</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mb-12 w-full">
+                        <div class="flex items-center gap-4 mb-6">
+                            <h3
+                                class="text-2xl font-black text-slate-700 bg-white/60 px-4 py-1.5 rounded-xl border border-slate-200/50 shadow-sm">
+                                מועדים מיוחדים</h3>
+                            <div class="h-px bg-slate-300/70 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                            <div
+                                class="bg-white/40 backdrop-blur-md rounded-2xl border-2 border-slate-200/60 p-5 shadow-sm hover:shadow-md hover:bg-white/50 transition-all duration-300">
+                                <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-slate-200/60">
+                                    <h3 class="text-base font-black text-slate-800">מבחן לא ידוע / מועדים מיוחדים</h3>
+                                    <span
+                                        class="bg-slate-200/50 border border-slate-300/30 text-[8px] px-2 py-0.5 rounded-full text-slate-600 font-bold">
+                                        מבחן 12
+                                    </span>
+                                </div>
+                                <div class="space-y-2.5">
+
+                                    <a href="q2_unknown.html" target="_blank"
+                                        class="flex items-center justify-between p-3 rounded-xl border border-white/40 bg-white/50 hover:bg-indigo-50/50 hover:border-indigo-300/30 transition-all duration-200 group cursor-pointer shadow-sm">
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] bg-indigo-500/10 text-indigo-700 border border-indigo-500/25">
+                                                Q2
+                                            </span>
+                                            <span
+                                                class="text-xs font-bold text-slate-700 group-hover:text-slate-900">שאלה
+                                                2: ניהול זיכרון משתנה</span>
+                                        </div>
+                                        <i
+                                            class="fa-solid fa-chevron-left text-slate-400 group-hover:text-slate-600 transition-colors text-[9px]"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Navigation & UI scripts -->
+    <script>
+        // Main SPA View switching logic
+        function showView(viewId) {
+            // Hide all views
+            document.querySelectorAll('.view-container').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Remove active style from top nav buttons
+            document.querySelectorAll('nav button').forEach(el => {
+                el.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100";
+            });
+
+            // Show selected view
+            const targetView = document.getElementById('view-' + viewId);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+
+            // Set active class on navbar button
+            const activeBtn = document.getElementById('navbtn-' + viewId);
+            if (activeBtn) {
+                if (viewId === 'dashboard') {
+                    activeBtn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-sky-50 text-sky-700 border border-sky-200/50";
+                } else if (viewId === 'questions') {
+                    activeBtn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-50 text-emerald-700 border border-emerald-200/50";
+                } else if (viewId === 'exams') {
+                    activeBtn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-violet-50 text-violet-700 border border-violet-200/50";
+                }
+            }
+
+            // Scroll view or body to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+
+</html>
