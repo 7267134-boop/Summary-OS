@@ -12,15 +12,18 @@ def apply_markers(html):
     # 2. Add uniform marker styles to CSS if not present
     marker_css = """
         /* Realistic Highlighter Markers */
-        .marker-yellow { background-image: linear-gradient(104deg, rgba(253,224,71,0.5) 0%, rgba(253,224,71,0.9) 20%, rgba(253,224,71,0.5) 50%, rgba(253,224,71,0.8) 80%, rgba(253,224,71,0.4) 100%); padding: 2px 6px; font-weight: bold; color: inherit; border-radius: 4px 8px 3px 6px / 6px 3px 8px 4px; display: inline; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-        .marker-orange { background-image: linear-gradient(104deg, rgba(253,186,116,0.5) 0%, rgba(253,186,116,0.9) 20%, rgba(253,186,116,0.5) 50%, rgba(253,186,116,0.8) 80%, rgba(253,186,116,0.4) 100%); padding: 2px 6px; font-weight: bold; color: inherit; border-radius: 4px 8px 3px 6px / 6px 3px 8px 4px; display: inline; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-        .marker-title-blue { background-image: linear-gradient(104deg, rgba(191,219,254,0.5) 0%, rgba(191,219,254,0.9) 20%, rgba(191,219,254,0.5) 50%, rgba(191,219,254,0.8) 80%, rgba(191,219,254,0.4) 100%); padding: 4px 10px; font-weight: bold; color: inherit; border-radius: 4px 8px 3px 6px / 6px 3px 8px 4px; display: inline-block; transform: rotate(-0.5deg); }
-        .title-teal { background-image: linear-gradient(104deg, rgba(153,246,228,0.5) 0%, rgba(153,246,228,0.9) 20%, rgba(153,246,228,0.5) 50%, rgba(153,246,228,0.8) 80%, rgba(153,246,228,0.4) 100%); padding: 4px 10px; color: inherit; border-radius: 4px 8px 3px 6px / 6px 3px 8px 4px; display: inline-block; transform: rotate(-0.5deg); }
+        .marker-yellow { background-color: transparent; background-image: linear-gradient(104deg, rgba(253,224,71,0) 0.9%, rgba(253,224,71,0.6) 2.4%, rgba(253,224,71,0.4) 5.8%, rgba(253,224,71,0.45) 50%, rgba(253,224,71,0.3) 93%, rgba(253,224,71,0.5) 96%, rgba(253,224,71,0) 98%); padding: 2px 0.6em; margin: 0 -0.2em; font-weight: bold; color: inherit; border-radius: 3px 5px 3px 5px; display: inline; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+        .marker-orange { background-color: transparent; background-image: linear-gradient(104deg, rgba(253,186,116,0) 0.9%, rgba(253,186,116,0.6) 2.4%, rgba(253,186,116,0.4) 5.8%, rgba(253,186,116,0.45) 50%, rgba(253,186,116,0.3) 93%, rgba(253,186,116,0.5) 96%, rgba(253,186,116,0) 98%); padding: 2px 0.6em; margin: 0 -0.2em; font-weight: bold; color: inherit; border-radius: 3px 5px 3px 5px; display: inline; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+        .marker-title-blue { background-color: transparent; background-image: linear-gradient(104deg, rgba(191,219,254,0) 0.9%, rgba(191,219,254,0.7) 2.4%, rgba(191,219,254,0.5) 5.8%, rgba(191,219,254,0.55) 50%, rgba(191,219,254,0.4) 93%, rgba(191,219,254,0.6) 96%, rgba(191,219,254,0) 98%); padding: 4px 18px; margin: 0 -4px; font-weight: bold; color: inherit; border-radius: 3px 5px 3px 5px; display: inline-block; transform: rotate(-0.5deg); }
+        .title-teal { background-color: transparent; background-image: linear-gradient(104deg, rgba(153,246,228,0) 0.9%, rgba(153,246,228,0.7) 2.4%, rgba(153,246,228,0.5) 5.8%, rgba(153,246,228,0.55) 50%, rgba(153,246,228,0.4) 93%, rgba(153,246,228,0.6) 96%, rgba(153,246,228,0) 98%); padding: 4px 18px; margin: 0 -4px; color: inherit; border-radius: 3px 5px 3px 5px; display: inline-block; transform: rotate(-0.5deg); }
 """
-    if "Realistic Highlighter Markers" not in html:
-        # Remove old Uniform Markers if exists
-        html = re.sub(r'/\* Uniform Markers \*/.*?(?=</style>)', '', html, flags=re.DOTALL)
-        html = html.replace('</style>', marker_css + '\n    </style>')
+    if "Realistic Highlighter Markers" in html:
+        # Update existing markers
+        html = re.sub(r'/\*\s*Realistic Highlighter Markers\s*\*/.*?(?=</style>)', marker_css.strip(), html, flags=re.DOTALL)
+    else:
+        # Remove old Uniform Markers if exists and add new
+        html = re.sub(r'/\*\s*Uniform Markers\s*\*/.*?(?=</style>)', '', html, flags=re.DOTALL)
+        html = html.replace('</style>', marker_css.strip() + '\n    </style>')
 
     # 3. Main Headers (Chapters)
     def replace_main_header(match):
