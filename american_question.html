@@ -1,15 +1,93 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="he" dir="rtl" class="h-full overflow-x-hidden">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>שאלון אינטראקטיבי</title>
+    <title>שאלות אמריקאיות - מערכות הפעלה</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        calmBg: '#f4f7fb',
+                        cardBg: '#ffffff',
+                        textMain: '#334155',
+                        textMuted: '#64748b',
+                        accentSoft: '#38bdf8',
+                        accentStrong: '#0284c7',
+                        accentHover: '#e0f2fe'
+                    },
+                    fontFamily: { sans: ['Heebo', 'Assistant', 'sans-serif'] },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f4f7fb;
+            background-image:
+                radial-gradient(#cbd5e1 1px, transparent 1px),
+                linear-gradient(135deg, #f8fafc 0%, #f0f9ff 50%, #e0f2fe 100%);
+            background-size: 32px 32px, cover;
+            background-attachment: fixed;
+            font-family: 'Heebo', 'Assistant', 'sans-serif';
+        }
+
+        .view-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.35s ease-in-out;
+        }
+
+        .view-container.active {
+            display: flex;
+            opacity: 1;
+            animation: viewFadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes viewFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .animate-shake {
+            animation: errorShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: #ef4444 !important;
         }
 
         .expandable-content {
@@ -21,28 +99,239 @@
 
         .expandable-content.expanded {
             max-height: 2500px;
-            /* Arbitrary large number to allow content to show */
             opacity: 1;
             padding-top: 1rem;
             padding-bottom: 1rem;
         }
 
-        .option-button {
-            transition: all 0.2s ease-in-out;
+        .delay-100 {
+            animation-delay: 100ms;
+        }
+
+        .delay-200 {
+            animation-delay: 200ms;
+        }
+
+        .delay-300 {
+            animation-delay: 300ms;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .slot-item {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #1e293b;
+            scroll-snap-align: center;
         }
     </style>
 </head>
 
-<body class="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">מאגר שאלות ולמידה אינטראקטיבית</h1>
-            <p class="text-lg text-gray-600">לחץ על התשובות כדי לחשוף את ההסברים המלאים (למה נכון ולמה שגוי)</p>
-        </header>
-
-        <!-- Container where all questions will be injected -->
-        <div id="quiz-container" class="space-y-8"></div>
+<body class="text-textMain min-h-screen relative flex flex-col overflow-y-auto">
+    <!-- Background Blobs -->
+    <div
+        class="fixed top-0 right-[-10%] w-96 h-96 bg-sky-300/30 rounded-full filter blur-[100px] animate-blob pointer-events-none z-0">
     </div>
+    <div class="fixed bottom-[20%] left-[-10%] w-80 h-80 bg-indigo-300/25 rounded-full filter blur-[100px] animate-blob pointer-events-none z-0"
+        style="animation-delay: 2s;"></div>
+
+    <!-- Header / Navbar -->
+    <header
+        class="sticky top-0 bg-white/70 backdrop-blur-md border-b border-slate-200/50 z-50 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-white shadow-md">
+                <i class="fa-solid fa-list-check text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-black text-slate-800 tracking-tight leading-none">שאלות אמריקאיות</h1>
+                <p class="text-[10px] text-slate-500 mt-1 font-medium">תרגול שאלות תאורטיות למבחן</p>
+            </div>
+        </div>
+        <nav class="flex items-center gap-1 sm:gap-3">
+            <a href="exams_practice.html"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-100">
+                <i class="fa-solid fa-arrow-right ml-1.5"></i>חזרה ללוח בקרה
+            </a>
+            <button onclick="resetApp()"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-sky-50 text-sky-700 border border-sky-200/50 hover:bg-sky-100 shadow-sm">
+                <i class="fa-solid fa-rotate-right ml-1.5"></i> חזור לשאלות
+            </button>
+        </nav>
+    </header>
+
+    <!-- Scoreboard (Fixed to bottom left) -->
+    <div id="scoreboard"
+        class="fixed bottom-6 left-6 bg-white/80 backdrop-blur-lg border border-slate-200 shadow-2xl rounded-2xl p-4 z-40 flex items-center gap-4 transition-all transform translate-y-32 opacity-0">
+        <div class="flex flex-col">
+            <span class="text-xs font-bold text-slate-500">ציון נוכחי</span>
+            <span class="text-2xl font-black text-sky-600 leading-none" id="score-text">0/0</span>
+        </div>
+        <div class="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center text-sky-500">
+            <i class="fa-solid fa-trophy text-xl"></i>
+        </div>
+    </div>
+
+    <main class="flex-grow relative z-10 flex flex-col py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+
+        <!-- VIEW 1: SPLASH (Choose mode) -->
+        <section id="view-splash" class="view-container active flex-col items-center justify-center min-h-[60vh]">
+            <div class="text-center mb-12 animate-fade-in-up">
+                <h2
+                    class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-800 to-fuchsia-600 tracking-tight mb-4">
+                    איך תרצו לתרגל?</h2>
+                <p class="text-lg text-slate-600 font-medium max-w-2xl mx-auto">ישנן 117 שאלות במאגר. תוכלו לבחור לתרגל
+                    כמות אקראית של שאלות מכל החומר, או להתמקד בנושא ספציפי בלבד.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+                <!-- Mode Amount -->
+                <button onclick="showView('amount')"
+                    class="group relative bg-white rounded-3xl p-8 border border-slate-200 shadow-lg hover:shadow-xl hover:border-sky-300 transition-all hover:-translate-y-1 text-right animate-fade-in-up delay-100">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-sky-500 group-hover:text-white transition-all shadow-inner">
+                        <i class="fa-solid fa-dice text-3xl"></i>
+                    </div>
+                    <h3
+                        class="text-2xl font-bold text-slate-800 mb-2 font-sans group-hover:text-sky-600 transition-colors">
+                        תרגול לפי כמות</h3>
+                    <p class="text-slate-500 font-medium">בחרו כמה שאלות אקראיות מכלל הנושאים תרצו לפתור (למשל סימולציה
+                        של 20 שאלות).</p>
+                </button>
+                <!-- Mode Topic -->
+                <button onclick="showView('topic')"
+                    class="group relative bg-white rounded-3xl p-8 border border-slate-200 shadow-lg hover:shadow-xl hover:border-fuchsia-300 transition-all hover:-translate-y-1 text-right animate-fade-in-up delay-200">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-fuchsia-500 group-hover:text-white transition-all shadow-inner">
+                        <i class="fa-solid fa-layer-group text-3xl"></i>
+                    </div>
+                    <h3
+                        class="text-2xl font-bold text-slate-800 mb-2 font-sans group-hover:text-fuchsia-600 transition-colors">
+                        תרגול לפי נושא</h3>
+                    <p class="text-slate-500 font-medium">בחרו נושא ספציפי מהקורס (למשל זיכרון וירטואלי) ופתרו את כל
+                        השאלות הרלוונטיות אליו בלבד.</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW 2: AMOUNT -->
+        <section id="view-amount" class="view-container flex-col items-center justify-center min-h-[60vh]">
+            <div class="text-center mb-10">
+                <button onclick="showView('splash')"
+                    class="text-slate-400 hover:text-slate-700 font-bold mb-4 flex items-center justify-center gap-2 transition-colors mx-auto"><i
+                        class="fa-solid fa-arrow-right"></i> חזרה</button>
+                <h2 class="text-3xl font-black text-slate-800 mb-2">כמה שאלות תרצו לתרגל?</h2>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center gap-8 w-full max-w-xl mx-auto mt-6">
+                <!-- Slot Machine Wheels -->
+                <div class="flex items-center gap-3 bg-white p-6 rounded-[2rem] border-[6px] border-slate-800 shadow-xl relative overflow-hidden order-2 md:order-1"
+                    style="box-shadow: inset 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 20px 25px -5px rgb(0 0 0 / 0.1);">
+                    <div
+                        class="absolute top-1/2 left-0 right-0 h-[80px] -translate-y-1/2 border-y-4 border-red-500/40 bg-red-50/20 pointer-events-none z-10 rounded-lg mx-2">
+                    </div>
+
+                    <div class="flex gap-3 relative z-0" dir="ltr">
+                        <!-- Hundreds -->
+                        <div id="slot-100"
+                            class="w-24 h-40 overflow-y-scroll snap-y snap-mandatory scroll-smooth hide-scrollbar bg-slate-50 rounded-xl border-2 border-slate-200 py-10 shadow-inner">
+                        </div>
+                        <!-- Tens -->
+                        <div id="slot-10"
+                            class="w-24 h-40 overflow-y-scroll snap-y snap-mandatory scroll-smooth hide-scrollbar bg-slate-50 rounded-xl border-2 border-slate-200 py-10 shadow-inner">
+                        </div>
+                        <!-- Units -->
+                        <div id="slot-1"
+                            class="w-24 h-40 overflow-y-scroll snap-y snap-mandatory scroll-smooth hide-scrollbar bg-slate-50 rounded-xl border-2 border-slate-200 py-10 shadow-inner">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Randomize Lever -->
+                <button onclick="randomizeSlotMachine()"
+                    class="group relative flex flex-col items-center justify-center gap-3 w-32 h-48 bg-gradient-to-b from-slate-700 to-slate-900 rounded-2xl shadow-xl shadow-slate-300 hover:-translate-y-1 hover:shadow-2xl transition-all order-1 md:order-2 border-b-8 border-slate-900 active:border-b-0 active:translate-y-2">
+                    <div
+                        class="absolute -top-6 w-10 h-10 bg-red-500 rounded-full border-4 border-white shadow-lg transition-transform group-active:scale-90">
+                    </div>
+                    <div class="w-3 h-12 bg-slate-400 absolute -top-4 rounded-t-lg transition-transform"></div>
+                    <i class="fa-solid fa-shuffle text-white text-3xl mt-6"></i>
+                    <span class="text-white font-black text-sm uppercase tracking-wider">הגרל!</span>
+                </button>
+            </div>
+
+            <button onclick="startSlotMachineQuiz()"
+                class="mt-14 bg-sky-500 text-white px-12 py-5 rounded-2xl font-black text-2xl hover:bg-sky-600 shadow-xl shadow-sky-500/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 w-full max-w-sm mx-auto">
+                בוא נצא לדרך! <i class="fa-solid fa-rocket"></i>
+            </button>
+        </section>
+
+        <!-- VIEW 3: TOPIC -->
+        <section id="view-topic" class="view-container flex-col w-full">
+            <div class="text-center mb-10">
+                <button onclick="showView('splash')"
+                    class="text-slate-400 hover:text-slate-700 font-bold mb-4 flex items-center justify-center gap-2 transition-colors mx-auto"><i
+                        class="fa-solid fa-arrow-right"></i> חזרה</button>
+                <h2 class="text-3xl font-black text-slate-800 mb-2">בחרו נושא לתרגול</h2>
+                <p class="text-slate-500">השאלות מוינו אוטומטית לפי תוכן השאלה וההסבר.</p>
+            </div>
+            <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Topics injected dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- VIEW 4: QUIZ -->
+        <section id="view-quiz" class="view-container flex-col w-full">
+            <div id="quiz-header"
+                class="mb-8 text-center md:text-right flex flex-col md:flex-row justify-between items-center bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-800" id="quiz-title">מבחן מעורב</h2>
+                    <p class="text-slate-500 font-medium" id="quiz-subtitle">שאלה 1 מתוך 20</p>
+                </div>
+            </div>
+            <div id="quiz-container" class="space-y-8"></div>
+
+            <div class="mt-12 text-center" id="quiz-finish" style="display:none;">
+                <div
+                    class="inline-block bg-white p-8 rounded-3xl shadow-xl border border-slate-200 text-center relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-100 rounded-full blur-2xl z-0"></div>
+                    <i class="fa-solid fa-flag-checkered text-5xl text-emerald-500 mb-4 relative z-10"></i>
+                    <h2 class="text-3xl font-black text-slate-800 mb-2 relative z-10">כל הכבוד, סיימתם!</h2>
+                    <p class="text-lg text-slate-600 mb-6 relative z-10">הציון הסופי שלכם הוא <strong
+                            id="final-score-text" class="text-sky-600 text-2xl">0/0</strong>.</p>
+                    <button onclick="resetApp()"
+                        class="relative z-10 bg-gradient-to-r from-sky-500 to-indigo-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 transition-all hover:-translate-y-1">חזרה
+                        לתפריט</button>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script>
         // מאגר השאלות. כל שאלה חדשה מתווספת לכאן בלי למחוק את הקודמות.
@@ -1329,75 +1618,407 @@
             }
         ];
 
-        function renderQuestions() {
-            const container = document.getElementById('quiz-container');
-            container.innerHTML = '';
+        // ==========================================
+        // SMART AUTO-CATEGORIZER
+        // ==========================================
+        function categorizeQuestion(q) {
+            const text = (q.text + " " + (q.generalExplanation || "")).toLowerCase();
+            let matchedTopics = [];
 
-            questionsData.forEach((q, index) => {
-                const questionCard = document.createElement('div');
-                questionCard.className = 'bg-white rounded-2xl shadow-lg p-6 border-t-4 border-blue-500';
+            // 1. זיהוי "שחקני מפתח" (Killer Keywords) - זיהוי מיידי לפי מהות השאלה
+            // מסודר מהנושאים הכי ספציפיים לנושאים הכלליים יותר
+            if (text.includes("וירטואליזציה") || text.includes("virtualization") || text.includes("hypervisor") || text.includes("popek") || text.includes("paravirtualization") || text.includes("bare metal") || text.includes("vmm") || text.includes("hosted")) matchedTopics.push("וירטואליזציה וענן");
+            if (text.includes("deadlock") || text.includes("קיפאון") || text.includes("בנקאי") || text.includes("banker") || text.includes("coffman")) matchedTopics.push("תופעת הקיפאון (Deadlocks)");
+            if (text.includes("i-node") || text.includes("inode") || text.includes("hard link") || text.includes("symbolic link") || text.includes("ספרייה") || text.includes("מערכת קבצים") || text.includes("file system")) matchedTopics.push("מערכות קבצים");
+            if (text.includes("tlb") || text.includes("page fault") || text.includes("thrashing") || text.includes("demand paging") || text.includes("prepaging") || text.includes("working set") || text.includes("belady") || text.includes("lru") || text.includes("fifo") || text.includes("inverted page table") || text.includes("דפדוף")) matchedTopics.push("זיכרון וירטואלי ודפדוף");
+            if (text.includes("swapping") || text.includes("paging") || text.includes("page table") || text.includes("טבלת דפים") || text.includes("mmu") || text.includes("segmentation") || text.includes("קיטוע")) matchedTopics.push("ניהול זיכרון פיזי");
+            if (text.includes("סמפור") || text.includes("semaphore") || text.includes("monitor") || text.includes("מוניטור") || text.includes("mutex") || text.includes("critical section") || text.includes("קטע קריטי") || text.includes("barrier") || text.includes("מחסום") || text.includes("race condition") || text.includes("מנעול") || text.includes("spin lock")) matchedTopics.push("סנכרון ומניעה הדדית");
+            if (text.includes("תזמון") || text.includes("scheduling") || text.includes("scheduler") || text.includes("fcfs") || text.includes("sjf") || text.includes("srtf") || text.includes("round robin") || text.includes("timeslice") || text.includes("קוונטום") || text.includes("turnaround") || text.includes("זמן סבב")) matchedTopics.push("תזמון מעבד (CPU Scheduling)");
+            if (text.includes("קלט/פלט") || text.includes("i/o") || text.includes("dma") || text.includes("spooling") || text.includes("device driver") || text.includes("דיסק מגנטי") || text.includes("sstf") || text.includes("c-look") || text.includes("פסיקות חומרה") || text.includes("timer")) matchedTopics.push("קלט/פלט ומערכות חומרה");
+            if (text.includes("zombie") || text.includes("orphan") || text.includes("fork") || text.includes("exec") || text.includes("thread") || text.includes("תהליכון") || text.includes("ipc") || text.includes("rendezvous") || text.includes("mailbox") || text.includes("signal") || text.includes("סיגנל") || text.includes("context switch") || text.includes("pcb")) matchedTopics.push("ניהול תהליכים ותקשורת");
+            if (text.includes("domain") || text.includes("acl") || text.includes("capability") || text.includes("c-list") || text.includes("מנגנוני הגנה")) matchedTopics.push("אבטחה ומנגנוני הגנה");
+            if (text.includes("linux") || text.includes("xv6") || text.includes("docker") || text.includes("namespace") || text.includes("פקודת ps")) matchedTopics.push("לינוקס, xv6 וקונטיינרים");
+            if (text.includes("system call") || text.includes("קריאת מערכת") || text.includes("microkernel") || text.includes("monolithic") || text.includes("kernel mode") || text.includes("user mode") || text.includes("trap")) matchedTopics.push("מבוא, חומרה ומבנה המערכת");
 
-                const questionTitle = document.createElement('h2');
-                questionTitle.className = 'text-xl font-semibold text-gray-800 mb-6 whitespace-pre-line';
-                questionTitle.innerText = q.text;
-                questionCard.appendChild(questionTitle);
+            // 2. Fallback (ספירת מילים) עבור שאלות עמומות שלא הכילו מונח מובהק
+            if (matchedTopics.length === 0) {
+                const topics = {
+                    "מבוא, חומרה ומבנה המערכת": ["מבוא", "kernel", "מערכת הפעלה"],
+                    "ניהול תהליכים ותקשורת": ["תהליך", "process"],
+                    "ניהול זיכרון פיזי": ["זיכרון", "memory"],
+                    "מערכות קבצים": ["קובץ", "דיסק"],
+                };
 
-                const optionsList = document.createElement('div');
-                optionsList.className = 'space-y-4 mb-6';
-
-                const generalExpDiv = document.createElement('div');
-                generalExpDiv.className = 'expandable-content bg-blue-50 text-blue-900 p-0 rounded-lg mt-6 text-base font-medium';
-                generalExpDiv.innerHTML = `<div class="p-4 border-r-4 border-blue-500"><strong>הסבר כללי לעומק: </strong><br><br>${q.generalExplanation.replace(/\n/g, '<br>')}</div>`;
-
-                q.options.forEach(opt => {
-                    const optionContainer = document.createElement('div');
-                    optionContainer.className = 'flex flex-col';
-
-                    const optionBtn = document.createElement('button');
-                    optionBtn.className = 'option-button w-full text-right p-4 rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-gray-100 font-semibold text-gray-700 focus:outline-none';
-                    optionBtn.innerText = opt.text;
-
-                    const specificExpDiv = document.createElement('div');
-                    specificExpDiv.className = 'expandable-content mt-2 text-sm font-medium rounded-lg p-0';
-
-                    if (opt.isCorrect) {
-                        specificExpDiv.classList.add('bg-green-100', 'text-green-800');
-                        specificExpDiv.innerHTML = `<div class="p-3 border-r-4 border-green-500">${opt.explanation}</div>`;
-                    } else {
-                        specificExpDiv.classList.add('bg-red-100', 'text-red-800');
-                        specificExpDiv.innerHTML = `<div class="p-3 border-r-4 border-red-500">${opt.explanation}</div>`;
+                let bestTopic = "נושאים כלליים (מעורב)";
+                let maxScore = 0;
+                for (const [topic, keywords] of Object.entries(topics)) {
+                    let score = 0;
+                    for (const kw of keywords) {
+                        score += text.split(kw).length - 1;
                     }
+                    if (score > maxScore) { maxScore = score; bestTopic = topic; }
+                }
+                matchedTopics.push(bestTopic);
+            }
 
-                    optionBtn.onclick = () => {
-                        // Reveal specific explanation
-                        specificExpDiv.classList.add('expanded');
+            return [...new Set(matchedTopics)];
+        }
 
-                        // Style button based on correct/incorrect
-                        if (opt.isCorrect) {
-                            optionBtn.classList.replace('border-gray-200', 'border-green-500');
-                            optionBtn.classList.replace('bg-gray-50', 'bg-green-50');
-                        } else {
-                            optionBtn.classList.replace('border-gray-200', 'border-red-500');
-                            optionBtn.classList.replace('bg-gray-50', 'bg-red-50');
-                        }
+        // Apply categorization to all
+        const topicCounts = {};
+        questionsData.forEach(q => {
+            q.topics = categorizeQuestion(q);
+            q.topics.forEach(t => {
+                topicCounts[t] = (topicCounts[t] || 0) + 1;
+            });
+        });
 
-                        // Reveal general explanation
-                        generalExpDiv.classList.add('expanded');
-                    };
+        // ==========================================
+        // APP LOGIC & STATE
+        // ==========================================
+        let currentQuestions = [];
+        let score = 0;
+        let totalAttempts = 0;
+        let questionsCompleted = 0;
+        let isPracticeByAmount = false;
+        let currentQuestionIndex = 0;
 
-                    optionContainer.appendChild(optionBtn);
-                    optionContainer.appendChild(specificExpDiv);
-                    optionsList.appendChild(optionContainer);
-                });
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
-                questionCard.appendChild(optionsList);
-                questionCard.appendChild(generalExpDiv);
-                container.appendChild(questionCard);
+            if (viewId === 'topic') renderTopicCards();
+            if (viewId === 'amount') initSlotMachine();
+        }
+
+        // ==========================================
+        // SLOT MACHINE LOGIC
+        // ==========================================
+        function populateSlot(id, max) {
+            const el = document.getElementById(id);
+            if (el.children.length > 0) return; // Already populated
+            for (let i = 0; i <= max; i++) {
+                const div = document.createElement('div');
+                div.className = 'slot-item';
+                div.innerText = i;
+                el.appendChild(div);
+            }
+        }
+
+        function initSlotMachine() {
+            populateSlot('slot-100', 9);
+            populateSlot('slot-10', 9);
+            populateSlot('slot-1', 9);
+
+            // Default to 0 questions
+            setTimeout(() => {
+                document.getElementById('slot-100').scrollTo({ top: 0 });
+                document.getElementById('slot-10').scrollTo({ top: 0 });
+                document.getElementById('slot-1').scrollTo({ top: 0 });
+            }, 100);
+        }
+
+        function getSlotValue() {
+            const getVal = (id) => {
+                const el = document.getElementById(id);
+                return Math.round(el.scrollTop / 80);
+            };
+            return getVal('slot-100') * 100 + getVal('slot-10') * 10 + getVal('slot-1');
+        }
+
+        function randomizeSlotMachine() {
+            const total = questionsData.length;
+            const rand = Math.floor(Math.random() * total) + 1;
+
+            const h = Math.floor(rand / 100);
+            const t = Math.floor((rand % 100) / 10);
+            const u = rand % 10;
+            const maxH = Math.floor(total / 100);
+
+            // Random spin animation before settling
+            document.getElementById('slot-100').scrollTo({ top: Math.floor(Math.random() * 10) * 80, behavior: 'smooth' });
+            document.getElementById('slot-10').scrollTo({ top: Math.floor(Math.random() * 10) * 80, behavior: 'smooth' });
+            document.getElementById('slot-1').scrollTo({ top: Math.floor(Math.random() * 10) * 80, behavior: 'smooth' });
+
+            setTimeout(() => { document.getElementById('slot-100').scrollTo({ top: h * 80, behavior: 'smooth' }); }, 300);
+            setTimeout(() => { document.getElementById('slot-10').scrollTo({ top: t * 80, behavior: 'smooth' }); }, 500);
+            setTimeout(() => { document.getElementById('slot-1').scrollTo({ top: u * 80, behavior: 'smooth' }); }, 700);
+        }
+
+        function startSlotMachineQuiz() {
+            let val = getSlotValue();
+            if (val === 0) {
+                const container = document.querySelector('#view-amount .bg-white.p-6.rounded-\\[2rem\\]');
+                if (container) {
+                    container.classList.add('animate-shake');
+                    setTimeout(() => container.classList.remove('animate-shake'), 400);
+                }
+                return;
+            }
+            startQuiz(val, null);
+        }
+
+
+        function renderTopicCards() {
+            const grid = document.getElementById('topics-grid');
+            grid.innerHTML = '';
+            const sortedTopics = Object.keys(topicCounts).sort((a, b) => {
+                // sort by number of questions (descending)
+                return topicCounts[b] - topicCounts[a];
+            });
+
+            sortedTopics.forEach((topic, idx) => {
+                const count = topicCounts[topic];
+                const btn = document.createElement('button');
+                btn.className = 'group text-right bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-fuchsia-400 hover:shadow-md transition-all animate-fade-in-up flex flex-col md:flex-row justify-between items-start md:items-center gap-4';
+                btn.style.animationDelay = `${(idx % 5) * 50}ms`;
+                btn.innerHTML = `
+                    <h3 class="text-xl font-bold text-slate-800 group-hover:text-fuchsia-600 transition-colors">${topic}</h3>
+                    <span class="bg-fuchsia-50 text-fuchsia-600 font-bold px-3 py-1.5 rounded-lg text-sm whitespace-nowrap">${count} שאלות</span>
+                `;
+                btn.onclick = () => startQuiz('all', topic);
+                grid.appendChild(btn);
             });
         }
 
-        // Initialize quiz rendering
-        renderQuestions();
+        function shuffleArray(array) {
+            let curId = array.length, randomId;
+            while (0 !== curId) {
+                randomId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randomId];
+                array[randomId] = tmp;
+            }
+            return array;
+        }
+
+        function resetApp() {
+            score = 0;
+            totalAttempts = 0;
+            questionsCompleted = 0;
+            updateScoreboard();
+            document.getElementById('scoreboard').classList.replace('translate-y-0', 'translate-y-32');
+            document.getElementById('scoreboard').classList.replace('opacity-100', 'opacity-0');
+            document.getElementById('quiz-finish').style.display = 'none';
+            showView('splash');
+        }
+
+        function updateScoreboard() {
+            document.getElementById('score-text').innerText = `${score}/${totalAttempts}`;
+            document.getElementById('final-score-text').innerText = `${score}/${totalAttempts}`;
+
+            if (questionsCompleted === currentQuestions.length && currentQuestions.length > 0) {
+                document.getElementById('quiz-finish').style.display = 'block';
+            }
+        }
+
+        function startQuiz(amount, topic) {
+            let pool = [...questionsData];
+
+            if (topic) {
+                isPracticeByAmount = false;
+                pool = pool.filter(q => q.topics && q.topics.includes(topic));
+                document.getElementById('quiz-title').innerText = topic;
+            } else {
+                isPracticeByAmount = true;
+                document.getElementById('quiz-title').innerText = "תרגול לפי כמות";
+            }
+
+            pool = shuffleArray(pool);
+
+            if (amount !== 'all') {
+                if (amount > pool.length) {
+                    let expandedPool = [...pool];
+                    while (expandedPool.length < amount) {
+                        expandedPool = expandedPool.concat(shuffleArray([...questionsData]));
+                    }
+                    pool = expandedPool.slice(0, amount);
+                } else {
+                    pool = pool.slice(0, amount);
+                }
+            }
+
+            currentQuestions = pool;
+            document.getElementById('quiz-subtitle').innerText = `סה"כ ${pool.length} שאלות`;
+
+            score = 0;
+            totalAttempts = 0;
+            questionsCompleted = 0;
+            currentQuestionIndex = 0;
+            updateScoreboard();
+
+            // Show scoreboard pop-up effect
+            setTimeout(() => {
+                const sb = document.getElementById('scoreboard');
+                sb.classList.replace('translate-y-32', 'translate-y-0');
+                sb.classList.replace('opacity-0', 'opacity-100');
+            }, 300);
+
+            renderQuestionsGrid();
+            if (isPracticeByAmount) {
+                goToQuestion(0);
+            }
+            showView('quiz');
+        }
+
+        function goToQuestion(index) {
+            const cards = document.querySelectorAll('.question-card');
+            if (cards[currentQuestionIndex]) {
+                cards[currentQuestionIndex].style.display = 'none';
+            }
+            currentQuestionIndex = index;
+            const target = cards[currentQuestionIndex];
+            if (target) {
+                target.style.display = 'block';
+                target.classList.add('animate-fade-in-up');
+            }
+            document.getElementById('quiz-subtitle').innerText = `שאלה ${index + 1} מתוך ${currentQuestions.length}`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderQuestionsGrid() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            currentQuestions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card bg-white rounded-3xl shadow-lg shadow-slate-200/50 p-6 sm:p-8 border border-slate-200 relative overflow-hidden group';
+                if (isPracticeByAmount) {
+                    card.style.display = 'none';
+                }
+
+                const badgesContainer = document.createElement('div');
+                badgesContainer.className = 'absolute top-0 right-6 flex flex-wrap gap-2 pt-0';
+                (q.topics || []).forEach(t => {
+                    const badge = document.createElement('div');
+                    badge.className = 'bg-sky-100 text-sky-700 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-b-lg border-b border-x border-sky-200 shadow-sm whitespace-nowrap';
+                    badge.innerText = t;
+                    badgesContainer.appendChild(badge);
+                });
+                card.appendChild(badgesContainer);
+
+                let cleanText = q.text;
+                const indexA = cleanText.search(/(?:^|\n)\s*א\./);
+                const indexB = cleanText.search(/(?:^|\n)\s*ב\./);
+                if (indexA !== -1 && indexB !== -1 && indexA < indexB) {
+                    cleanText = cleanText.substring(0, indexA).trim();
+                }
+
+                const headerRow = document.createElement('div');
+                headerRow.className = 'flex items-start gap-4 mb-6 mt-4';
+                headerRow.innerHTML = `
+                    <div class="w-10 h-10 shrink-0 bg-slate-100 rounded-xl flex items-center justify-center font-black text-slate-500 border border-slate-200">
+                        ${index + 1}
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 leading-relaxed pt-1 whitespace-pre-line">${cleanText}</h3>
+                `;
+                card.appendChild(headerRow);
+
+                const optionsList = document.createElement('div');
+                optionsList.className = 'space-y-3 ml-0 sm:ml-14';
+
+                const generalExpDiv = document.createElement('div');
+                generalExpDiv.className = 'expandable-content bg-sky-50 text-sky-900 p-0 rounded-xl mt-6 text-sm font-medium ml-0 sm:ml-14';
+                const safeGenExp = q.generalExplanation ? q.generalExplanation.replace(/\\n/g, '<br>') : 'אין הסבר כללי לשאלה זו.';
+                generalExpDiv.innerHTML = `<div class="p-5 border-r-4 border-sky-500"><strong class="text-base text-sky-700 block mb-2"><i class="fa-solid fa-lightbulb mr-1"></i> הסבר כללי לעומק:</strong><p class="leading-relaxed whitespace-pre-line">${safeGenExp}</p></div>`;
+
+                let questionCorrectlyAnswered = false;
+                let clickedOptions = new Set();
+
+                q.options.forEach(opt => {
+                    const optContainer = document.createElement('div');
+                    optContainer.className = 'flex flex-col';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'option-button w-full text-right p-4 rounded-xl border-2 border-slate-100 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 font-bold text-slate-700 focus:outline-none flex items-start gap-3 transition-all';
+                    btn.innerHTML = `<div class="w-6 h-6 shrink-0 rounded-full border-2 border-slate-300 flex items-center justify-center mt-0.5 btn-radio"></div><span class="flex-grow pt-0.5">${opt.text}</span>`;
+
+                    const specificExpDiv = document.createElement('div');
+                    specificExpDiv.className = 'expandable-content mt-2 text-sm font-medium rounded-xl p-0';
+
+                    if (opt.isCorrect) {
+                        specificExpDiv.classList.add('bg-emerald-50', 'text-emerald-800');
+                        specificExpDiv.innerHTML = `<div class="p-4 border-r-4 border-emerald-500"><i class="fa-solid fa-check-circle mr-1 text-emerald-600"></i> ${opt.explanation}</div>`;
+                    } else {
+                        specificExpDiv.classList.add('bg-red-50', 'text-red-800');
+                        specificExpDiv.innerHTML = `<div class="p-4 border-r-4 border-red-500"><i class="fa-solid fa-times-circle mr-1 text-red-600"></i> ${opt.explanation}</div>`;
+                    }
+
+                    btn.onclick = () => {
+                        if (clickedOptions.has(opt.id)) return;
+                        clickedOptions.add(opt.id);
+
+                        if (!questionCorrectlyAnswered) {
+                            totalAttempts++;
+                        }
+
+                        const radio = btn.querySelector('.btn-radio');
+
+                        if (opt.isCorrect) {
+                            if (!questionCorrectlyAnswered) {
+                                score++;
+                                questionsCompleted++;
+                                questionCorrectlyAnswered = true;
+                                generalExpDiv.classList.add('expanded');
+                            }
+
+                            btn.classList.remove('hover:bg-slate-100', 'hover:border-slate-300');
+                            btn.classList.replace('border-slate-100', 'border-emerald-500');
+                            btn.classList.replace('bg-slate-50', 'bg-emerald-50');
+                            btn.classList.replace('text-slate-700', 'text-emerald-800');
+                            btn.classList.add('shadow-md', 'scale-[1.01]');
+                            radio.classList.replace('border-slate-300', 'border-emerald-500');
+                            radio.classList.add('bg-emerald-500');
+                            radio.innerHTML = '<i class="fa-solid fa-check text-white text-xs"></i>';
+                        } else {
+                            btn.classList.remove('hover:bg-slate-100', 'hover:border-slate-300');
+                            btn.classList.replace('border-slate-100', 'border-red-500');
+                            btn.classList.replace('bg-slate-50', 'bg-red-50');
+                            btn.classList.replace('text-slate-700', 'text-red-800');
+                            radio.classList.replace('border-slate-300', 'border-red-500');
+                            radio.classList.add('bg-red-500');
+                            radio.innerHTML = '<i class="fa-solid fa-xmark text-white text-xs"></i>';
+                        }
+
+                        updateScoreboard();
+                        specificExpDiv.classList.add('expanded');
+                    };
+
+                    optContainer.appendChild(btn);
+                    optContainer.appendChild(specificExpDiv);
+                    optionsList.appendChild(optContainer);
+                });
+
+                card.appendChild(optionsList);
+                card.appendChild(generalExpDiv);
+
+                if (isPracticeByAmount) {
+                    const navDiv = document.createElement('div');
+                    navDiv.className = 'mt-10 flex flex-col sm:flex-row justify-between items-center border-t-2 border-slate-100 pt-6 gap-4';
+
+                    const prevBtn = document.createElement('button');
+                    prevBtn.className = 'w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 transition-all ' + (index === 0 ? 'invisible' : '');
+                    prevBtn.innerHTML = '<i class="fa-solid fa-arrow-right ml-2"></i> לשאלה הקודמת';
+                    prevBtn.onclick = () => { goToQuestion(index - 1); };
+
+                    const nextBtn = document.createElement('button');
+                    nextBtn.className = 'w-full sm:w-auto px-10 py-4 rounded-xl font-black text-white bg-sky-500 hover:bg-sky-600 shadow-xl shadow-sky-500/30 transition-all transform hover:-translate-y-1 text-lg ' + (index === currentQuestions.length - 1 ? 'invisible' : '');
+                    nextBtn.innerHTML = 'לשאלה הבאה <i class="fa-solid fa-arrow-left mr-2"></i>';
+                    nextBtn.onclick = () => { goToQuestion(index + 1); };
+
+                    navDiv.appendChild(prevBtn);
+                    navDiv.appendChild(nextBtn);
+                    card.appendChild(navDiv);
+                }
+
+                container.appendChild(card);
+            });
+        }
+
+        // Show splash screen directly when loaded
+        showView('splash');
     </script>
 </body>
 
