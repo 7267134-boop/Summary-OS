@@ -20,15 +20,22 @@ THEME_COLORS = {
 }
 
 def read_input_file(path):
-    encodings = ["cp1255", "windows-1255", "utf-8", "utf-16", "utf-16-le"]
+    encodings = ["utf-8", "utf-16-le", "utf-16", "cp1255", "windows-1255", "latin-1"]
+    print(f"\n--- Diagnostic reading for {path} ---")
     for enc in encodings:
         try:
-            with open(path, "r", encoding=enc) as f:
+            with open(path, "r", encoding=enc, errors="ignore") as f:
                 content = f.read()
-                if "מערכות הפעלה" in content:
-                    print(f"Read {path} with encoding: {enc}")
+                is_hebrew_found = "מערכות" in content
+                is_html_found = "html" in content.lower()
+                preview = content[:80].replace('\n', ' ')
+                print(f"Encoding '{enc}': Success! Length={len(content)}, Hebrew 'מערכות'={is_hebrew_found}, HTML={is_html_found}, Preview: {preview}")
+                
+                if len(content) > 1000 and (is_hebrew_found or is_html_found):
+                    print(f"-> Selected Encoding: {enc}")
                     return content, enc
-        except Exception:
+        except Exception as e:
+            print(f"Encoding '{enc}': Failed! Error: {e}")
             continue
     raise ValueError(f"Could not read {path}")
 
@@ -84,30 +91,69 @@ def refactor_card_body(body_html, color):
     body_html = div_pattern.sub(div_replacer, body_html)
     
     # 3. Replace bold text tags with hand-highlighted markers
-    marker_map = {
-        "orange": "yellow",
-        "red": "red",
-        "blue": "blue",
-        "teal": "green",
-        "purple": "purple",
-        "green": "green",
-        "pink": "red",
-        "rose": "red",
-        "cyan": "blue",
-        "indigo": "blue"
-    }
-    m_color = marker_map.get(color, "yellow")
+    # We will support all chapter colors as custom marker classes:
+    # marker-orange, marker-red, marker-blue, marker-teal, marker-purple, marker-green, marker-pink, marker-rose, marker-cyan, marker-indigo
     
+    # Classify bold elements to maintain design hierarchy:
+    
+    # A. Theme-colored bold tags (main concepts, sub-headers)
+    def theme_strong_replacer(match):
+        classes = match.group(1) or ""
+        # Remove old text color class
+        cleaned_classes = re.sub(r'\btext-(?:indigo|blue|teal|purple|green|pink|rose|cyan|orange|amber|red)-[1-9]00\b', '', classes)
+        # Add the unified sub-header marker class (orange)
+        new_classes = f"marker-orange {cleaned_classes}".strip()
+        new_classes = re.sub(r'\s+', ' ', new_classes)
+        return f'<strong class="{new_classes}">'
+        
+    # Matches tags like: <strong class="text-indigo-700 block mb-1"> or <strong class="text-indigo-700">
     body_html = re.sub(
-        r'<strong class="text-indigo-700">',
-        f'<strong class="marker-{m_color}">',
+        r'<strong class="([^"]*text-(?:indigo|blue|teal|purple|green|pink|rose|cyan|orange|amber|red)-[1-9]00[^"]*)">',
+        theme_strong_replacer,
         body_html
     )
+
+    # B. Any other <strong> or <b> tags
+    def catch_all_strong_replacer(match):
+        tag = match.group(1) # 'strong' or 'b'
+        attrs = match.group(2) or ""
+        inner_text = match.group(3)
+        
+        # If it already has a marker class, leave it alone
+        if 'marker-' in attrs:
+            return match.group(0)
+            
+        marker_class = "marker-yellow"
+        # Determine if it looks like a subheader (starts with 1.1.1 or ends with :)
+        clean_text = re.sub(r'<[^>]+>', '', inner_text).strip()
+        if re.match(r'^\d+\.\d+\.\d+', clean_text) or clean_text.endswith(':'):
+            marker_class = "marker-orange"
+            
+        # Add marker
+        if 'class="' in attrs:
+            # Inject into existing class attribute
+            def inject_class(m):
+                cls_content = m.group(1)
+                # Remove old text colors if any
+                cls_content = re.sub(r'\btext-[a-z]+-[1-9]00\b', '', cls_content)
+                return f'class="{marker_class} {cls_content.strip()}"'
+            attrs = re.sub(r'class="([^"]*)"', inject_class, attrs)
+            return f'<{tag}{attrs}>{inner_text}</{tag}>'
+        else:
+            return f'<{tag} class="{marker_class}"{attrs}>{inner_text}</{tag}>'
+
+    body_html = re.sub(r'<(strong|b)([^>]*)>(.*?)</\1>', catch_all_strong_replacer, body_html, flags=re.DOTALL)
     
     return body_html
 
 def main():
-    content, enc = read_input_file(summary_path)
+    original_path = os.path.join(script_dir, "full_summary_original.html")
+    if os.path.exists(original_path):
+        print(f"Reading from backup original file: {original_path}")
+        content, enc = read_input_file(original_path)
+    else:
+        print(f"Reading from summary path: {summary_path}")
+        content, enc = read_input_file(summary_path)
     
     # Extract the main body content
     body_match = re.search(r'<body\b[^>]*>(.*?)</body>', content, re.DOTALL)
@@ -212,8 +258,10 @@ def main():
         # Add Chapter Notebook Header Banner
         refactored_body_parts.append(f"""
         <!-- ================= פרק {chap_num} ================= -->
-        <div class="border-b-4 border-{color}-400 pb-4 mb-8 mt-12">
-            <h2 class="text-2xl font-black text-{color}-800 font-heading">פרק {chap_num}: {chap_name}</h2>
+        <div class="border-b-4 border-blue-400 pb-4 mb-8 mt-12">
+            <h2 class="text-2xl font-black text-blue-800 font-heading">
+                <span class="marker-title-blue">פרק {chap_num}: {chap_name}</span>
+            </h2>
             <p class="text-sm text-slate-500 mt-1">להלן סיכום ממוקד ומקיף של פרק {chap_num} מתוך מדריך הלמידה:</p>
         </div>
         """)
@@ -258,7 +306,7 @@ def main():
             # Add transformed section html
             refactored_body_parts.append(f"""
         <section id="{sec_id}" class="mb-12 scroll-mt-6">
-            <h3 class="title-{color}">{sec_title_full}</h3>
+            <h3 class="title-teal">{sec_title_full}</h3>
             <div class="p-2 md:p-4">
                 {refactored_body}
             </div>
@@ -298,13 +346,13 @@ def main():
         sidebar_html.append(f"""
             <!-- פרק {ch_num} -->
             <div class="mb-4">
-                <h3 class="font-bold text-{color}-700 mb-1 border-b border-{color}-200/80 pb-1">{ch_name}</h3>
+                <h3 class="font-bold text-blue-700 mb-1 border-b border-blue-200/80 pb-1">{ch_name}</h3>
                 <ul class="space-y-1 text-sm list-none pr-2">""")
                 
         for sec in ch_info["sections"]:
             sidebar_html.append(f"""
                     <li>
-                        <a href="#{sec['id']}" class="text-slate-700 hover:text-{color}-700 hover:bg-{color}-50/50 block rounded px-2 py-0.5 transition font-medium">{sec['title']}</a>
+                        <a href="#{sec['id']}" class="text-slate-700 hover:text-blue-700 hover:bg-blue-50/50 block rounded px-2 py-0.5 transition font-medium">{sec['title']}</a>
                     </li>""")
                     
         sidebar_html.append("""
@@ -384,21 +432,42 @@ def main():
         .notebook-page {
             max-width: 900px;
             margin: 0 auto;
-            padding: 40px 90px 60px 40px;
+            padding: 40px 80px 60px 80px;
             background-color: rgba(253, 251, 247, 0.95);
             position: relative;
         }
 
-        .title-orange { color: #c2410c; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(194, 65, 12, 0.2); padding-bottom: 2px; }
-        .title-red { color: #b91c1c; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(185, 28, 28, 0.2); padding-bottom: 2px; }
-        .title-blue { color: #1d4ed8; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(29, 78, 216, 0.2); padding-bottom: 2px; }
-        .title-teal { color: #0f766e; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(15, 118, 110, 0.2); padding-bottom: 2px; }
-        .title-purple { color: #6d28d9; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(109, 40, 217, 0.2); padding-bottom: 2px; }
-        .title-green { color: #15803d; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(21, 128, 61, 0.2); padding-bottom: 2px; }
-        .title-pink { color: #be185d; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(190, 24, 93, 0.2); padding-bottom: 2px; }
-        .title-rose { color: #e11d48; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(225, 29, 72, 0.2); padding-bottom: 2px; }
-        .title-cyan { color: #0891b2; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(8, 145, 178, 0.2); padding-bottom: 2px; }
-        .title-indigo { color: #4338ca; font-weight: 700; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; border-bottom: 3px solid rgba(67, 56, 202, 0.2); padding-bottom: 2px; }
+        @media (max-width: 768px) {
+            .notebook-page {
+                padding: 30px 40px 40px 20px;
+            }
+            .notebook-page::before { right: 20px; }
+            .notebook-page::after { right: 25px; }
+        }
+
+        /* כותרות משניות - סגנון הדגשה מלבני רחב עם הטיה קלה למראה כתיבה ידנית */
+        .title-orange { color: #7c2d12; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(253, 186, 116, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-red { color: #7f1d1d; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(254, 202, 202, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-blue { color: #1e3a8a; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(191, 219, 254, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-teal { color: #115e59; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(153, 246, 228, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-purple { color: #581c87; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(233, 213, 255, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-green { color: #14532d; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(187, 247, 208, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-pink { color: #831843; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(251, 207, 232, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-rose { color: #881337; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(254, 205, 211, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-cyan { color: #164e63; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(165, 243, 252, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+        .title-indigo { color: #312e81; font-weight: 700; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; display: inline-block; background-color: rgba(199, 210, 254, 0.35); padding: 4px 12px; border-radius: 6px; transform: rotate(-0.5deg); }
+
+        /* מרקרים לכותרות ראשיות */
+        .marker-title-orange { background-color: rgba(253, 186, 116, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-red { background-color: rgba(254, 202, 202, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-blue { background-color: rgba(191, 219, 254, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-teal { background-color: rgba(153, 246, 228, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-purple { background-color: rgba(233, 213, 255, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-green { background-color: rgba(187, 247, 208, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-pink { background-color: rgba(251, 207, 232, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-rose { background-color: rgba(254, 205, 211, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-cyan { background-color: rgba(165, 243, 252, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
+        .marker-title-indigo { background-color: rgba(199, 210, 254, 0.35); padding: 4px 14px; border-radius: 6px; display: inline-block; }
 
         .hand-drawn-box {
             border: 2px solid #334155;
@@ -455,37 +524,18 @@ def main():
         }
 
         /* מרקרים מציאותיים */
-        .marker-yellow {
-            background: linear-gradient(104deg, rgba(253, 224, 71, 0) 0.9%, rgba(253, 224, 71, 0.65) 2.4%, rgba(253, 224, 71, 0.55) 5.8%, rgba(253, 224, 71, 0.35) 93%, rgba(253, 224, 71, 0.75) 96%, rgba(253, 224, 71, 0) 98%);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .marker-green {
-            background: linear-gradient(104deg, rgba(134, 239, 172, 0) 0.9%, rgba(134, 239, 172, 0.65) 2.4%, rgba(134, 239, 172, 0.55) 5.8%, rgba(134, 239, 172, 0.25) 93%, rgba(134, 239, 172, 0.75) 96%, rgba(134, 239, 172, 0) 98%);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .marker-blue {
-            background: linear-gradient(104deg, rgba(147, 197, 253, 0) 0.9%, rgba(147, 197, 253, 0.65) 2.4%, rgba(147, 197, 253, 0.55) 5.8%, rgba(147, 197, 253, 0.25) 93%, rgba(147, 197, 253, 0.75) 96%, rgba(147, 197, 253, 0) 98%);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .marker-red {
-            background: linear-gradient(104deg, rgba(254, 202, 202, 0) 0.9%, rgba(254, 202, 202, 0.65) 2.4%, rgba(254, 202, 202, 0.55) 5.8%, rgba(254, 202, 202, 0.25) 93%, rgba(254, 202, 202, 0.75) 96%, rgba(254, 202, 202, 0) 98%);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-            color: #000;
-        }
+        /* מרקרים מציאותיים בסגנון הדגשה מלבני עגול - התאמה לתמונה המצורפת */
+        .marker-yellow { background-color: rgba(253, 224, 71, 0.45); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #1e293b; display: inline; }
+        .marker-orange { background-color: rgba(253, 186, 116, 0.45); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #7c2d12; display: inline; }
+        .marker-red { background-color: rgba(254, 202, 202, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #7f1d1d; display: inline; }
+        .marker-blue { background-color: rgba(191, 219, 254, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #1e3a8a; display: inline; }
+        .marker-teal { background-color: rgba(153, 246, 228, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #115e59; display: inline; }
+        .marker-purple { background-color: rgba(233, 213, 255, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #581c87; display: inline; }
+        .marker-green { background-color: rgba(187, 247, 208, 0.6); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #14532d; display: inline; }
+        .marker-pink { background-color: rgba(251, 207, 232, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #831843; display: inline; }
+        .marker-rose { background-color: rgba(254, 205, 211, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #881337; display: inline; }
+        .marker-cyan { background-color: rgba(167, 243, 254, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #164e63; display: inline; }
+        .marker-indigo { background-color: rgba(199, 210, 254, 0.5); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #312e81; display: inline; }
 
         code {
             font-family: 'Consolas', 'Courier New', monospace;
