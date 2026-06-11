@@ -455,9 +455,11 @@
         }
 
     </style>
+    <script src="theme-manager.js"></script>
 </head>
 
 <body class="text-slate-800 h-screen flex overflow-hidden">
+
 
     <!-- Sidebar Navigation -->
     <aside class="w-80 bg-darker text-slate-300 flex flex-col h-full shadow-2xl z-20 flex-shrink-0 border-l border-slate-800">
@@ -504,7 +506,7 @@
             </div>
                 <div class="relative group/nav mb-1">
                 <button onclick="showTab('ipc')" id="btn-ipc" class="nav-btn">
-                    <span>🔌 2.3 תקשורת בין תהליכים</span>
+                    <span>🔌 2.4 תקשורת בין תהליכים (IPC)</span>
                 </button>
                 <button onclick="showQuestions('ipc', 'תקשורת בין תהליכים', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
                     ❓
@@ -512,7 +514,7 @@
             </div>
                 <div class="relative group/nav mb-1">
                 <button onclick="showTab('scheduling')" id="btn-scheduling" class="nav-btn">
-                    <span>🧠 2.4 תזמון תהליכים (Scheduling)</span>
+                    <span>🧠 2.5 תזמון תהליכים (Scheduling)</span>
                 </button>
                 <button onclick="showQuestions('scheduling', 'תזמון תהליכים (Scheduling)', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
                     ❓
@@ -520,17 +522,17 @@
             </div>
                 <div class="relative group/nav mb-1">
                 <button onclick="showTab('classic-sync')" id="btn-classic-sync" class="nav-btn">
-                    <span>🍽️ 2.5 בעיות סנכרון קלאסיות</span>
+                    <span>🍽️ 2.6 בעיות סנכרון קלאסיות</span>
                 </button>
-                <button onclick="showQuestions('classic-sync', '️ 2.5 בעיות סנכרון קלאסיות', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
+                <button onclick="showQuestions('classic-sync', '️ 2.6 בעיות סנכרון קלאסיות', event)" class="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 group-hover/nav:text-slate-200 hover:text-white flex items-center justify-center text-xs font-bold transition-all border border-slate-700/50 shadow-sm cursor-pointer z-10" title="שאלות מנחות">
                     ❓
                 </button>
             </div>
                 <button onclick="showTab('glossary-concepts')" id="btn-glossary-concepts" class="nav-btn">
-                    <span>📖 2.6 סיכום מושגים</span>
+                    <span>📖 2.7 סיכום מושגים</span>
                 </button>
                 <button onclick="showTab('glossary-questions')" id="btn-glossary-questions" class="nav-btn">
-                    <span>❓ 2.7 שאלות חזרה ובעיות פתורות</span>
+                    <span>❓ 2.8 שאלות חזרה ובעיות פתורות</span>
                 </button>
             </div>
         </div>
@@ -538,7 +540,7 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto scroll-smooth bg-white relative">
-        <div class="max-w-5xl mx-auto p-10 lg:p-16 pb-32">
+        <div class="max-w-4xl mx-auto p-10 lg:p-16 pb-32">
 
             <!-- ==========================================
                  PART 2.0: CPU ARCHITECTURE
@@ -813,54 +815,90 @@
                         כדי לנהל את המעברים המהירים, מערכת ההפעלה מתייחסת לכל תהליך כנמצא באחד ממצבים מוגדרים מראש. תרשים של מודל שלושת המצבים הבסיסי:
                     </p>
 
-                    <!-- Responsive visual diagram -->
-                    <div class="bg-slate-900 text-slate-100 p-6 rounded-2xl overflow-x-auto shadow-xl mb-6 flex flex-col items-center justify-center font-mono text-sm relative min-w-max border border-slate-800" dir="ltr">
+                    <!-- Interactive State Machine Simulator -->
+                    <div class="bg-slate-900 text-slate-100 p-6 rounded-2xl shadow-xl mb-6 border border-slate-800 flex flex-col items-center" id="state-machine-sim" dir="ltr">
                         
-                        <!-- Event 2 -->
-                        <div class="text-indigo-300 mb-1 text-center pr-12 text-xs">
-                            (2. המתזמן בחר תהליך אחר)
+                        <div class="relative w-full max-w-[650px] h-[300px] mx-auto bg-slate-950 overflow-hidden rounded-xl border border-slate-800" id="sm-diagram">
+                            <!-- Edges (SVG for lines) -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none" id="sm-edges">
+                                <defs>
+                                    <marker id="arrow-sm" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+                                    </marker>
+                                </defs>
+                                <!-- Running -> Ready -->
+                                <line x1="210" y1="60" x2="440" y2="60" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)" stroke-dasharray="4"/>
+                                <!-- Ready -> Running -->
+                                <line x1="440" y1="80" x2="210" y2="80" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)"/>
+                                <!-- Running -> Blocked -->
+                                <line x1="170" y1="90" x2="290" y2="190" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)"/>
+                                <!-- Blocked -> Ready -->
+                                <line x1="360" y1="190" x2="480" y2="90" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)"/>
+                                
+                                <!-- Suspend transitions -->
+                                <!-- Blocked -> B-Suspend -->
+                                <line x1="265" y1="220" x2="160" y2="220" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)"/>
+                                <!-- B-Suspend -> Blocked (Resume) -->
+                                <line x1="160" y1="230" x2="265" y2="230" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)" stroke-dasharray="2"/>
+                                <!-- Ready -> R-Suspend -->
+                                <line x1="510" y1="90" x2="540" y2="190" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)"/>
+                                <!-- R-Suspend -> Ready (Resume) -->
+                                <line x1="520" y1="190" x2="490" y2="90" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)" stroke-dasharray="2"/>
+                                <!-- B-Suspend -> R-Suspend (I/O completion while swapped) -->
+                                <line x1="160" y1="250" x2="490" y2="250" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-sm)"/>
+                            </svg>
+
+                            <!-- The Ball (Process) -->
+                            <div id="sm-process-ball" class="absolute w-8 h-8 bg-amber-400 rounded-full shadow-[0_0_15px_rgba(251,191,36,0.8)] z-20 transition-all duration-700 ease-in-out flex items-center justify-center text-amber-900 font-bold text-[10px] transform -translate-x-1/2 -translate-y-1/2" style="top: 70px; left: 150px;">
+                                P1
+                            </div>
+
+                            <!-- State Nodes -->
+                            <!-- Running -->
+                            <div class="absolute top-[70px] left-[150px] border-2 border-emerald-500 bg-emerald-950/90 text-emerald-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[120px] transform -translate-x-1/2 -translate-y-1/2">
+                                Running
+                            </div>
+                            <!-- Ready (with Tooltip) -->
+                            <div class="absolute top-[70px] left-[500px] border-2 border-sky-500 bg-sky-950/90 text-sky-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[120px] transform -translate-x-1/2 -translate-y-1/2 group">
+                                Ready
+                                <!-- Tooltip -->
+                                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-100 text-slate-800 font-bold text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-md">
+                                    תור המוכנים (Ready Queue)
+                                </div>
+                            </div>
+                            <!-- Blocked -->
+                            <div class="absolute top-[220px] left-[325px] border-2 border-rose-500 bg-rose-950/90 text-rose-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[120px] transform -translate-x-1/2 -translate-y-1/2">
+                                Blocked
+                            </div>
+                            
+                            <!-- Blocked-Suspend -->
+                            <div class="absolute top-[220px] left-[100px] border-2 border-purple-500 bg-purple-950/90 text-purple-400 px-2 py-1.5 rounded-xl shadow-lg text-center font-bold text-xs z-10 w-[110px] transform -translate-x-1/2 -translate-y-1/2 leading-tight">
+                                Blocked<br>Suspend
+                            </div>
+                            
+                            <!-- Ready-Suspend -->
+                            <div class="absolute top-[220px] left-[550px] border-2 border-fuchsia-500 bg-fuchsia-950/90 text-fuchsia-400 px-2 py-1.5 rounded-xl shadow-lg text-center font-bold text-xs z-10 w-[110px] transform -translate-x-1/2 -translate-y-1/2 leading-tight">
+                                Ready<br>Suspend
+                            </div>
                         </div>
-                        
-                        <!-- Top Row (Running <-> Ready) -->
-                        <div class="flex items-center justify-center w-full max-w-lg mb-8 relative">
-                            <!-- Running Box -->
-                            <div class="border-2 border-emerald-500 bg-emerald-950/40 text-emerald-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold">
-                                [ רץ / Running ]
-                            </div>
-                            
-                            <!-- Arrow Top Right to Left (Event 2) -->
-                            <div class="absolute left-1/2 -top-1 w-48 border-t border-dashed border-indigo-500 transform -translate-x-1/2"></div>
-                            <div class="absolute left-[calc(50%-6rem)] -top-[7px] text-indigo-400">◄</div>
-                            
-                            <!-- Spacing -->
-                            <div class="w-24"></div>
-                            
-                            <!-- Ready Box -->
-                            <div class="border-2 border-sky-500 bg-sky-950/40 text-sky-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold">
-                                [ מוכן / Ready ]
-                            </div>
+
+                        <!-- Controls -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 w-full max-w-[650px]" dir="rtl">
+                            <button onclick="moveSmBall('running')" class="bg-emerald-900/50 hover:bg-emerald-800/80 text-emerald-300 border border-emerald-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
+                                🟢 למעבד (Dispatch)
+                            </button>
+                            <button onclick="moveSmBall('ready')" class="bg-sky-900/50 hover:bg-sky-800/80 text-sky-300 border border-sky-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
+                                🔵 הפקעה / התעוררות
+                            </button>
+                            <button onclick="moveSmBall('blocked')" class="bg-rose-900/50 hover:bg-rose-800/80 text-rose-300 border border-rose-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
+                                🔴 המתנה לקלט (I/O)
+                            </button>
+                            <button onclick="moveSmBall('suspend')" class="bg-purple-900/50 hover:bg-purple-800/80 text-purple-300 border border-purple-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
+                                🟣 השהיה (Swap Out)
+                            </button>
                         </div>
-
-                        <!-- Bottom Row (Blocked) -->
-                        <div class="flex flex-col items-center justify-center w-full max-w-lg relative">
-                            <!-- Blocked Box -->
-                            <div class="border-2 border-rose-500 bg-rose-950/40 text-rose-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10">
-                                [ חסום / Blocked ]
-                            </div>
-
-                            <!-- Arrow Running -> Blocked (Event 1) -->
-                            <div class="absolute -left-2 md:left-8 -top-16 h-20 w-8 border-l border-b border-dashed border-rose-550 rounded-bl z-0"></div>
-                            <div class="absolute -left-[14px] md:left-[26px] -top-16 text-rose-400 transform -rotate-90">▲</div>
-                            <div class="absolute -left-12 md:left-[-20px] top-6 text-rose-300 text-xs text-right w-24">
-                                (1. מחכה לקלט)
-                            </div>
-
-                            <!-- Arrow Blocked -> Ready (Event 4) -->
-                            <div class="absolute right-0 md:right-10 -top-16 h-20 w-8 border-r border-b border-dashed border-sky-550 rounded-br z-0"></div>
-                            <div class="absolute right-[25px] md:right-[65px] -top-16 text-sky-400 transform -rotate-90">▲</div>
-                            <div class="absolute -right-16 md:right-[-30px] top-6 text-sky-300 text-xs text-left w-32">
-                                (4. הקלט התקבל)
-                            </div>
+                        <div class="mt-4 p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-400 w-full max-w-[650px] text-center" id="sm-terminal" dir="rtl">
+                            [מערכת] תהליך P1 רץ כעת על המעבד (Running). נסו להזיז אותו למצבים השונים!
                         </div>
                     </div>
                     
@@ -952,6 +990,13 @@
                                 </label>
                                 <input type="range" id="thrash-slider-n" min="1" max="20" step="1" value="5" oninput="updateThrashingSimulation()" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
                             </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1 flex justify-between">
+                                    <span>גבול זיכרון RAM:</span>
+                                    <span id="thrash-val-ram" class="text-blue-600 font-bold">10</span>
+                                </label>
+                                <input type="range" id="thrash-slider-ram" min="2" max="20" step="1" value="10" oninput="updateThrashingSimulation()" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
                             <div class="pt-4 border-t border-slate-100 font-mono text-xs space-y-2">
                                 <div class="flex justify-between">
                                     <span class="text-slate-500">נוסחת חישוב:</span>
@@ -965,8 +1010,11 @@
                         </div>
 
                         <!-- Graph Panel -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm md:col-span-2 flex flex-col items-center">
-                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3 border-b pb-2 w-full text-center">ניצולת מעבד בזמן אמת מול $n$ (גבול RAM = 10)</span>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm md:col-span-2 flex flex-col items-center relative">
+                            <div id="thrash-hdd-icon" class="absolute top-4 left-4 text-3xl opacity-20 text-slate-400 transition-all duration-300">
+                                💾
+                            </div>
+                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3 border-b pb-2 w-full text-center" id="thrash-graph-title">ניצולת מעבד בזמן אמת מול $n$ (גבול RAM = 10)</span>
                             <canvas id="thrash-canvas" width="400" height="180" class="w-full max-w-[400px] bg-slate-900 rounded-lg border border-slate-800"></canvas>
                         </div>
                     </div>
@@ -1233,7 +1281,7 @@
                     <h3 class="text-xl font-bold text-slate-800 mb-2">מבחן ריסוק: User Space לעומת Kernel Space Threads</h3>
                     <p class="text-xs text-slate-500 mb-6">לחצו על כפתור קריאת ה-I/O כדי לראות את ההבדל הדרמטי בין תהליכונים ברמת משתמש (שמערכת ההפעלה לא מודעת אליהם) לתהליכונים ברמת ליבה.</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         <!-- Left Panel: User-level threads -->
                         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden transition-all duration-300" id="thread-user-box">
                             <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3 border-b pb-2">User-Level Threads (רמת משתמש)</span>
@@ -1259,7 +1307,7 @@
                             </div>
                         </div>
 
-                        <!-- Right Panel: Kernel-level threads -->
+                        <!-- Middle Panel: Kernel-level threads -->
                         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden transition-all duration-300" id="thread-kernel-box">
                             <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3 border-b pb-2">Kernel-Level Threads (רמת גרעין)</span>
                             <div class="space-y-4">
@@ -1281,6 +1329,31 @@
 
                             <div class="mt-4 p-3 bg-slate-900 text-slate-400 font-mono text-[10px] rounded-lg text-center" id="kernel-cpu-state">
                                 סך תהליכונים מוקצב: ריצה במקביל (Core 0 + Core 1)
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Hybrid M:N threads -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden transition-all duration-300" id="thread-hybrid-box">
+                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3 border-b pb-2">Hybrid M:N (הפעלת מתזמן)</span>
+                            <div class="space-y-4">
+                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between">
+                                    <div>
+                                        <div class="font-bold text-xs text-slate-700">תהליכון 1 (Thread 1)</div>
+                                        <div class="text-[10px] text-slate-500 font-mono">מריץ לולאת חישוב</div>
+                                    </div>
+                                    <div class="thread-indicator running" id="indicator-hybrid-t1"></div>
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between">
+                                    <div>
+                                        <div class="font-bold text-xs text-slate-700">תהליכון 2 (Thread 2)</div>
+                                        <div class="text-[10px] text-slate-500 font-mono">מאזין לממשק גרפי (UI)</div>
+                                    </div>
+                                    <div class="thread-indicator running" id="indicator-hybrid-t2"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-slate-900 text-slate-400 font-mono text-[10px] rounded-lg text-center" id="hybrid-cpu-state">
+                                הקצאה דינמית: ריצה על מעבד וירטואלי (LWP)
                             </div>
                         </div>
                     </div>
@@ -1379,7 +1452,7 @@
 
                 <!-- Critical Regions & Mutual Exclusion -->
                 <article class="mb-12">
-                    <h3 class="text-2xl font-black text-slate-800 mb-4">2.3.2 קטעים קריטיים ומניעה הדדית</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4">2.4.2 קטעים קריטיים ומניעה הדדית</h3>
                     <p class="text-sm text-slate-700 mb-6 leading-relaxed">
                         הפתרון הלוגי הוא למנוע מיותר מתהליך אחד לגשת למשאב המשותף באותו זמן. הגנה זו נקראת <strong>מניעה הדדית (Mutual Exclusion)</strong>. כל תוכנית מחולקת תיאורטית לשני חלקים:
                     </p>
@@ -1418,7 +1491,7 @@
 
                 <!-- Busy Waiting Solutions -->
                 <article class="mb-12">
-                    <h3 class="text-2xl font-black text-slate-800 mb-2">2.3.3 ניסיונות לפתרון בעזרת "המתנה פעילה" (Busy Waiting)</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mb-2">2.4.3 ניסיונות לפתרון בעזרת "המתנה פעילה" (Busy Waiting)</h3>
                     <p class="text-sm text-slate-700 mb-6">
                         נבחן את הדרכים השונות שהוצעו לאורך השנים כדי לממש מניעה הדדית, ונבין מדוע חלקן נכשלו וכיצד החומרה נחלצה לעזרה.
                     </p>
@@ -1517,7 +1590,7 @@
 
                 <!-- Priority Inversion -->
                 <article class="mb-12">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.3.4 בעיית העדיפות ההפוכה (Priority Inversion) והמעבר לחסימה</h3>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.4.4 בעיית העדיפות ההפוכה (Priority Inversion) והמעבר לחסימה</h3>
                     <div class="thought-box">
                         <strong class="text-rose-900 block mb-3 text-sm">תרחיש המבוי הסתום (Deadlock) של ההמתנה הפעילה:</strong>
                         <ul class="space-y-2 text-xs text-slate-800 list-disc list-inside leading-relaxed">
@@ -1538,7 +1611,7 @@
                 <!-- Semaphores & Lost Wakeup -->
                 <article class="mb-12 relative overflow-hidden bg-white border border-rose-200 rounded-3xl shadow-lg">
                     <div class="relative z-10 p-8">
-                        <h3 class="text-2xl font-black text-rose-955 mb-4 border-b border-rose-100 pb-4">2.3.5 בעיית היצרן-צרכן וסמפורים (Semaphores)</h3>
+                        <h3 class="text-2xl font-black text-rose-955 mb-4 border-b border-rose-100 pb-4">2.4.5 בעיית היצרן-צרכן וסמפורים (Semaphores)</h3>
                         <p class="text-xs text-slate-800 leading-relaxed mb-6">
                             מודל היצרן-צרכן ממחיש את הצורך ב-Sleep/Wakeup. תהליך מייצר נתונים לבאפר מוגבל, ותהליך אחר צורך. אם מלא - היצרן נרדם. אם ריק - הצרכן נרדם. הבעיה נוצרת כי משתנה מונה הפריטים לא מוגן.
                         </p>
@@ -1618,7 +1691,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                         
                         <!-- Mutexes -->
                         <div class="bg-white border-t-4 border-indigo-400 rounded-2xl p-5 shadow-sm border border-slate-200">
-                            <h3 class="text-base font-bold text-slate-900 mb-2">2.3.6 מנעולים (Mutexes)</h3>
+                            <h3 class="text-base font-bold text-slate-900 mb-2">2.4.6 מנעולים (Mutexes)</h3>
                             <p class="text-xs text-slate-700 leading-relaxed mb-3">
                                 מנעול (Mutex) הוא גרסה מפושטת של סמפור <strong>שאינה סופרת</strong>, אלא מנהלת מצב בינארי בלבד: נעול (0) או פתוח (1). הוא משמש נטו להגנה על קטע קריטי ללא ספירת משאבים.
                             </p>
@@ -1629,7 +1702,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
 
                         <!-- Monitors -->
                         <div class="bg-white border-t-4 border-emerald-400 rounded-2xl p-5 shadow-sm border border-slate-200">
-                            <h3 class="text-base font-bold text-slate-900 mb-2">2.3.7 מבני פיקוח (Monitors)</h3>
+                            <h3 class="text-base font-bold text-slate-900 mb-2">2.4.7 מבני פיקוח (Monitors)</h3>
                             <p class="text-xs text-slate-700 leading-relaxed mb-3">
                                 מבנה ב<strong>שפה עילית</strong> (כמו Java/C#) שמאגד משתנים ופונקציות. הקומפיילר עצמו מייצר את נעילות ה-Mutex ומבטיח אטומטיות, מה שמונע טעויות אנוש של מתכנתים ששוכחים לעשות Up/Down.
                             </p>
@@ -1640,7 +1713,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
 
                         <!-- Message Passing -->
                         <div class="bg-white border-t-4 border-amber-450 rounded-2xl p-5 shadow-sm border border-slate-200">
-                            <h3 class="text-base font-bold text-slate-900 mb-2">2.3.8 העברת הודעות</h3>
+                            <h3 class="text-base font-bold text-slate-900 mb-2">2.4.8 העברת הודעות</h3>
                             <p class="text-xs text-slate-700 leading-relaxed mb-3">
                                 סמפורים דורשים <em>זיכרון משותף</em>. במערכות מבוזרות (רשת מחשבים), משתמשים בהעברת הודעות: <code>send(dest, &msg)</code> ו-<code>receive(src, &msg)</code>.
                             </p>
@@ -1658,7 +1731,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                         <svg class="w-40 h-40 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
                     </div>
                     
-                    <h3 class="text-xl font-bold text-slate-800 mb-4 relative z-10">2.3.9 מחסומים (Barriers)</h3>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 relative z-10">2.4.9 מחסומים (Barriers)</h3>
                     <p class="text-xs text-slate-700 mb-6 relative z-10 leading-relaxed">
                         בעוד שסמפורים ומנעולים נועדו לאפשר גישה בלעדית למשאב אחד, <strong>מחסומים</strong> נועדו לפתור את הבעיה ההפוכה: סנכרון של <strong>קבוצה שלמה של תהליכונים</strong> שעובדים יחד על משימה שלבית.
                     </p>
@@ -1703,9 +1776,20 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
 
                         <!-- Shared Variable & Lock Panel -->
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between items-center text-center">
-                            <div class="w-full">
+                            <div class="w-full relative">
                                 <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3 border-b pb-2">משתנה משותף (Shared Memory)</span>
-                                <div class="bg-slate-900 text-green-400 p-4 rounded-xl font-mono text-2xl font-black shadow-inner my-4" id="ipc-shared-counter">
+                                <!-- Padlock Icon (Hidden by default) -->
+                                <div id="ipc-padlock" class="absolute top-8 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 transform scale-50 z-20">
+                                    <div class="bg-rose-500 text-white p-1.5 rounded-full shadow-lg border-2 border-white">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    </div>
+                                </div>
+                                <!-- Blocking line (Red cross/line) -->
+                                <div id="ipc-blocking-line" class="absolute inset-0 border-4 border-rose-500 rounded-xl opacity-0 pointer-events-none transition-opacity duration-300 z-10 flex items-center justify-center">
+                                    <span class="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider absolute -top-3">Memory Bus Locked</span>
+                                </div>
+                                
+                                <div class="bg-slate-900 text-green-400 p-4 rounded-xl font-mono text-2xl font-black shadow-inner my-4 relative" id="ipc-shared-counter">
                                     10
                                 </div>
                             </div>
@@ -1742,9 +1826,17 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                     </div>
 
                     <!-- Buttons and Output log -->
-                    <div class="flex items-center justify-between border-t border-slate-200 pt-4">
+                    <div class="flex items-center justify-between border-t border-slate-200 pt-4 flex-wrap gap-2">
                         <div class="text-xs font-bold text-slate-600">תהליך פעיל במעבד: <span id="ipc-active-proc-display" class="text-blue-600 font-extrabold text-sm">תהליך א'</span></div>
-                        <button onclick="resetIpcSimulation()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-1.5 px-4 rounded-lg text-xs transition-colors cursor-pointer">אפס סימולציה</button>
+                        <div class="flex gap-2">
+                            <button onclick="runAutoEvilSimulation()" id="btn-ipc-auto-evil" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-colors shadow-sm cursor-pointer flex items-center gap-1">
+                                😈 מתזמן רשע אוטומטי
+                            </button>
+                            <button onclick="stepManualEvilSimulation()" id="btn-ipc-manual-evil" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-colors shadow-sm cursor-pointer flex items-center gap-1">
+                                👣 צעד רשע ידני
+                            </button>
+                            <button onclick="resetIpcSimulation()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-1.5 px-4 rounded-lg text-xs transition-colors cursor-pointer">אפס סימולציה</button>
+                        </div>
                     </div>
 
                     <div class="mt-4 p-4 rounded-xl bg-slate-900 text-slate-300 font-mono text-xs leading-relaxed min-h-[60px]" id="ipc-terminal">
@@ -1760,7 +1852,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
             <div id="scheduling" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
-                        חלק 2.4
+                        חלק 2.5
                     </div>
                     <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">תזמון תהליכים (Process Scheduling)</h2>
                     <p class="text-xl text-slate-600 leading-relaxed">
@@ -1770,7 +1862,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
 
                 <!-- 2.4.1 Intro to Scheduling -->
                 <article class="mb-12">
-                    <h3 class="text-2xl font-black text-slate-800 mb-4">2.4.1 רמות תזמון במערכת מורכבת</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4">2.5.1 רמות תזמון במערכת מורכבת</h3>
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-6">
                         <p class="text-slate-700 leading-relaxed text-xs">
                             במערכת מרובת תהליכים (Multiprogramming), יש בדרך כלל יותר תהליכים מוכנים ממעבדים פנויים. <strong>מתזמן התהליכים (Scheduler)</strong> מחלק את הזמן. קיימות שלוש רמות:
@@ -1856,7 +1948,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                         <!-- Batch Algorithms -->
                         <div class="bg-blue-50/20 border border-blue-100 rounded-3xl p-6">
                             <h4 class="font-bold text-blue-900 text-lg mb-4 flex items-center border-b border-blue-200 pb-2">
-                                <span class="bg-blue-600 text-white px-2 py-0.5 rounded-lg text-sm mr-2 ml-2">2.4.2</span>
+                                <span class="bg-blue-600 text-white px-2 py-0.5 rounded-lg text-sm mr-2 ml-2">2.5.2</span>
                                 אלגוריתמים למערכות אצווה (Batch Systems)
                             </h4>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1892,7 +1984,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                         <!-- Interactive Algorithms -->
                         <div class="bg-emerald-50/20 border border-emerald-100 rounded-3xl p-6">
                             <h4 class="font-bold text-emerald-900 text-lg mb-4 flex items-center border-b border-emerald-200 pb-2">
-                                <span class="bg-emerald-600 text-white px-2 py-0.5 rounded-lg text-sm mr-2 ml-2">2.4.3</span>
+                                <span class="bg-emerald-600 text-white px-2 py-0.5 rounded-lg text-sm mr-2 ml-2">2.5.3</span>
                                 אלגוריתמים למערכות אינטראקטיביות (Interactive Systems)
                             </h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1951,7 +2043,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                         <!-- Real Time Algorithms -->
                         <div class="bg-rose-50/20 border border-rose-100 rounded-3xl p-6">
                             <h4 class="font-bold text-rose-900 text-lg mb-4 flex items-center border-b border-rose-200 pb-2">
-                                <span class="bg-rose-600 text-white px-2 py-0.5 rounded-lg text-sm mr-2 ml-2">2.4.4</span>
+                                <span class="bg-rose-600 text-white px-2 py-0.5 rounded-lg text-sm mr-2 ml-2">2.5.4</span>
                                 תזמון במערכות זמן אמת (Real-Time Systems)
                             </h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1974,7 +2066,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
 
                 <!-- Policy vs Mechanism -->
                 <article class="mb-12">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.4.5 מדיניות מול מנגנונים (Policy vs. Mechanism)</h3>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.5.5 מדיניות מול מנגנונים (Policy vs. Mechanism)</h3>
                     <p class="text-xs text-slate-700 mb-6 leading-relaxed">
                         הפרדה ארכיטקטונית חשובה במערכות הפעלה היא ההפרדה בין המנגנון לבין המדיניות. הפרדה זו מאפשרת <strong>גמישות</strong> – ניתן לתת לתהליך מנהל (במרחב המשתמש) לקבוע את המדיניות (למשל, לשנות עדיפויות), בעוד הגרעין ימשיך לבצע את המנגנון בבטחה.
                     </p>
@@ -2010,7 +2102,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
 
                 <!-- Thread Scheduling -->
                 <article class="mt-8">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.4.6 תזמון תהליכונים (Thread Scheduling)</h3>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.5.6 תזמון תהליכונים (Thread Scheduling)</h3>
                     <p class="text-xs text-slate-700 mb-6 leading-relaxed">
                         המתזמן מתנהג אחרת לחלוטין בהתאם למיקום התהליכונים ומידת המודעות של הגרעין לקיומם:
                     </p>
@@ -2056,6 +2148,77 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                     </div>
                 </article>
 
+                <div class="thought-box">
+                    <h3 class="text-xl font-bold text-fuchsia-950 mb-2">⚖️ הטרייד-אוף של גודל הקוואנטה (Quantum Size)
+                    </h3>
+                    <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                        בחלוקת זמן (Timesharing), המתזמן (Scheduler) משתמש באלגוריתם Round Robin ומקצה לכל תהליך פרוסת
+                        זמן קבועה מראש הנקראת <strong>קוואנטה (Quantum)</strong>.
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5 pr-2">
+                        <li><strong>קוואנטה קצר מדי (למשל, 1ms):</strong> משפר משמעותית את המקביליות המדומה (הכל רץ
+                            חלק), אך גורם ל<strong>בזבוז זמן מעבד קיצוני</strong> עקב ביצוע החלפות הקשר (Context
+                            Switches) מרובות בגרעין.</li>
+                        <li><strong>קוואנטה ארוך מדי (למשל, 100ms):</strong> משפר את ניצולת המעבד (פחות תקורה על החלפות
+                            הקשר), אך פוגע במקביליות. תהליכים אינטראקטיביים יחוו לאגים והשהיות ארוכות.</li>
+                    </ul>
+                </div>
+
+                <!-- Round Robin Slider Simulator -->
+                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm"
+                    id="quantum-sim-card">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">סימולטור אינטראקטיבי: הטרייד-אוף של גודל הקוואנטה
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-6">הזיזו את הסליידר כדי לשנות את גודל קוואנטת הזמן (Time
+                        Quantum) וראו את ההשפעה על כמות החלפות ההקשר (Context Switches) והיעילות הכוללת של המעבד.</p>
+
+                    <!-- Slider Control -->
+                    <div
+                        class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col sm:flex-row items-center gap-6">
+                        <div class="flex-1 w-full">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-slate-700">גודל קוואנטה (Quantum Size):</span>
+                                <span class="text-sm font-extrabold text-blue-600"
+                                    id="quantum-value-display">20ms</span>
+                            </div>
+                            <input type="range" id="quantum-slider" min="1" max="100" value="20"
+                                class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                                oninput="updateQuantumSimulation()">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 text-center text-[10px] font-mono w-full sm:w-[240px]">
+                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                <span class="text-slate-400 block mb-0.5">החלפות הקשר:</span>
+                                <span class="font-bold text-red-600 text-xs" id="quantum-cs-count">4</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                <span class="text-slate-400 block mb-0.5">ניצולת מעבד:</span>
+                                <span class="font-bold text-green-600 text-xs" id="quantum-cpu-util">83%</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                <span class="text-slate-400 block mb-0.5">זמן תגובה:</span>
+                                <span class="font-bold text-amber-600 text-xs" id="quantum-resp-time">מצוין</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gantt Chart View -->
+                    <div class="gantt-container mb-6">
+                        <div class="gantt-row">
+                            <div class="gantt-label">תרשים גאנט:</div>
+                            <div class="gantt-timeline" id="quantum-gantt-timeline">
+                                <!-- Dynamic Gantt Blocks go here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explanation details -->
+                    <div class="p-4 rounded-xl bg-slate-900 text-slate-300 font-mono text-xs leading-relaxed min-h-[60px]"
+                        id="quantum-terminal">
+                        [מערכת] גרף הריצה מציג חלוקת זמן בין 3 תהליכים (P1, P2, P3). המקומות האדומים מייצגים החלפת הקשר
+                        (Context Switch) שלוקחת 1ms של תקורה.
+                    </div>
+                </div>
+
                 <!-- Live Gantt Chart Builder -->
                 <div class="my-10 bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm" id="sched-sim-card">
                     <h3 class="text-xl font-bold text-slate-800 mb-2">מחולל תרשימי גאנט דינמי (Live Gantt Chart Builder)</h3>
@@ -2067,20 +2230,26 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                             <div class="space-y-4">
                                 <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block border-b pb-2">הגדרת משימות</span>
                                 <div class="space-y-3" id="sched-tasks-inputs">
-                                    <div class="flex gap-2 items-center">
-                                        <span class="w-6 text-xs font-bold text-slate-700">P1:</span>
-                                        <input type="number" id="sched-p1-burst" min="1" max="25" value="12" class="w-16 p-1 border rounded text-center text-xs font-bold font-mono">
-                                        <span class="text-[10px] text-slate-400">ms</span>
+                                    <div class="flex gap-2 items-center text-xs">
+                                        <span class="w-6 font-bold text-slate-700">P1:</span>
+                                        <span class="text-slate-500 mr-1">T<sub>arr</sub>=</span>
+                                        <input type="number" id="sched-p1-arr" min="0" max="25" value="0" class="w-12 p-1 border rounded text-center font-bold font-mono">
+                                        <span class="text-slate-500 mr-2">T<sub>burst</sub>=</span>
+                                        <input type="number" id="sched-p1-burst" min="1" max="25" value="12" class="w-12 p-1 border rounded text-center font-bold font-mono">
                                     </div>
-                                    <div class="flex gap-2 items-center">
-                                        <span class="w-6 text-xs font-bold text-slate-700">P2:</span>
-                                        <input type="number" id="sched-p2-burst" min="1" max="25" value="2" class="w-16 p-1 border rounded text-center text-xs font-bold font-mono">
-                                        <span class="text-[10px] text-slate-400">ms</span>
+                                    <div class="flex gap-2 items-center text-xs">
+                                        <span class="w-6 font-bold text-slate-700">P2:</span>
+                                        <span class="text-slate-500 mr-1">T<sub>arr</sub>=</span>
+                                        <input type="number" id="sched-p2-arr" min="0" max="25" value="2" class="w-12 p-1 border rounded text-center font-bold font-mono">
+                                        <span class="text-slate-500 mr-2">T<sub>burst</sub>=</span>
+                                        <input type="number" id="sched-p2-burst" min="1" max="25" value="2" class="w-12 p-1 border rounded text-center font-bold font-mono">
                                     </div>
-                                    <div class="flex gap-2 items-center">
-                                        <span class="w-6 text-xs font-bold text-slate-700">P3:</span>
-                                        <input type="number" id="sched-p3-burst" min="1" max="25" value="6" class="w-16 p-1 border rounded text-center text-xs font-bold font-mono">
-                                        <span class="text-[10px] text-slate-400">ms</span>
+                                    <div class="flex gap-2 items-center text-xs">
+                                        <span class="w-6 font-bold text-slate-700">P3:</span>
+                                        <span class="text-slate-500 mr-1">T<sub>arr</sub>=</span>
+                                        <input type="number" id="sched-p3-arr" min="0" max="25" value="4" class="w-12 p-1 border rounded text-center font-bold font-mono">
+                                        <span class="text-slate-500 mr-2">T<sub>burst</sub>=</span>
+                                        <input type="number" id="sched-p3-burst" min="1" max="25" value="6" class="w-12 p-1 border rounded text-center font-bold font-mono">
                                     </div>
                                 </div>
                             </div>
@@ -2091,6 +2260,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                                     <select id="sched-algo-select" onchange="toggleSchedQuantumSlider()" class="w-full p-2 border rounded text-xs bg-slate-50 font-medium">
                                         <option value="FCFS">FCFS (First-Come First-Served)</option>
                                         <option value="SJF">SJF (Shortest Job First)</option>
+                                        <option value="SRTN">SRTN (Shortest Remaining Time Next - Preemptive)</option>
                                         <option value="RR">Round Robin (RR)</option>
                                     </select>
                                 </div>
@@ -2108,6 +2278,12 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2 flex flex-col justify-between">
                             <div class="space-y-4 w-full">
                                 <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block border-b pb-2">תרשים גאנט (Gantt Timeline)</span>
+                                <div class="w-full flex items-center mb-3 min-h-[28px] bg-slate-50 p-2 rounded-lg border border-slate-100" id="sched-ready-queue">
+                                    <span class="text-[10px] text-slate-500 font-bold ml-2 shrink-0">Ready Queue:</span>
+                                    <div class="flex gap-1 overflow-hidden" id="sched-ready-queue-items">
+                                        <!-- Ready queue dynamically populated -->
+                                    </div>
+                                </div>
                                 <div class="gantt-container w-full" id="sched-gantt-chart">
                                     <div class="gantt-timeline w-full" id="sched-gantt-timeline">
                                         <!-- Blocks generated dynamically -->
@@ -2157,7 +2333,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
             <div id="classic-sync" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
-                        חלק 2.5
+                        חלק 2.6
                     </div>
                     <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">בעיות סנכרון קלאסיות</h2>
                     <p class="text-xl text-slate-600 leading-relaxed">
@@ -2167,7 +2343,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
 
                 <!-- Dining Philosophers -->
                 <article class="mb-12">
-                    <h3 class="text-2xl font-black text-slate-800 mb-4">2.5.1 בעיית הפילוסופים הסועדים (The Dining Philosophers)</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4">2.6.1 בעיית הפילוסופים הסועדים (The Dining Philosophers)</h3>
                     <p class="text-sm text-slate-700 mb-6">
                         בעיה זו הוגדרה ע"י דייקסטרה כדי להמחיש את אתגרי הקצאת משאבים מוגבלים, כאשר <strong>כל תהליך זקוק ליותר ממשאב יחיד</strong> כדי לבצע את עבודתו.
                     </p>
@@ -2243,7 +2419,7 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                 
                 <!-- Readers Writers -->
                 <article class="mb-12 mt-12">
-                    <h3 class="text-2xl font-black text-slate-805 mb-4">2.5.2 בעיית הקוראים והכותבים (Readers-Writers)</h3>
+                    <h3 class="text-2xl font-black text-slate-805 mb-4">2.6.2 בעיית הקוראים והכותבים (Readers-Writers)</h3>
                     <p class="text-sm text-slate-700 mb-6">
                         מודלת בעיה קלאסית של מסד נתונים המייצגת ניגוד אינטרסים בניהול גישה (שונה מיצרן-צרכן).
                     </p>
@@ -2389,7 +2565,13 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
                                         🔴 אלגוריתם נאיבי (סכנת קיפאון)
                                     </button>
                                     <button onclick="setPhiloMode('asymmetric')" id="btn-philo-asym" class="w-full text-right p-3 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium text-xs transition-all hover:bg-slate-50 cursor-pointer">
-                                        🟢 אלגוריתם אסימטרי (ללא קיפאון)
+                                        🟢 אסימטרי (ללא קיפאון)
+                                    </button>
+                                    <button onclick="setPhiloMode('state_array')" id="btn-philo-state" class="w-full text-right p-3 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium text-xs transition-all hover:bg-slate-50 cursor-pointer">
+                                        🔵 מערך מצבים (Mutex)
+                                    </button>
+                                    <button onclick="setPhiloMode('random_wait')" id="btn-philo-random" class="w-full text-right p-3 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium text-xs transition-all hover:bg-slate-50 cursor-pointer">
+                                        🟣 המתנה אקראית (Random Wait)
                                     </button>
                                 </div>
                             </div>
@@ -2419,7 +2601,7 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
             <div id="glossary-concepts" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-racket text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
-                        חלק 2.6
+                        חלק 2.7
                     </div>
                     <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים מסכם</h2>
                     <p class="text-xl text-slate-600 leading-relaxed">
@@ -2457,7 +2639,7 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
             <div id="glossary-questions" class="tab-content">
                 <header class="mb-12 border-b pb-6">
                     <div class="inline-block px-4 py-1 bg-rose-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
-                        פרק 2 • שאלות ותשובות
+                        חלק 2.8 • שאלות ותשובות
                     </div>
                     <h2 class="text-4xl font-black text-slate-800 tracking-tight mb-4">שאלות חזרה ובעיות פתורות</h2>
                     <p class="text-xl text-slate-600 leading-relaxed">
@@ -2615,7 +2797,79 @@ semaphore db = <span class="token-function">1</span>;    <span class="token-comm
     <!-- Script Block for Tabs & Sidebar Controls -->
     <script>
         {
+            // --- 2.1.5 Interactive State Machine Simulator JS ---
+            let currentSmState = 'running'; // 'running', 'ready', 'blocked', 'b-suspend', 'r-suspend'
             
+            function moveSmBall(action) {
+                const ball = document.getElementById("sm-process-ball");
+                const terminal = document.getElementById("sm-terminal");
+                if (!ball || !terminal) return;
+                
+                let nextState = currentSmState;
+                let msg = "";
+                
+                if (action === 'running') {
+                    if (currentSmState === 'ready') {
+                        nextState = 'running';
+                        msg = "המתזמן בחר בתהליך. מעבר מ-Ready ל-Running.";
+                    } else {
+                        msg = "שגיאה: מעבר למעבד אפשרי רק מ-Ready.";
+                    }
+                } else if (action === 'ready') {
+                    if (currentSmState === 'running') {
+                        nextState = 'ready';
+                        msg = "פג הזמן המוקצב או פסיקה התקבלה. מעבר מ-Running ל-Ready (הפקעה).";
+                    } else if (currentSmState === 'blocked') {
+                        nextState = 'ready';
+                        msg = "אירוע הקלט התקבל! מעבר מ-Blocked ל-Ready (התעוררות).";
+                    } else if (currentSmState === 'r-suspend') {
+                        nextState = 'ready';
+                        msg = "חזרה לזיכרון הראשי מהדיסק (Swap In). מעבר מ-Ready-Suspend ל-Ready.";
+                    } else {
+                        msg = "שגיאה: לא ניתן לעבור ל-Ready מהמצב הנוכחי.";
+                    }
+                } else if (action === 'blocked') {
+                    if (currentSmState === 'running') {
+                        nextState = 'blocked';
+                        msg = "התהליך פנה לדיסק או לרשת. מעבר מ-Running ל-Blocked.";
+                    } else if (currentSmState === 'b-suspend') {
+                        nextState = 'blocked';
+                        msg = "חזרה לזיכרון הראשי (Swap In). מעבר מ-Blocked-Suspend ל-Blocked.";
+                    } else {
+                        msg = "שגיאה: חסימה מתרחשת מ-Running, או חזרה מ-B-Suspend.";
+                    }
+                } else if (action === 'suspend') {
+                    if (currentSmState === 'blocked') {
+                        nextState = 'b-suspend';
+                        msg = "פינוי זיכרון (Swap Out). מעבר מ-Blocked ל-Blocked-Suspend.";
+                    } else if (currentSmState === 'ready') {
+                        nextState = 'r-suspend';
+                        msg = "פינוי זיכרון (Swap Out). מעבר מ-Ready ל-Ready-Suspend.";
+                    } else if (currentSmState === 'b-suspend') {
+                        nextState = 'r-suspend';
+                        msg = "הקלט התקבל בזמן שהתהליך בדיסק! מעבר מ-Blocked-Suspend ל-Ready-Suspend.";
+                    } else {
+                        msg = "שגיאה: לא ניתן להשהות מהמצב הנוכחי.";
+                    }
+                }
+                
+                if (nextState !== currentSmState) {
+                    currentSmState = nextState;
+                    const coords = {
+                        'running': { top: '70px', left: '150px' },
+                        'ready': { top: '70px', left: '500px' },
+                        'blocked': { top: '220px', left: '325px' },
+                        'b-suspend': { top: '220px', left: '100px' },
+                        'r-suspend': { top: '220px', left: '550px' }
+                    };
+                    ball.style.top = coords[currentSmState].top;
+                    ball.style.left = coords[currentSmState].left;
+                    terminal.innerHTML = `<span class="text-emerald-400 font-bold">[הצלחה]</span> ${msg}`;
+                } else {
+                    terminal.innerHTML = `<span class="text-rose-500 font-bold">[נחסם]</span> ${msg}`;
+                }
+            }
+
             // Modal Functions for Sidebar Q&A Triggers
             function showQuestions(tabId, sectionName, event) {
                 if (event) event.stopPropagation();
@@ -2736,6 +2990,7 @@ function showTab(tabId) {
                 const defaultTab = 'cpu-architecture';
                 const finalTab = hashTab || savedTab || defaultTab;
                 showTab(finalTab);
+                updateQuantumSimulation();
 
                 // 4. Inject navigation buttons at the bottom of each tab
                 const tabs = [];
@@ -2919,41 +3174,56 @@ function showTab(tabId) {
             function updateThrashingSimulation() {
                 const sliderP = document.getElementById("thrash-slider-p");
                 const sliderN = document.getElementById("thrash-slider-n");
-                if (!sliderP || !sliderN) return;
+                const sliderRAM = document.getElementById("thrash-slider-ram");
+                if (!sliderP || !sliderN || !sliderRAM) return;
                 
                 const valP = parseFloat(sliderP.value);
                 const valN = parseInt(sliderN.value);
+                const valRAM = parseInt(sliderRAM.value);
                 
                 document.getElementById("thrash-val-p").textContent = valP.toFixed(2);
                 document.getElementById("thrash-val-n").textContent = valN;
+                document.getElementById("thrash-val-ram").textContent = valRAM;
+                
+                const title = document.getElementById("thrash-graph-title");
+                if (title) title.textContent = `ניצולת מעבד בזמן אמת מול n (גבול RAM = ${valRAM})`;
                 
                 const card = document.getElementById("thrashing-sim-card");
                 const terminal = document.getElementById("thrashing-terminal");
                 const cpuDisplay = document.getElementById("thrash-cpu-display");
+                const hddIcon = document.getElementById("thrash-hdd-icon");
                 
                 let cpuUtil = 0;
-                let isThrashing = valN > 10; // RAM Limit is 10
+                let isThrashing = valN > valRAM; // RAM Limit is dynamic
                 
                 if (isThrashing) {
                     cpuUtil = 0;
                     card.classList.add("thrashing-danger");
+                    if (hddIcon) {
+                        hddIcon.classList.add("animate-pulse", "text-rose-500", "opacity-100");
+                        hddIcon.classList.remove("opacity-20", "text-slate-400");
+                    }
                     cpuDisplay.textContent = "0%";
                     cpuDisplay.className = "font-black text-red-650 text-sm animate-pulse";
-                    terminal.innerHTML = "<span class='text-red-500 font-black'>[Thrashing Detected!]</span> כמות התהליכים (" + valN + ") עקפה את רף הזיכרון (10). המעבד מבזבז 100% מזמנו על דפדוף (Page Faults & Swapping) וכתיבה לדיסק איטי. ניצולת המעבד היא אפס!";
+                    terminal.innerHTML = "<span class='text-red-500 font-black'>[Thrashing Detected!]</span> כמות התהליכים (" + valN + ") עקפה את רף הזיכרון (" + valRAM + "). המעבד מבזבז 100% מזמנו על דפדוף (Page Faults & Swapping) וכתיבה לדיסק איטי. ניצולת המעבד היא אפס!";
                 } else {
                     cpuUtil = Math.round((1 - Math.pow(valP, valN)) * 100);
                     card.classList.remove("thrashing-danger");
+                    if (hddIcon) {
+                        hddIcon.classList.remove("animate-pulse", "text-rose-500", "opacity-100");
+                        hddIcon.classList.add("opacity-20", "text-slate-400");
+                    }
                     cpuDisplay.textContent = cpuUtil + "%";
                     cpuDisplay.className = "font-black text-green-600 text-sm";
                     
-                    let memoryPercent = Math.round((valN / 10) * 100);
-                    terminal.innerHTML = "[מערכת] זיכרון ה-RAM נמצא ב-" + memoryPercent + "% ניצולת. ניצולת המעבד עומדת על " + cpuUtil + "% כיוון שיש מספיק זיכרון פיזי לתהליכים.";
+                    let memoryPercent = Math.round((valN / valRAM) * 100);
+                    terminal.innerHTML = "[מערכת] זיכרון ה-RAM נמצא ב-" + memoryPercent + "% ניצולת (מתוך " + valRAM + "). ניצולת המעבד עומדת על " + cpuUtil + "% כיוון שיש מספיק זיכרון פיזי לתהליכים.";
                 }
                 
-                drawThrashingGraph(valP, valN, isThrashing);
+                drawThrashingGraph(valP, valN, valRAM, isThrashing);
             }
 
-            function drawThrashingGraph(p, currentN, isThrashing) {
+            function drawThrashingGraph(p, currentN, limitN, isThrashing) {
                 const canvas = document.getElementById("thrash-canvas");
                 if (!canvas) return;
                 const ctx = canvas.getContext("2d");
@@ -2973,8 +3243,8 @@ function showTab(tabId) {
                     ctx.stroke();
                 }
                 
-                // Draw RAM limit line (at N=10)
-                let limitX = 35 + 10 * 17.5; // (N=10)
+                // Draw RAM limit line
+                let limitX = 35 + limitN * 17.5;
                 ctx.strokeStyle = "#ef4444";
                 ctx.lineWidth = 2;
                 ctx.setLineDash([4, 4]);
@@ -2997,7 +3267,7 @@ function showTab(tabId) {
                 for (let n = 1; n <= 20; n++) {
                     let x = 35 + n * 17.5;
                     let util = 0;
-                    if (n <= 10) {
+                    if (n <= limitN) {
                         util = 1 - Math.pow(p, n);
                     } else {
                         util = 0; // Thrashing
@@ -3041,6 +3311,7 @@ function showTab(tabId) {
                 const terminal = document.getElementById("threads-terminal");
                 const userBox = document.getElementById("thread-user-box");
                 const kernelBox = document.getElementById("thread-kernel-box");
+                const hybridBox = document.getElementById("thread-hybrid-box");
                 
                 btn.disabled = true;
                 btn.classList.add("opacity-50", "cursor-not-allowed");
@@ -3050,6 +3321,7 @@ function showTab(tabId) {
                 // Animate Thread 1 indicator blinking
                 document.getElementById("indicator-user-t1").className = "thread-indicator blocked animate-pulse";
                 document.getElementById("indicator-kernel-t1").className = "thread-indicator blocked animate-pulse";
+                document.getElementById("indicator-hybrid-t1").className = "thread-indicator blocked animate-pulse";
                 
                 setTimeout(() => {
                     // Step 1: User space threads block entire process
@@ -3058,21 +3330,34 @@ function showTab(tabId) {
                     document.getElementById("user-cpu-state").textContent = "תהליך שלם חסום (קפוא)";
                     document.getElementById("user-cpu-state").className = "mt-4 p-3 bg-red-900 text-white font-mono text-[10px] rounded-lg text-center font-bold animate-pulse";
                     
-                    terminal.innerHTML += "<span class='text-red-500 font-bold'>[User Space] מערכת ההפעלה לא מודעת לתהליכונים ברמת המשתמש. כשתהליכון 1 נחסם ב-I/O, כל התהליך נחסם וקופא (כולל תהליכון 2)!</span><br>";
+                    terminal.innerHTML += "<span class='text-red-500 font-bold'>[User Space] כשתהליכון 1 נחסם ב-I/O, כל התהליך נחסם וקופא (כולל תהליכון 2)!</span><br>";
                     
+                    // Shake user box to show frozen state
+                    userBox.classList.remove("shake-element");
+                    void userBox.offsetWidth;
+                    userBox.classList.add("shake-element");
+                }, 1000);
+
+                setTimeout(() => {
                     // Step 2: Kernel space threads block thread 1, schedule thread 2
                     document.getElementById("indicator-kernel-t1").className = "thread-indicator blocked";
                     document.getElementById("indicator-kernel-t2").className = "thread-indicator running animate-bounce";
                     document.getElementById("kernel-cpu-state").textContent = "תהליכון 1 חסום | תהליכון 2 רץ על Core 1";
                     document.getElementById("kernel-cpu-state").className = "mt-4 p-3 bg-green-900 text-white font-mono text-[10px] rounded-lg text-center font-bold";
                     
-                    terminal.innerHTML += "<span class='text-green-500 font-bold'>[Kernel Space] מערכת ההפעלה מנהלת את התהליכונים. תהליכון 1 נחסם, אך המתזמן מקצה מעבד אחר לתהליכון 2, שממשיך לרוץ במקביל!</span>";
+                    terminal.innerHTML += "<span class='text-green-500 font-bold'>[Kernel Space] תהליכון 1 נחסם, אך המתזמן מקצה מעבד אחר לתהליכון 2. הבעיה: זה דרש מעבר יקר ל-Kernel!</span><br>";
+                }, 2000);
+
+                setTimeout(() => {
+                    // Step 3: Hybrid threads upcall
+                    document.getElementById("indicator-hybrid-t1").className = "thread-indicator blocked";
+                    document.getElementById("indicator-hybrid-t2").className = "thread-indicator running animate-bounce";
+                    hybridBox.classList.add("border-indigo-400", "shadow-indigo-200");
+                    document.getElementById("hybrid-cpu-state").textContent = "Upcall! תהליכון 2 ממשיך על ה-LWP שהתפנה";
+                    document.getElementById("hybrid-cpu-state").className = "mt-4 p-3 bg-indigo-900 text-white font-mono text-[10px] rounded-lg text-center font-bold";
                     
-                    // Shake user box to show frozen state
-                    userBox.classList.remove("shake-element");
-                    void userBox.offsetWidth;
-                    userBox.classList.add("shake-element");
-                }, 1200);
+                    terminal.innerHTML += "<span class='text-indigo-400 font-bold'>[Hybrid M:N] הגרעין ביצע Upcall לספריית המשתמש והודיע: \"תהליכון 1 נחסם\". הספרייה מיד שיבצה את תהליכון 2 על המעבד הווירטואלי במרחב המשתמש, ללא מעברים מיותרים לליבה!</span>";
+                }, 3000);
             }
 
             function resetThreadsCrashSimulation() {
@@ -3086,6 +3371,8 @@ function showTab(tabId) {
                 document.getElementById("indicator-user-t2").className = "thread-indicator running";
                 document.getElementById("indicator-kernel-t1").className = "thread-indicator running";
                 document.getElementById("indicator-kernel-t2").className = "thread-indicator running";
+                document.getElementById("indicator-hybrid-t1").className = "thread-indicator running";
+                document.getElementById("indicator-hybrid-t2").className = "thread-indicator running";
                 
                 document.getElementById("user-cpu-state").textContent = "סך תהליך מוקצב: ריצה על מעבד (Core 0)";
                 document.getElementById("user-cpu-state").className = "mt-4 p-3 bg-slate-900 text-slate-400 font-mono text-[10px] rounded-lg text-center";
@@ -3093,8 +3380,12 @@ function showTab(tabId) {
                 document.getElementById("kernel-cpu-state").textContent = "סך תהליכונים מוקצב: ריצה במקביל (Core 0 + Core 1)";
                 document.getElementById("kernel-cpu-state").className = "mt-4 p-3 bg-slate-900 text-slate-400 font-mono text-[10px] rounded-lg text-center";
                 
+                document.getElementById("hybrid-cpu-state").textContent = "הקצאה דינמית: ריצה על מעבד וירטואלי (LWP)";
+                document.getElementById("hybrid-cpu-state").className = "mt-4 p-3 bg-slate-900 text-slate-400 font-mono text-[10px] rounded-lg text-center";
+
                 document.getElementById("thread-user-box").className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden transition-all duration-300";
                 document.getElementById("thread-kernel-box").className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden transition-all duration-300";
+                document.getElementById("thread-hybrid-box").className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden transition-all duration-300";
                 
                 document.getElementById("threads-terminal").innerHTML = "[מערכת] הסימולטור מאופס.";
             }
@@ -3108,6 +3399,68 @@ function showTab(tabId) {
             let ipcInstructionB = 1; // 1, 2, 3
             let ipcTslEnabled = false;
             let ipcLock = false; // Hardware Lock
+            let ipcLockOwner = null; // Track who holds the lock
+
+            let ipcEvilSequence = [
+                { type: 'step', arg: 'A' },
+                { type: 'step', arg: 'A' },
+                { type: 'switch' },
+                { type: 'step', arg: 'B' },
+                { type: 'step', arg: 'B' },
+                { type: 'step', arg: 'B' },
+                { type: 'switch' },
+                { type: 'step', arg: 'A' }
+            ];
+            let ipcEvilStepIdx = 0;
+
+            function stepManualEvilSimulation() {
+                if (ipcEvilStepIdx >= ipcEvilSequence.length) {
+                    resetIpcSimulation();
+                    return;
+                }
+                let action = ipcEvilSequence[ipcEvilStepIdx];
+                if (action.type === 'step') {
+                    stepIpcProcess(action.arg);
+                } else if (action.type === 'switch') {
+                    ipcContextSwitch();
+                }
+                ipcEvilStepIdx++;
+            }
+
+            function runAutoEvilSimulation() {
+                resetIpcSimulation();
+                
+                const btn = document.getElementById("btn-ipc-auto-evil");
+                const manualBtn = document.getElementById("btn-ipc-manual-evil");
+                if (btn) {
+                    btn.disabled = true;
+                    btn.classList.add("opacity-50", "cursor-not-allowed");
+                }
+                if (manualBtn) {
+                    manualBtn.disabled = true;
+                    manualBtn.classList.add("opacity-50", "cursor-not-allowed");
+                }
+                
+                let delay = 1800; // Slower transition (1.8s instead of 0.8s)
+                
+                setTimeout(() => { stepIpcProcess('A'); 
+                setTimeout(() => { stepIpcProcess('A'); 
+                setTimeout(() => { ipcContextSwitch(); 
+                setTimeout(() => { stepIpcProcess('B'); 
+                setTimeout(() => { stepIpcProcess('B'); 
+                setTimeout(() => { stepIpcProcess('B'); 
+                setTimeout(() => { ipcContextSwitch(); 
+                setTimeout(() => { stepIpcProcess('A'); 
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.classList.remove("opacity-50", "cursor-not-allowed");
+                    }
+                    if (manualBtn) {
+                        manualBtn.disabled = false;
+                        manualBtn.classList.remove("opacity-50", "cursor-not-allowed");
+                    }
+                }, delay); }, delay); }, delay); }, delay); }, delay); }, delay); }, delay); }, delay);
+            }
 
             function toggleIpcTsl() {
                 const tslToggle = document.getElementById("ipc-tsl-toggle");
@@ -3123,9 +3476,22 @@ function showTab(tabId) {
 
             function stepIpcProcess(proc) {
                 const terminal = document.getElementById("ipc-terminal");
+                const padlock = document.getElementById("ipc-padlock");
+                const blockLine = document.getElementById("ipc-blocking-line");
                 
-                if (ipcTslEnabled && ipcLock && ipcActiveProcess !== proc) {
-                    terminal.innerHTML = "<span class='text-red-500 font-bold'>[TSL Lock] המעבד חסום! תהליך " + ipcActiveProcess + " מחזיק בנעילת החומרה האטומית. תהליך " + proc + " נאלץ לבצע המתנה פעילה.</span>";
+                if (ipcActiveProcess !== proc) {
+                    terminal.innerHTML = "<span class='text-amber-500 font-bold'>[מתזמן] תהליך " + proc + " מנסה לרוץ אך המעבד מוקצה לתהליך " + ipcActiveProcess + ". בצעו Context Switch תחילה!</span>";
+                    return;
+                }
+
+                if (ipcTslEnabled && ipcLock && ipcLockOwner !== proc) {
+                    terminal.innerHTML = "<span class='text-red-500 font-bold'>[TSL Lock] המעבד חסום! תהליך " + ipcLockOwner + " מחזיק בנעילת החומרה. תהליך " + proc + " בהמתנה פעילה (Spinlock).</span>";
+                    
+                    if (blockLine) {
+                        blockLine.classList.remove("opacity-0");
+                        setTimeout(() => blockLine.classList.add("opacity-0"), 1000);
+                    }
+                    
                     const simCard = document.getElementById("ipc-sim-card");
                     if (simCard) {
                         simCard.classList.remove("shake-element");
@@ -3134,16 +3500,14 @@ function showTab(tabId) {
                     }
                     return;
                 }
-                
-                if (ipcActiveProcess !== proc) {
-                    terminal.innerHTML = "<span class='text-amber-500 font-bold'>[מתזמן] תהליך " + proc + " מנסה לרוץ אך המעבד מוקצה לתהליך " + ipcActiveProcess + ". בצעו Context Switch תחילה!</span>";
-                    return;
-                }
 
                 if (proc === 'A') {
                     if (ipcInstructionA === 1) {
                         if (ipcTslEnabled && !ipcLock) {
                             ipcLock = true;
+                            ipcLockOwner = 'A';
+                            if (padlock) padlock.classList.replace("opacity-0", "opacity-100");
+                            if (padlock) padlock.classList.replace("scale-50", "scale-100");
                             terminal.innerHTML = "<span class='text-blue-500 font-bold'>[TSL] תהליך א' ביצע TSL בהצלחה ורכש את מנעול החומרה.</span><br>";
                         }
                         ipcRegA = ipcSharedCounter;
@@ -3171,6 +3535,9 @@ function showTab(tabId) {
                         
                         if (ipcTslEnabled) {
                             ipcLock = false;
+                            ipcLockOwner = null;
+                            if (padlock) padlock.classList.replace("opacity-100", "opacity-0");
+                            if (padlock) padlock.classList.replace("scale-100", "scale-50");
                             terminal.innerHTML += "<br><span class='text-green-500 font-bold'>[TSL] תהליך א' שחרר את מנעול החומרה.</span>";
                         }
                         checkIpcRaceCondition();
@@ -3180,6 +3547,9 @@ function showTab(tabId) {
                     if (ipcInstructionB === 1) {
                         if (ipcTslEnabled && !ipcLock) {
                             ipcLock = true;
+                            ipcLockOwner = 'B';
+                            if (padlock) padlock.classList.replace("opacity-0", "opacity-100");
+                            if (padlock) padlock.classList.replace("scale-50", "scale-100");
                             terminal.innerHTML = "<span class='text-blue-500 font-bold'>[TSL] תהליך ב' ביצע TSL בהצלחה ורכש את מנעול החומרה.</span><br>";
                         }
                         ipcRegB = ipcSharedCounter;
@@ -3207,6 +3577,9 @@ function showTab(tabId) {
                         
                         if (ipcTslEnabled) {
                             ipcLock = false;
+                            ipcLockOwner = null;
+                            if (padlock) padlock.classList.replace("opacity-100", "opacity-0");
+                            if (padlock) padlock.classList.replace("scale-100", "scale-50");
                             terminal.innerHTML += "<br><span class='text-green-500 font-bold'>[TSL] תהליך ב' שחרר את מנעול החומרה.</span>";
                         }
                         checkIpcRaceCondition();
@@ -3256,6 +3629,8 @@ function showTab(tabId) {
                 ipcInstructionA = 1;
                 ipcInstructionB = 1;
                 ipcLock = false;
+                ipcLockOwner = null;
+                ipcEvilStepIdx = 0;
                 
                 const sharedEl = document.getElementById("ipc-shared-counter");
                 if (sharedEl) sharedEl.textContent = ipcSharedCounter;
@@ -3264,6 +3639,10 @@ function showTab(tabId) {
                 const regBEl = document.getElementById("ipc-reg-b-display");
                 if (regAEl) regAEl.textContent = "RegA: -";
                 if (regBEl) regBEl.textContent = "RegB: -";
+                
+                const padlock = document.getElementById("ipc-padlock");
+                if (padlock) padlock.classList.replace("opacity-100", "opacity-0");
+                if (padlock) padlock.classList.replace("scale-100", "scale-50");
                 
                 const boxA = document.getElementById("ipc-process-a-box");
                 const boxB = document.getElementById("ipc-process-b-box");
@@ -3281,6 +3660,84 @@ function showTab(tabId) {
                 
                 const terminal = document.getElementById("ipc-terminal");
                 if (terminal) terminal.innerHTML = "[מערכת] הסימולטור מאופס.";
+            }
+
+            // 1.5 Round Robin Quantum Simulator State
+            function updateQuantumSimulation() {
+                const slider = document.getElementById("quantum-slider");
+                const valDisplay = document.getElementById("quantum-value-display");
+                const timeline = document.getElementById("quantum-gantt-timeline");
+                const csEl = document.getElementById("quantum-cs-count");
+                const utilEl = document.getElementById("quantum-cpu-util");
+                const respEl = document.getElementById("quantum-resp-time");
+                const terminal = document.getElementById("quantum-terminal");
+
+                const qVal = parseInt(slider.value);
+                valDisplay.textContent = `${qVal}ms`;
+
+                timeline.innerHTML = "";
+
+                let p1_rem = 15;
+                let p2_rem = 10;
+                let p3_rem = 8;
+                let csCount = 0;
+                let timelineHTML = "";
+                let totalTime = 0;
+
+                let queue = ['P1', 'P2', 'P3'];
+
+                while (queue.length > 0 && totalTime < 100) {
+                    let proc = queue.shift();
+                    let runTime = 0;
+
+                    if (proc === 'P1') {
+                        runTime = Math.min(qVal, p1_rem);
+                        p1_rem -= runTime;
+                    } else if (proc === 'P2') {
+                        runTime = Math.min(qVal, p2_rem);
+                        p2_rem -= runTime;
+                    } else if (proc === 'P3') {
+                        runTime = Math.min(qVal, p3_rem);
+                        p3_rem -= runTime;
+                    }
+
+                    if (totalTime > 0) {
+                        timelineHTML += `<div class="gantt-block cs" style="flex-grow: 1;" title="החלפת הקשר: 1ms">CS</div>`;
+                        totalTime += 1;
+                        csCount++;
+                    }
+
+                    const procClass = proc.toLowerCase();
+                    timelineHTML += `<div class="gantt-block ${procClass}" style="flex-grow: ${runTime * 2};" title="${proc} רץ לפרק זמן של ${runTime}ms">${proc}</div>`;
+                    totalTime += runTime;
+
+                    if (proc === 'P1' && p1_rem > 0) queue.push('P1');
+                    if (proc === 'P2' && p2_rem > 0) queue.push('P2');
+                    if (proc === 'P3' && p3_rem > 0) queue.push('P3');
+                }
+
+                timeline.innerHTML = timelineHTML;
+
+                const cpuTime = 33;
+                const totalSimTime = cpuTime + csCount;
+                const efficiency = Math.round((cpuTime / totalSimTime) * 100);
+
+                csEl.textContent = csCount;
+                utilEl.textContent = `${efficiency}%`;
+
+                if (qVal <= 5) {
+                    respEl.textContent = "מעולה (מיידי)";
+                    respEl.className = "font-bold text-green-600 text-xs";
+                    terminal.innerHTML = `[ניתוח] קוואנטה קטנה (${qVal}ms) מעניקה <b>זמן תגובה מצוין</b>. המעבד עובר במהירות בין המשימות וכל משתמש מרגיש שהמערכת מגיבה מיידית. עם זאת, התקורה של החלפות הקשר עצומה (${csCount} החלפות), וניצולת המעבד ירדה ל-${efficiency}% בלבד.`;
+                } else if (qVal <= 25) {
+                    respEl.textContent = "טוב ומאוזן";
+                    respEl.className = "font-bold text-blue-600 text-xs";
+                    terminal.innerHTML = `[ניתוח] קוואנטה מאוזנת (${qVal}ms) מאזנת היטב בין ביצועים לבין תגובתיות. כמות החלפות ההקשר סבירה (${csCount}), והניצולת עומדת על ${efficiency}%. זו הבחירה הטיפוסית במערכות שולחניות.`;
+                } else {
+                    respEl.textContent = "איטי (לאג)";
+                    respEl.className = "font-bold text-red-600 text-xs";
+                    terminal.innerHTML = `[ניתוח] קוואנטה גדולה (${qVal}ms) מונעת כמעט לחלוטין את החלפות ההקשר (רק ${csCount} החלפות), וניצולת המעבד מעולה (${efficiency}%). עם זאת, <b>זמן התגובה גרוע</b>. תהליכים אינטראקטיביים קטנים (כמו P3) נאלצים להמתין זמן ארוך מאוד בתור עד שתהליכים ארוכים (כמו P1) יסיימו את פרוסת הזמן הארוכה שלהם.`;
+                }
             }
 
             // --- 2.4 Live Gantt Chart Builder JS ---
@@ -3309,13 +3766,19 @@ function showTab(tabId) {
             function runSchedulingSimulation() {
                 if (schedInterval) clearInterval(schedInterval);
                 
+                const p1Arr = parseInt(document.getElementById("sched-p1-arr").value);
+                const p2Arr = parseInt(document.getElementById("sched-p2-arr").value);
+                const p3Arr = parseInt(document.getElementById("sched-p3-arr").value);
+                
                 const p1 = parseInt(document.getElementById("sched-p1-burst").value);
                 const p2 = parseInt(document.getElementById("sched-p2-burst").value);
                 const p3 = parseInt(document.getElementById("sched-p3-burst").value);
+                
                 const algo = document.getElementById("sched-algo-select").value;
                 const quantum = parseInt(document.getElementById("sched-quantum-slider").value);
                 
                 const timeline = document.getElementById("sched-gantt-timeline");
+                const rqItems = document.getElementById("sched-ready-queue-items");
                 const btn = document.getElementById("btn-sched-run");
                 const terminal = document.getElementById("sched-terminal");
                 
@@ -3323,82 +3786,151 @@ function showTab(tabId) {
                 btn.classList.add("opacity-50", "cursor-not-allowed");
                 
                 timeline.innerHTML = "";
-                terminal.innerHTML = "[מתזמן] מתחיל לתזמן משימות באמצעות אלגוריתם " + algo + "...<br>";
+                rqItems.innerHTML = "";
+                terminal.innerHTML = "[מתזמן] מבצע תזמון " + algo + " עם התחשבות בזמני הגעה...<br>";
                 
                 let tasks = [
-                    { name: 'P1', burst: p1, rem: p1, start: -1, end: -1, wait: 0 },
-                    { name: 'P2', burst: p2, rem: p2, start: -1, end: -1, wait: 0 },
-                    { name: 'P3', burst: p3, rem: p3, start: -1, end: -1, wait: 0 }
+                    { name: 'P1', arr: p1Arr, burst: p1, rem: p1, start: -1, end: -1, wait: 0, css: 'p1' },
+                    { name: 'P2', arr: p2Arr, burst: p2, rem: p2, start: -1, end: -1, wait: 0, css: 'p2' },
+                    { name: 'P3', arr: p3Arr, burst: p3, rem: p3, start: -1, end: -1, wait: 0, css: 'p3' }
                 ];
                 
+                let time = 0;
+                let completed = 0;
                 let gantt = [];
-                let totalTime = 0;
+                let animStates = [];
+                let readyQueue = [];
+                let running = null;
+                let rrCounter = 0;
                 let csCount = 0;
                 
-                if (algo === 'FCFS') {
-                    tasks.forEach(t => {
-                        t.start = totalTime;
-                        t.wait = totalTime;
-                        gantt.push({ name: t.name, duration: t.burst });
-                        totalTime += t.burst;
-                        t.end = totalTime;
-                    });
-                } 
-                else if (algo === 'SJF') {
-                    let sorted = [...tasks].sort((a, b) => a.burst - b.burst);
-                    sorted.forEach(t => {
-                        t.start = totalTime;
-                        t.wait = totalTime;
-                        gantt.push({ name: t.name, duration: t.burst });
-                        totalTime += t.burst;
-                        t.end = totalTime;
-                        let orig = tasks.find(x => x.name === t.name);
-                        if (orig) orig.wait = t.wait;
-                    });
-                }
-                else if (algo === 'RR') {
-                    let queue = [...tasks];
-                    let lastProc = null;
+                while (completed < 3 && time < 150) {
+                    let arrived = tasks.filter(t => t.arr === time);
+                    if (arrived.length > 0) readyQueue.push(...arrived);
                     
-                    while (queue.length > 0) {
-                        let t = queue.shift();
-                        let run = Math.min(t.rem, quantum);
-                        
-                        if (lastProc !== null && lastProc !== t.name) {
-                            gantt.push({ name: 'CS', duration: 1 }); // 1ms overhead
-                            totalTime += 1;
-                            csCount++;
+                    if (algo === 'FCFS') {
+                        if (!running && readyQueue.length > 0) {
+                            running = readyQueue.shift();
+                            if (running.start === -1) running.start = time;
                         }
-                        
-                        if (t.start === -1) t.start = totalTime;
-                        
-                        gantt.push({ name: t.name, duration: run });
-                        t.rem -= run;
-                        totalTime += run;
-                        lastProc = t.name;
-                        
-                        if (t.rem > 0) {
-                            queue.push(t);
-                        } else {
-                            t.end = totalTime;
-                            t.wait = (t.end - 0) - t.burst - csCount;
-                            if (t.wait < 0) t.wait = 0;
+                    } 
+                    else if (algo === 'SJF') {
+                        if (!running && readyQueue.length > 0) {
+                            readyQueue.sort((a, b) => a.burst - b.burst);
+                            running = readyQueue.shift();
+                            if (running.start === -1) running.start = time;
                         }
                     }
+                    else if (algo === 'SRTN') {
+                        if (readyQueue.length > 0) {
+                            readyQueue.sort((a, b) => a.rem - b.rem);
+                            if (!running) {
+                                running = readyQueue.shift();
+                                if (running.start === -1) running.start = time;
+                            } else if (readyQueue[0].rem < running.rem) {
+                                readyQueue.push(running);
+                                running = readyQueue.shift();
+                                csCount++;
+                                if (gantt.length > 0 && gantt[gantt.length-1].name !== 'CS') {
+                                    gantt.push({ name: 'CS', duration: 1, css: 'cs' });
+                                    animStates.push({time: time, running: 'CS', rq: readyQueue.map(t=>t.name)});
+                                    time++;
+                                    continue; 
+                                }
+                                if (running.start === -1) running.start = time;
+                            }
+                        }
+                    }
+                    else if (algo === 'RR') {
+                        if (running && rrCounter === quantum) {
+                            readyQueue.push(running);
+                            running = null;
+                            rrCounter = 0;
+                            csCount++;
+                            gantt.push({ name: 'CS', duration: 1, css: 'cs' });
+                            animStates.push({time: time, running: 'CS', rq: readyQueue.map(t=>t.name)});
+                            time++;
+                            let arrivedCS = tasks.filter(t => t.arr === time);
+                            if (arrivedCS.length > 0) readyQueue.push(...arrivedCS);
+                        }
+                        if (!running && readyQueue.length > 0) {
+                            running = readyQueue.shift();
+                            if (running.start === -1) running.start = time;
+                            rrCounter = 0;
+                        }
+                    }
+                    
+                    if (running) {
+                        running.rem--;
+                        rrCounter++;
+                        if (gantt.length > 0 && gantt[gantt.length-1].name === running.name) {
+                            gantt[gantt.length-1].duration++;
+                        } else {
+                            gantt.push({ name: running.name, duration: 1, css: running.css });
+                        }
+                        animStates.push({time: time, running: running.name, rq: readyQueue.map(t=>t.name)});
+                        
+                        if (running.rem === 0) {
+                            running.end = time + 1;
+                            running.wait = running.end - running.arr - running.burst;
+                            completed++;
+                            running = null;
+                            rrCounter = 0;
+                        }
+                    } else {
+                        if (gantt.length > 0 && gantt[gantt.length-1].name === 'Idle') {
+                            gantt[gantt.length-1].duration++;
+                        } else {
+                            gantt.push({ name: 'Idle', duration: 1, css: 'idle' });
+                        }
+                        animStates.push({time: time, running: 'Idle', rq: readyQueue.map(t=>t.name)});
+                    }
+                    time++;
                 }
                 
                 let step = 0;
+                let currentGanttIdx = 0;
+                let currentGanttDur = 0;
+                
                 schedInterval = setInterval(() => {
-                    if (step < gantt.length) {
-                        let item = gantt[step];
-                        let block = document.createElement("div");
-                        block.className = "gantt-block " + item.name.toLowerCase();
-                        block.style.width = (item.duration / totalTime) * 100 + "%";
-                        block.textContent = item.name;
-                        block.title = item.name + ": " + item.duration + "ms";
-                        timeline.appendChild(block);
+                    if (step < animStates.length) {
+                        let state = animStates[step];
                         
-                        terminal.innerHTML += "[זמן = " + step + "] מריץ את " + item.name + "<br>";
+                        // Update RQ UI
+                        rqItems.innerHTML = "";
+                        state.rq.forEach(qItem => {
+                            let itemDiv = document.createElement("div");
+                            itemDiv.className = "px-2 py-0.5 text-[10px] font-bold text-white rounded " + qItem.toLowerCase();
+                            itemDiv.textContent = qItem;
+                            rqItems.appendChild(itemDiv);
+                        });
+                        if (state.rq.length === 0) {
+                            rqItems.innerHTML = "<span class='text-[10px] text-slate-300 italic'>Empty</span>";
+                        }
+                        
+                        // Update Gantt UI
+                        let blockInfo = gantt[currentGanttIdx];
+                        currentGanttDur++;
+                        
+                        // Check if we need a new block
+                        let blockEl = timeline.children[currentGanttIdx];
+                        if (!blockEl) {
+                            blockEl = document.createElement("div");
+                            blockEl.className = "gantt-block " + blockInfo.css;
+                            blockEl.textContent = blockInfo.name;
+                            timeline.appendChild(blockEl);
+                            terminal.innerHTML += "[t=" + state.time + "] מריץ את " + state.running + "<br>";
+                            terminal.scrollTop = terminal.scrollHeight;
+                        }
+                        
+                        // Expand width (relative to total time)
+                        blockEl.style.width = ((currentGanttDur / time) * 100) + "%";
+                        
+                        if (currentGanttDur === blockInfo.duration) {
+                            currentGanttIdx++;
+                            currentGanttDur = 0;
+                        }
+                        
                         step++;
                     } else {
                         clearInterval(schedInterval);
@@ -3407,7 +3939,7 @@ function showTab(tabId) {
                         let avgWait = (sumWait / tasks.length).toFixed(1);
                         
                         let totalCompute = p1 + p2 + p3;
-                        let util = Math.round((totalCompute / totalTime) * 100);
+                        let util = Math.round((totalCompute / time) * 100);
                         
                         document.getElementById("sched-cs-count").textContent = csCount;
                         document.getElementById("sched-utilization").textContent = util + "%";
@@ -3416,15 +3948,18 @@ function showTab(tabId) {
                         btn.disabled = false;
                         btn.classList.remove("opacity-50", "cursor-not-allowed");
                         
-                        terminal.innerHTML += "<span class='text-green-500 font-bold'>[סיום] תזמון המשימות הושלם.</span>";
+                        terminal.innerHTML += "<span class='text-green-500 font-bold'>[סיום] תזמון הושלם ב-" + time + "ms.</span>";
                     }
-                }, 400);
+                }, 200);
             }
 
             function resetSchedulingSimulation() {
                 if (schedInterval) clearInterval(schedInterval);
                 const timeline = document.getElementById("sched-gantt-timeline");
                 if (timeline) timeline.innerHTML = '<div class="flex items-center justify-center text-slate-500 text-xs w-full">לחצו "הרץ תזמון" כדי להדגים</div>';
+                
+                const rqItems = document.getElementById("sched-ready-queue-items");
+                if (rqItems) rqItems.innerHTML = "";
                 
                 const csCountEl = document.getElementById("sched-cs-count");
                 const utilEl = document.getElementById("sched-utilization");
@@ -3453,16 +3988,20 @@ function showTab(tabId) {
             
             function setPhiloMode(mode) {
                 philoMode = mode;
-                const btnNaive = document.getElementById("btn-philo-naive");
-                const btnAsym = document.getElementById("btn-philo-asym");
+                const btns = {
+                    'naive': document.getElementById("btn-philo-naive"),
+                    'asymmetric': document.getElementById("btn-philo-asym"),
+                    'state_array': document.getElementById("btn-philo-state"),
+                    'random_wait': document.getElementById("btn-philo-random")
+                };
                 
-                if (btnNaive && btnAsym) {
-                    if (mode === 'naive') {
-                        btnNaive.className = "w-full text-right p-3 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 font-bold text-xs transition-all cursor-pointer";
-                        btnAsym.className = "w-full text-right p-3 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium text-xs transition-all hover:bg-slate-50 cursor-pointer";
-                    } else {
-                        btnAsym.className = "w-full text-right p-3 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 font-bold text-xs transition-all cursor-pointer";
-                        btnNaive.className = "w-full text-right p-3 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium text-xs transition-all hover:bg-slate-50 cursor-pointer";
+                for (let key in btns) {
+                    if (btns[key]) {
+                        if (key === mode) {
+                            btns[key].className = "w-full text-right p-3 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 font-bold text-xs transition-all cursor-pointer";
+                        } else {
+                            btns[key].className = "w-full text-right p-3 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium text-xs transition-all hover:bg-slate-50 cursor-pointer";
+                        }
                     }
                 }
                 resetPhiloSimulation();
@@ -3574,8 +4113,12 @@ function showTab(tabId) {
                 philoStep++;
                 if (philoMode === 'naive') {
                     runNaiveStep();
-                } else {
+                } else if (philoMode === 'asymmetric') {
                     runAsymmetricStep();
+                } else if (philoMode === 'state_array') {
+                    runStateArrayStep();
+                } else if (philoMode === 'random_wait') {
+                    runRandomWaitStep();
                 }
                 updatePhiloUI();
             }
@@ -3614,12 +4157,12 @@ function showTab(tabId) {
                     chopStates[0] = 1;
                     chopStates[1] = 2;
                     chopStates[2] = 3;
-                    terminal.innerHTML = "<b>שלב 2:</b> פילוסופים P0 עד P3 מרימים את מקל שמאל. פילוסוף P4 (החמישי) מנסה להרים קודם את ימין (C4) אך הוא תפוס ע\"י P0. P4 ממתין ולא מרים את מקל שמאל (C3). מקל C3 נותר פנוי!";
+                    terminal.innerHTML = "<b>שלב 2:</b> פילוסופים P0 עד P3 מרימים את מקל שמאל. פילוסוף P4 מנסה להרים קודם ימין (C4) אך הוא תפוס ע\"י P0. P4 ממתין. מקל C3 פנוי!";
                 }
                 else if (philoStep === 3) {
                     chopStates[3] = 3;
                     philoStates[3] = 'Eating';
-                    terminal.innerHTML = "<b>שלב 3:</b> פילוסוף P3 מזהה שמקל ימין שלו (C3) פנוי, מרים אותו ומתחיל לאכול (Eating)! המעגל הלוגי נקטע.";
+                    terminal.innerHTML = "<b>שלב 3:</b> P3 מזהה שמקל ימין (C3) פנוי, מרים אותו ומתחיל לאכול! המעגל הלוגי נקטע.";
                 }
                 else if (philoStep === 4) {
                     chopStates[2] = -1;
@@ -3627,12 +4170,69 @@ function showTab(tabId) {
                     philoStates[3] = 'Thinking';
                     chopStates[2] = 2;
                     philoStates[2] = 'Eating';
-                    terminal.innerHTML = "<b>שלב 4:</b> פילוסוף P3 סיים לאכול וחזר לחשוב, שחרר את C2 ו-C3. פילוסוף P2 מרים את C2 ששוחרר ומתחיל לאכול.";
+                    terminal.innerHTML = "<b>שלב 4:</b> P3 סיים, שחרר מקלות. P2 מרים את המקל ששוחרר ואוכל.";
                 }
                 else if (philoStep === 5) {
                     philoStates = ['Thinking', 'Thinking', 'Thinking', 'Thinking', 'Thinking'];
                     chopStates = [-1, -1, -1, -1, -1];
-                    terminal.innerHTML = "<b>שלב 5:</b> שאר הפילוסופים אוכלים ומסיימים בתורם. הסימולציה הושלמה ללא קיפאון!";
+                    terminal.innerHTML = "<b>שלב 5:</b> שאר הפילוסופים אוכלים בתורם. הסימולציה הושלמה ללא קיפאון!";
+                    philoStep = 0;
+                }
+            }
+
+            function runStateArrayStep() {
+                const terminal = document.getElementById("philo-terminal");
+                if (philoStep === 1) {
+                    philoStates = ['Hungry', 'Hungry', 'Hungry', 'Hungry', 'Hungry'];
+                    terminal.innerHTML = "<b>שלב 1:</b> כולם רעבים. לפי אלגוריתם מערך המצבים, ההרמה מותנית במצב השכנים תחת נעילת Mutex.";
+                } 
+                else if (philoStep === 2) {
+                    philoStates[0] = 'Eating';
+                    chopStates[4] = 0;
+                    chopStates[0] = 0;
+                    terminal.innerHTML = "<b>שלב 2:</b> P0 נועל Mutex, בודק שכנים (P4 ו-P1 שרעבים אך לא אוכלים), ומצליח להרים את שני המקלות באופן אטומי ולאכול.";
+                }
+                else if (philoStep === 3) {
+                    terminal.innerHTML = "<b>שלב 3:</b> P1 נועל Mutex ובודק שכנים. מכיוון ש-P0 אוכל, P1 לא מרים מקלות ונרדם על סמפור.";
+                }
+                else if (philoStep === 4) {
+                    philoStates[2] = 'Eating';
+                    chopStates[1] = 2;
+                    chopStates[2] = 2;
+                    terminal.innerHTML = "<b>שלב 4:</b> P2 בודק שכנים. P1 ישן, P3 רעב. P2 יכול לאכול! הוא מרים שני מקלות אטומית ואוכל במקביל ל-P0.";
+                }
+                else if (philoStep === 5) {
+                    philoStates = ['Thinking', 'Thinking', 'Thinking', 'Thinking', 'Thinking'];
+                    chopStates = [-1, -1, -1, -1, -1];
+                    terminal.innerHTML = "<b>שלב 5:</b> P0 ו-P2 מסיימים ומעירים את שכניהם (P1 ו-P3). כולם מסיימים ללא קיפאון ומנצלים מקסימום מקביליות!";
+                    philoStep = 0;
+                }
+            }
+
+            function runRandomWaitStep() {
+                const terminal = document.getElementById("philo-terminal");
+                if (philoStep === 1) {
+                    philoStates = ['Hungry', 'Hungry', 'Hungry', 'Hungry', 'Hungry'];
+                    terminal.innerHTML = "<b>שלב 1:</b> כל הפילוסופים רעבים בו זמנית.";
+                } 
+                else if (philoStep === 2) {
+                    for (let i = 0; i < 5; i++) chopStates[(i - 1 + 5) % 5] = i;
+                    terminal.innerHTML = "<b>שלב 2:</b> כולם הרימו מקל שמאלי (כמו הנאיבי). אך כעת הם בודקים את מקל ימין ומגלים שהוא תפוס.";
+                }
+                else if (philoStep === 3) {
+                    chopStates = [-1, -1, -1, -1, -1];
+                    terminal.innerHTML = "<b>שלב 3:</b> במקום להמתין לנצח, כל פילוסוף משחרר את מקל שמאל ומגריל זמן המתנה אקראי (Random Backoff) לפני הניסיון הבא.";
+                }
+                else if (philoStep === 4) {
+                    philoStates[1] = 'Eating';
+                    chopStates[0] = 1;
+                    chopStates[1] = 1;
+                    terminal.innerHTML = "<b>שלב 4:</b> P1 הגריל את זמן ההמתנה הקצר ביותר! הוא מתעורר ראשון, מוצא את שני המקלות פנויים, ומתחיל לאכול. הקיפאון נמנע.";
+                }
+                else if (philoStep === 5) {
+                    philoStates = ['Thinking', 'Thinking', 'Thinking', 'Thinking', 'Thinking'];
+                    chopStates = [-1, -1, -1, -1, -1];
+                    terminal.innerHTML = "<b>שלב 5:</b> הסימולציה מסתיימת (Livelock נמנע סטטיסטית).";
                     philoStep = 0;
                 }
             }
@@ -3858,6 +4458,7 @@ function showTab(tabId) {
             window.toggleSchedQuantumSlider = toggleSchedQuantumSlider;
             window.updateSchedQuantumDisplay = updateSchedQuantumDisplay;
             window.runSchedulingSimulation = runSchedulingSimulation;
+            window.updateQuantumSimulation = updateQuantumSimulation;
             window.resetSchedulingSimulation = resetSchedulingSimulation;
             window.setPhiloMode = setPhiloMode;
             window.stepPhiloSimulation = stepPhiloSimulation;

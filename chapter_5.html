@@ -149,26 +149,30 @@
         }
 
     </style>
+    <script src="theme-manager.js"></script>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex selection:bg-blue-200 selection:text-blue-900">
 
-    <!-- Mobile Overlay -->
-    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleSidebar()"></div>
 
-    <!-- Toggle Button -->
-    <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="fixed top-6 right-84 z-50 bg-white text-slate-700 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-slate-50 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all group lg:hidden">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-    </button>
+
 
     <!-- Sidebar -->
     <aside id="sidebar" class="w-80 min-w-[20rem] bg-dark text-slate-300 flex flex-col h-screen sticky top-0 border-l border-slate-800 shadow-2xl z-50">
         <!-- Header -->
-        <div class="p-8 border-b border-slate-800/80 bg-darker/50 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-            <h1 class="text-3xl font-black text-white tracking-tight mb-2 relative z-10">פרק 5</h1>
-            <p class="text-blue-400 font-medium text-sm relative z-10">קלט/פלט (I/O)</p>
+        <div class="p-6 border-b border-slate-800 bg-darker">
+            <h1 class="text-3xl font-black text-white tracking-tight leading-tight">מערכות<br><span
+                    class="text-sky-500">הפעלה</span></h1>
+            <p class="text-xs text-slate-400 mt-2">כרך א': יסודות ומבנה פרק 5</p>
+
+            <div class="mt-4">
+                <a href="index.html"
+                    class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 12l9-9m-9 9l9 9" />
+                    </svg>
+                    חזרה לדף הבית
+                </a>
+            </div>
         </div>
 
         <!-- Navigation -->
@@ -237,6 +241,9 @@
 
         <div class="max-w-5xl mx-auto p-8 lg:p-12 pb-24">
             
+            <div id="content-area" class="relative min-h-[60vh]">
+
+                <div id="tab-intro" class="tab-content active">
             <header class="mb-12 bg-white p-8 rounded-2xl shadow-sm border border-slate-200/60 relative overflow-hidden">
                 <div class="absolute -left-10 -top-10 bg-blue-50 w-40 h-40 rounded-full blur-3xl opacity-60"></div>
                 <h2 id="main-title" class="text-4xl font-black text-slate-900 tracking-tight relative z-10 flex items-center gap-4">
@@ -245,10 +252,6 @@
                 </h2>
                 <p class="text-slate-500 mt-4 font-medium text-lg relative z-10 ml-16 leading-relaxed">סיכום מלא של מבנה החומרה, ניהול פסיקות, DMA, מבנה התוכנה השכבתית ואלגוריתמי תזמון דיסקים.</p>
             </header>
-
-            <div id="content-area" class="relative min-h-[60vh]">
-
-                <div id="tab-intro" class="tab-content active">
 <!-- 5.0 מבוא -->
 
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
@@ -476,6 +479,16 @@
                                     <div class="text-xl">💾</div>
                                     <div class="text-xs font-bold text-white mt-1">זיכרון (RAM)</div>
                                     <div class="text-[9px] text-slate-500 font-mono mt-1 uppercase" id="sim51-ram-status">WAITING</div>
+                                </div>
+                            </div>
+
+                            <!-- System Bus Visual -->
+                            <div class="relative mt-2 px-6 z-10">
+                                <div class="h-2 w-full bg-slate-800 rounded-full flex items-center justify-center overflow-hidden border border-slate-700/50">
+                                    <div id="sim51-bus-line" class="h-full w-full bg-slate-700 transition-colors duration-200"></div>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest">System Bus</span>
                                 </div>
                             </div>
 
@@ -782,13 +795,27 @@
                         <!-- Controls -->
                         <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between md:col-span-1">
                             <div class="space-y-4">
-                                <div>
-                                    <button id="sim54-start-btn" onclick="startSim54()" class="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-500 transition-all text-xs flex items-center justify-center gap-1 shadow-md shadow-emerald-950/30">
-                                        <span>▶️</span> הרץ הדמיה
-                                    </button>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-slate-400 mb-1 flex justify-between">
+                                            <span>מהירות רשת (Producer):</span>
+                                            <span id="sim54-prod-val" class="font-mono text-emerald-400">6</span>
+                                        </label>
+                                        <input type="range" id="sim54-prod-speed" min="2" max="15" value="6" class="w-full accent-emerald-500" oninput="document.getElementById('sim54-prod-val').textContent = this.value">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-slate-400 mb-1 flex justify-between">
+                                            <span>קצב צריכה (Consumer):</span>
+                                            <span id="sim54-cons-val" class="font-mono text-amber-400">8</span>
+                                        </label>
+                                        <input type="range" id="sim54-cons-speed" min="2" max="15" value="8" class="w-full accent-amber-500" oninput="document.getElementById('sim54-cons-val').textContent = this.value">
+                                    </div>
                                 </div>
-                                <div>
-                                    <button id="sim54-reset-btn" onclick="resetSim54()" class="w-full py-2 rounded-lg bg-slate-800 text-slate-300 font-bold hover:bg-slate-750 transition-all text-xs border border-slate-700">
+                                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-700/50">
+                                    <button id="sim54-start-btn" onclick="startSim54()" class="py-2 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-500 transition-all text-xs flex items-center justify-center gap-1 shadow-md shadow-emerald-950/30">
+                                        <span>▶️</span> התחל
+                                    </button>
+                                    <button id="sim54-reset-btn" onclick="resetSim54()" class="py-2 rounded-lg bg-slate-800 text-slate-300 font-bold hover:bg-slate-750 transition-all text-xs border border-slate-700">
                                         <span>🔄</span> אפס
                                     </button>
                                 </div>
@@ -1183,7 +1210,7 @@
                         <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col gap-4 md:col-span-1">
                             <div>
                                 <label class="block text-xs text-slate-400 mb-1.5">אלגוריתם:</label>
-                                <select id="sim53-algo" class="w-full bg-slate-850 border border-slate-700 text-slate-350 rounded-lg p-2 text-xs focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                                <select id="sim53-algo" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2 text-xs focus:ring-1 focus:ring-amber-500 focus:outline-none">
                                     <option value="fcfs">FCFS (First-Come, First-Served)</option>
                                     <option value="sstf">SSTF (Shortest Seek Time First)</option>
                                     <option value="scan">SCAN (Elevator)</option>
@@ -1193,12 +1220,12 @@
 
                             <div>
                                 <label class="block text-xs text-slate-400 mb-1.5">מיקום התחלתי (0-199):</label>
-                                <input type="number" id="sim53-start-pos" min="0" max="199" value="50" class="w-full bg-slate-850 border border-slate-700 text-slate-300 rounded-lg p-2 text-xs font-mono focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                                <input type="number" id="sim53-start-pos" min="0" max="199" value="50" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2 text-xs font-mono focus:ring-1 focus:ring-amber-500 focus:outline-none">
                             </div>
 
                             <div>
                                 <label class="block text-xs text-slate-400 mb-1.5">תור בקשות (צילינדרים):</label>
-                                <input type="text" id="sim53-queue" value="98, 183, 37, 122, 14, 124, 65, 67" class="w-full bg-slate-850 border border-slate-700 text-slate-300 rounded-lg p-2 text-xs font-mono focus:ring-1 focus:ring-amber-500 focus:outline-none" placeholder="למשל: 50, 120, 10">
+                                <input type="text" id="sim53-queue" value="98, 183, 37, 122, 14, 124, 65, 67" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2 text-xs font-mono focus:ring-1 focus:ring-amber-500 focus:outline-none" placeholder="למשל: 50, 120, 10">
                                 <div class="flex gap-2 mt-1.5">
                                     <button onclick="generateRandomSim53Queue()" class="flex-1 py-1 rounded bg-slate-800 text-[10px] text-slate-300 hover:bg-slate-700 border border-slate-750">אקראי</button>
                                     <button onclick="clearSim53Queue()" class="flex-1 py-1 rounded bg-slate-800 text-[10px] text-slate-300 hover:bg-slate-700 border border-slate-750">נקה</button>
@@ -1223,7 +1250,7 @@
                         <!-- Graph & Table visualization -->
                         <div class="md:col-span-3 flex flex-col gap-4">
                             <!-- Visual Track / Chart -->
-                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 relative h-[180px] overflow-hidden flex flex-col justify-between">
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 relative h-[300px] overflow-hidden flex flex-col justify-between">
                                 <div class="flex justify-between text-[9px] text-slate-500 font-mono border-b border-slate-900 pb-1">
                                     <span>0 (פנים הדיסק)</span>
                                     <span>50</span>
@@ -1233,7 +1260,7 @@
                                 </div>
 
                                 <!-- Seek Graph SVG -->
-                                <div class="relative w-full h-[120px] bg-slate-900/30 rounded border border-slate-900 flex items-center">
+                                <div class="relative w-full h-[240px] bg-slate-900/30 rounded border border-slate-900 flex items-center">
                                     <svg id="sim53-graph-svg" class="w-full h-full absolute inset-0 z-10">
                                         <!-- Seek lines will be drawn here dynamically -->
                                     </svg>
@@ -1368,9 +1395,15 @@
                                                         <button id="wd-disable-btn" onclick="toggleWatchdog(false)" class="px-3 py-2 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-red-650/20 text-red-400 border-red-500/30">כבוי</button>
                                                     </div>
                                                 </div>
-                                                <div class="pt-2">
-                                                    <button id="wd-freeze-btn" onclick="triggerWdFreeze()" class="w-full py-2.5 rounded-lg bg-red-600 text-white font-bold hover:bg-red-500 transition-all text-xs shadow-md shadow-red-900/30 flex items-center justify-center gap-1">
-                                                        <span>🚨</span> הרץ לולאה אינסופית (הקפא מערכת)
+                                                <div class="pt-2 border-t border-slate-700/50">
+                                                    <label class="block text-xs text-slate-400 mb-1.5 flex justify-between">
+                                                        <span>עומס מעבד (CPU Load):</span>
+                                                        <span id="wd-load-val" class="font-mono text-amber-400">20%</span>
+                                                    </label>
+                                                    <input type="range" id="wd-cpu-load" min="0" max="100" value="20" class="w-full accent-amber-500 mb-3" oninput="document.getElementById('wd-load-val').textContent = this.value + '%'">
+                                                    
+                                                    <button id="wd-freeze-btn" onclick="triggerWdFreeze()" class="w-full py-2 rounded-lg bg-red-600/20 border border-red-500/50 text-red-400 font-bold hover:bg-red-600 hover:text-white transition-all text-xs shadow-md shadow-red-900/10 flex items-center justify-center gap-1">
+                                                        <span>🚨</span> הרץ לולאה אינסופית
                                                     </button>
                                                 </div>
                                             </div>
@@ -2102,6 +2135,8 @@
             document.getElementById('sim51-task-desc').textContent = 'Idle';
             document.getElementById('sim51-cpu-box').className = "bg-slate-900 p-3 rounded-lg border border-slate-800 transition-all";
             document.getElementById('sim51-cpu-emoji').textContent = "💻";
+            const busLine = document.getElementById('sim51-bus-line');
+            if (busLine) busLine.className = "h-full w-full bg-slate-700 transition-colors duration-200";
             document.getElementById('sim51-log-lines').innerHTML = '<div class="text-slate-500">&gt; System ready for transfer.</div>';
             document.getElementById('sim51-particles-container').innerHTML = '';
             document.getElementById('sim51-start-btn').disabled = false;
@@ -2150,8 +2185,21 @@
                 if (sim51Mode === 'pio') {
                     addSim51Log(`CPU read byte ${sim51Bytes - 64} -> CPU write to RAM.`);
                 } else {
-                    const randomTask = sim51UserTasks[Math.floor(Math.random() * sim51UserTasks.length)];
-                    addSim51Log(`[CPU] Active: ${randomTask}`, 'text-emerald-400');
+                    const isStealing = Math.random() < 0.4; // 40% chance of cycle stealing
+                    if (isStealing) {
+                        addSim51Log(`[CPU] Blocked - Cycle Stealing! ⏳`, 'text-orange-400 font-bold');
+                        document.getElementById('sim51-cpu-emoji').textContent = "⏳";
+                        document.getElementById('sim51-cpu-box').className = "bg-orange-950/40 p-3 rounded-lg border border-orange-500 transition-all";
+                        const busLine = document.getElementById('sim51-bus-line');
+                        if (busLine) busLine.className = "h-full w-full bg-orange-500 transition-colors duration-200 shadow-[0_0_8px_rgba(249,115,22,0.8)]";
+                    } else {
+                        const randomTask = sim51UserTasks[Math.floor(Math.random() * sim51UserTasks.length)];
+                        addSim51Log(`[CPU] Active: ${randomTask}`, 'text-emerald-400');
+                        document.getElementById('sim51-cpu-emoji').textContent = "😊";
+                        document.getElementById('sim51-cpu-box').className = "bg-emerald-950 p-3 rounded-lg border border-emerald-500 transition-all";
+                        const busLine = document.getElementById('sim51-bus-line');
+                        if (busLine) busLine.className = "h-full w-full bg-blue-500 transition-colors duration-200 shadow-[0_0_8px_rgba(59,130,246,0.5)]";
+                    }
                     addSim51Log(`[DMA] Block transfer: ${sim51Bytes - 64} bytes to RAM`, 'text-blue-400');
                 }
 
@@ -2164,6 +2212,8 @@
                     if (sim51Mode === 'dma') {
                         addSim51Log('[CPU] INTERRUPT received: DMA transfer complete!', 'text-amber-400 font-bold');
                         document.getElementById('sim51-cpu-emoji').textContent = "😮";
+                        const busLine = document.getElementById('sim51-bus-line');
+                        if (busLine) busLine.className = "h-full w-full bg-slate-700 transition-colors duration-200";
                         // Trigger light flash
                         const cpuBox = document.getElementById('sim51-cpu-box');
                         cpuBox.classList.add('bg-amber-500');
@@ -2288,51 +2338,119 @@
             const ball = document.getElementById('sim52-ball');
             const stateTxt = document.getElementById('sim52-state-txt');
             
-            stateTxt.textContent = 'RUNNING';
+            stateTxt.textContent = 'RUNNING (DOWN)';
             stateTxt.className = "text-purple-400 font-bold animate-pulse";
             ball.style.opacity = '1';
             ball.textContent = op === 'write-disk' ? '💾' : '🖨️';
+            ball.style.filter = '';
 
             let step = 0;
+            let direction = 'down';
             const stepTops = ['12px', '88px', '164px', '240px'];
 
             function runStep() {
-                if (step >= 4) {
+                if (direction === 'down') {
+                    if (step > 3) {
+                        direction = 'hardware';
+                        step = 3;
+                        setTimeout(runStep, 1500);
+                        return;
+                    }
+                    
+                    ball.style.top = stepTops[step];
+                    
+                    document.querySelectorAll('[id^="sim52-layer-"]').forEach(el => {
+                        el.style.borderColor = '';
+                        el.style.backgroundColor = '';
+                    });
+
+                    const activeLayer = document.getElementById(`sim52-layer-${step + 1}`);
+                    const color = step === 0 ? 'rgb(168, 85, 247)' : step === 1 ? 'rgb(59, 130, 246)' : step === 2 ? 'rgb(16, 185, 129)' : 'rgb(245, 158, 11)';
+                    if (activeLayer) {
+                        activeLayer.style.borderColor = color;
+                        activeLayer.style.backgroundColor = color.replace('rgb', 'rgba').replace(')', ', 0.15)');
+                    }
+
+                    const stepData = sim52Data[op][step];
+                    document.getElementById('sim52-info-title').textContent = stepData.title;
+                    document.getElementById('sim52-info-desc').textContent = stepData.desc;
+                    document.getElementById('sim52-code-snippet').textContent = stepData.code;
+
+                    step++;
+                    setTimeout(runStep, 1500);
+                } else if (direction === 'hardware') {
+                    document.querySelectorAll('[id^="sim52-layer-"]').forEach((el, idx) => {
+                        if (idx < 3) el.style.opacity = '0.3';
+                    });
+                    stateTxt.textContent = 'HARDWARE WORKING (BLOCKED)';
+                    stateTxt.className = "text-amber-400 font-bold animate-pulse";
+                    
+                    const activeLayer = document.getElementById(`sim52-layer-4`);
+                    activeLayer.classList.add('animate-pulse');
+                    
+                    document.getElementById('sim52-info-desc').textContent = "החומרה מבצעת את הפעולה הפיזית. התהליך ושכבות התוכנה שמעל נחסמו (Blocked) וממתינים. המעבד כעת חופשי למשימות אחרות.";
+                    
                     setTimeout(() => {
-                        ball.style.opacity = '0';
-                        ball.style.top = '10px';
-                        document.querySelectorAll('[id^="sim52-layer-"]').forEach(el => {
-                            el.style.borderColor = '';
-                            el.style.backgroundColor = '';
-                        });
-                        stateTxt.textContent = 'COMPLETE';
-                        stateTxt.className = "text-emerald-400 font-bold";
-                        sim52Running = false;
-                    }, 1000);
-                    return;
-                }
-
-                ball.style.top = stepTops[step];
-
-                document.querySelectorAll('[id^="sim52-layer-"]').forEach(el => {
-                    el.style.borderColor = '';
-                    el.style.backgroundColor = '';
-                });
-
-                const activeLayer = document.getElementById(`sim52-layer-${step + 1}`);
-                const color = step === 0 ? 'rgb(168, 85, 247)' : step === 1 ? 'rgb(59, 130, 246)' : step === 2 ? 'rgb(16, 185, 129)' : 'rgb(245, 158, 11)';
-                if (activeLayer) {
+                        activeLayer.classList.remove('animate-pulse');
+                        direction = 'up';
+                        step = 2; // Move to driver
+                        ball.textContent = '⚡';
+                        ball.style.filter = 'drop-shadow(0 0 5px red)';
+                        stateTxt.textContent = 'INTERRUPT RETURN';
+                        stateTxt.className = "text-red-400 font-bold animate-pulse";
+                        document.getElementById('sim52-info-title').textContent = "Interrupt!";
+                        document.getElementById('sim52-info-desc').textContent = "פסיקת חומרה! החומרה סיימה. כעת הפסיקה מעירה את מנהל ההתקן.";
+                        document.getElementById('sim52-code-snippet').textContent = "ISR_Hardware_Done();";
+                        runStep();
+                    }, 2500);
+                } else if (direction === 'up') {
+                    if (step < 0) {
+                        setTimeout(() => {
+                            ball.style.opacity = '0';
+                            ball.style.top = '10px';
+                            ball.style.filter = '';
+                            document.querySelectorAll('[id^="sim52-layer-"]').forEach(el => {
+                                el.style.borderColor = '';
+                                el.style.backgroundColor = '';
+                                el.style.opacity = '1';
+                            });
+                            stateTxt.textContent = 'COMPLETE';
+                            stateTxt.className = "text-emerald-400 font-bold";
+                            sim52Running = false;
+                        }, 1000);
+                        return;
+                    }
+                    
+                    ball.style.top = stepTops[step];
+                    
+                    document.querySelectorAll('[id^="sim52-layer-"]').forEach(el => {
+                        el.style.borderColor = '';
+                        el.style.backgroundColor = '';
+                    });
+                    
+                    const activeLayer = document.getElementById(`sim52-layer-${step + 1}`);
+                    activeLayer.style.opacity = '1'; // Wake up
+                    const color = step === 0 ? 'rgb(168, 85, 247)' : step === 1 ? 'rgb(59, 130, 246)' : step === 2 ? 'rgb(16, 185, 129)' : 'rgb(245, 158, 11)';
                     activeLayer.style.borderColor = color;
                     activeLayer.style.backgroundColor = color.replace('rgb', 'rgba').replace(')', ', 0.15)');
+                    
+                    if (step === 2) {
+                        document.getElementById('sim52-info-title').textContent = "3. מנהל התקן (Driver) - התעוררות";
+                        document.getElementById('sim52-info-desc').textContent = "מנהל ההתקן קיבל את הפסיקה, קרא את הסטטוס (הצלחה) ומעיר את מערכת ההפעלה.";
+                        document.getElementById('sim52-code-snippet').textContent = "finish_io_request();";
+                    } else if (step === 1) {
+                        document.getElementById('sim52-info-title').textContent = "2. מערכת ההפעלה (OS Level) - התעוררות";
+                        document.getElementById('sim52-info-desc').textContent = "מערכת ההפעלה מעדכנת את סטטוס התהליך מ-Blocked ל-Ready ומשחררת אותו להמשך ריצה.";
+                        document.getElementById('sim52-code-snippet').textContent = "wakeup(process_id);";
+                    } else if (step === 0) {
+                        document.getElementById('sim52-info-title').textContent = "1. מרחב משתמש (User Space) - סיום";
+                        document.getElementById('sim52-info-desc').textContent = "קריאת המערכת חזרה בהצלחה. התוכנית שלכם ממשיכה לרוץ לשורה הבאה בקוד.";
+                        document.getElementById('sim52-code-snippet').textContent = "console.log('Success!');";
+                    }
+                    
+                    step--;
+                    setTimeout(runStep, 1500);
                 }
-
-                const stepData = sim52Data[op][step];
-                document.getElementById('sim52-info-title').textContent = stepData.title;
-                document.getElementById('sim52-info-desc').textContent = stepData.desc;
-                document.getElementById('sim52-code-snippet').textContent = stepData.code;
-
-                step++;
-                setTimeout(runStep, 1500);
             }
 
             runStep();
@@ -2408,33 +2526,55 @@
             if (!svg) return;
             svg.innerHTML = '';
             const width = svg.clientWidth || svg.parentNode.clientWidth || 400;
-            const height = 120;
-            const totalSteps = sim53Completed.length + sim53Requests.length;
-            const stepY = height / (totalSteps + 1 || 8);
+            const height = 240;
+            const maxTime = sim53GraphPoints.length > 0 ? sim53GraphPoints[sim53GraphPoints.length - 1].time : 10;
+            const scaleY = height / (Math.max(maxTime, 50) + 10);
 
-            let pathD = `M ${(50 / 200) * width} 10`;
-            let currentY = 10;
+            if (sim53GraphPoints.length === 0) return;
+
+            let pathD = `M ${(sim53GraphPoints[0].pos / 200) * width} 10`;
             
-            sim53Completed.forEach((pos, idx) => {
-                currentY += stepY;
-                const x = (pos / 200) * width;
-                pathD += ` L ${x} ${currentY}`;
+            sim53GraphPoints.forEach((pt, idx) => {
+                if (idx === 0) return;
+                const x = (pt.pos / 200) * width;
+                const y = 10 + pt.time * scaleY;
+                pathD += ` L ${x} ${y}`;
 
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', x);
-                circle.setAttribute('cy', currentY);
-                circle.setAttribute('r', '4');
-                circle.setAttribute('fill', '#f59e0b');
-                svg.appendChild(circle);
+                if (pt.type === 'complete') {
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x);
+                    circle.setAttribute('cy', y);
+                    circle.setAttribute('r', '4');
+                    circle.setAttribute('fill', '#10b981');
+                    svg.appendChild(circle);
 
-                const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                txt.setAttribute('x', x);
-                txt.setAttribute('y', currentY - 6);
-                txt.setAttribute('fill', '#fff');
-                txt.setAttribute('font-size', '8px');
-                txt.setAttribute('text-anchor', 'middle');
-                txt.textContent = pos;
-                svg.appendChild(txt);
+                    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    txt.setAttribute('x', x);
+                    txt.setAttribute('y', y - 6);
+                    txt.setAttribute('fill', '#fff');
+                    txt.setAttribute('font-size', '8px');
+                    txt.setAttribute('text-anchor', 'middle');
+                    txt.textContent = pt.pos;
+                    svg.appendChild(txt);
+                } else if (pt.type === 'seek') {
+                    const spinner = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    spinner.setAttribute('x', x + 5);
+                    spinner.setAttribute('y', y + 3);
+                    spinner.setAttribute('fill', '#fff');
+                    spinner.setAttribute('font-size', '10px');
+                    spinner.textContent = '💿';
+                    
+                    const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animateTransform');
+                    animate.setAttribute('attributeName', 'transform');
+                    animate.setAttribute('type', 'rotate');
+                    animate.setAttribute('from', `0 ${x + 10} ${y}`);
+                    animate.setAttribute('to', `360 ${x + 10} ${y}`);
+                    animate.setAttribute('dur', '1s');
+                    animate.setAttribute('repeatCount', 'indefinite');
+                    spinner.appendChild(animate);
+                    
+                    svg.appendChild(spinner);
+                }
             });
 
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -2462,6 +2602,9 @@
             sim53TotalMoves = 0;
             sim53Completed = [];
             sim53Direction = 1;
+            sim53Time = 0;
+            sim53WaitState = false;
+            sim53GraphPoints = [{pos: sim53Head, time: 0, type: 'start'}];
 
             renderSim53Queue();
             drawSim53Graph();
@@ -2469,6 +2612,25 @@
         }
 
         function runSim53Step() {
+            if (sim53WaitState) {
+                sim53WaitState = false;
+                sim53Time += 15; // Fixed rotational latency penalty
+                
+                sim53Requests.splice(currentNextIndex, 1);
+                sim53Completed.push(currentNextPos);
+                
+                sim53GraphPoints.push({pos: currentNextPos, time: sim53Time, type: 'complete'});
+                
+                document.getElementById('sim53-head-pos').textContent = currentNextPos;
+                document.getElementById('sim53-head-pos').classList.remove('animate-pulse', 'text-amber-500');
+                
+                renderSim53Queue();
+                drawSim53Graph();
+
+                sim53StepTimeout = setTimeout(runSim53Step, 500);
+                return;
+            }
+
             if (sim53Requests.length === 0) {
                 sim53Running = false;
                 document.getElementById('sim53-start-btn').disabled = false;
@@ -2507,23 +2669,31 @@
                 let viable = sim53Requests.filter(r => r >= sim53Head).sort((a,b)=>a-b);
                 if (viable.length === 0) {
                     sim53Head = 0;
-                    viable = sim53Requests.sort((a,b)=>a-b);
+                    sim53GraphPoints.push({pos: 0, time: sim53Time + 5, type: 'jump'});
+                    sim53Time += 5;
+                    viable = [...sim53Requests].sort((a,b)=>a-b);
                 }
                 nextIndex = sim53Requests.indexOf(viable[0]);
             }
 
             if (nextIndex !== -1) {
                 const nextPos = sim53Requests[nextIndex];
-                sim53Requests.splice(nextIndex, 1);
-                sim53Completed.push(nextPos);
+                const distance = Math.abs(nextPos - sim53Head);
                 
-                sim53TotalMoves += Math.abs(nextPos - sim53Head);
+                sim53TotalMoves += distance;
+                sim53Time += distance; // Seek time
                 sim53Head = nextPos;
-
-                document.getElementById('sim53-head-pos').textContent = sim53Head;
+                
+                currentNextPos = nextPos;
+                currentNextIndex = nextIndex;
+                sim53WaitState = true;
+                
+                sim53GraphPoints.push({pos: nextPos, time: sim53Time, type: 'seek'});
+                
                 document.getElementById('sim53-total-movement').textContent = sim53TotalMoves;
+                document.getElementById('sim53-head-pos').textContent = nextPos + ' 💿';
+                document.getElementById('sim53-head-pos').classList.add('animate-pulse', 'text-amber-500');
 
-                renderSim53Queue();
                 drawSim53Graph();
 
                 sim53StepTimeout = setTimeout(runSim53Step, 800);
@@ -2609,8 +2779,11 @@
             document.getElementById('sim54-double-play-icon').classList.add('hidden');
 
             sim54Interval = setInterval(() => {
+                let prod = parseFloat(document.getElementById('sim54-prod-speed').value);
+                let cons = parseFloat(document.getElementById('sim54-cons-speed').value);
+
                 if (sim54Single.isBuffering) {
-                    sim54Single.fill += 6;
+                    sim54Single.fill += prod;
                     document.getElementById('sim54-single-status').textContent = 'BUFFERING';
                     document.getElementById('sim54-single-status').className = "text-[9px] bg-amber-500/20 text-amber-400 px-1 rounded font-mono animate-pulse";
                     if (sim54Single.fill >= 100) {
@@ -2618,7 +2791,7 @@
                         sim54Single.isBuffering = false;
                     }
                 } else {
-                    sim54Single.fill -= 8;
+                    sim54Single.fill -= cons;
                     sim54Single.play += 1.5;
                     document.getElementById('sim54-single-status').textContent = 'PLAYING';
                     document.getElementById('sim54-single-status').className = "text-[9px] bg-emerald-500/20 text-emerald-400 px-1 rounded font-mono";
@@ -2631,8 +2804,8 @@
                 }
 
                 if (sim54Double.active === 'A') {
-                    sim54Double.bufA -= 8;
-                    sim54Double.bufB += 10;
+                    sim54Double.bufA -= cons;
+                    sim54Double.bufB += prod;
                     if (sim54Double.bufB > 100) sim54Double.bufB = 100;
 
                     sim54Double.play += 1.5;
@@ -2651,8 +2824,8 @@
                         }
                     }
                 } else {
-                    sim54Double.bufB -= 8;
-                    sim54Double.bufA += 10;
+                    sim54Double.bufB -= cons;
+                    sim54Double.bufA += prod;
                     if (sim54Double.bufA > 100) sim54Double.bufA = 100;
 
                     sim54Double.play += 1.5;
@@ -2843,8 +3016,22 @@
 
             if (wdFeedTimer) clearInterval(wdFeedTimer);
             wdFeedTimer = setInterval(() => {
+                let load = parseInt(document.getElementById('wd-cpu-load').value);
+                let skipChance = load / 100.0;
+                
                 if (!wdSystemFrozen && wdActive) {
-                    feedWatchdog();
+                    if (Math.random() >= skipChance) {
+                        feedWatchdog();
+                        if (load <= 70) {
+                            document.getElementById('wd-cpu-emoji').textContent = "😊";
+                            document.getElementById('wd-cpu-status-txt').textContent = 'HEALTHY';
+                            document.getElementById('wd-cpu-status-txt').className = "text-[10px] font-bold text-emerald-400 mt-1 uppercase";
+                        }
+                    } else if (load > 70) {
+                        document.getElementById('wd-cpu-emoji').textContent = "🥵";
+                        document.getElementById('wd-cpu-status-txt').textContent = 'HIGH LOAD';
+                        document.getElementById('wd-cpu-status-txt').className = "text-[10px] font-bold text-amber-500 mt-1 uppercase";
+                    }
                 }
             }, 1200);
         }
@@ -2922,9 +3109,21 @@
                 tab.appendChild(navContainer);
             });
 
-            if (window.innerWidth < 1024) {
+            // 1. Create and inject sidebar toggle button
+            const toggleBtn = document.createElement('button');
+            toggleBtn.id = 'sidebar-toggle-btn';
+            toggleBtn.className = 'fixed top-6 p-2 rounded-lg bg-white/80 backdrop-blur-md hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-md z-30 flex items-center justify-center w-10 h-10 transition-all duration-300 active:scale-95 cursor-pointer';
+            toggleBtn.title = 'הצג/הסתר תפריט ניווט';
+            toggleBtn.onclick = toggleSidebar;
+            toggleBtn.innerHTML = '<svg id="sidebar-toggle-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"></svg>';
+            document.body.appendChild(toggleBtn);
+
+            // 2. Load sidebar collapsed state from localStorage
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
                 document.body.classList.add('sidebar-collapsed');
             }
+            updateToggleBtnIcon(isCollapsed);
             
             document.querySelectorAll('details').forEach(details => {
                 details.addEventListener('toggle', (e) => {
@@ -2940,14 +3139,23 @@
             initWatchdog();
         });
 
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                document.body.classList.remove('sidebar-collapsed');
-                document.getElementById('mobile-overlay').classList.add('hidden');
-            } else if (!document.getElementById('mobile-overlay').classList.contains('opacity-100')) {
-                document.body.classList.add('sidebar-collapsed');
+        function updateToggleBtnIcon(isCollapsed) {
+            const icon = document.getElementById('sidebar-toggle-icon');
+            if (!icon) return;
+            if (isCollapsed) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />';
             }
-        });
+        }
+
+        function toggleSidebar() {
+            const body = document.body;
+            body.classList.toggle('sidebar-collapsed');
+            const isCollapsed = body.classList.contains('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+            updateToggleBtnIcon(isCollapsed);
+        }
     </script>
 
 </body>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
@@ -573,9 +573,11 @@
             color: #991b1b;
         }
     </style>
+    <script src="theme-manager.js"></script>
 </head>
 
 <body class="text-slate-800 h-screen flex overflow-hidden">
+
 
     <!-- Sidebar Navigation -->
     <aside
@@ -748,6 +750,64 @@
                     </p>
                 </div>
 
+                <!-- 1.1 Perspectives Simulator -->
+                <div class="my-10 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                    <div class="bg-slate-900 p-5 text-white flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-bold tracking-tight mb-1">סימולטור 1.1: החלפת נקודות מבט</h3>
+                            <p class="text-slate-400 text-xs">כיצד נראית המערכת מעיניו של המתכנת מול עיניו של המעבד?</p>
+                        </div>
+                        <div class="flex bg-slate-800 p-1 rounded-lg">
+                            <button onclick="switchPerspective('topdown')" id="btn-persp-topdown" class="px-4 py-2 rounded-md text-xs font-bold transition-all bg-blue-600 text-white shadow-sm">מבט מלמעלה (מתכנת)</button>
+                            <button onclick="switchPerspective('bottomup')" id="btn-persp-bottomup" class="px-4 py-2 rounded-md text-xs font-bold transition-all text-slate-400 hover:text-white">מבט מלמטה (מנהל משאבים)</button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8 relative min-h-[350px] bg-slate-50 flex flex-col items-center justify-center transition-all duration-500" id="persp-container">
+                        <!-- Default: Top Down View -->
+                        <div id="persp-topdown-view" class="w-full max-w-xl text-center transition-opacity duration-300">
+                            <div class="bg-white p-6 rounded-xl border-2 border-blue-200 shadow-md mb-6 relative">
+                                <h4 class="font-black text-blue-800 mb-2">אבסטרקציה (מכונה וירטואלית)</h4>
+                                <div class="flex justify-around mt-4">
+                                    <div class="text-center">
+                                        <div class="text-4xl mb-2">📄</div>
+                                        <div class="text-xs font-bold text-slate-600">קריאת קובץ</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-4xl mb-2">🌐</div>
+                                        <div class="text-xs font-bold text-slate-600">שליחת חבילת רשת</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-slate-500 text-sm">המתכנת לא יודע איפה הקובץ יושב פיזית על הדיסק, הוא רק קורא לפונקציה `read()`. המערכת מסתירה את המורכבות.</div>
+                        </div>
+                        
+                        <!-- Bottom Up View -->
+                        <div id="persp-bottomup-view" class="w-full max-w-xl text-center absolute inset-0 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+                            <div class="w-full flex justify-between gap-4 px-8 mb-6">
+                                <div class="bg-red-50 border border-red-200 rounded p-3 w-1/3 shadow-inner">
+                                    <div class="text-xs font-bold text-red-800 mb-2">תהליך A (דפדפן)</div>
+                                    <div class="h-2 w-full bg-red-200 rounded-full overflow-hidden"><div class="h-full bg-red-500 animate-pulse w-3/4"></div></div>
+                                </div>
+                                <div class="bg-green-50 border border-green-200 rounded p-3 w-1/3 shadow-inner">
+                                    <div class="text-xs font-bold text-green-800 mb-2">תהליך B (משחק)</div>
+                                    <div class="h-2 w-full bg-green-200 rounded-full overflow-hidden"><div class="h-full bg-green-500 animate-pulse w-1/2"></div></div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-800 p-4 rounded-xl border-2 border-slate-700 shadow-xl w-3/4 text-white relative">
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-[10px] font-black px-2 py-0.5 rounded text-white tracking-widest">מנהל המשאבים</div>
+                                <h4 class="font-bold text-sm mb-4 mt-2">מעבד (CPU) & זיכרון (RAM)</h4>
+                                <div class="flex gap-2">
+                                    <div class="flex-1 bg-slate-900 rounded p-2 text-xs border border-slate-700">CPU Time<br><span class="text-blue-400">Time Multiplexing</span></div>
+                                    <div class="flex-1 bg-slate-900 rounded p-2 text-xs border border-slate-700">RAM Space<br><span class="text-fuchsia-400">Space Multiplexing</span></div>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-slate-600 text-sm max-w-md">מנהל המשאבים עסוק כל הזמן בחלוקת משאבים מוגבלים בין עשרות תוכניות מתחרות כדי למנוע קריסות והתנגשויות.</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="deep-dive">
                     <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">מדרג הרשאות המחשב: חלוקת רכיבי
                         התוכנה</h3>
@@ -838,80 +898,7 @@
                     </div>
                 </div>
 
-                <!-- Memory Isolation Simulator -->
-                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm"
-                    id="mem-isolation-sim-card">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">סימולטור אינטראקטיבי: בידוד זיכרון (Memory
-                        Isolation)</h3>
-                    <p class="text-xs text-slate-500 mb-6">מציג כיצד הגנת ה-MMU מונעת מתהליכים שגויים או זדוניים להרוס
-                        תהליכים אחרים בזיכרון ה-RAM.</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <!-- Left controls -->
-                        <div
-                            class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3">בקרת
-                                    סימולציה</span>
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="text-sm font-bold text-slate-700 font-medium">הגנת זיכרון (MMU):</span>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="mem-prot-toggle" class="sr-only peer" checked
-                                            onchange="toggleMemProtection()">
-                                        <div
-                                            class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <button onclick="runMemIsolationSimulation()"
-                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all active:scale-[0.98] cursor-pointer shadow-sm">הרץ
-                                    כתיבה מתהליך A</button>
-                                <button onclick="resetMemIsolationSim()"
-                                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-2 px-4 rounded-xl text-xs transition-colors cursor-pointer">איפוס
-                                    סימולציה</button>
-                            </div>
-                        </div>
-
-                        <!-- RAM representation -->
-                        <div class="md:col-span-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-3">ייצוג
-                                זיכרון ה-RAM</span>
-                            <div class="grid grid-cols-8 gap-2 text-center text-[10px] font-bold text-slate-700">
-                                <div class="border border-red-200 bg-red-50 p-3 rounded-lg" id="ram-slot-0">
-                                    Kernel<br>(0)</div>
-                                <div class="border border-blue-200 bg-blue-50 p-3 rounded-lg" id="ram-slot-1">תהליך
-                                    A<br>(1)</div>
-                                <div class="border border-blue-200 bg-blue-50 p-3 rounded-lg" id="ram-slot-2">תהליך
-                                    A<br>(2)</div>
-                                <div class="border border-blue-200 bg-blue-50 p-3 rounded-lg" id="ram-slot-3">תהליך
-                                    A<br>(3)</div>
-                                <div class="border border-slate-200 bg-slate-50 p-3 rounded-lg" id="ram-slot-4">
-                                    פנוי<br>(4)</div>
-                                <div class="border border-green-200 bg-green-50 p-3 rounded-lg" id="ram-slot-5">תהליך
-                                    B<br>(5)</div>
-                                <div class="border border-green-200 bg-green-50 p-3 rounded-lg" id="ram-slot-6">תהליך
-                                    B<br>(6)</div>
-                                <div class="border border-green-200 bg-green-50 p-3 rounded-lg" id="ram-slot-7">תהליך
-                                    B<br>(7)</div>
-                            </div>
-
-                            <!-- MMU Glowing Wall -->
-                            <div class="mt-4">
-                                <div class="text-[9px] text-slate-400 font-bold mb-1 select-none text-center"
-                                    id="mmu-wall-label">חומת הגנה MMU</div>
-                                <div class="mmu-wall active" id="mmu-wall-visual"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Simulator terminal -->
-                    <div class="p-4 rounded-xl bg-slate-900 text-slate-300 font-mono text-xs leading-relaxed min-h-[80px]"
-                        id="mem-isolation-terminal">
-                        [מערכת] הסימולטור מוכן. הגנת זיכרון פעילה. תהליכים A ו-B פועלים בבידוד.
-                    </div>
-                </div>
+                <!-- Memory Isolation Simulator Removed -->
 
             </div>
 
@@ -1003,106 +990,7 @@
                             המעבד עובר במהירות גבוהה בין המשתמשים ויוצר אשליה של מחשב בלעדי לכל אחד.</li>
                     </ul>
                 </div>
-                <!-- ==================== עזרים חזותיים וסימולטורים ==================== -->
 
-                <!-- Spooling Simulator -->
-                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm"
-                    id="spooling-sim-card">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">סימולטור אינטראקטיבי: מרוץ ה-Spooling</h3>
-                    <p class="text-xs text-slate-500 mb-6">משווה בין עבודה ישירה מול מדפסת איטית לבין עבודה מופשטת דרך
-                        חוצץ הדיסק (Spooling) ומדגים את הזינוק בניצולת המעבד.</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <!-- Direct I/O -->
-                        <div
-                            class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <span class="font-bold text-sm text-red-800 border-b pb-1.5 block mb-4">תרחיש א': ללא
-                                    Spooling (כתיבה ישירה)</span>
-                                <div class="flex items-center justify-around gap-2 mb-4">
-                                    <div class="w-12 h-12 bg-blue-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow animate-pulse"
-                                        id="spool-cpu-direct">CPU</div>
-                                    <div class="text-xl text-slate-400 font-bold animate-pulse">&rarr;</div>
-                                    <div class="w-12 h-12 bg-slate-800 text-white rounded-lg flex flex-col items-center justify-center font-bold text-[10px] shadow"
-                                        id="spool-printer-direct">מדפסת</div>
-                                </div>
-                                <div
-                                    class="space-y-2 text-[10px] font-mono text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4">
-                                    <div>מצב מעבד: <span class="font-bold text-green-600"
-                                            id="spool-cpu-direct-status">מוכן</span></div>
-                                    <div>דפי מדפסת: <span class="font-bold" id="spool-printer-direct-pages">0/5</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <span class="text-[10px] font-bold text-slate-500 block mb-1">ניצולת מעבד (CPU
-                                    Utilization):</span>
-                                <div
-                                    class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
-                                    <div class="bg-red-500 h-full transition-all duration-300" style="width: 0%"
-                                        id="spool-cpu-direct-util"></div>
-                                </div>
-                                <div class="text-right text-[10px] font-bold text-slate-600 mt-1"
-                                    id="spool-cpu-direct-util-text">0%</div>
-                            </div>
-                        </div>
-
-                        <!-- Spooling I/O -->
-                        <div
-                            class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <span class="font-bold text-sm text-green-800 border-b pb-1.5 block mb-4">תרחיש ב': עם
-                                    Spooling (תיווך דיסק)</span>
-                                <div class="flex items-center justify-around gap-2 mb-4">
-                                    <div class="w-12 h-12 bg-blue-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow animate-pulse"
-                                        id="spool-cpu-spool">CPU</div>
-                                    <div class="text-lg text-slate-400 font-bold">&rarr;</div>
-                                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-[10px] shadow"
-                                        id="spool-disk-spool">דיסק</div>
-                                    <div class="text-lg text-slate-400 font-bold">&rarr;</div>
-                                    <div class="w-12 h-12 bg-slate-800 text-white rounded-lg flex flex-col items-center justify-center font-bold text-[10px] shadow"
-                                        id="spool-printer-spool">מדפסת</div>
-                                </div>
-                                <div
-                                    class="space-y-2 text-[10px] font-mono text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4">
-                                    <div>מצב מעבד: <span class="font-bold text-green-600"
-                                            id="spool-cpu-spool-status">מוכן</span></div>
-                                    <div>קבצים בדיסק: <span class="font-bold text-indigo-600"
-                                            id="spool-disk-spool-files">0/5</span></div>
-                                    <div>דפי מדפסת: <span class="font-bold" id="spool-printer-spool-pages">0/5</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <span class="text-[10px] font-bold text-slate-500 block mb-1">ניצולת מעבד (CPU
-                                    Utilization):</span>
-                                <div
-                                    class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
-                                    <div class="bg-green-500 h-full transition-all duration-300" style="width: 0%"
-                                        id="spool-cpu-spool-util"></div>
-                                </div>
-                                <div class="text-right text-[10px] font-bold text-slate-600 mt-1"
-                                    id="spool-cpu-spool-util-text">0%</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Controls and terminal -->
-                    <div class="bg-white/80 border border-slate-200/80 p-5 rounded-2xl shadow-sm mb-4">
-                        <div class="flex gap-2">
-                            <button onclick="runSpoolingSimulation()"
-                                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl text-xs transition-all cursor-pointer shadow shadow-blue-500/10 active:scale-95"
-                                id="spool-run-btn">התחל סימולציית הדפסה</button>
-                            <button onclick="resetSpoolingSim()"
-                                class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-2 px-5 rounded-xl text-xs transition-colors cursor-pointer">איפוס</button>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-slate-900 text-slate-300 font-mono text-xs leading-relaxed min-h-[60px]"
-                        id="spool-terminal">
-                        [מערכת] לחצו על "התחל סימולציית הדפסה" כדי להשוות בין השיטות.
-                    </div>
-                </div>
 
             </div>
 
@@ -1450,55 +1338,102 @@
                     </div>
                 </div>
 
-                <!-- Matching Game Simulator -->
-                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm"
-                    id="matching-game-card">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">משחק התאמה: שיוך תרחישים למערכות הפעלה</h3>
-                    <p class="text-xs text-slate-500 mb-6">לחצו על תרחיש בצד ימין, ולאחר מכן לחצו על סוג מערכת ההפעלה
-                        המתאים לו בצד שמאל. היזהרו משגיאות קריטיות!</p>
+                <!-- Constraint Lab Simulator -->
+                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm" id="constraint-lab-card">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">מעבדת אילוצים: תכנון מערכות הפעלה מציאותיות</h3>
+                    <p class="text-xs text-slate-500 mb-6">לפניכם משימות הנדסיות קריטיות. בחרו את מנגנון התזמון ואופי המערכת המתאים ביותר כדי למנוע קריסה. היזהרו - בחירה שגויה תגרום לאסון!</p>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <!-- Left: Scenarios -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 relative" id="constraint-lab-grid">
+                        <!-- SVG Layer for Connecting Lines -->
+                        <svg id="constraint-lines-svg" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;"></svg>
+                        
+                        <!-- Left: Tasks -->
                         <div class="space-y-3">
-                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-1">תרחישי
-                                מציאות</span>
-                            <div class="matching-card" id="match-scen-1" onclick="selectMatchingCard('scen', 1)">1. קוצב
-                                לב חשמלי (מנגנון הצלת חיים)</div>
-                            <div class="matching-card" id="match-scen-2" onclick="selectMatchingCard('scen', 2)">2. שרת
-                                מסדי נתונים מרכזי של בנק לאומי</div>
-                            <div class="matching-card" id="match-scen-3" onclick="selectMatchingCard('scen', 3)">3. מחשב
-                                גיימינג משרדי ביתי</div>
-                            <div class="matching-card" id="match-scen-4" onclick="selectMatchingCard('scen', 4)">4. שבב
-                                הבקרה הפנימי של מדיח כלים</div>
+                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-1">משימות הנדסיות</span>
+                            
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition-all relative z-20" id="task-mainframe" onclick="selectConstraintTask('mainframe')">
+                                <div class="font-bold text-sm text-slate-800 mb-1 flex items-center justify-between">
+                                    <span>🏦 סליקת אשראי לאומית</span>
+                                    <span class="text-[10px] bg-slate-100 text-slate-800 px-2 rounded-full font-black">קלט/פלט מסיבי</span>
+                                </div>
+                                <div class="text-xs text-slate-600">דורש עיבוד של עשרות אלפי טרנזקציות ומסדי נתונים ענקיים בו-זמנית.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition-all relative z-20" id="task-server" onclick="selectConstraintTask('server')">
+                                <div class="font-bold text-sm text-slate-800 mb-1 flex items-center justify-between">
+                                    <span>🌐 שרת אינטרנט עולמי</span>
+                                    <span class="text-[10px] bg-blue-100 text-blue-800 px-2 rounded-full font-black">עומס רשת</span>
+                                </div>
+                                <div class="text-xs text-slate-600">משרת מיליוני בקשות אינטרנט במקביל. דורש זמינות מתמדת ושרידות.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition-all relative z-20" id="task-multiprocessor" onclick="selectConstraintTask('multiprocessor')">
+                                <div class="font-bold text-sm text-slate-800 mb-1 flex items-center justify-between">
+                                    <span>🧠 סימולציה מדעית</span>
+                                    <span class="text-[10px] bg-indigo-100 text-indigo-800 px-2 rounded-full font-black">עיבוד מקבילי</span>
+                                </div>
+                                <div class="text-xs text-slate-600">חישובים מורכבים הדורשים סנכרון ותקשורת מהירה בין עשרות מעבדים באותו לוח.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition-all relative z-20" id="task-pc" onclick="selectConstraintTask('pc')">
+                                <div class="font-bold text-sm text-slate-800 mb-1 flex items-center justify-between">
+                                    <span>🎮 תחנת פיתוח וגיימינג</span>
+                                    <span class="text-[10px] bg-fuchsia-100 text-fuchsia-800 px-2 rounded-full font-black">משתמש יחיד</span>
+                                </div>
+                                <div class="text-xs text-slate-600">מריץ משחק ודפדפן ברקע. המשתמש מצפה לזמן תגובה מיידי בממשק גרפי עשיר.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition-all relative z-20" id="task-rt" onclick="selectConstraintTask('rt')">
+                                <div class="font-bold text-sm text-slate-800 mb-1 flex items-center justify-between">
+                                    <span>🏎️ בקרת טיסה במסוק</span>
+                                    <span class="text-[10px] bg-red-100 text-red-800 px-2 rounded-full font-black">סכנת חיים</span>
+                                </div>
+                                <div class="text-xs text-slate-600">חייב לתקן את זווית הרוטור בתוך 10ms. החמצה של הדד-ליין תוביל להתרסקות.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition-all relative z-20" id="task-embedded" onclick="selectConstraintTask('embedded')">
+                                <div class="font-bold text-sm text-slate-800 mb-1 flex items-center justify-between">
+                                    <span>⌚ בקר מכונת כביסה</span>
+                                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 rounded-full font-black">חומרה מוגבלת</span>
+                                </div>
+                                <div class="text-xs text-slate-600">זיכרון קטן מאוד (KB בודדים). מריץ תוכנה קבועה מראש ללא אפשרות התקנת אפליקציות.</div>
+                            </div>
                         </div>
 
-                        <!-- Right: OS Types -->
+                        <!-- Right: Solutions -->
                         <div class="space-y-3">
-                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-1">סוגי
-                                מערכות הפעלה</span>
-                            <div class="matching-card" id="match-type-rt" onclick="selectMatchingCard('type', 'rt')">
-                                מערכת זמן-אמת קשיחה (Hard Real-Time)</div>
-                            <div class="matching-card" id="match-type-srv" onclick="selectMatchingCard('type', 'srv')">
-                                מערכת שרתים (Server OS)</div>
-                            <div class="matching-card" id="match-type-pc" onclick="selectMatchingCard('type', 'pc')">
-                                מערכת למחשבים אישיים (PC OS)</div>
-                            <div class="matching-card" id="match-type-emb" onclick="selectMatchingCard('type', 'emb')">
-                                מערכת הפעלה משובצת (Embedded OS)</div>
+                            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-1">סוג מערכת ההפעלה</span>
+                            
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-green-400 transition-all opacity-50 pointer-events-none relative z-20" id="sol-mainframe" onclick="selectConstraintSolution('mainframe')">
+                                <div class="font-bold text-sm text-slate-800 mb-1">🏢 Mainframe OS</div>
+                                <div class="text-xs text-slate-600">התמחות באצוות (Batch) מסיביות של קלט/פלט וניהול משאבים בקנה מידה עצום.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-green-400 transition-all opacity-50 pointer-events-none relative z-20" id="sol-server" onclick="selectConstraintSolution('server')">
+                                <div class="font-bold text-sm text-slate-800 mb-1">🗄️ Server OS</div>
+                                <div class="text-xs text-slate-600">מערכות שרת המיועדות לשרידות ארוכת טווח וחלוקת עומסי רשת קליינט-שרת.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-green-400 transition-all opacity-50 pointer-events-none relative z-20" id="sol-multiprocessor" onclick="selectConstraintSolution('multiprocessor')">
+                                <div class="font-bold text-sm text-slate-800 mb-1">🧩 Multiprocessor OS</div>
+                                <div class="text-xs text-slate-600">התמחות בסנכרון תקשורת ונעילות בין מעבדים מרובים החולקים אותו זיכרון ראשי.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-green-400 transition-all opacity-50 pointer-events-none relative z-20" id="sol-pc" onclick="selectConstraintSolution('pc')">
+                                <div class="font-bold text-sm text-slate-800 mb-1">🖥️ PC OS</div>
+                                <div class="text-xs text-slate-600">ממוקדות בחוויית משתמש (GUI), זמני תגובה למקלדת/עכבר ותאימות חומרה.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-green-400 transition-all opacity-50 pointer-events-none relative z-20" id="sol-rt" onclick="selectConstraintSolution('rt')">
+                                <div class="font-bold text-sm text-slate-800 mb-1">⚡ Real-Time OS</div>
+                                <div class="text-xs text-slate-600">דטרמיניסטיות. מתזמן קשיח המבטיח עמידה בזמני יעד גורליים על פני הוגנות.</div>
+                            </div>
+
+                            <div class="bg-white p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-green-400 transition-all opacity-50 pointer-events-none relative z-20" id="sol-embedded" onclick="selectConstraintSolution('embedded')">
+                                <div class="font-bold text-sm text-slate-800 mb-1">📦 Embedded OS</div>
+                                <div class="text-xs text-slate-600">תופסות נפח מזערי. מריצות קוד צרוב בזיכרון ROM ולא מאפשרות התקנת תוכנות חדשות.</div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="flex items-center justify-between border-t border-slate-200 pt-4 mb-4">
-                        <div class="text-xs font-bold text-slate-600">ניקוד: <span id="matching-score"
-                                class="text-blue-600 font-extrabold text-sm">0 / 4</span></div>
-                        <button onclick="resetMatchingGame()"
-                            class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-1.5 px-4 rounded-lg text-xs transition-colors cursor-pointer">אפס
-                            משחק</button>
-                    </div>
-
-                    <!-- Warnings and output log -->
-                    <div class="p-4 rounded-xl bg-slate-900 text-slate-300 font-mono text-xs leading-relaxed min-h-[70px]"
-                        id="matching-terminal">
-                        [מערכת] המשחק מוכן. התחילו להתאים בין תרחישים למערכות הפעלה.
                     </div>
                 </div>
 
@@ -1585,21 +1520,80 @@
                     </div>
                 </div>
 
-                <div class="thought-box">
-                    <h3 class="text-xl font-bold text-fuchsia-950 mb-2">⚖️ הטרייד-אוף של גודל הקוואנטה (Quantum Size)
-                    </h3>
-                    <p class="text-sm text-slate-700 leading-relaxed mb-3">
-                        בחלוקת זמן (Timesharing), המתזמן (Scheduler) משתמש באלגוריתם Round Robin ומקצה לכל תהליך פרוסת
-                        זמן קבועה מראש הנקראת <strong>קוואנטה (Quantum)</strong>.
-                    </p>
-                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5 pr-2">
-                        <li><strong>קוואנטה קצר מדי (למשל, 1ms):</strong> משפר משמעותית את המקביליות המדומה (הכל רץ
-                            חלק), אך גורם ל<strong>בזבוז זמן מעבד קיצוני</strong> עקב ביצוע החלפות הקשר (Context
-                            Switches) מרובות בגרעין.</li>
-                        <li><strong>קוואנטה ארוך מדי (למשל, 100ms):</strong> משפר את ניצולת המעבד (פחות תקורה על החלפות
-                            הקשר), אך פוגע במקביליות. תהליכים אינטראקטיביים יחוו לאגים והשהיות ארוכות.</li>
-                    </ul>
+                <!-- 1.5 Address Space & Segfault Simulator -->
+                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm" id="segfault-sim-card">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">סימולטור 1.5: מרחב כתובות והגנת זיכרון (MMU)</h3>
+                    <p class="text-xs text-slate-500 mb-6">צפו במבנה מרחב הכתובות של תהליך. נסו לבצע גישה בלתי חוקית לזיכרון כדי לראות כיצד ה-MMU מגן על המערכת באמצעות שגיאת Segmentation Fault.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <!-- Left: Visual Address Space -->
+                        <div class="relative bg-white border border-slate-300 p-4 rounded-xl shadow-inner flex flex-col items-center justify-center min-h-[300px]">
+                            <div class="w-48 space-y-2 relative z-10">
+                                <!-- Stack -->
+                                <div class="bg-indigo-100 border-2 border-indigo-300 p-3 text-center rounded shadow-sm relative transition-all" id="mem-seg-stack">
+                                    <div class="font-bold text-indigo-900 text-sm">Stack (מחסנית)</div>
+                                    <div class="text-[10px] text-indigo-700">משתנים מקומיים, כתובות חזרה</div>
+                                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 text-indigo-400">↓</div>
+                                </div>
+                                
+                                <div class="h-16 flex items-center justify-center">
+                                    <div class="text-xs text-slate-400 font-mono tracking-widest">... מרחב פנוי ...</div>
+                                </div>
+
+                                <!-- Heap -->
+                                <div class="bg-emerald-100 border-2 border-emerald-300 p-3 text-center rounded shadow-sm relative transition-all" id="mem-seg-heap">
+                                    <div class="absolute -top-2 left-1/2 -translate-x-1/2 text-emerald-400">↑</div>
+                                    <div class="font-bold text-emerald-900 text-sm">Heap (ערימה)</div>
+                                    <div class="text-[10px] text-emerald-700">הקצאות דינמיות (malloc)</div>
+                                </div>
+
+                                <!-- Data -->
+                                <div class="bg-amber-100 border-2 border-amber-300 p-3 text-center rounded shadow-sm transition-all">
+                                    <div class="font-bold text-amber-900 text-sm">Data / BSS</div>
+                                    <div class="text-[10px] text-amber-700">משתנים גלובליים וסטטיים</div>
+                                </div>
+
+                                <!-- Text -->
+                                <div class="bg-slate-200 border-2 border-slate-400 p-3 text-center rounded shadow-sm relative transition-all" id="mem-seg-text">
+                                    <div class="absolute -left-12 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-80" style="transform-origin: right; transform: scaleX(0); transition: transform 0.4s ease-out;" id="hacker-arrow">
+                                        <span class="text-red-500 font-bold text-lg">⚠️</span>
+                                        <div class="h-1 w-6 bg-red-500"></div>
+                                        <div class="w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-red-500"></div>
+                                    </div>
+                                    <div class="font-bold text-slate-800 text-sm">Text (קוד)</div>
+                                    <div class="text-[10px] text-slate-600 font-mono">Read-Only</div>
+                                </div>
+                            </div>
+
+                            <!-- Overlay for Segfault -->
+                            <div class="absolute inset-0 bg-red-900/90 rounded-xl hidden flex-col items-center justify-center z-20 backdrop-blur-sm" id="mem-segfault-overlay">
+                                <div class="text-5xl mb-2">🛑</div>
+                                <h4 class="text-white font-black text-xl mb-1 drop-shadow-md">Segmentation Fault</h4>
+                                <p class="text-red-200 text-xs font-mono bg-black/40 px-3 py-1 rounded">Core dumped (Signal 11)</p>
+                            </div>
+                        </div>
+
+                        <!-- Right: Actions & Explanation -->
+                        <div class="flex flex-col justify-center space-y-6">
+                            <div class="bg-red-50 border border-red-100 p-4 rounded-xl shadow-sm">
+                                <h4 class="font-bold text-red-900 text-sm mb-2 flex items-center gap-2">
+                                    <span>🦠</span> ניסיון פריצה: הזרקת קוד
+                                </h4>
+                                <p class="text-xs text-red-800 leading-relaxed mb-4">
+                                    ננסה לכתוב הוראת מכונה זדונית לתוך <strong>מקטע הקוד (Text Segment)</strong> שמוגדר כקריאה-בלבד (Read-Only) על מנת להשתלט על התהליך.
+                                </p>
+                                <button onclick="triggerSegfault()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition-all active:scale-95 text-sm cursor-pointer">
+                                    הפעל כתיבה למקטע הקוד
+                                </button>
+                            </div>
+                            
+                            <div class="text-[11px] text-slate-500 leading-relaxed p-3 bg-slate-100 rounded-lg">
+                                <strong>הסבר:</strong> כאשר התהליך מנסה לבצע פעולה האסורה על פי טבלת הדפים שלו ב-MMU (כמו כתיבה לאזור Read-Only), החומרה מקפיצה פסיקה פנימית (Trap) למערכת ההפעלה. מערכת ההפעלה שולחת לתהליך סיגנל סיום (SIGSEGV) שמחסל אותו מיד.
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
 
                 <div class="deep-dive">
                     <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">דיאגרמת מצבי תהליך (Process States)
@@ -1729,90 +1723,42 @@
                     </div>
 
                     <!-- Column 2: Address Space Diagram -->
-                    <div
-                        class="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between" id="address-space-card">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 mb-2 border-b pb-1.5">אנטומיית מרחב הכתובות
-                                בזיכרון</h3>
-                            <p class="text-[11px] text-slate-500 mb-4 leading-relaxed">תרשים המציג כיצד מחולק הזיכרון
-                                הלוגי של תהליך בודד (Address Space).</p>
+                            <h3 class="text-base font-bold text-slate-800 mb-2 border-b pb-1.5 flex items-center justify-between">
+                                <span>אנטומיית מרחב הכתובות בזיכרון</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">MMU פעיל</span>
+                            </h3>
+                            <p class="text-[11px] text-slate-500 mb-4 leading-relaxed">תרשים המציג כיצד מחולק הזיכרון اللוגי של תהליך בודד (Address Space). נסו לכתוב לאזור מוגן כדי לראות את תגובת ה-MMU.</p>
                         </div>
-                        <div
-                            class="flex-1 flex flex-col gap-1 border border-slate-200 rounded-xl p-4 bg-white max-w-[240px] mx-auto w-full text-center text-[10px] font-bold text-slate-700">
-                            <div class="bg-indigo-100 border border-indigo-200 py-2.5 rounded shadow-sm">מקטע המחסנית
-                                (Stack)<br><span class="font-mono text-[8px] font-normal">&larr; גדל כלפי מטה</span>
+                        <div class="relative">
+                            <!-- Memory Layout -->
+                            <div class="flex-1 flex flex-col gap-1 border border-slate-200 rounded-xl p-4 bg-white max-w-[240px] mx-auto w-full text-center text-[10px] font-bold text-slate-700 relative z-10 transition-all duration-300" id="address-space-layout">
+                                <div class="bg-indigo-100 border border-indigo-200 py-2.5 rounded shadow-sm transition-all" id="mem-seg-stack">מקטע המחסנית (Stack)<br><span class="font-mono text-[8px] font-normal">&larr; גדל כלפי מטה</span></div>
+                                <div class="h-8 border border-dashed border-slate-300 rounded flex items-center justify-center text-[9px] text-slate-400 font-medium transition-all" id="mem-seg-free">שטח דינמי פנוי</div>
+                                <div class="bg-orange-100 border border-orange-200 py-2.5 rounded shadow-sm transition-all" id="mem-seg-heap">מקטע ה-Heap<br><span class="font-mono text-[8px] font-normal">גדל כלפי מעלה &larr;</span></div>
+                                <div class="bg-green-100 border border-green-200 py-2 rounded shadow-sm transition-all" id="mem-seg-data">מקטע ה-Data</div>
+                                <div class="bg-slate-200 border border-slate-400 py-2 rounded shadow-sm transition-all relative overflow-hidden" id="mem-seg-text">
+                                    מקטע הקוד (Text)<br><span class="text-[8px] font-normal text-slate-600">(Read-Only)</span>
+                                    <div class="absolute inset-0 bg-red-500/80 hidden items-center justify-center text-white text-xs font-black" id="mem-segfault-overlay">SEGFAULT!</div>
+                                </div>
                             </div>
-                            <div
-                                class="h-8 border border-dashed border-slate-300 rounded flex items-center justify-center text-[9px] text-slate-400 font-medium">
-                                שטח דינמי פנוי</div>
-                            <div class="bg-orange-100 border border-orange-200 py-2.5 rounded shadow-sm">מקטע
-                                ה-Heap<br><span class="font-mono text-[8px] font-normal">גדל כלפי מעלה &larr;</span>
+                            
+                            <!-- Hacker Arrow Animation -->
+                            <div class="absolute right-0 top-[85%] w-8 h-2 bg-red-500 rounded-full scale-x-0 origin-right transition-transform duration-300 pointer-events-none" id="hacker-arrow">
+                                <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-y-4 border-y-transparent border-r-8 border-r-red-500"></div>
                             </div>
-                            <div class="bg-green-100 border border-green-200 py-2 rounded shadow-sm">מקטע הנתונים (Data)
-                            </div>
-                            <div class="bg-slate-200 border border-slate-300 py-2 rounded shadow-sm">מקטע הקוד
-                                (Text)<br><span class="text-[8px] font-normal text-slate-500">(Read-Only)</span></div>
                         </div>
-                        <div class="mt-4 text-[10px] text-slate-500 leading-relaxed text-center select-none">
-                            * הגנה חומרתית מונעת מהמחסנית ומה-Heap להתנגש או לחרוג מגבולות המרחב המוגדרים של התהליך.
+                        
+                        <div class="mt-4 flex flex-col items-center gap-2">
+                            <button onclick="triggerSegfault()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-1.5 px-4 rounded text-xs transition-all active:scale-95 shadow-sm" id="btn-segfault">שלח פקודת כתיבה זדונית לקוד</button>
+                            <div class="text-[10px] text-slate-500 leading-relaxed text-center select-none max-w-[240px]">
+                                * הגנת החומרה (MMU) מונעת דריסה של זיכרון קריאה-בלבד (RO) או גישה מחוץ לגבולות.
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Round Robin Slider Simulator -->
-                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm"
-                    id="quantum-sim-card">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">סימולטור אינטראקטיבי: הטרייד-אוף של גודל הקוואנטה
-                    </h3>
-                    <p class="text-xs text-slate-500 mb-6">הזיזו את הסליידר כדי לשנות את גודל קוואנטת הזמן (Time
-                        Quantum) וראו את ההשפעה על כמות החלפות ההקשר (Context Switches) והיעילות הכוללת של המעבד.</p>
-
-                    <!-- Slider Control -->
-                    <div
-                        class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col sm:flex-row items-center gap-6">
-                        <div class="flex-1 w-full">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-bold text-slate-700">גודל קוואנטה (Quantum Size):</span>
-                                <span class="text-sm font-extrabold text-blue-600"
-                                    id="quantum-value-display">20ms</span>
-                            </div>
-                            <input type="range" id="quantum-slider" min="1" max="100" value="20"
-                                class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-                                oninput="updateQuantumSimulation()">
-                        </div>
-                        <div class="grid grid-cols-3 gap-3 text-center text-[10px] font-mono w-full sm:w-[240px]">
-                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                <span class="text-slate-400 block mb-0.5">החלפות הקשר:</span>
-                                <span class="font-bold text-red-600 text-xs" id="quantum-cs-count">4</span>
-                            </div>
-                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                <span class="text-slate-400 block mb-0.5">ניצולת מעבד:</span>
-                                <span class="font-bold text-green-600 text-xs" id="quantum-cpu-util">83%</span>
-                            </div>
-                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                <span class="text-slate-400 block mb-0.5">זמן תגובה:</span>
-                                <span class="font-bold text-amber-600 text-xs" id="quantum-resp-time">מצוין</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Gantt Chart View -->
-                    <div class="gantt-container mb-6">
-                        <div class="gantt-row">
-                            <div class="gantt-label">תרשים גאנט:</div>
-                            <div class="gantt-timeline" id="quantum-gantt-timeline">
-                                <!-- Dynamic Gantt Blocks go here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Explanation details -->
-                    <div class="p-4 rounded-xl bg-slate-900 text-slate-300 font-mono text-xs leading-relaxed min-h-[60px]"
-                        id="quantum-terminal">
-                        [מערכת] גרף הריצה מציג חלוקת זמן בין 3 תהליכים (P1, P2, P3). המקומות האדומים מייצגים החלפת הקשר
-                        (Context Switch) שלוקחת 1ms של תקורה.
-                    </div>
-                </div>
 
             </div>
 
@@ -2220,6 +2166,65 @@
                             </div>
                             <div class="mt-4 pt-3 border-t text-[10px] text-slate-500 font-bold font-sans">תכונה: שרידות
                                 גבוהה. שרת קורס רץ במרחב משתמש ומאותחל מחדש.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OS Architecture Sandbox Simulator -->
+                <div class="my-10 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 shadow-sm" id="arch-sandbox-card">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">מעבדת ארכיטקטורות: בחירת מבנה מנצח</h3>
+                    <p class="text-xs text-slate-500 mb-6">לחצו על הארכיטקטורה וצפו בתכונות המרכזיות (ביצועים, יציבות, אבטחה וגודל גרעין) משתנות בהתאם למבנה.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <!-- Left: Buttons -->
+                        <div class="space-y-3 col-span-1">
+                            <button onclick="updateArchSandbox('monolithic')" class="w-full text-right p-3 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-400 transition-all font-bold text-sm text-slate-700 shadow-sm" id="btn-arch-monolithic">מערכת מונוליתית (Monolithic)</button>
+                            <button onclick="updateArchSandbox('layered')" class="w-full text-right p-3 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-400 transition-all font-bold text-sm text-slate-700 shadow-sm" id="btn-arch-layered">מערכת מרובדות (Layered)</button>
+                            <button onclick="updateArchSandbox('microkernel')" class="w-full text-right p-3 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-400 transition-all font-bold text-sm text-slate-700 shadow-sm" id="btn-arch-microkernel">מיקרו-קרנל (Microkernel)</button>
+                            <button onclick="updateArchSandbox('vm')" class="w-full text-right p-3 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-400 transition-all font-bold text-sm text-slate-700 shadow-sm" id="btn-arch-vm">מכונות מדומות (VM / Hypervisor)</button>
+                            <button onclick="updateArchSandbox('exokernel')" class="w-full text-right p-3 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-400 transition-all font-bold text-sm text-slate-700 shadow-sm" id="btn-arch-exokernel">אקסו-קרנל (Exokernel)</button>
+                        </div>
+
+                        <!-- Right: Visualizer -->
+                        <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-slate-200 p-5 shadow-sm min-h-[200px] flex flex-col justify-center relative overflow-hidden">
+                            <h4 class="font-black text-slate-800 mb-6 text-center text-lg" id="arch-sim-title">בחרו ארכיטקטורה כדי להתחיל</h4>
+                            
+                            <div class="space-y-5">
+                                <!-- Performance -->
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-600 mb-1.5">
+                                        <span>🚀 ביצועים (Performance)</span>
+                                        <span id="arch-sim-perf-val" class="text-blue-600 font-black">--</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                                        <div class="h-full bg-blue-500 rounded-full transition-all duration-700 ease-out w-0" id="arch-sim-perf-bar"></div>
+                                    </div>
+                                </div>
+                                <!-- Stability -->
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-600 mb-1.5">
+                                        <span>🛡️ יציבות (Stability & Fault Tolerance)</span>
+                                        <span id="arch-sim-stab-val" class="text-green-600 font-black">--</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                                        <div class="h-full bg-green-500 rounded-full transition-all duration-700 ease-out w-0" id="arch-sim-stab-bar"></div>
+                                    </div>
+                                </div>
+                                <!-- Kernel Size -->
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-600 mb-1.5">
+                                        <span>📦 גודל גרעין המערכת (Kernel Size)</span>
+                                        <span id="arch-sim-size-val" class="text-red-600 font-black">--</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                                        <div class="h-full bg-red-500 rounded-full transition-all duration-700 ease-out w-0" id="arch-sim-size-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-sm text-indigo-900 leading-relaxed min-h-[80px] font-medium shadow-inner" id="arch-sim-desc">
+                                תכונות הארכיטקטורה יופיעו כאן לאחר הבחירה. שימו לב להבדלים בביצועים לעומת יציבות.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2877,7 +2882,7 @@
 
                 // 4. Initialize Simulator Visuals
                 updateSimView();
-                updateQuantumSimulation();
+
                 initFlashcards();
 
                 // 5. Inject navigation buttons at the bottom of each tab
@@ -2937,254 +2942,6 @@
                 });
             });
 
-            // 1.1 Memory Isolation Simulator State
-            let memIsolationActive = true;
-            let memIsolationSimRunning = false;
-
-            function toggleMemProtection() {
-                const toggle = document.getElementById("mem-prot-toggle");
-                memIsolationActive = toggle.checked;
-                const mmuWall = document.getElementById("mmu-wall-visual");
-                const mmuLabel = document.getElementById("mmu-wall-label");
-                const terminal = document.getElementById("mem-isolation-terminal");
-
-                if (memIsolationActive) {
-                    mmuWall.classList.add("active");
-                    mmuLabel.classList.remove("text-slate-400");
-                    mmuLabel.classList.add("text-blue-600", "font-black");
-                    terminal.innerHTML = "[מערכת] הגנת זיכרון (MMU) הופעלה. תהליכים מופרדים במרחב הזיכרון.";
-                } else {
-                    mmuWall.classList.remove("active");
-                    mmuLabel.classList.remove("text-blue-600", "font-black");
-                    mmuLabel.classList.add("text-slate-400");
-                    terminal.innerHTML = "<span class='text-amber-500 font-bold'>[אזהרה] הגנת זיכרון (MMU) כבויה! תהליכים עלולים להשחית זיכרון אחד של השני.</span>";
-                }
-            }
-
-            function runMemIsolationSimulation() {
-                if (memIsolationSimRunning) return;
-                memIsolationSimRunning = true;
-
-                const terminal = document.getElementById("mem-isolation-terminal");
-                const slot6 = document.getElementById("ram-slot-6");
-                const slot1 = document.getElementById("ram-slot-1");
-                const mmuWall = document.getElementById("mmu-wall-visual");
-                const simCard = document.getElementById("mem-isolation-sim-card");
-
-                terminal.innerHTML = "[תהליך A] מנסה לבצע כתיבה לכתובת זיכרון פיזית של תהליך B (כתובת 6)...<br>";
-
-                // Animate Process A slot 1 writing
-                slot1.classList.add("animate-pulse", "border-blue-500", "bg-blue-100");
-
-                setTimeout(() => {
-                    slot1.classList.remove("animate-pulse", "border-blue-500", "bg-blue-100");
-
-                    if (memIsolationActive) {
-                        // Hits MMU wall
-                        terminal.innerHTML += "<span class='text-blue-500 font-bold'>[MMU] זיהה ניסיון גישה לא מורשה מצד תהליך A לכתובת 6!</span><br>";
-                        mmuWall.classList.add("bg-red-500");
-
-                        setTimeout(() => {
-                            mmuWall.classList.remove("bg-red-500");
-                            terminal.innerHTML += "<span class='text-red-500 font-bold'>[חריגת מעבד] שגיאת גישה (Segmentation Fault / Access Violation). תהליך A הופסק.</span><br>";
-                            terminal.innerHTML += "[מערכת] תהליך B נותר בטוח ויציב.";
-
-                            // Shaking
-                            simCard.classList.remove("shake-element");
-                            void simCard.offsetWidth;
-                            simCard.classList.add("shake-element");
-
-                            // highlight process A slot in red
-                            slot1.classList.add("bg-red-100", "border-red-400", "text-red-700");
-                            slot1.innerHTML = "תהליך A<br>(הופסק)";
-
-                            memIsolationSimRunning = false;
-                        }, 800);
-                    } else {
-                        // Memory Corruption
-                        terminal.innerHTML += "<span class='text-amber-500 font-bold'>[אזהרה] הגישה בוצעה בהצלחה ללא מניעה!</span><br>";
-
-                        setTimeout(() => {
-                            slot6.className = "border border-red-600 bg-red-500 text-white p-3 rounded-lg animate-pulse";
-                            slot6.innerHTML = "השחתה!<br>(6)";
-
-                            terminal.innerHTML += "<span class='text-red-600 font-bold'>[תהליך B] הנתונים בכתובת 6 נדרסו! תהליך B קרס עקב קריאת מידע מושחת.</span><br>";
-                            terminal.innerHTML += "[מערכת] שרידות מערכת ההפעלה כולה נפגעה!";
-
-                            simCard.classList.remove("shake-element");
-                            void simCard.offsetWidth;
-                            simCard.classList.add("shake-element");
-
-                            memIsolationSimRunning = false;
-                        }, 800);
-                    }
-                }, 1000);
-            }
-
-            function resetMemIsolationSim() {
-                memIsolationSimRunning = false;
-                const slot1 = document.getElementById("ram-slot-1");
-                const slot6 = document.getElementById("ram-slot-6");
-                const terminal = document.getElementById("mem-isolation-terminal");
-
-                slot1.className = "border border-blue-200 bg-blue-50 p-3 rounded-lg";
-                slot1.innerHTML = "תהליך A<br>(1)";
-
-                slot6.className = "border border-green-200 bg-green-50 p-3 rounded-lg";
-                slot6.innerHTML = "תהליך B<br>(6)";
-
-                const toggle = document.getElementById("mem-prot-toggle");
-                toggle.checked = true;
-                toggleMemProtection();
-            }
-
-            // 1.2 Spooling Simulator State
-            let spoolingSimRunning = false;
-            let spoolingInterval = null;
-
-            function runSpoolingSimulation() {
-                if (spoolingSimRunning) return;
-                spoolingSimRunning = true;
-
-                const runBtn = document.getElementById("spool-run-btn");
-                runBtn.disabled = true;
-                runBtn.classList.add("opacity-50", "cursor-not-allowed");
-
-                const terminal = document.getElementById("spool-terminal");
-                terminal.innerHTML = "[מערכת] מתחיל סימולציית הדפסה סימולטנית...<br>";
-
-                const cpuDirect = document.getElementById("spool-cpu-direct");
-                const cpuSpool = document.getElementById("spool-cpu-spool");
-                const diskSpool = document.getElementById("spool-disk-spool");
-
-                const directPagesEl = document.getElementById("spool-printer-direct-pages");
-                const spoolPagesEl = document.getElementById("spool-printer-spool-pages");
-                const spoolFilesEl = document.getElementById("spool-disk-spool-files");
-
-                const directUtilBar = document.getElementById("spool-cpu-direct-util");
-                const directUtilText = document.getElementById("spool-cpu-direct-util-text");
-                const spoolUtilBar = document.getElementById("spool-cpu-spool-util");
-                const spoolUtilText = document.getElementById("spool-cpu-spool-util-text");
-
-                const directStatus = document.getElementById("spool-cpu-direct-status");
-                const spoolStatus = document.getElementById("spool-cpu-spool-status");
-
-                let directPages = 0;
-                let spoolFiles = 0;
-                let spoolPages = 0;
-                let simTime = 0;
-
-                spoolingInterval = setInterval(() => {
-                    simTime += 0.25;
-
-                    // Direct I/O
-                    if (directPages < 5) {
-                        if (simTime <= 0.5) {
-                            directStatus.textContent = "מחשב...";
-                            directStatus.className = "font-bold text-blue-600";
-                            cpuDirect.className = "w-12 h-12 bg-blue-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow animate-pulse";
-                            directUtilBar.style.width = "100%";
-                            directUtilText.textContent = "100%";
-                        } else {
-                            directStatus.textContent = "ממתין (Sleep)";
-                            directStatus.className = "font-bold text-amber-600";
-                            cpuDirect.className = "w-12 h-12 bg-slate-400 text-slate-200 rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow";
-                            directUtilBar.style.width = "4%";
-                            directUtilText.textContent = "4%";
-
-                            if (Math.floor((simTime - 0.5) / 1.5) > directPages) {
-                                directPages++;
-                                if (directPages > 5) directPages = 5;
-                                directPagesEl.textContent = `${directPages}/5`;
-                            }
-                        }
-                    } else {
-                        directStatus.textContent = "סיום";
-                        directStatus.className = "font-bold text-green-600";
-                        directUtilBar.style.width = "0%";
-                        directUtilText.textContent = "0%";
-                    }
-
-                    // Spooling I/O
-                    if (spoolFiles < 5) {
-                        spoolStatus.textContent = "כותב לדיסק...";
-                        spoolStatus.className = "font-bold text-blue-600";
-                        cpuSpool.className = "w-12 h-12 bg-blue-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow animate-pulse";
-                        diskSpool.className = "w-12 h-12 bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-[10px] shadow animate-bounce";
-                        spoolUtilBar.style.width = "95%";
-                        spoolUtilText.textContent = "95%";
-
-                        if (Math.floor(simTime / 0.5) > spoolFiles) {
-                            spoolFiles++;
-                            if (spoolFiles > 5) spoolFiles = 5;
-                            spoolFilesEl.textContent = `${spoolFiles}/5`;
-                        }
-                    } else {
-                        spoolStatus.textContent = "פנוי (Idle)";
-                        spoolStatus.className = "font-bold text-green-600";
-                        cpuSpool.className = "w-12 h-12 bg-green-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow";
-                        diskSpool.className = "w-12 h-12 bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-[10px] shadow";
-                        spoolUtilBar.style.width = "0%";
-                        spoolUtilText.textContent = "0%";
-                    }
-
-                    if (spoolFiles > 0 && spoolPages < 5) {
-                        if (Math.floor(simTime / 1.5) > spoolPages) {
-                            spoolPages++;
-                            if (spoolPages > 5) spoolPages = 5;
-                            spoolPagesEl.textContent = `${spoolPages}/5`;
-                        }
-                    }
-
-                    if (simTime === 1.0) {
-                        terminal.innerHTML += "[ללא Spooling] מעבד חסום עד שהמדפסת תסיים הדפסת דף 1.<br>";
-                        terminal.innerHTML += "[עם Spooling] מעבד שלח עבודות 1 ו-2 לדיסק, וממשיך לעבודה 3.<br>";
-                    } else if (simTime === 2.5) {
-                        terminal.innerHTML += "[עם Spooling] <span class='text-green-500 font-bold'>מעבד סיים לעבד את כל 5 העבודות ופנוי לרוץ!</span><br>";
-                        terminal.innerHTML += "[ללא Spooling] מעבד עדיין ממתין להדפסת דף 2...<br>";
-                    }
-
-                    if (directPages === 5 && spoolPages === 5) {
-                        clearInterval(spoolingInterval);
-                        terminal.innerHTML += "<br><span class='text-green-500 font-bold'>[תוצאה] הסימולציה הושלמה.</span><br>";
-                        terminal.innerHTML += "<b>עם Spooling:</b> המעבד התפנה לצרכים אחרים תוך 2.5 שניות.<br>";
-                        terminal.innerHTML += "<b>ללא Spooling:</b> המעבד היה חסום סרק במשך 8 שניות של המתנה למדפסת.";
-
-                        runBtn.disabled = false;
-                        runBtn.classList.remove("opacity-50", "cursor-not-allowed");
-                        spoolingSimRunning = false;
-                    }
-                }, 250);
-            }
-
-            function resetSpoolingSim() {
-                if (spoolingInterval) clearInterval(spoolingInterval);
-                spoolingSimRunning = false;
-
-                const runBtn = document.getElementById("spool-run-btn");
-                runBtn.disabled = false;
-                runBtn.classList.remove("opacity-50", "cursor-not-allowed");
-
-                document.getElementById("spool-printer-direct-pages").textContent = "0/5";
-                document.getElementById("spool-printer-spool-pages").textContent = "0/5";
-                document.getElementById("spool-disk-spool-files").textContent = "0/5";
-
-                document.getElementById("spool-cpu-direct-util").style.width = "0%";
-                document.getElementById("spool-cpu-direct-util-text").textContent = "0%";
-                document.getElementById("spool-cpu-spool-util").style.width = "0%";
-                document.getElementById("spool-cpu-spool-util-text").textContent = "0%";
-
-                document.getElementById("spool-cpu-direct-status").textContent = "מוכן";
-                document.getElementById("spool-cpu-direct-status").className = "font-bold text-green-600";
-                document.getElementById("spool-cpu-spool-status").textContent = "מוכן";
-                document.getElementById("spool-cpu-spool-status").className = "font-bold text-green-600";
-
-                document.getElementById("spool-cpu-direct").className = "w-12 h-12 bg-blue-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow";
-                document.getElementById("spool-cpu-spool").className = "w-12 h-12 bg-blue-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-xs shadow";
-                document.getElementById("spool-disk-spool").className = "w-12 h-12 bg-indigo-600 text-white rounded-lg flex flex-col items-center justify-center font-bold text-[10px] shadow";
-
-                document.getElementById("spool-terminal").innerHTML = "[מערכת] הסימולטור מאופס.";
-            }
 
             // 1.3 Memory Hierarchy Pyramid State
             const pyramidData = {
@@ -3492,83 +3249,6 @@
                 }
             }
 
-            // 1.5 Round Robin Quantum Simulator State
-            function updateQuantumSimulation() {
-                const slider = document.getElementById("quantum-slider");
-                const valDisplay = document.getElementById("quantum-value-display");
-                const timeline = document.getElementById("quantum-gantt-timeline");
-                const csEl = document.getElementById("quantum-cs-count");
-                const utilEl = document.getElementById("quantum-cpu-util");
-                const respEl = document.getElementById("quantum-resp-time");
-                const terminal = document.getElementById("quantum-terminal");
-
-                const qVal = parseInt(slider.value);
-                valDisplay.textContent = `${qVal}ms`;
-
-                timeline.innerHTML = "";
-
-                let p1_rem = 15;
-                let p2_rem = 10;
-                let p3_rem = 8;
-                let csCount = 0;
-                let timelineHTML = "";
-                let totalTime = 0;
-
-                let queue = ['P1', 'P2', 'P3'];
-
-                while (queue.length > 0 && totalTime < 100) {
-                    let proc = queue.shift();
-                    let runTime = 0;
-
-                    if (proc === 'P1') {
-                        runTime = Math.min(qVal, p1_rem);
-                        p1_rem -= runTime;
-                    } else if (proc === 'P2') {
-                        runTime = Math.min(qVal, p2_rem);
-                        p2_rem -= runTime;
-                    } else if (proc === 'P3') {
-                        runTime = Math.min(qVal, p3_rem);
-                        p3_rem -= runTime;
-                    }
-
-                    if (totalTime > 0) {
-                        timelineHTML += `<div class="gantt-block cs" style="flex-grow: 1;" title="החלפת הקשר: 1ms">CS</div>`;
-                        totalTime += 1;
-                        csCount++;
-                    }
-
-                    const procClass = proc.toLowerCase();
-                    timelineHTML += `<div class="gantt-block ${procClass}" style="flex-grow: ${runTime * 2};" title="${proc} רץ לפרק זמן של ${runTime}ms">${proc}</div>`;
-                    totalTime += runTime;
-
-                    if (proc === 'P1' && p1_rem > 0) queue.push('P1');
-                    if (proc === 'P2' && p2_rem > 0) queue.push('P2');
-                    if (proc === 'P3' && p3_rem > 0) queue.push('P3');
-                }
-
-                timeline.innerHTML = timelineHTML;
-
-                const cpuTime = 33;
-                const totalSimTime = cpuTime + csCount;
-                const efficiency = Math.round((cpuTime / totalSimTime) * 100);
-
-                csEl.textContent = csCount;
-                utilEl.textContent = `${efficiency}%`;
-
-                if (qVal <= 5) {
-                    respEl.textContent = "מעולה (מיידי)";
-                    respEl.className = "font-bold text-green-600 text-xs";
-                    terminal.innerHTML = `[ניתוח] קוואנטה קטנה (${qVal}ms) מעניקה <b>זמן תגובה מצוין</b>. המעבד עובר במהירות בין המשימות וכל משתמש מרגיש שהמערכת מגיבה מיידית. עם זאת, התקורה של החלפות הקשר עצומה (${csCount} החלפות), וניצולת המעבד ירדה ל-${efficiency}% בלבד.`;
-                } else if (qVal <= 25) {
-                    respEl.textContent = "טוב ומאוזן";
-                    respEl.className = "font-bold text-blue-600 text-xs";
-                    terminal.innerHTML = `[ניתוח] קוואנטה מאוזנת (${qVal}ms) מאזנת היטב בין ביצועים לבין תגובתיות. כמות החלפות ההקשר סבירה (${csCount}), והניצולת עומדת על ${efficiency}%. זו הבחירה הטיפוסית במערכות שולחניות.`;
-                } else {
-                    respEl.textContent = "איטי (לאג)";
-                    respEl.className = "font-bold text-red-600 text-xs";
-                    terminal.innerHTML = `[ניתוח] קוואנטה גדולה (${qVal}ms) מונעת כמעט לחלוטין את החלפות ההקשר (רק ${csCount} החלפות), וניצולת המעבד מעולה (${efficiency}%). עם זאת, <b>זמן התגובה גרוע</b>. תהליכים אינטראקטיביים קטנים (כמו P3) נאלצים להמתין זמן ארוך מאוד בתור עד שתהליכים ארוכים (כמו P1) יסיימו את פרוסת הזמן הארוכה שלהם.`;
-                }
-            }
 
             // 1.7 Architectural Crash Test Simulator State
             function runCrashTestArchitecture(arch) {
@@ -4015,6 +3695,231 @@
                 renderFlashcards();
             }
 
+            // === 1.1 Perspectives Sandbox ===
+            function switchPerspective(view) {
+                const topdownView = document.getElementById('persp-topdown-view');
+                const bottomupView = document.getElementById('persp-bottomup-view');
+                const btnTopdown = document.getElementById('btn-persp-topdown');
+                const btnBottomup = document.getElementById('btn-persp-bottomup');
+                
+                if(!topdownView || !bottomupView) return;
+
+                if(view === 'topdown') {
+                    btnTopdown.className = "px-4 py-2 rounded-md text-xs font-bold transition-all bg-blue-600 text-white shadow-sm";
+                    btnBottomup.className = "px-4 py-2 rounded-md text-xs font-bold transition-all text-slate-400 hover:text-white";
+                    bottomupView.style.opacity = '0';
+                    bottomupView.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        topdownView.style.opacity = '1';
+                        topdownView.style.pointerEvents = 'auto';
+                    }, 300);
+                } else {
+                    btnBottomup.className = "px-4 py-2 rounded-md text-xs font-bold transition-all bg-blue-600 text-white shadow-sm";
+                    btnTopdown.className = "px-4 py-2 rounded-md text-xs font-bold transition-all text-slate-400 hover:text-white";
+                    topdownView.style.opacity = '0';
+                    topdownView.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        bottomupView.style.opacity = '1';
+                        bottomupView.style.pointerEvents = 'auto';
+                    }, 300);
+                }
+            }
+
+            // Removed 1.1 Memory Isolation (MMU) per user request
+
+
+
+            // === 1.4 Constraint Lab ===
+            let constraintActiveTask = null;
+            let constraintMatched = new Set();
+
+            function selectConstraintTask(taskId) {
+                if (constraintMatched.has(taskId)) return;
+                constraintActiveTask = taskId;
+                ['mainframe', 'server', 'multiprocessor', 'pc', 'rt', 'embedded'].forEach(t => {
+                    const el = document.getElementById('task-' + t);
+                    if(el && !constraintMatched.has(t)) el.classList.remove('border-blue-500', 'bg-blue-50');
+                });
+                
+                const selectedEl = document.getElementById('task-' + taskId);
+                if(selectedEl) selectedEl.classList.add('border-blue-500', 'bg-blue-50');
+
+                // Enable solutions
+                ['mainframe', 'server', 'multiprocessor', 'pc', 'rt', 'embedded'].forEach(s => {
+                    if (!constraintMatched.has(s)) {
+                        const el = document.getElementById('sol-' + s);
+                        if(el) el.classList.remove('opacity-50', 'pointer-events-none');
+                    }
+                });
+            }
+
+            function selectConstraintSolution(solId) {
+                if (!constraintActiveTask || constraintMatched.has(solId) || constraintMatched.has(constraintActiveTask)) return;
+                
+                const taskId = constraintActiveTask;
+                const taskEl = document.getElementById('task-' + taskId);
+                const solEl = document.getElementById('sol-' + solId);
+                const gridEl = document.getElementById('constraint-lab-grid');
+                const svgEl = document.getElementById('constraint-lines-svg');
+                
+                if(!taskEl || !solEl || !gridEl || !svgEl) return;
+
+                const gridRect = gridEl.getBoundingClientRect();
+                const taskRect = taskEl.getBoundingClientRect();
+                const solRect = solEl.getBoundingClientRect();
+
+                // Calculate center points relative to the grid
+                const x1 = taskRect.left + taskRect.width / 2 - gridRect.left;
+                const y1 = taskRect.top + taskRect.height / 2 - gridRect.top;
+                const x2 = solRect.left + solRect.width / 2 - gridRect.left;
+                const y2 = solRect.top + solRect.height / 2 - gridRect.top;
+
+                const isMatch = (taskId === solId);
+                
+                // Create SVG line
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke-width', '3');
+                line.setAttribute('stroke-linecap', 'round');
+                
+                if (isMatch) {
+                    line.setAttribute('stroke', '#22c55e'); // Green
+                    svgEl.appendChild(line);
+                    
+                    constraintMatched.add(taskId);
+                    
+                    taskEl.classList.replace('border-blue-500', 'border-green-500');
+                    taskEl.classList.replace('bg-blue-50', 'bg-green-50');
+                    solEl.classList.add('border-green-500', 'bg-green-50');
+                    taskEl.classList.add('pointer-events-none');
+                    solEl.classList.add('pointer-events-none');
+                    
+                    constraintActiveTask = null;
+                } else {
+                    line.setAttribute('stroke', '#ef4444'); // Red
+                    line.setAttribute('stroke-dasharray', '8,8');
+                    svgEl.appendChild(line);
+                    
+                    solEl.classList.add('border-red-500', 'bg-red-50');
+                    
+                    setTimeout(() => {
+                        svgEl.removeChild(line);
+                        solEl.classList.remove('border-red-500', 'bg-red-50');
+                    }, 1000);
+                }
+            }
+
+            // === 1.5 MMU Segfault ===
+            function triggerSegfault() {
+                const textSeg = document.getElementById('mem-seg-text');
+                const stackSeg = document.getElementById('mem-seg-stack');
+                const heapSeg = document.getElementById('mem-seg-heap');
+                const arrow = document.getElementById('hacker-arrow');
+                const overlay = document.getElementById('mem-segfault-overlay');
+                
+                // Reset
+                overlay.classList.replace('flex', 'hidden');
+                textSeg.classList.remove('animate-shake', 'border-red-500');
+                
+                // Animate arrow
+                arrow.style.transform = 'scaleX(1)';
+                
+                setTimeout(() => {
+                    arrow.style.transform = 'scaleX(0)';
+                    overlay.classList.replace('hidden', 'flex');
+                    textSeg.classList.add('animate-shake', 'border-red-500');
+                }, 400);
+                
+                setTimeout(() => {
+                    overlay.classList.replace('flex', 'hidden');
+                    textSeg.classList.remove('animate-shake', 'border-red-500');
+                }, 2500);
+            }
+
+            // === 1.7 Architecture Sandbox ===
+            function updateArchSandbox(archType) {
+                // Reset active button state
+                ['monolithic', 'layered', 'microkernel', 'vm', 'exokernel'].forEach(type => {
+                    const btn = document.getElementById('btn-arch-' + type);
+                    if(btn) {
+                        btn.classList.remove('bg-blue-50', 'border-blue-500', 'text-blue-800');
+                        btn.classList.add('bg-white', 'text-slate-700');
+                    }
+                });
+                
+                // Set active button
+                const activeBtn = document.getElementById('btn-arch-' + archType);
+                if(activeBtn) {
+                    activeBtn.classList.remove('bg-white', 'text-slate-700');
+                    activeBtn.classList.add('bg-blue-50', 'border-blue-500', 'text-blue-800');
+                }
+
+                // Elements
+                const title = document.getElementById('arch-sim-title');
+                const desc = document.getElementById('arch-sim-desc');
+                const perfVal = document.getElementById('arch-sim-perf-val');
+                const perfBar = document.getElementById('arch-sim-perf-bar');
+                const stabVal = document.getElementById('arch-sim-stab-val');
+                const stabBar = document.getElementById('arch-sim-stab-bar');
+                const sizeVal = document.getElementById('arch-sim-size-val');
+                const sizeBar = document.getElementById('arch-sim-size-bar');
+
+                if(!title) return;
+
+                // Update data
+                setTimeout(() => {
+                    if (archType === 'monolithic') {
+                        title.textContent = 'מערכת מונוליתית (Linux / Windows)';
+                        perfVal.textContent = 'גבוה מאוד (100%)';
+                        perfBar.style.width = '100%';
+                        stabVal.textContent = 'נמוכה (30%)';
+                        stabBar.style.width = '30%';
+                        sizeVal.textContent = 'ענק (100%)';
+                        sizeBar.style.width = '100%';
+                        desc.innerHTML = '<strong>ניתוח:</strong> הגרעין מכיל את כל שירותי המערכת. אין תקורה של החלפות הקשר (Context Switch) ולכן הביצועים מעולים. עם זאת, הגרעין מנופח (עשרות מיליוני שורות קוד), ובאג בדרייבר מדפסת פשוט יגרום ל-Kernel Panic ויקריס את המחשב כולו.';
+                    } else if (archType === 'layered') {
+                        title.textContent = 'מערכת מרובדות (THE / MULTICS)';
+                        perfVal.textContent = 'בינוני (60%)';
+                        perfBar.style.width = '60%';
+                        stabVal.textContent = 'בינונית (60%)';
+                        stabBar.style.width = '60%';
+                        sizeVal.textContent = 'גדול (70%)';
+                        sizeBar.style.width = '70%';
+                        desc.innerHTML = '<strong>ניתוח:</strong> הקוד מאורגן בשכבות מבודדות. משפר את יכולת האיתור של באגים (Debugging), אך הפנייה דרך שכבות מרובות גורמת להאטה. בפועל, קשה מאוד לתכנן מודל היררכי טהור בעולם האמיתי.';
+                    } else if (archType === 'microkernel') {
+                        title.textContent = 'מיקרו-קרנל (MINIX / QNX)';
+                        perfVal.textContent = 'נמוך (40%)';
+                        perfBar.style.width = '40%';
+                        stabVal.textContent = 'גבוהה מאוד (100%)';
+                        stabBar.style.width = '100%';
+                        sizeVal.textContent = 'זעיר (10%)';
+                        sizeBar.style.width = '10%';
+                        desc.innerHTML = '<strong>ניתוח:</strong> הגרעין מזערי ומטפל רק בתזמון ותקשורת (IPC). שאר השירותים רצים כתוכניות משתמש (Servers). יציבות פנומנלית: קריסת שרת תוביל לאתחולו ללא קריסת המחשב. המחיר: פגיעה משמעותית בביצועים עקב תקורת החלפות הקשר (Context Switch) כבדה.';
+                    } else if (archType === 'vm') {
+                        title.textContent = 'מכונות מדומות (VM/370 / VMware)';
+                        perfVal.textContent = 'בינוני (50%)';
+                        perfBar.style.width = '50%';
+                        stabVal.textContent = 'גבוהה (90%)';
+                        stabBar.style.width = '90%';
+                        sizeVal.textContent = 'בינוני (40%)';
+                        sizeBar.style.width = '40%';
+                        desc.innerHTML = '<strong>ניתוח:</strong> שכבת ה-Hypervisor מדמה את החומרה. מעולה לבידוד ותאימות לאחור (Guest OS לא יכולה להפיל מערכות אחרות). המחיר הוא ביצועים בגלל תקורה של הדמיית חומרה מורכבת.';
+                    } else if (archType === 'exokernel') {
+                        title.textContent = 'אקסו-קרנל (Exokernel / Nemesis)';
+                        perfVal.textContent = 'אולטימטיבי (100%+)';
+                        perfBar.style.width = '100%';
+                        stabVal.textContent = 'בינונית (60%)';
+                        stabBar.style.width = '60%';
+                        sizeVal.textContent = 'מינימלי (5%)';
+                        sizeBar.style.width = '5%';
+                        desc.innerHTML = '<strong>ניתוח:</strong> הגרעין מוותר על כל הפשטה (אבסטרקציה) ומקצה משאבים בצורתם הגולמית. תוכנות משתמשות ב-Library OS ליישום ניהול הזיכרון או הקבצים. גמישות וביצועים ללא פשרות, אך הקוד של תוכנות המשתמש הופך מסובך וקשה לתחזוקה.';
+                    }
+                }, 50);
+            }
+
             // Expose required methods to window
             window.showTab = showTab;
             window.toggleSidebar = toggleSidebar;
@@ -4024,11 +3929,6 @@
             window.runCrashTest = runCrashTest;
 
             // New Exposed functions
-            window.toggleMemProtection = toggleMemProtection;
-            window.runMemIsolationSimulation = runMemIsolationSimulation;
-            window.resetMemIsolationSim = resetMemIsolationSim;
-            window.runSpoolingSimulation = runSpoolingSimulation;
-            window.resetSpoolingSim = resetSpoolingSim;
             window.selectPyramidLayer = selectPyramidLayer;
             window.triggerInterruptFlow = triggerInterruptFlow;
             window.nextInterruptStep = nextInterruptStep;
@@ -4036,13 +3936,18 @@
             window.selectMatchingCard = selectMatchingCard;
             window.resetMatchingGame = resetMatchingGame;
             window.showStateInfo = showStateInfo;
-            window.updateQuantumSimulation = updateQuantumSimulation;
+
             window.runCrashTestArchitecture = runCrashTestArchitecture;
             window.resetCrashTestArchitecture = resetCrashTestArchitecture;
             window.setFlashcardMode = setFlashcardMode;
             window.filterFlashcards = filterFlashcards;
             window.toggleFlashcard = toggleFlashcard;
             window.resetFlashcards = resetFlashcards;
+
+            window.selectConstraintTask = selectConstraintTask;
+            window.selectConstraintSolution = selectConstraintSolution;
+            window.triggerSegfault = triggerSegfault;
+            window.updateArchSandbox = updateArchSandbox;
         }
     </script>
 
