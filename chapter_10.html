@@ -1295,6 +1295,20 @@
                 <h2 class="text-3xl font-bold text-slate-900">6. ממ"ן 02: המעבר מ"עולם שטוח" לעולם של "בועות" (קונטיינרים)</h2>
             </div>
             
+            <!-- הרחבה 1: מה זה בעצם קונטיינר -->
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mt-8 mb-4">
+                <h3 class="text-xl font-bold text-indigo-900 mb-4">💡 למעמיקים: מה זה בעצם קונטיינר ברמת ה-OS? (ההפרדה בין המנוע לגרעין)</h3>
+                <p class="text-sm text-indigo-800 mb-4">
+                    כיום, אנשים נוטים לבלבל בין המנוע שמנהל קונטיינרים (כמו Docker, containerd או CRI-O) לבין ה<strong>קונטיינר עצמו</strong>. במציאות, ברמת הגרעין (Kernel), <strong>אין דבר כזה "אובייקט קונטיינר"</strong>. 
+                </p>
+                <p class="text-sm text-indigo-800 mb-4">
+                    כשאנחנו מריצים קונטיינר, דוקר לא פונה למערכת ההפעלה ומבקש "תייצרי לי קונטיינר". במקום זאת, דוקר מבצע קריאת <code class="ltr-block bg-indigo-100 px-1 rounded">clone()</code> (גרסה מתקדמת של fork). קריאה זו מבקשת מהגרעין לייצר תהליך לינוקס רגיל לחלוטין, אך מפעילה דגלים מיוחדים (כמו <code class="ltr-block bg-indigo-100 px-1 rounded">CLONE_NEWPID</code> או <code class="ltr-block bg-indigo-100 px-1 rounded">CLONE_NEWNS</code>).
+                </p>
+                <p class="text-sm text-indigo-800">
+                    התוצאה: מערכת ההפעלה רואה תהליך רגיל, אך היא מבודדת אותו משאר המערכת. <strong>קונטיינר הוא בסך הכל תהליך מבודד</strong> המשתמש במנגנוני אשליה מובנים בגרעין.
+                </p>
+            </div>
+
             <!-- Flat vs Bubbles -->
             <div class="grid md:grid-cols-2 gap-8">
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
@@ -1350,6 +1364,20 @@
                         <p class="text-sm text-indigo-800">המספר <strong>האמיתי</strong> של התהליך כפי ששאר המערכת ומנהל המערכת (הגרעין) רואים אותו מחוץ לבועה. הגרעין אומר: "אתה חושב שאתה 1, אבל אתה בעצם התהליך ה-7 במחשב שלי".</p>
                     </div>
                 </div>
+            </div>
+
+            <!-- הרחבה: Network Namespace -->
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-8">
+                <h3 class="text-xl font-bold text-indigo-900 mb-4">💡 למעמיקים: מה עם רשת? (Network Namespace)</h3>
+                <p class="text-sm text-indigo-800 mb-4">
+                    הבנו שתהליך מקבל PIDs משלו, אבל מה קורה כשאתם מריצים שרת Node.js שמקשיב לפורט 8080 בתוך הקונטיינר? למה זה לא מתנגש עם שרת אחר שרץ על המחשב המארח באותו פורט?
+                </p>
+                <p class="text-sm text-indigo-800 mb-4">
+                    התשובה היא <strong>Network Namespace</strong>. הגרעין מייצר עבור הבועה מחסנית רשת (Network Stack) וירטואלית עצמאית לחלוטין. יש לה "כרטיס רשת" משלה (veth), כתובת IP פנימית משלה (לרוב בטווח 172.17.x.x), וטבלת ניתוב משלה.
+                </p>
+                <p class="text-sm text-indigo-800">
+                    לכן, פורט 8080 בתוך הבועה שייך אך ורק ל-IP הפנימי שלה. כדי שהעולם החיצון יוכל לדבר איתה, דוקר יוצר מנגנון Port Forwarding – הוא מאזין לפורט על המחשב המארח ומנתב את הבקשות פנימה דרך "גשר" וירטואלי אל הבועה.
+                </p>
             </div>
 
             <!-- Why Maman 01 crashed -->
@@ -2201,6 +2229,20 @@
                     <strong>המהות של עולם ה-DevOps המודרני היא סביבות פיתוח ניתנות לזריקה, שקמות מכלום תוך שניות, מוכנות לעבודה, ולא משאירות "זבל" כשמסיימים.</strong>
                 </p>
                 
+                <!-- הרחבה: קודספייסס כקונטיינר -->
+                <div class="bg-indigo-950/50 border-r-4 border-indigo-400 p-5 rounded-lg mb-8 relative z-10">
+                    <p class="text-indigo-200 mb-3 text-sm">
+                        בסופו של דבר, זה מחבר אותנו בדיוק למטלות הקורס (ממ"ן 01 ואילך). כשהתחלתם את המטלה, לחצתם על כפתור ב-GitHub Codespaces וקיבלתם סביבה עם Linux (Ubuntu) ו-Terminal.
+                        <strong>הסביבה הזו היא לא מכונה וירטואלית רגילה. זהו קונטיינר!</strong>
+                    </p>
+                    <p class="text-indigo-200 mb-3 text-sm">
+                        מיקרוסופט מחזיקה שרתים עצומים בחוות השרתים שלה (Azure). כשאתם מבקשים סביבה, השרת פשוט שולף Docker Image ענק שמכיל את כל הכלים (gcc, qemu, git), מריץ אותו כקונטיינר, ומזרים את פלט הטרמינל (דרך מנגנוני IPC ו-WebSockets) ישר לדפדפן שלכם.
+                    </p>
+                    <p class="text-indigo-200 text-sm">
+                        זו הסיבה שסביבת הפיתוח עולה כל כך מהר – לא צריך להתניע Kernel מאפס, אלא רק לייצר תהליך מבודד (<code class="ltr-block bg-indigo-900 px-1 rounded">clone()</code>) על השרת המארח.
+                    </p>
+                </div>
+                
                 <div class="grid md:grid-cols-3 gap-6 relative z-10">
                     <div class="bg-black/30 p-5 rounded-xl border border-indigo-500/30">
                         <h4 class="font-bold text-indigo-200 mb-2">אפס התקנות (Zero Setup)</h4>
@@ -2218,9 +2260,33 @@
             </div>
 
         </section>
+
+                    <!-- הרחבה: UnionFS ו-Copy-On-Write -->
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-12">
+                        <h3 class="text-xl font-bold text-indigo-900 mb-4">💡 למעמיקים: מהי מערכת קבצים שכבתית? (UnionFS / OverlayFS)</h3>
+                        <p class="text-sm text-indigo-800 mb-4">
+                            כמו שלמדנו בפרקים הקודמים (VFS), מערכת קבצים היא הדרך שבה מערכת ההפעלה מארגנת את המידע על הדיסק. דוקר משתמש במערכת קבצים וירטואלית מיוחדת מסוג <strong>Union File System</strong> (לרוב ממומשת דרך מנוע שנקרא Overlay2).
+                        </p>
+                        <p class="text-sm text-indigo-800 mb-4">
+                            <strong>למה צריך את זה?</strong> אם היינו מעתיקים את כל מערכת ההפעלה (נגיד Ubuntu ששוקל 1GB) לכל קונטיינר שרץ, הדיסק שלנו היה נגמר תוך שניות והפעלת הקונטיינר הייתה איטית להחריד (בגלל זמני ההעתקה).
+                        </p>
+                        <p class="text-sm text-indigo-800 mb-4">
+                            במקום זאת, דוקר מוריד פעם אחת את השכבה של Ubuntu למחשב, ונועל אותה ל<strong>קריאה בלבד (Read-Only)</strong>. כשמפעילים קונטיינר, דוקר רק מניח מעל השכבה הזו שכבה דקיקה ושקופה המאפשרת כתיבה (Read-Write).
+                        </p>
+                        <div class="bg-white p-4 rounded-lg border border-indigo-100 mb-4 shadow-sm">
+                            <strong class="text-indigo-900 block mb-2">איך עובד מנגנון Copy-on-Write (CoW)?</strong>
+                            <ol class="list-decimal list-inside text-sm text-indigo-800 space-y-1">
+                                <li>אם הקונטיינר רק <strong>קורא</strong> קובץ, הבקשה עוברת לשכבת הבסיס (Read-Only) והקובץ נקרא משם.</li>
+                                <li>ברגע שהקונטיינר מנסה <strong>לשנות</strong> קובץ (או ליצור חדש), מערכת OverlayFS תופסת את הבקשה, מעתיקה בשקט את הקובץ המקורי לשכבה העליונה (הדקיקה), ורק אז מתירה לבצע את השינוי.</li>
+                            </ol>
+                        </div>
+                        <p class="text-sm text-indigo-800">
+                            <strong>הקסם בפעולה:</strong> בסימולטור למטה (The Docker Bakery) תראו שכל שכבה ב-Dockerfile מוערמת אחת על השנייה כקרח קפוא (Read-Only). רק כשנריץ את הקונטיינרים, ורק כשאחד מהם ינסה לכתוב לקובץ - תיווצר ההעתקה (CoW).
+                        </p>
+                    </div>
                     
                     <!-- SIMULATOR 5: The Docker Bakery -->
-                    <div class="mt-16 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                    <div class="mt-4 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
                         <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
                             <span class="text-slate-400 font-mono text-sm">סימולטור 10.5: מאפיית השכבות של דוקר (The Docker Bakery)</span>
                         </div>

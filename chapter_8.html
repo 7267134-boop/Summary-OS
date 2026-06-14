@@ -413,9 +413,9 @@
                 <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">1. ארכיטקטורות גישה לזיכרון (UMA vs. NUMA)</h3>
                 
                 <!-- UMA vs NUMA diagrams -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-10">
                     <!-- UMA Card -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition relative overflow-hidden" id="uma-card">
                         <div class="flex items-center gap-2 mb-4">
                             <span class="bg-blue-100 text-blue-800 font-black px-3 py-1 rounded-lg text-xs">UMA</span>
                             <h4 class="font-extrabold text-lg text-slate-800">Uniform Memory Access</h4>
@@ -423,69 +423,107 @@
                         <p class="text-slate-600 text-xs mb-6">גישה אחידה לזיכרון. כל המעבדים מחוברים דרך אפיק מערכת משותף יחיד לזיכרון ראשי יחיד. זמן הגישה של כל מעבד לכל כתובת בזיכרון הוא אחיד וזהה.</p>
                         
                         <!-- Visual representation of UMA -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 flex flex-col items-center">
-                            <div class="flex gap-2 mb-4">
-                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 1</span>
-                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 2</span>
-                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 3</span>
-                                <span class="bg-blue-600 text-white font-bold text-[10px] px-2 py-1.5 rounded shadow-sm">CPU 4</span>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-150 flex flex-col items-center relative min-h-[220px]">
+                            <div class="flex gap-4 mb-8 w-full justify-center relative z-10" id="uma-cpus-container">
+                                <button onclick="pingUma(1)" id="uma-cpu-1" class="relative bg-blue-600 text-white font-bold text-[10px] px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700 active:scale-95 transition-all outline-none cursor-pointer">CPU 1<br><span class="text-[8px] opacity-70">שלח Ping</span></button>
+                                <button onclick="pingUma(2)" id="uma-cpu-2" class="relative bg-blue-600 text-white font-bold text-[10px] px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700 active:scale-95 transition-all outline-none cursor-pointer">CPU 2<br><span class="text-[8px] opacity-70">שלח Ping</span></button>
+                                <button onclick="pingUma(3)" id="uma-cpu-3" class="relative bg-blue-600 text-white font-bold text-[10px] px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700 active:scale-95 transition-all outline-none cursor-pointer">CPU 3<br><span class="text-[8px] opacity-70">שלח Ping</span></button>
+                                <button onclick="pingUma(4)" id="uma-cpu-4" class="relative bg-blue-600 text-white font-bold text-[10px] px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700 active:scale-95 transition-all outline-none cursor-pointer">CPU 4<br><span class="text-[8px] opacity-70">שלח Ping</span></button>
                             </div>
+                            
                             <!-- System Bus -->
-                            <div class="w-full bg-slate-350 h-2 rounded mb-4 relative flex items-center justify-center">
-                                <span class="text-[8px] text-slate-600 font-bold absolute -top-4">System Bus (אפיק משותף)</span>
+                            <div class="w-full max-w-[280px] bg-slate-300 h-3 rounded-full mb-8 relative flex items-center justify-center shadow-inner" id="uma-bus">
+                                <span class="text-[9px] text-slate-600 font-bold absolute -top-5">System Bus (אפיק משותף)</span>
+                                <!-- Packet -->
+                                <div id="uma-packet" class="absolute w-3 h-3 bg-emerald-400 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.8)] opacity-0 transition-all z-20"></div>
                             </div>
+                            
                             <!-- RAM -->
-                            <div class="bg-emerald-600 text-white font-black text-xs px-8 py-3 rounded-lg shadow-md">
+                            <div class="bg-emerald-600 text-white font-black text-xs px-10 py-3 rounded-xl shadow-md border-b-4 border-emerald-800 z-10" id="uma-ram">
                                 Shared RAM
+                            </div>
+
+                            <!-- Timer Display -->
+                            <div class="absolute bottom-3 left-4 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm flex items-center gap-2">
+                                <span class="text-[10px] font-bold text-slate-500">זמן גישה:</span>
+                                <span id="uma-timer" class="font-mono font-black text-blue-600 text-sm">-- ns</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- NUMA Card -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition relative overflow-hidden" id="numa-card">
                         <div class="flex items-center gap-2 mb-4">
                             <span class="bg-indigo-100 text-indigo-800 font-black px-3 py-1 rounded-lg text-xs">NUMA</span>
                             <h4 class="font-extrabold text-lg text-slate-800">Non-Uniform Memory Access</h4>
                         </div>
-                        <p class="text-slate-600 text-xs mb-6">גישה לא אחידה לזיכרון. לכל מעבד יש "חלקת זיכרון" מקומית מהירה משלו. גישה לזיכרון מקומי מהירה מאוד, אך גישה לזיכרון של מעבד אחר איטית יותר ומתבצעת דרך רשת חיבורים.</p>
+                        <p class="text-slate-600 text-xs mb-6">גישה לא אחידה לזיכרון. קריאה מזיכרון מקומי מהירה מאוד, אך קריאה מזיכרון מרוחק איטית יותר בשל מעבר ברשת החיבורים הפנימית.</p>
                         
                         <!-- Visual representation of NUMA -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-150">
-                            <div class="grid grid-cols-2 gap-4 items-center">
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-150 relative min-h-[220px]">
+                            <div class="grid grid-cols-2 gap-x-8 gap-y-12 items-center relative z-10">
                                 <!-- Node 1 -->
-                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
-                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 1</span>
-                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
-                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 1</span>
+                                <div class="bg-white border p-3 rounded-xl flex items-center justify-between shadow-sm relative z-10" id="numa-node-1">
+                                    <div class="flex flex-col gap-1 w-full" id="numa-cpu-1">
+                                        <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded text-center">CPU 1</span>
+                                        <div class="flex gap-1 justify-center">
+                                            <button onclick="pingNuma(1, 1)" class="bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 text-[8px] font-bold px-1 py-0.5 rounded transition-colors border border-slate-200 cursor-pointer">R1</button>
+                                            <button onclick="pingNuma(1, 4)" class="bg-slate-100 hover:bg-orange-100 text-slate-600 hover:text-orange-700 text-[8px] font-bold px-1 py-0.5 rounded transition-colors border border-slate-200 cursor-pointer">R4</button>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] text-slate-300 font-black mx-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-2 rounded-lg border-b-2 border-emerald-800" id="numa-ram-1">RAM 1</span>
                                 </div>
                                 <!-- Node 2 -->
-                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
-                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 2</span>
-                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
-                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 2</span>
+                                <div class="bg-white border p-3 rounded-xl flex items-center justify-between shadow-sm relative z-10" id="numa-node-2">
+                                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1.5 rounded w-full text-center" id="numa-cpu-2">CPU 2</span>
+                                    <span class="text-[10px] text-slate-300 font-black mx-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-2 rounded-lg border-b-2 border-emerald-800" id="numa-ram-2">RAM 2</span>
+                                </div>
+                                <!-- Node 3 -->
+                                <div class="bg-white border p-3 rounded-xl flex items-center justify-between shadow-sm relative z-10" id="numa-node-3">
+                                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1.5 rounded w-full text-center" id="numa-cpu-3">CPU 3</span>
+                                    <span class="text-[10px] text-slate-300 font-black mx-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-2 rounded-lg border-b-2 border-emerald-800" id="numa-ram-3">RAM 3</span>
+                                </div>
+                                <!-- Node 4 -->
+                                <div class="bg-white border p-3 rounded-xl flex items-center justify-between shadow-sm relative z-10" id="numa-node-4">
+                                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1.5 rounded w-full text-center" id="numa-cpu-4">CPU 4</span>
+                                    <span class="text-[10px] text-slate-300 font-black mx-1">⇄</span>
+                                    <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-2 rounded-lg border-b-2 border-emerald-800" id="numa-ram-4">RAM 4</span>
                                 </div>
                             </div>
                             
                             <!-- Interconnect line -->
-                            <div class="flex justify-center my-2 text-slate-400 text-xs font-bold animate-pulse">
-                                ⇅ Interconnect Network ⇅
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none" id="numa-interconnect-container">
+                                <div class="w-[60%] h-[40%] border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center bg-slate-50/50 z-0">
+                                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-50 px-2 rounded-full">Interconnect</span>
+                                </div>
+                                <!-- NUMA Packet -->
+                                <div id="numa-packet" class="absolute w-3 h-3 bg-emerald-400 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.8)] opacity-0 z-20 transition-all"></div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4 items-center">
-                                <!-- Node 3 -->
-                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
-                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 3</span>
-                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
-                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 3</span>
-                                </div>
-                                <!-- Node 4 -->
-                                <div class="bg-white border p-2 rounded-lg flex items-center justify-between shadow-sm">
-                                    <span class="bg-blue-600 text-white text-[9px] font-bold p-1 rounded">CPU 4</span>
-                                    <span class="text-[8px] text-slate-400 font-bold border-r pr-1">⇄</span>
-                                    <span class="bg-emerald-600 text-white text-[9px] font-bold p-1 rounded">RAM 4</span>
-                                </div>
+                            <!-- Timer Display -->
+                            <div class="absolute bottom-3 left-4 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm flex items-center gap-2 z-20">
+                                <span class="text-[10px] font-bold text-slate-500">זמן גישה:</span>
+                                <span id="numa-timer" class="font-mono font-black text-indigo-600 text-sm">-- ns</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Theoretical: SMT / Hyper-threading -->
+                <div class="concept-box mt-10 mb-12 border-l-4 border-indigo-500 bg-indigo-50/30 p-6 rounded-r-xl">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-md">3</span>
+                        אשליה חומרתית: ריבוי תהליכונים (Hyper-threading / SMT)
+                    </h3>
+                    <p class="text-slate-700 leading-relaxed mb-4">
+                        כדי לנצל את משאבי המעבד עד תום, החומרה המודרנית משתמשת בטכניקת <strong>Simultaneous Multithreading (SMT)</strong>. ליבה פיזית בודדת מורכבת מ"מוח" חישובי (ALU) ומ"מרחב מצב" (אוגרים ומונה תוכנית). ב-SMT, החומרה משכפלת רק את אוגרי המצב, אך משאירה יחידת חישוב פיזית אחת.
+                    </p>
+                    <div class="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm text-sm text-indigo-900 leading-relaxed">
+                        <strong class="font-black">מה זה אומר מבחינת מערכת ההפעלה?</strong><br>
+                        מערכת ההפעלה "רואה" שני מעבדים לוגיים שונים ויכולה לשלוח אליהם שני תהליכונים נפרדים במקביל. בפועל, החומרה פשוט "מזפזפת" ביניהם באפס זמן מתי שאחד מהם ממתין לנתונים מהזיכרון. לכן, מתזמן חכם חייב להכיר את הטופולוגיה: שיבוץ של שני תהליכים כבדים (CPU-Bound) על שני מעבדים לוגיים החולקים את אותה ליבה פיזית, יוביל לכך שהם יחנקו זה את זה בתחרות על ה-ALU המשותף.
                     </div>
                 </div>
 
@@ -513,36 +551,43 @@
                     </div>
 
                     <!-- Coherence Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-                        <!-- Core A -->
-                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden" id="coherence-core-a-box">
-                            <h4 class="font-extrabold text-lg text-slate-800 mb-4 flex items-center justify-between">
-                                <span>ליבה א' (Core A)</span>
-                                <span id="coherence-core-a-state" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">ריק</span>
-                            </h4>
-                            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-6">
-                                <div class="text-xs text-blue-700 font-bold mb-1">L1 Cache (משתנה X):</div>
-                                <div id="coherence-core-a-cache-val" class="text-3xl font-black text-blue-900">-</div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="coherenceRead('A')" class="flex-1 bg-slate-800 text-white hover:bg-slate-900 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">קרא X</button>
-                                <button onclick="coherenceWrite('A', 5)" class="flex-1 bg-primary text-white hover:bg-blue-700 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">כתוב X = 5</button>
-                            </div>
-                        </div>
+                    <div class="relative mb-6">
+                        <!-- Horizontal Bus for Snooping -->
+                        <div class="absolute top-1/2 left-0 right-0 h-2 bg-slate-200 rounded-full -translate-y-1/2 z-0 hidden md:block" id="coherence-snoop-bus"></div>
+                        <!-- Snooping Message Packet -->
+                        <div id="coherence-snoop-msg" class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-red-100 border-2 border-red-500 text-red-700 font-black text-[10px] px-2 py-1 rounded-full shadow-lg opacity-0 z-20 transition-all duration-700 pointer-events-none whitespace-nowrap">INVALIDATE X</div>
 
-                        <!-- Core B -->
-                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden" id="coherence-core-b-box">
-                            <h4 class="font-extrabold text-lg text-slate-800 mb-4 flex items-center justify-between">
-                                <span>ליבה ב' (Core B)</span>
-                                <span id="coherence-core-b-state" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">ריק</span>
-                            </h4>
-                            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-6">
-                                <div class="text-xs text-blue-700 font-bold mb-1">L1 Cache (משתנה X):</div>
-                                <div id="coherence-core-b-cache-val" class="text-3xl font-black text-blue-900">-</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 relative z-10">
+                            <!-- Core A -->
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col" id="coherence-core-a-box">
+                                <h4 class="font-extrabold text-lg text-slate-800 mb-4 flex items-center justify-between">
+                                    <span>ליבה א' (Core A)</span>
+                                    <span id="coherence-core-a-state" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">ריק</span>
+                                </h4>
+                                <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-6 flex-1">
+                                    <div class="text-xs text-blue-700 font-bold mb-1">L1 Cache (משתנה X):</div>
+                                    <div id="coherence-core-a-cache-val" class="text-3xl font-black text-blue-900">-</div>
+                                </div>
+                                <div class="flex gap-2 mt-auto">
+                                    <button onclick="coherenceRead('A')" class="flex-1 bg-slate-800 text-white hover:bg-slate-900 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">קרא X</button>
+                                    <button onclick="coherenceWrite('A', 5)" class="flex-1 bg-primary text-white hover:bg-blue-700 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">כתוב X = 5</button>
+                                </div>
                             </div>
-                            <div class="flex gap-2">
-                                <button onclick="coherenceRead('B')" class="flex-1 bg-slate-800 text-white hover:bg-slate-900 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">קרא X</button>
-                                <button onclick="coherenceWrite('B', 5)" class="flex-1 bg-primary text-white hover:bg-blue-700 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">כתוב X = 5</button>
+
+                            <!-- Core B -->
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col" id="coherence-core-b-box">
+                                <h4 class="font-extrabold text-lg text-slate-800 mb-4 flex items-center justify-between">
+                                    <span>ליבה ב' (Core B)</span>
+                                    <span id="coherence-core-b-state" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">ריק</span>
+                                </h4>
+                                <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-6 flex-1">
+                                    <div class="text-xs text-blue-700 font-bold mb-1">L1 Cache (משתנה X):</div>
+                                    <div id="coherence-core-b-cache-val" class="text-3xl font-black text-blue-900">-</div>
+                                </div>
+                                <div class="flex gap-2 mt-auto">
+                                    <button onclick="coherenceRead('B')" class="flex-1 bg-slate-800 text-white hover:bg-slate-900 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">קרא X</button>
+                                    <button onclick="coherenceWrite('B', 5)" class="flex-1 bg-primary text-white hover:bg-blue-700 font-bold py-2 px-3 rounded-lg text-xs transition-all active:scale-95 cursor-pointer">כתוב X = 5</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -550,18 +595,53 @@
                     <!-- Shared RAM -->
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-6 text-center max-w-sm mx-auto relative overflow-hidden">
                         <!-- Visual lightning paths -->
-                        <div id="coherence-pulse-line-a" class="absolute top-0 left-1/4 w-0.5 bg-yellow-400 h-0 transition-all duration-300"></div>
-                        <div id="coherence-pulse-line-b" class="absolute top-0 right-1/4 w-0.5 bg-yellow-400 h-0 transition-all duration-300"></div>
+                        <div id="coherence-pulse-line-a" class="absolute top-0 left-1/4 w-0.5 bg-yellow-400 h-0 transition-all duration-300 z-0"></div>
+                        <div id="coherence-pulse-line-b" class="absolute top-0 right-1/4 w-0.5 bg-yellow-400 h-0 transition-all duration-300 z-0"></div>
                         
-                        <h4 class="font-extrabold text-sm text-slate-500 mb-1">Shared RAM (זיכרון ראשי משותף)</h4>
-                        <div class="text-[10px] text-slate-400 mb-2">כתובת זיכרון: X</div>
-                        <div id="coherence-ram-val" class="text-3xl font-black text-emerald-600 bg-emerald-50 border border-emerald-200 py-2 px-4 rounded-lg inline-block min-w-[80px]">0</div>
+                        <div class="relative z-10">
+                            <h4 class="font-extrabold text-sm text-slate-500 mb-1">Shared RAM (זיכרון ראשי משותף)</h4>
+                            <div class="text-[10px] text-slate-400 mb-2">כתובת זיכרון: X</div>
+                            <div id="coherence-ram-val" class="text-3xl font-black text-emerald-600 bg-emerald-50 border border-emerald-200 py-2 px-4 rounded-lg inline-block min-w-[80px]">0</div>
+                        </div>
                     </div>
 
                     <!-- Warning alert & Logs console -->
                     <div id="coherence-alert-box" class="hidden mb-4 p-4 rounded-lg text-sm bg-rose-50 border border-rose-200 text-rose-900 font-bold animate-pulse text-center"></div>
                     <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-y-auto max-h-40 dark-scroll text-left" dir="ltr" id="coherence-console">
                         &gt; System initialized. RAM value X = 0.
+                    </div>
+                </div>
+
+                <!-- Theoretical: Memory Consistency -->
+                <div class="deep-dive mt-10 mb-8">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">עקביות מטמון (Cache Coherence) מול מודל עקביות זיכרון (Memory Consistency)</h3>
+                    <p class="mb-4 text-slate-700 leading-relaxed">
+                        קיימת נטייה להתבלבל בין שני המושגים, אך ההבדל ביניהם קריטי למתכנתים בסביבת ריבוי-ליבות:
+                    </p>
+                    <ul class="space-y-4 ms-6 list-disc list-outside text-slate-700 leading-relaxed mb-6">
+                        <li>
+                            <strong class="text-emerald-700 font-bold">עקביות מטמון (כמו MESI):</strong> מטפלת אך ורק ב<strong>כתובת זיכרון אחת בודדת</strong> (למשל, המשתנה X). היא מוודאת שברגע שמעבד כתב ל-X, אף מעבד אחר לא יקרא ערך ישן של X מהמטמון שלו.
+                        </li>
+                        <li>
+                            <strong class="text-purple-700 font-bold">מודל עקביות הזיכרון (Memory Consistency):</strong> מגדיר את סדר הפעולות כפי שהוא נצפה על פני <strong>מספר משתנים שונים</strong>.
+                        </li>
+                    </ul>
+                    
+                    <div class="bg-purple-50 p-5 rounded-xl border border-purple-200 shadow-sm">
+                        <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="text-xl">⚠️</span> הסכנה: Out-of-Order Execution</h4>
+                        <p class="text-sm text-purple-800 leading-relaxed mb-4">
+                            מעבדים מודרניים משנים לעיתים קרובות את סדר הפקודות כדי לייעל ביצועים, כל עוד הם לא שוברים תלויות בקוד הרציף של אותה ליבה.<br>
+                            נניח ש<strong>ליבה א'</strong> מריצה: <code class="bg-white px-1.5 py-0.5 rounded text-slate-800 font-mono text-xs shadow-sm border border-slate-200">X = 1; Flag = 1;</code><br>
+                            ו<strong>ליבה ב'</strong> מריצה: <code class="bg-white px-1.5 py-0.5 rounded text-slate-800 font-mono text-xs shadow-sm border border-slate-200">if (Flag == 1) print(X);</code>
+                        </p>
+                        <p class="text-sm text-purple-800 leading-relaxed">
+                            החומרה בליבה א' עלולה להחליט לכתוב את <code class="bg-white px-1 rounded">Flag</code> לזיכרון <em>לפני</em> <code class="bg-white px-1 rounded">X</code>. ליבה ב' תראה ש-<code class="bg-white px-1 rounded">Flag == 1</code>, תיגש להדפיס את <code class="bg-white px-1 rounded">X</code> ותדפיס "0" (הערך הישן)! MESI <strong>לא</strong> יעזור כאן, כי מדובר בשתי כתובות שונות (X ו-Flag).
+                        </p>
+                        <hr class="border-purple-200 my-4">
+                        <h5 class="font-bold text-purple-900 mb-1 flex items-center gap-2"><span class="text-xl">🚧</span> הפתרון: מחסומי זיכרון (Memory Barriers / Fences)</h5>
+                        <p class="text-sm text-purple-800 leading-relaxed">
+                            כדי לפתור זאת, מתכנתים חייבים לשתול פקודות חומרה מסוג "מחסום". המחסום מורה למעבד: "אל תבצע שום פקודת קריאה/כתיבה חדשה עד שכל הפקודות שמעל המחסום הסתיימו והופצו לכל הליבות במערכת".
+                        </p>
                     </div>
                 </div>
 
@@ -618,6 +698,7 @@
                     </p>
 
                     <!-- Mode & Workload controls -->
+                    <!-- Mode & Workload controls -->
                     <div class="bg-white p-4 rounded-xl border border-slate-200 mb-6 flex flex-wrap gap-4 items-center justify-between shadow-sm">
                         <div class="flex items-center gap-3">
                             <span class="text-sm font-bold text-slate-600">ארכיטקטורה:</span>
@@ -625,77 +706,90 @@
                             <button id="ms-mode-smp" onclick="setMsMode('smp')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">ריבוי סימטרי (SMP)</button>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="triggerMsWorkload()" class="bg-primary text-white hover:bg-blue-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95">הוסף עומס עבודה (SysCalls)</button>
+                            <button onclick="triggerMsWorkload()" class="bg-primary text-white hover:bg-blue-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95">הוסף עומס עבודה (SysCalls אוטומטי)</button>
                             <button onclick="resetMsSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">איפוס</button>
+                        </div>
+                    </div>
+
+                    <!-- Physical Queue (Master-Slave only) -->
+                    <div id="ms-queue-container" class="mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center transition-all relative">
+                        <span class="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-wide">תור בקשות קרנל (Kernel Queue)</span>
+                        <div id="ms-queue" class="flex gap-2 min-h-[40px] p-2 bg-slate-50 rounded-lg w-full max-w-lg overflow-x-auto items-center border border-slate-150">
+                            <!-- Tasks will be injected here -->
+                            <span class="text-xs text-slate-400 italic mx-auto" id="ms-queue-empty">התור ריק</span>
                         </div>
                     </div>
 
                     <!-- CPUs Grid -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
                         <!-- CPU 1 -->
-                        <div id="cpu-box-1" class="bg-white p-5 rounded-xl border-2 border-indigo-500 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
-                            <div id="cpu-crown-1" class="absolute -top-3 left-1/2 -translate-x-1/2 text-xl">👑</div>
+                        <div id="cpu-box-1" class="bg-white p-5 rounded-xl border-2 border-indigo-500 shadow-sm text-center relative flex flex-col justify-between min-h-[180px] transition-all">
+                            <div id="cpu-crown-1" class="absolute -top-3 left-1/2 -translate-x-1/2 text-xl z-10 drop-shadow-md">👑</div>
                             <div>
                                 <h4 class="font-extrabold text-sm text-slate-800">CPU 1</h4>
                                 <div id="cpu-role-1" class="text-[10px] font-bold text-indigo-600 mb-2">Master (מוביל)</div>
-                                <div id="cpu-status-1" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                                <div id="cpu-status-1" class="text-xs text-slate-500 font-medium h-8 flex items-center justify-center">מריץ קוד משתמש</div>
                             </div>
-                            <div class="mt-4">
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                            <div class="mt-auto w-full">
+                                <button onclick="processQueueTask()" id="btn-process-task" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-1.5 px-2 rounded text-[10px] transition-all cursor-pointer mb-3 border border-indigo-200">עבד משימה אחת</button>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1 shadow-inner">
                                     <div id="cpu-bar-1" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
                                 </div>
-                                <span id="cpu-pct-1" class="text-xs font-bold text-slate-600">20%</span>
+                                <span id="cpu-pct-1" class="text-xs font-black text-slate-600">20%</span>
                             </div>
                         </div>
 
                         <!-- CPU 2 -->
-                        <div id="cpu-box-2" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
+                        <div id="cpu-box-2" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[180px] transition-all">
                             <div>
                                 <h4 class="font-extrabold text-sm text-slate-800">CPU 2</h4>
                                 <div id="cpu-role-2" class="text-[10px] font-bold text-slate-400 mb-2">Slave (נגרר)</div>
-                                <div id="cpu-status-2" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                                <div id="cpu-status-2" class="text-xs text-slate-500 font-medium h-8 flex items-center justify-center">מריץ קוד משתמש</div>
                             </div>
-                            <div class="mt-4">
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                            <div class="mt-auto w-full">
+                                <button onclick="sendSysCall(2)" id="btn-syscall-2" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 px-2 rounded text-[10px] transition-all cursor-pointer mb-3 active:scale-95 shadow-sm">שלח SysCall</button>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1 shadow-inner">
                                     <div id="cpu-bar-2" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
                                 </div>
-                                <span id="cpu-pct-2" class="text-xs font-bold text-slate-600">20%</span>
+                                <span id="cpu-pct-2" class="text-xs font-black text-slate-600">20%</span>
                             </div>
                         </div>
 
                         <!-- CPU 3 -->
-                        <div id="cpu-box-3" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
+                        <div id="cpu-box-3" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[180px] transition-all">
                             <div>
                                 <h4 class="font-extrabold text-sm text-slate-800">CPU 3</h4>
                                 <div id="cpu-role-3" class="text-[10px] font-bold text-slate-400 mb-2">Slave (נגרר)</div>
-                                <div id="cpu-status-3" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                                <div id="cpu-status-3" class="text-xs text-slate-500 font-medium h-8 flex items-center justify-center">מריץ קוד משתמש</div>
                             </div>
-                            <div class="mt-4">
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                            <div class="mt-auto w-full">
+                                <button onclick="sendSysCall(3)" id="btn-syscall-3" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 px-2 rounded text-[10px] transition-all cursor-pointer mb-3 active:scale-95 shadow-sm">שלח SysCall</button>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1 shadow-inner">
                                     <div id="cpu-bar-3" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
                                 </div>
-                                <span id="cpu-pct-3" class="text-xs font-bold text-slate-600">20%</span>
+                                <span id="cpu-pct-3" class="text-xs font-black text-slate-600">20%</span>
                             </div>
                         </div>
 
                         <!-- CPU 4 -->
-                        <div id="cpu-box-4" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[160px]">
+                        <div id="cpu-box-4" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm text-center relative flex flex-col justify-between min-h-[180px] transition-all">
                             <div>
                                 <h4 class="font-extrabold text-sm text-slate-800">CPU 4</h4>
                                 <div id="cpu-role-4" class="text-[10px] font-bold text-slate-400 mb-2">Slave (נגרר)</div>
-                                <div id="cpu-status-4" class="text-xs text-slate-500 font-medium">מריץ קוד משתמש</div>
+                                <div id="cpu-status-4" class="text-xs text-slate-500 font-medium h-8 flex items-center justify-center">מריץ קוד משתמש</div>
                             </div>
-                            <div class="mt-4">
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
+                            <div class="mt-auto w-full">
+                                <button onclick="sendSysCall(4)" id="btn-syscall-4" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 px-2 rounded text-[10px] transition-all cursor-pointer mb-3 active:scale-95 shadow-sm">שלח SysCall</button>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1 shadow-inner">
                                     <div id="cpu-bar-4" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
                                 </div>
-                                <span id="cpu-pct-4" class="text-xs font-bold text-slate-600">20%</span>
+                                <span id="cpu-pct-4" class="text-xs font-black text-slate-600">20%</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Packet container -->
-                    <div id="ms-packet-space" class="relative h-6 w-full overflow-hidden mb-4"></div>
+                    <!-- Packet container (Hidden since we have visual queue now) -->
+                    <div id="ms-packet-space" class="hidden"></div>
 
                     <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-y-auto max-h-40 dark-scroll text-left" dir="ltr" id="ms-console">
                         &gt; Master-Slave Simulation initialized.
@@ -736,38 +830,125 @@
                     </div>
                 </div>
 
+                <!-- TLB Shootdown Deep Dive & Interactive Sim -->
+                <div class="deep-dive mt-8 mb-12">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">אתגר סנכרון מרכזי: TLB Shootdown</h3>
+                    <p class="mb-4 text-slate-700 leading-relaxed">
+                        בסביבת מרובת-מעבדים עם זיכרון וירטואלי, לכל ליבה יש זיכרון מטמון משלה לתרגום כתובות הנקרא <strong>TLB</strong> (Translation Lookaside Buffer).
+                    </p>
+                    <p class="mb-6 text-slate-700 leading-relaxed">
+                        כאשר מערכת ההפעלה מעדכנת את טבלת הדפים (למשל, כאשר דף יוצא מהזיכרון לדיסק), היא חייבת לעדכן גם את ה-TLBs של <strong>כל הליבות האחרות</strong> שמריצות חוטים של אותו תהליך. אי-ביצוע עדכון זה עלול לגרום לליבה אחרת לנסות לגשת לדף שכבר אינו קורא אוטומטית מטבלת הדפים המעודכנת (שגיאה קריטית).
+                    </p>
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 shadow-sm relative overflow-hidden">
+                        <h4 class="font-bold text-indigo-900 mb-6 flex items-center gap-2">
+                            <span class="text-lg">🎯</span> סימולטור TLB Shootdown
+                        </h4>
+                        
+                        <!-- Mini UI for TLB Shootdown -->
+                        <div class="bg-white rounded-xl border border-indigo-100 p-6 mb-6 relative z-10">
+                            <!-- CPUs -->
+                            <div class="flex justify-between items-center mb-12 relative">
+                                <!-- Core 1 -->
+                                <div id="tlb-core-1" class="bg-slate-50 border-2 border-slate-200 rounded-lg p-3 text-center w-24 transition-colors duration-300 z-10">
+                                    <div class="font-black text-sm text-slate-800">Core 1</div>
+                                    <div id="tlb-status-1" class="text-[9px] font-bold text-slate-500 mt-1">פעיל</div>
+                                </div>
+                                
+                                <!-- Core 2 -->
+                                <div id="tlb-core-2" class="bg-slate-50 border-2 border-slate-200 rounded-lg p-3 text-center w-24 transition-colors duration-300 z-10">
+                                    <div class="font-black text-sm text-slate-800">Core 2</div>
+                                    <div id="tlb-status-2" class="text-[9px] font-bold text-slate-500 mt-1">TLB: דף X</div>
+                                </div>
+                                
+                                <!-- Core 3 -->
+                                <div id="tlb-core-3" class="bg-slate-50 border-2 border-slate-200 rounded-lg p-3 text-center w-24 transition-colors duration-300 z-10">
+                                    <div class="font-black text-sm text-slate-800">Core 3</div>
+                                    <div id="tlb-status-3" class="text-[9px] font-bold text-slate-500 mt-1">TLB: דף X</div>
+                                </div>
+
+                                <!-- Arrows Container -->
+                                <div class="absolute inset-0 pointer-events-none z-0">
+                                    <div id="tlb-arrow-ipi-2" class="absolute top-1/2 left-[20%] w-[25%] h-0.5 bg-red-500 origin-left scale-x-0 transition-transform duration-500 -translate-y-1/2 flex items-center justify-center">
+                                        <span class="absolute -top-4 text-[8px] font-black text-red-600 bg-white px-1">IPI Interrupt</span>
+                                    </div>
+                                    <div id="tlb-arrow-ipi-3" class="absolute top-1/2 left-[20%] w-[65%] h-0.5 bg-red-500 origin-left scale-x-0 transition-transform duration-500 translate-y-2 flex items-center justify-center">
+                                        <span class="absolute top-2 text-[8px] font-black text-red-600 bg-white px-1">IPI Interrupt</span>
+                                    </div>
+                                    <div id="tlb-arrow-ack-2" class="absolute top-1/2 left-[20%] w-[25%] h-0.5 bg-emerald-500 origin-right scale-x-0 transition-transform duration-500 -translate-y-3 flex items-center justify-center">
+                                        <span class="absolute -top-4 text-[8px] font-black text-emerald-600 bg-white px-1">ACK / אישור</span>
+                                    </div>
+                                    <div id="tlb-arrow-ack-3" class="absolute top-1/2 left-[20%] w-[65%] h-0.5 bg-emerald-500 origin-right scale-x-0 transition-transform duration-500 -translate-y-5 flex items-center justify-center">
+                                        <span class="absolute -top-4 text-[8px] font-black text-emerald-600 bg-white px-1">ACK / אישור</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- RAM -->
+                            <div class="flex justify-center mb-6">
+                                <div id="tlb-ram" class="bg-emerald-50 border-2 border-emerald-200 rounded-lg p-3 w-48 text-center transition-colors">
+                                    <div class="font-black text-sm text-emerald-800">RAM (זיכרון פיזי)</div>
+                                    <div id="tlb-ram-page" class="text-[10px] font-bold text-emerald-600 bg-white mt-2 px-2 py-1 rounded inline-block transition-all">דף X (מיועד לפינוי)</div>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button onclick="triggerTlbShootdown()" id="btn-tlb-shootdown" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg text-sm transition-all cursor-pointer shadow-md hover:bg-indigo-700 active:scale-95">Core 1: פנה דף פיזי מהזיכרון</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 text-slate-200 p-3 rounded-lg font-mono text-xs overflow-y-auto max-h-32 dark-scroll text-left" dir="ltr" id="tlb-console">
+                            &gt; Ready. Page X is loaded in Core 2 and Core 3 TLBs.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Bus Contention visualizer -->
-                <h3 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">מכבש ה-Spinlock ותעבורת האפיק (Bus Contention)</h3>
+                <h3 class="text-xl font-bold text-slate-900 mb-4 border-b pb-2">מכבש ה-Spinlock ותעבורת האפיק (Bus Contention)</h3>
                 
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8">
-                    <p class="text-sm text-slate-655 mb-6 leading-relaxed">
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6">
+                    <p class="text-xs text-slate-655 mb-4 leading-relaxed">
                         מנעולים המבוססים על הוראת חומרה אטומית (כמו TSL) נקראים <strong>Spinlocks</strong>, בהם המעבד הממתין מבצע "המתנה פעילה" בלולאה. 
                         כאשר מספר מעבדים מנסים להיכנס בו-זמנית למנעול תפוס, הם מציפים את אפיק הזיכרון (System Bus) בדגימות רצופות, מה שמייצר עומס אפיק (Bus Contention) וחוסם את הגישה לזיכרון הראשי. הדבר מאט גם את המעבד שכבר מריץ את הקטע הקריטי.
                     </p>
 
                     <!-- Controller Bar -->
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 mb-6 flex flex-wrap gap-4 items-center justify-between shadow-sm">
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 mb-4 flex flex-wrap gap-4 items-center justify-between shadow-sm">
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="busAcquireLock()" class="bg-primary text-white hover:bg-blue-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95 shadow-sm">מעבד 1 תופס מנעול</button>
-                            <button onclick="busTriggerSpinlock()" class="bg-amber-500 text-white hover:bg-amber-600 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95 shadow-sm">מעבדים 2-4 נכנסים ל-Spinlock</button>
-                            <button onclick="busReleaseLock()" class="bg-slate-800 text-white hover:bg-slate-900 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95 shadow-sm">שחרר מנעול</button>
+                            <button onclick="busAcquireLock()" class="bg-primary text-white hover:bg-blue-700 font-bold py-1.5 px-3 rounded-lg text-[11px] transition-all cursor-pointer active:scale-95 shadow-sm">מעבד 1 תופס מנעול</button>
+                            <button onclick="busTriggerSpinlock()" class="bg-amber-500 text-white hover:bg-amber-600 font-bold py-1.5 px-3 rounded-lg text-[11px] transition-all cursor-pointer active:scale-95 shadow-sm">מעבדים 2-4 נכנסים ל-Spinlock</button>
+                            <button id="mcs-btn" onclick="busTriggerMcs()" class="bg-indigo-600 text-white hover:bg-indigo-700 font-bold py-1.5 px-3 rounded-lg text-[11px] transition-all cursor-pointer active:scale-95 shadow-sm">מעבדים 2-4 נכנסים ל-MCS (תור)</button>
+                            <button onclick="busReleaseLock()" class="bg-slate-800 text-white hover:bg-slate-900 font-bold py-1.5 px-3 rounded-lg text-[11px] transition-all cursor-pointer active:scale-95 shadow-sm">שחרר מנעול</button>
                         </div>
-                        <button onclick="resetBusSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">איפוס</button>
+                        <button onclick="resetBusSim()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-lg text-[11px] transition-all cursor-pointer active:scale-95">איפוס</button>
                     </div>
 
                     <!-- Alert / Status -->
-                    <div id="bus-contention-alert" class="hidden mb-6 p-4 rounded-lg text-sm bg-red-100 border border-red-200 text-red-900 font-black animate-pulse text-center">
+                    <div id="bus-contention-alert" class="hidden mb-3 p-3 rounded-lg text-xs bg-red-100 border border-red-200 text-red-900 font-black animate-pulse text-center shadow-inner">
                         ⚠️ עומס אפיק: 100% (Bus Contention) - פקק תנועה כבד בגישה לזיכרון הראשי!
                     </div>
 
+                    <!-- Bus Bandwidth Gauge -->
+                    <div class="mb-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-600 whitespace-nowrap">תפוסת אפיק הזיכרון (Bus Bandwidth):</span>
+                        <div class="flex-1 bg-slate-100 h-3 rounded-full overflow-hidden shadow-inner relative">
+                            <div id="bus-bandwidth-fill" class="h-full bg-emerald-500 transition-all duration-500 w-[5%]"></div>
+                        </div>
+                        <span id="bus-bandwidth-pct" class="text-xs font-black text-emerald-600 w-10 text-left">5%</span>
+                    </div>
+
                     <!-- Visual Topologies -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 mb-6">
+                    <div class="bg-white border border-slate-200 rounded-xl p-4 mb-4 relative overflow-hidden">
                         <!-- 4 CPUs -->
-                        <div class="grid grid-cols-4 gap-4 mb-10 text-center">
+                        <div class="grid grid-cols-4 gap-3 mb-6 text-center relative z-10">
                             <!-- CPU 1 -->
-                            <div id="bus-cpu-1" class="bg-slate-50 p-4 border border-slate-200 rounded-lg transition-colors duration-300">
-                                <div class="font-extrabold text-sm text-slate-800">CPU 1</div>
-                                <div id="bus-cpu-status-1" class="text-[10px] text-slate-500 font-bold mt-1">מריץ קוד רגיל</div>
+                            <div id="bus-cpu-1" class="bg-slate-50 p-3 border border-slate-200 rounded-lg transition-colors duration-300 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-extrabold text-sm text-slate-800">CPU 1</div>
+                                    <div id="bus-cpu-status-1" class="text-[10px] text-slate-500 font-bold mt-1">מריץ קוד רגיל</div>
+                                </div>
+                                <div class="mt-3 w-full bg-slate-200 h-1.5 rounded-full overflow-hidden hidden" id="bus-cpu-1-progress-container">
+                                    <div id="bus-cpu-1-progress" class="bg-blue-600 h-full w-0"></div>
+                                </div>
                             </div>
                             <!-- CPU 2 -->
                             <div id="bus-cpu-2" class="bg-slate-50 p-4 border border-slate-200 rounded-lg transition-colors duration-300">
@@ -817,8 +998,8 @@
                                     <span id="bus-lock-val" class="font-mono text-lg font-black text-slate-800 bg-white border px-3 py-1 rounded">0</span>
                                 </div>
                                 <div>
-                                    <span class="text-[10px] font-bold text-slate-400 block">עקומת השהיית כתיבה:</span>
-                                    <span id="bus-write-delay" class="font-mono text-sm font-bold text-emerald-600 bg-white border px-3 py-1 rounded">Normal (0ms)</span>
+                                    <span class="text-[10px] font-bold text-slate-400 block">זמן כתיבה למעבד 1:</span>
+                                    <span id="bus-write-delay" class="font-mono text-lg font-black text-slate-800 bg-white border px-3 py-1 rounded">1.5s (רגיל)</span>
                                 </div>
                             </div>
                         </div>
@@ -920,6 +1101,27 @@
                     <!-- Feedbacks -->
                     <div id="affinity-feedback" class="mt-6 p-4 rounded-xl text-center text-sm font-bold bg-slate-100 border border-slate-200 text-slate-700">
                         המשחק ממתין לתחילת ריצה. גררו את P1.
+                    </div>
+                </div>
+
+                <!-- Theoretical: Load Balancing -->
+                <div class="concept-box mt-12 mb-12 border-l-4 border-emerald-500 bg-emerald-50/30 p-6 rounded-r-xl">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="bg-emerald-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-md">⚖️</span>
+                        אתגר נוסף: חלוקת עומסים (Load Balancing)
+                    </h3>
+                    <p class="text-slate-700 leading-relaxed mb-4">
+                        זיקת מטמון (Cache Affinity) מושכת תהליך להישאר על אותו מעבד, אך מה קורה כשמעבד אחד כורע תחת עומס של עשרות תהליכים (Overloaded), בזמן שמעבדים אחרים יושבים בטלים (Idle)?
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6 mt-4">
+                        <div class="bg-white p-4 rounded-lg border border-emerald-100 shadow-sm text-sm">
+                            <h4 class="font-bold text-emerald-800 mb-2">Push Migration (דחיפה)</h4>
+                            <p class="text-slate-600">תהליך ייעודי של מערכת ההפעלה (Load Balancer) מתעורר כל פרק זמן קבוע, בודק את אורך התורים בכל המעבדים, ו"דוחף" תהליכים ממעבד עמוס למעבד פנוי כדי לאזן.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-emerald-100 shadow-sm text-sm">
+                            <h4 class="font-bold text-emerald-800 mb-2">Pull Migration (משיכה)</h4>
+                            <p class="text-slate-600">המעבד הפנוי (שאין לו מה להריץ כרגע) יוזם בעצמו את הפעולה – הוא פונה לתור של מעבד עמוס אחר ו"גונב" (Work Stealing) משם תהליך כדי להעסיק את עצמו.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -1377,6 +1579,97 @@
         }
 
         // ==========================================
+        // TLB SHOOTDOWN LOGIC
+        // ==========================================
+        let tlbState = 0;
+        window.triggerTlbShootdown = function() {
+            const btn = document.getElementById('btn-tlb-shootdown');
+            const c1 = document.getElementById('tlb-core-1');
+            const c2 = document.getElementById('tlb-core-2');
+            const c3 = document.getElementById('tlb-core-3');
+            const s1 = document.getElementById('tlb-status-1');
+            const s2 = document.getElementById('tlb-status-2');
+            const s3 = document.getElementById('tlb-status-3');
+            const ramPage = document.getElementById('tlb-ram-page');
+            const con = document.getElementById('tlb-console');
+
+            if (tlbState === 0) {
+                // שלב 1: עדכון טבלת דפים ושליחת IPI
+                c1.classList.replace('bg-slate-50', 'bg-indigo-100');
+                c1.classList.replace('border-slate-200', 'border-indigo-400');
+                s1.innerText = 'מעדכן Page Table...';
+                con.innerHTML += '<br><span class="text-indigo-400">&gt; Core 1 updated Page Table. Sending IPI to Core 2,3...</span>';
+                
+                setTimeout(() => {
+                    document.getElementById('tlb-arrow-ipi-2').style.transform = 'translateY(-50%) scaleX(1)';
+                    document.getElementById('tlb-arrow-ipi-3').style.transform = 'translateY(8px) scaleX(1)';
+                    c1.classList.replace('bg-indigo-100', 'bg-amber-100');
+                    c1.classList.replace('border-indigo-400', 'border-amber-400');
+                    s1.innerText = 'ממתין (Spinlock)';
+                }, 500);
+
+                btn.innerText = 'Core 2,3: קבלו פסיקה (IPI)';
+                tlbState = 1;
+
+            } else if (tlbState === 1) {
+                // שלב 2: קבלת פסיקה, פסילת TLB ושליחת ACK
+                document.getElementById('tlb-arrow-ipi-2').style.transform = 'translateY(-50%) scaleX(0)';
+                document.getElementById('tlb-arrow-ipi-3').style.transform = 'translateY(8px) scaleX(0)';
+                
+                c2.classList.replace('bg-slate-50', 'bg-rose-100');
+                c2.classList.replace('border-slate-200', 'border-rose-400');
+                s2.innerHTML = '<span class="text-rose-600 line-through">TLB: דף X</span>';
+                
+                c3.classList.replace('bg-slate-50', 'bg-rose-100');
+                c3.classList.replace('border-slate-200', 'border-rose-400');
+                s3.innerHTML = '<span class="text-rose-600 line-through">TLB: דף X</span>';
+
+                con.innerHTML += '<br><span class="text-rose-400">&gt; Core 2,3 received IPI. Invalidating TLB... Sending ACK.</span>';
+
+                setTimeout(() => {
+                    document.getElementById('tlb-arrow-ack-2').style.transform = 'translateY(-12px) scaleX(1)';
+                    document.getElementById('tlb-arrow-ack-3').style.transform = 'translateY(-20px) scaleX(1)';
+                }, 500);
+
+                btn.innerText = 'Core 1: קבל אישורים ושחרר זיכרון';
+                tlbState = 2;
+
+            } else if (tlbState === 2) {
+                // שלב 3: אישור ושחרור הזיכרון הפיזי
+                document.getElementById('tlb-arrow-ack-2').style.transform = 'translateY(-12px) scaleX(0)';
+                document.getElementById('tlb-arrow-ack-3').style.transform = 'translateY(-20px) scaleX(0)';
+
+                c1.classList.replace('bg-amber-100', 'bg-emerald-100');
+                c1.classList.replace('border-amber-400', 'border-emerald-400');
+                s1.innerText = 'פעיל';
+
+                ramPage.classList.replace('bg-white', 'bg-slate-200');
+                ramPage.classList.replace('text-emerald-600', 'text-slate-400');
+                ramPage.innerText = 'דף X (פנוי / נמחק)';
+
+                con.innerHTML += '<br><span class="text-emerald-400">&gt; Core 1 received all ACKs. Safe to free physical memory!</span>';
+                con.scrollTop = con.scrollHeight;
+
+                btn.innerText = 'אתחל סימולציה';
+                tlbState = 3;
+
+            } else {
+                // איפוס
+                tlbState = 0;
+                c1.className = 'bg-slate-50 border-2 border-slate-200 rounded-lg p-3 text-center w-24 transition-colors duration-300 z-10';
+                c2.className = 'bg-slate-50 border-2 border-slate-200 rounded-lg p-3 text-center w-24 transition-colors duration-300 z-10';
+                c3.className = 'bg-slate-50 border-2 border-slate-200 rounded-lg p-3 text-center w-24 transition-colors duration-300 z-10';
+                s1.innerText = 'פעיל';
+                s2.innerText = 'TLB: דף X';
+                s3.innerText = 'TLB: דף X';
+                ramPage.className = 'text-[10px] font-bold text-emerald-600 bg-white mt-2 px-2 py-1 rounded inline-block transition-all';
+                ramPage.innerText = 'דף X (מיועד לפינוי)';
+                btn.innerText = 'Core 1: פנה דף פיזי מהזיכרון';
+                con.innerHTML = '&gt; Ready. Page X is loaded in Core 2 and Core 3 TLBs.';
+            }
+        };
+
+        // ==========================================
         // 2. MASTER-SLAVE BOTTLENECK LOGIC
         // ==========================================
         let msMode = 'ms'; // 'ms' or 'smp'
@@ -1509,6 +1802,67 @@
             }
         }
 
+        let msKernelQueue = [];
+        
+        function sendSysCall(cpuId) {
+            if (msMode !== 'ms') {
+                logMs("SMP Mode: CPU " + cpuId + " processing its own SysCall...");
+                setCpuState(cpuId, 100, "מריץ SysCall", "bg-emerald-500 animate-pulse");
+                let t = setTimeout(() => {
+                    setCpuState(cpuId, 20, "מריץ קוד משתמש", "bg-blue-500");
+                }, 1000);
+                msIntervals.push(t);
+                return;
+            }
+
+            // Master-Slave Mode
+            setCpuState(cpuId, 0, "ממתין ל-Master...", "bg-amber-400 animate-pulse");
+            msKernelQueue.push(cpuId);
+            createPacketAnimation(cpuId);
+            logMs(`CPU ${cpuId} requested SysCall. Added to Master Queue.`);
+            updateMsQueueUI();
+        }
+
+        function updateMsQueueUI() {
+            const queueEl = document.getElementById("ms-queue");
+            if (!queueEl) return;
+            
+            queueEl.innerHTML = "";
+            if (msKernelQueue.length === 0) {
+                queueEl.innerHTML = '<span class="text-xs text-slate-400 italic mx-auto" id="ms-queue-empty">התור ריק</span>';
+            } else {
+                msKernelQueue.forEach((cpuId, idx) => {
+                    const task = document.createElement("div");
+                    task.className = "bg-indigo-100 border border-indigo-300 text-indigo-800 font-bold text-[10px] px-2 py-1 rounded shadow-sm whitespace-nowrap animate-bounce-short";
+                    task.textContent = `SysCall (CPU ${cpuId})`;
+                    queueEl.appendChild(task);
+                });
+            }
+        }
+
+        function processQueueTask() {
+            if (msMode !== 'ms') {
+                logMs("Not in Master-Slave mode.");
+                return;
+            }
+            if (msKernelQueue.length === 0) {
+                logMs("Master Queue is empty.");
+                return;
+            }
+
+            const targetCpu = msKernelQueue.shift();
+            updateMsQueueUI();
+            setCpuState(1, 100, `מטפל ב-CPU ${targetCpu}`, "bg-red-500");
+            logMs(`Master (CPU 1) processing SysCall for CPU ${targetCpu}...`);
+
+            let t = setTimeout(() => {
+                setCpuState(1, 20, "מריץ קוד משתמש", "bg-blue-500");
+                setCpuState(targetCpu, 20, "מריץ קוד משתמש", "bg-blue-500");
+                logMs(`Master finished SysCall for CPU ${targetCpu}.`);
+            }, 1000);
+            msIntervals.push(t);
+        }
+
         function createPacketAnimation(cpuId) {
             const space = document.getElementById("ms-packet-space");
             if (!space) return;
@@ -1581,6 +1935,25 @@
             }
             if (dots) dots.innerHTML = "";
             if (writeDot) writeDot.classList.add("hidden");
+
+            const bwFill = document.getElementById("bus-bandwidth-fill");
+            const bwPct = document.getElementById("bus-bandwidth-pct");
+            if (bwFill) {
+                bwFill.style.width = "5%";
+                bwFill.className = "h-full bg-emerald-500 transition-all duration-500";
+            }
+            if (bwPct) {
+                bwPct.textContent = "5%";
+                bwPct.className = "text-sm font-black text-emerald-600 w-12 text-left";
+            }
+            
+            const cpu1ProgCont = document.getElementById("bus-cpu-1-progress-container");
+            const cpu1Prog = document.getElementById("bus-cpu-1-progress");
+            if (cpu1ProgCont) cpu1ProgCont.classList.add("hidden");
+            if (cpu1Prog) {
+                cpu1Prog.style.transition = "none";
+                cpu1Prog.style.width = "0%";
+            }
             
             const consoleEl = document.getElementById("bus-console");
             if (consoleEl) consoleEl.innerHTML = "&gt; Bus Contention Visualizer initialized.";
@@ -1607,19 +1980,29 @@
         }
 
         function triggerCpu1WriteNormal() {
+            const cpu1ProgCont = document.getElementById("bus-cpu-1-progress-container");
+            const cpu1Prog = document.getElementById("bus-cpu-1-progress");
+            if (cpu1ProgCont) cpu1ProgCont.classList.remove("hidden");
+            if (cpu1Prog) {
+                setTimeout(() => {
+                    cpu1Prog.style.transition = "width 1.5s linear";
+                    cpu1Prog.style.width = "100%";
+                }, 50);
+            }
+
             const dot = document.getElementById("bus-write-dot");
             if (!dot) return;
             
             dot.classList.remove("hidden");
             dot.style.top = "0%";
-            dot.style.transition = "top 0.5s linear";
+            dot.style.transition = "top 1.5s linear";
             
             let t = setTimeout(() => {
                 dot.style.top = "100%";
                 let t2 = setTimeout(() => {
                     dot.classList.add("hidden");
-                    logBus("CPU 1 successfully completed normal RAM write (Duration: 50ms).");
-                }, 500);
+                    logBus("CPU 1 successfully completed normal execution (Duration: ~1.5s).");
+                }, 1500);
                 busActiveIntervals.push(t2);
             }, 50);
             busActiveIntervals.push(t);
@@ -1643,6 +2026,17 @@
                 delayVal.className = "font-mono text-sm font-bold text-red-650 bg-red-50 border px-3 py-1 rounded";
             }
 
+            const bwFill = document.getElementById("bus-bandwidth-fill");
+            const bwPct = document.getElementById("bus-bandwidth-pct");
+            if (bwFill) {
+                bwFill.style.width = "100%";
+                bwFill.className = "h-full bg-red-600 transition-all duration-500 animate-pulse";
+            }
+            if (bwPct) {
+                bwPct.textContent = "100%";
+                bwPct.className = "text-sm font-black text-red-650 w-12 text-left animate-pulse";
+            }
+
             for (let i = 2; i <= 4; i++) {
                 const cpu = document.getElementById(`bus-cpu-${i}`);
                 const status = document.getElementById(`bus-cpu-status-${i}`);
@@ -1664,20 +2058,26 @@
             }, 300);
             busActiveIntervals.push(pollInterval);
 
-            // Try a memory write from CPU 1 under heavy traffic
+            // Slow down CPU 1 execution
             let writeDelayTimeout = setTimeout(() => {
-                logBus("CPU 1 is trying to write data to RAM. Fighting through bus congestion...");
+                logBus("CPU 1 is trying to execute code. Fighting through bus congestion...");
+                const cpu1Prog = document.getElementById("bus-cpu-1-progress");
+                if (cpu1Prog) {
+                    // Force the transition to be extremely slow because of contention
+                    cpu1Prog.style.transition = "width 8.0s cubic-bezier(0.25, 0.1, 0.25, 1)";
+                    logBus("🐢 CPU 1 progress heavily delayed by bus contention!");
+                }
                 const dot = document.getElementById("bus-write-dot");
                 if (dot) {
                     dot.classList.remove("hidden");
                     dot.style.top = "0%";
-                    dot.style.transition = "top 4.0s cubic-bezier(0.25, 0.1, 0.25, 1)";
+                    dot.style.transition = "top 8.0s cubic-bezier(0.25, 0.1, 0.25, 1)";
                     let t3 = setTimeout(() => {
                         dot.style.top = "100%";
                         let t4 = setTimeout(() => {
                             dot.classList.add("hidden");
-                            logBus("🐢 CPU 1 write completed (Duration: 4000ms - HEAVILY DELAYED!).");
-                        }, 4000);
+                            logBus("🐢 CPU 1 completed (Duration: ~8000ms - HEAVILY DELAYED!).");
+                        }, 8000);
                         busActiveIntervals.push(t4);
                     }, 100);
                     busActiveIntervals.push(t3);
@@ -1718,6 +2118,41 @@
             resetBusSim();
             logBus("Lock released. All CPUs returned to normal.");
         }
+
+        window.busTriggerMcs = function() {
+            if(busLock === 0) return; // אין משמעות אם המנעול פנוי
+            
+            // עיצוב תור חזותי קטן למעבדים 2,3,4
+            document.getElementById('bus-cpu-2').className = "bg-indigo-50 border-2 border-indigo-400 rounded-lg p-4 transition-colors duration-300 shadow-sm relative";
+            document.getElementById('bus-cpu-status-2').innerHTML = "MCS: ממתין למעבד 1";
+            
+            setTimeout(() => {
+                document.getElementById('bus-cpu-3').className = "bg-indigo-50 border-2 border-indigo-400 rounded-lg p-4 transition-colors duration-300 shadow-sm relative";
+                document.getElementById('bus-cpu-status-3').innerHTML = "MCS: ממתין למעבד 2";
+            }, 300);
+
+            setTimeout(() => {
+                document.getElementById('bus-cpu-4').className = "bg-indigo-50 border-2 border-indigo-400 rounded-lg p-4 transition-colors duration-300 shadow-sm relative";
+                document.getElementById('bus-cpu-status-4').innerHTML = "MCS: ממתין למעבד 3";
+            }, 600);
+
+            // אין עומס אפיק במנעול MCS
+            document.getElementById('bus-bandwidth-fill').style.width = '10%';
+            document.getElementById('bus-bandwidth-pct').innerText = '10%';
+            document.getElementById('bus-bandwidth-pct').className = 'text-xs font-black text-emerald-600 w-10 text-left';
+            document.getElementById('bus-contention-alert').classList.add('hidden');
+            
+            // זמן הגישה מתנרמל משמעותית כי אין פקק באפיק
+            document.getElementById('bus-write-delay').innerText = '2.0s (MCS Wait)';
+            document.getElementById('bus-write-delay').className = "font-mono text-lg font-black text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded";
+
+            // נשמור מצב שאנחנו ב-MCS כדי ששחרור המנעול יתנהג בהתאם
+            busLock = 2; // נניח ש-2 זה MCS queue
+
+            const con = document.getElementById('bus-console');
+            con.innerHTML += '<br><span class="text-indigo-400">&gt; CPUs 2-4 formed an MCS Queue. Bus traffic is normal! CPU 1 write access is fast.</span>';
+            con.scrollTop = con.scrollHeight;
+        };
 
         // ==========================================
         // 4. CACHE AFFINITY GAME LOGIC
@@ -2247,6 +2682,8 @@
         window.setMsMode = setMsMode;
         window.resetMsSim = resetMsSim;
         window.triggerMsWorkload = triggerMsWorkload;
+        window.sendSysCall = sendSysCall;
+        window.processQueueTask = processQueueTask;
 
         window.busAcquireLock = busAcquireLock;
         window.busTriggerSpinlock = busTriggerSpinlock;
@@ -2261,6 +2698,85 @@
         window.setGangMode = setGangMode;
         window.resetGangSim = resetGangSim;
         window.triggerGangSim = triggerGangSim;
+
+        function pingUma(cpuId) {
+            const timer = document.getElementById("uma-timer");
+            const packet = document.getElementById("uma-packet");
+            if (!packet) return;
+            
+            // Start position (cpu offset)
+            const offsets = { 1: 15, 2: 38, 3: 62, 4: 85 };
+            packet.style.left = offsets[cpuId] + "%";
+            packet.style.transition = "none";
+            packet.style.opacity = "1";
+            
+            if (timer) timer.textContent = "0 ns";
+            
+            // Animation sequence
+            setTimeout(() => {
+                packet.style.transition = "top 0.5s linear, opacity 0.2s linear";
+                packet.style.top = "100%"; // move down to RAM
+                if (timer) {
+                    let ns = 0;
+                    let interval = setInterval(() => { ns += 5; timer.textContent = ns + " ns"; }, 50);
+                    setTimeout(() => clearInterval(interval), 500);
+                }
+                
+                setTimeout(() => {
+                    packet.style.opacity = "0";
+                    setTimeout(() => {
+                        packet.style.top = "-5px"; // reset
+                        if (timer) timer.textContent = "50 ns";
+                    }, 200);
+                }, 500);
+            }, 50);
+        }
+
+        function pingNuma(cpuId, ramId) {
+            const timer = document.getElementById("numa-timer");
+            const packet = document.getElementById("numa-packet");
+            if (!packet || !timer) return;
+            
+            packet.style.transition = "none";
+            packet.style.opacity = "1";
+            timer.textContent = "0 ns";
+
+            if (cpuId === ramId) {
+                // Local access - fast!
+                packet.style.display = "none";
+                let ns = 0;
+                let interval = setInterval(() => { ns += 4; timer.textContent = ns + " ns"; }, 20);
+                setTimeout(() => {
+                    clearInterval(interval);
+                    timer.textContent = "20 ns";
+                }, 100);
+            } else {
+                // Remote access - slow via interconnect
+                packet.style.display = "block";
+                packet.style.left = "50%";
+                packet.style.top = "50%";
+                
+                let ns = 0;
+                let interval = setInterval(() => { ns += 4; timer.textContent = ns + " ns"; }, 40);
+                
+                setTimeout(() => {
+                    packet.style.transition = "transform 0.6s ease-in-out, opacity 0.2s";
+                    packet.style.transform = "scale(1.5)";
+                    
+                    setTimeout(() => {
+                        packet.style.opacity = "0";
+                        clearInterval(interval);
+                        timer.textContent = "120 ns";
+                        setTimeout(() => {
+                            packet.style.transform = "scale(1)";
+                        }, 200);
+                    }, 600);
+                }, 50);
+            }
+        }
+
+        window.pingUma = pingUma;
+        window.pingNuma = pingNuma;
 
         window.setFlashcardMode = setFlashcardMode;
         window.filterFlashcards = filterFlashcards;

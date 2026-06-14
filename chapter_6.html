@@ -173,7 +173,7 @@
     <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleSidebar()"></div>
 
     <!-- Toggle Button -->
-    <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="fixed top-6 right-84 z-50 bg-white text-slate-700 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-slate-50 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all group lg:hidden">
+    <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="fixed top-6 z-50 bg-white text-slate-700 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-slate-50 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all group">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
@@ -186,6 +186,14 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             <h1 class="text-3xl font-black text-white tracking-tight mb-2 relative z-10">פרק 6</h1>
             <p class="text-blue-400 font-medium text-sm relative z-10">קיפאון (Deadlock)</p>
+            <div class="mt-4 relative z-10">
+                <a href="index.html" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 12l9-9m-9 9l9 9" />
+                    </svg>
+                    חזרה לדף הבית
+                </a>
+            </div>
         </div>
 
         <!-- Navigation -->
@@ -280,24 +288,117 @@
                             אנחנו פותחים כעת את פרק 6, שעוסק באחת התקלות המרתקות (והמטרידות) ביותר במדעי המחשב: קיפאון (Deadlock). כדי להבין למה המחשב "נתקע", אנחנו חייבים קודם כל להבין על מה התהליכים נאבקים, וכיצד מערכת ההפעלה מתמודדת עם המבוי הסתום.
                         </p>
                         
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg">
-                                <h3 class="font-bold text-red-700 flex items-center gap-2 mb-2">
-                                    <span class="text-xl">⚠️</span> האתגר
-                                </h3>
-                                <p class="text-red-900 leading-relaxed">
-                                    תהליכים מרובים מתחרים על מספר מוגבל של משאבים במערכת. ללא ניהול קפדני, עלול להיווצר מצב שבו כל תהליך ממתין למשאב המוחזק על ידי תהליך אחר, מה שמשתק את כולם.
-                                </p>
+                        <div class="bg-slate-50 border border-slate-200 p-6 rounded-2xl mb-8 shadow-sm">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-2xl flex items-center gap-3">
+                                        <span class="text-3xl">🚦</span> האתגר: סימולציית ההמתנה המעגלית
+                                    </h3>
+                                    <p class="text-slate-600 mt-2 text-lg">הכנס את המכוניות (התהליכים) לצומת וראה כיצד נוצר קיפאון כאשר כל אחד חוסם את הבא בתור.</p>
+                                </div>
+                                <button onclick="resetIntersection()" class="bg-white border-2 border-slate-300 hover:bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    אפס סימולציה
+                                </button>
                             </div>
                             
-                            <div class="bg-green-50 border-r-4 border-green-500 p-4 rounded-l-lg">
-                                <h3 class="font-bold text-green-700 flex items-center gap-2 mb-2">
-                                    <span class="text-xl">🎯</span> המטרה
-                                </h3>
-                                <p class="text-green-900 leading-relaxed">
-                                    ללמוד את המנגנונים והאלגוריתמים המאפשרים למערכת ההפעלה לגלות קיפאון, להתאושש ממנו, להתחמק ממנו באופן דינמי (כמו אלגוריתם הבנקאי) או למנוע אותו באופן מבני מראש.
-                                </p>
+                            <div class="flex flex-col md:flex-row gap-12 items-center justify-center bg-white p-8 rounded-xl border border-slate-100 shadow-inner">
+                                <!-- The Intersection Graphic -->
+                                <div class="relative w-64 h-64 bg-slate-200 rounded-2xl overflow-hidden border-8 border-slate-300 shadow-md" id="intersection-board">
+                                    <!-- Roads -->
+                                    <div class="absolute top-0 bottom-0 left-1/2 w-16 -ml-8 bg-slate-700"></div>
+                                    <div class="absolute left-0 right-0 top-1/2 h-16 -mt-8 bg-slate-700"></div>
+                                    <!-- Road markings -->
+                                    <div class="absolute top-0 bottom-0 left-1/2 w-0.5 border-l-2 border-dashed border-yellow-400"></div>
+                                    <div class="absolute left-0 right-0 top-1/2 h-0.5 border-t-2 border-dashed border-yellow-400"></div>
+                                    
+                                    <!-- Cars -->
+                                    <div id="car-1" class="absolute top-2 left-1/2 ml-1 w-6 h-10 bg-red-500 rounded shadow-lg transition-all duration-500 z-20 flex items-center justify-center text-white text-xs font-bold">1</div>
+                                    <div id="car-2" class="absolute top-1/2 right-2 mt-1 w-10 h-6 bg-blue-500 rounded shadow-lg transition-all duration-500 z-20 flex items-center justify-center text-white text-xs font-bold">2</div>
+                                    <div id="car-3" class="absolute bottom-2 left-1/2 -ml-7 w-6 h-10 bg-green-500 rounded shadow-lg transition-all duration-500 z-20 flex items-center justify-center text-white text-xs font-bold transform rotate-180">3</div>
+                                    <div id="car-4" class="absolute top-1/2 left-2 -mt-7 w-10 h-6 bg-purple-500 rounded shadow-lg transition-all duration-500 z-20 flex items-center justify-center text-white text-xs font-bold">4</div>
+
+                                    <!-- Deadlock Warning Overlay -->
+                                    <div id="deadlock-warning" class="absolute inset-0 bg-red-600/90 flex flex-col items-center justify-center z-30 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
+                                        <div class="text-white font-black text-3xl tracking-widest animate-pulse drop-shadow-xl mb-2">DEADLOCK</div>
+                                        <div class="text-white/80 text-sm font-bold">המתנה מעגלית!</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Controls -->
+                                <div class="flex flex-col gap-3 min-w-[220px]">
+                                    <button id="btn-car-1" onclick="advanceCar(1)" class="bg-white hover:bg-red-50 text-slate-700 border-2 border-red-200 hover:border-red-400 px-5 py-3.5 rounded-xl font-bold flex items-center justify-between transition-all shadow-sm group">
+                                        <span>מכונית 1 <span class="text-red-500 text-sm font-normal">(צפון)</span></span>
+                                        <svg class="w-5 h-5 text-red-500 transform rotate-180 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                    </button>
+                                    <button id="btn-car-2" onclick="advanceCar(2)" class="bg-white hover:bg-blue-50 text-slate-700 border-2 border-blue-200 hover:border-blue-400 px-5 py-3.5 rounded-xl font-bold flex items-center justify-between transition-all shadow-sm group">
+                                        <span>מכונית 2 <span class="text-blue-500 text-sm font-normal">(מזרח)</span></span>
+                                        <svg class="w-5 h-5 text-blue-500 transform rotate-90 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                    </button>
+                                    <button id="btn-car-3" onclick="advanceCar(3)" class="bg-white hover:bg-green-50 text-slate-700 border-2 border-green-200 hover:border-green-400 px-5 py-3.5 rounded-xl font-bold flex items-center justify-between transition-all shadow-sm group">
+                                        <span>מכונית 3 <span class="text-green-500 text-sm font-normal">(דרום)</span></span>
+                                        <svg class="w-5 h-5 text-green-500 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                    </button>
+                                    <button id="btn-car-4" onclick="advanceCar(4)" class="bg-white hover:bg-purple-50 text-slate-700 border-2 border-purple-200 hover:border-purple-400 px-5 py-3.5 rounded-xl font-bold flex items-center justify-between transition-all shadow-sm group">
+                                        <span>מכונית 4 <span class="text-purple-500 text-sm font-normal">(מערב)</span></span>
+                                        <svg class="w-5 h-5 text-purple-500 transform -rotate-90 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                    </button>
+                                </div>
                             </div>
+                            
+                            <script>
+                                let intersectionState = {
+                                    carsIn: 0,
+                                    states: {1: false, 2: false, 3: false, 4: false}
+                                };
+                                
+                                function advanceCar(id) {
+                                    if(intersectionState.states[id]) return;
+                                    intersectionState.states[id] = true;
+                                    intersectionState.carsIn++;
+                                    
+                                    const car = document.getElementById('car-' + id);
+                                    const btn = document.getElementById('btn-car-' + id);
+                                    
+                                    // Move to its quadrant (requesting resource)
+                                    if(id === 1) car.style.transform = 'translateY(56px)';
+                                    if(id === 2) car.style.transform = 'translateX(-56px)';
+                                    if(id === 3) car.style.transform = 'translateY(-56px) rotate(180deg)';
+                                    if(id === 4) car.style.transform = 'translateX(56px)';
+                                    
+                                    btn.classList.add('opacity-50', 'pointer-events-none', 'bg-slate-100');
+                                    
+                                    // Check if we reached Deadlock
+                                    if(intersectionState.carsIn === 4) {
+                                        setTimeout(() => {
+                                            document.getElementById('deadlock-warning').classList.remove('opacity-0');
+                                            document.getElementById('intersection-board').classList.replace('border-slate-300', 'border-red-500');
+                                        }, 300);
+                                    }
+                                }
+                                
+                                function resetIntersection() {
+                                    intersectionState.carsIn = 0;
+                                    intersectionState.states = {1: false, 2: false, 3: false, 4: false};
+                                    
+                                    document.getElementById('deadlock-warning').classList.add('opacity-0');
+                                    document.getElementById('intersection-board').classList.replace('border-red-500', 'border-slate-300');
+                                    
+                                    for(let i=1; i<=4; i++) {
+                                        const car = document.getElementById('car-'+i);
+                                        const btn = document.getElementById('btn-car-'+i);
+                                        car.style.transition = 'none';
+                                        if(i === 1) car.style.transform = 'none';
+                                        if(i === 2) car.style.transform = 'none';
+                                        if(i === 3) car.style.transform = 'rotate(180deg)';
+                                        if(i === 4) car.style.transform = 'none';
+                                        
+                                        setTimeout(() => { car.style.transition = 'all 0.5s'; }, 50);
+                                        
+                                        btn.classList.remove('opacity-50', 'pointer-events-none', 'bg-slate-100');
+                                    }
+                                }
+                            </script>
                         </div>
                     </section>
                 </div>
@@ -460,31 +561,351 @@
                                 קיפאון אינו מתרחש סתם כך במקרה. חוקר בשם קופמן (Coffman) הוכיח בשנת 1971 שכדי שקיפאון יתרחש במערכת, חייבים להתקיים <strong>ארבעה תנאים בו-זמנית</strong>. אם מערכת ההפעלה תצליח לשבור אפילו תנאי אחד ויחיד מתוך הארבעה, קיפאון לעולם לא יוכל להתרחש:
                             </p>
 
-                            <div class="grid sm:grid-cols-2 gap-6">
-                                <!-- Condition 1 -->
-                                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-indigo-500 shadow-sm relative pt-8">
-                                    <div class="absolute -top-4 -right-4 bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">1</div>
-                                    <h3 class="font-bold text-lg mb-2 text-indigo-900">תנאי המניעה ההדדית (Mutual Exclusion)</h3>
-                                    <p class="text-slate-700 text-sm leading-relaxed">כל משאב המעורב בקיפאון חייב להיות במצב של גישה בלעדית. כלומר, ברגע נתון, המשאב מוקצה לתהליך אחד בלבד או שהוא פנוי. אם שני תהליכים היו יכולים להשתמש במשאב בו-זמנית (כמו קובץ לקריאה בלבד), הם לא היו צריכים להמתין זה לזה.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                <div class="bg-indigo-50 border-r-4 border-indigo-500 p-4 rounded-l-lg">
+                                    <h3 class="font-bold text-indigo-900 text-lg">1. מניעה הדדית (Mutual Exclusion)</h3>
+                                    <p class="text-indigo-800 mt-1 leading-relaxed">לפחות משאב אחד במערכת חייב להיות מוחזק במצב בלעדי (לא ניתן לחלוקה). אם תהליך אחר יבקש אותו, הוא ייאלץ להמתין עד שהמשאב ישוחרר.</p>
                                 </div>
-                                <!-- Condition 2 -->
-                                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-amber-500 shadow-sm relative pt-8">
-                                    <div class="absolute -top-4 -right-4 bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">2</div>
-                                    <h3 class="font-bold text-lg mb-2 text-amber-900">תנאי ההחזק והמתן (Hold and Wait)</h3>
-                                    <p class="text-slate-700 text-sm leading-relaxed">תהליך חייב להחזיק ברשותו משאב אחד לפחות שכבר הוקצה לו, ובאותו הזמן לבקש משאב נוסף (או מספר משאבים) המוחזק כרגע על ידי תהליך אחר. כלומר, התהליך "שומר לעצמו" את מה שיש לו, ומסרב לוותר עליו בזמן שהוא ממתין בתור לדבר הבא.</p>
+                                <div class="bg-amber-50 border-r-4 border-amber-500 p-4 rounded-l-lg">
+                                    <h3 class="font-bold text-amber-900 text-lg">2. החזק והמתן (Hold and Wait)</h3>
+                                    <p class="text-amber-800 mt-1 leading-relaxed">תהליך מחזיק ברשותו לפחות משאב אחד, ובמקביל ממתין לקבלת משאב נוסף שכרגע מוחזק על ידי תהליך אחר.</p>
                                 </div>
-                                <!-- Condition 3 -->
-                                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-rose-500 shadow-sm relative pt-8">
-                                    <div class="absolute -top-4 -right-4 bg-rose-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">3</div>
-                                    <h3 class="font-bold text-lg mb-2 text-rose-900">תנאי אי-חילוץ משאבים (No Preemption)</h3>
-                                    <p class="text-slate-700 text-sm leading-relaxed">מערכת ההפעלה אינה יכולה לחלץ (להפקיע) משאב בכוח מידי תהליך שמחזיק בו. משאב שהוקצה לתהליך ישוחרר אך ורק באופן התנדבותי על ידי התהליך עצמו, לאחר שסיים את עבודתו. לו המערכת הייתה יכולה פשוט לקחת את המשאב באמצע, היא הייתה פותרת את הפלונטר.</p>
+                                <div class="bg-rose-50 border-r-4 border-rose-500 p-4 rounded-l-lg">
+                                    <h3 class="font-bold text-rose-900 text-lg">3. אי-חילוץ משאבים (No Preemption)</h3>
+                                    <p class="text-rose-800 mt-1 leading-relaxed">לא ניתן להפקיע בכוח משאבים מתהליכים. משאב יכול להשתחרר אך ורק מרצונו החופשי של התהליך שמחזיק בו, לאחר שסיים את עבודתו.</p>
                                 </div>
-                                <!-- Condition 4 -->
-                                <div class="bg-slate-50 p-6 rounded-xl border-t-4 border-emerald-500 shadow-sm relative pt-8">
-                                    <div class="absolute -top-4 -right-4 bg-emerald-50 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-md">4</div>
-                                    <h3 class="font-bold text-lg mb-2 text-emerald-900">תנאי ההמתנה המעגלית (Circular Wait)</h3>
-                                    <p class="text-slate-700 text-sm leading-relaxed">חייבת להיות שרשרת סגורה (מעגל) של שני תהליכים או יותר. בשרשרת זו, תהליך א' ממתין למשאב שמוחזק על ידי תהליך ב', תהליך ב' ממתין למשאב שמוחזק על ידי תהליך ג', וכך הלאה, עד שהתהליך האחרון בשרשרת ממתין למשאב שמוחזק על ידי תהליך א'. המעגל הסגור הזה הוא שנועל את כולם.</p>
+                                <div class="bg-emerald-50 border-r-4 border-emerald-500 p-4 rounded-l-lg">
+                                    <h3 class="font-bold text-emerald-900 text-lg">4. המתנה מעגלית (Circular Wait)</h3>
+                                    <p class="text-emerald-800 mt-1 leading-relaxed">קיימת שרשרת סגורה (מעגל) של תהליכים, כך שכל תהליך בשרשרת ממתין למשאב המוחזק על ידי התהליך הבא אחריו בשרשרת.</p>
                                 </div>
+                            </div>
+
+                            <style>
+                                .gear-spin { animation: spin 4s linear infinite; }
+                                .gear-spin-reverse { animation: spin 3s linear infinite reverse; }
+                            </style>
+                            <div class="bg-slate-50 border border-slate-200 p-6 rounded-2xl mb-8 shadow-sm" id="coffman-breaker-simulator">
+                                <div class="mb-6">
+                                    <h3 class="font-bold text-slate-800 text-2xl flex items-center gap-3">
+                                        <span class="text-3xl">🔨</span> סימולטור 6.2.1: מנתץ השרשראות (שבירת תנאי קופמן)
+                                    </h3>
+                                    <p class="text-slate-600 mt-2 text-lg">המערכת כרגע נמצאת בקיפאון מוחלט (Deadlock). נסה לכבות כל פעם <strong>תנאי אחד בלבד</strong> כדי לראות כיצד שבירתו מצילה את המערכת מקיפאון.</p>
+                                </div>
+                                
+                                <div class="flex flex-col lg:flex-row gap-8 items-stretch">
+                                    <!-- RAG Visualization -->
+                                    <div class="flex-[2] bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col">
+                                        <div id="cb-deadlock-alert" class="absolute top-4 left-4 bg-red-100 border border-red-300 text-red-700 font-bold px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 animate-pulse z-20 transition-all">
+                                            <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span> DEADLOCK ACTIVE
+                                        </div>
+                                        <div id="cb-safe-alert" class="absolute top-4 left-4 bg-green-100 border border-green-300 text-green-700 font-bold px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 opacity-0 z-20 transition-all scale-95">
+                                            <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span> DEADLOCK BROKEN
+                                        </div>
+                                        
+                                        <div class="flex-1 relative flex items-center justify-center min-h-[260px] my-4">
+                                            <!-- P1 -->
+                                            <div id="cb-p1" class="absolute top-1/2 left-12 -translate-y-1/2 w-16 h-16 rounded-full bg-blue-50 border-4 border-blue-500 flex flex-col items-center justify-center z-10 transition-all duration-500">
+                                                <span class="font-black text-blue-900 text-xl">P1</span>
+                                            </div>
+                                            <!-- R1 -->
+                                            <div id="cb-r1" class="absolute top-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-lg bg-slate-100 border-4 border-slate-600 flex flex-col items-center justify-center z-10 transition-all duration-500">
+                                                <span class="font-bold text-slate-800">R1</span>
+                                                <span id="cb-r1-lock" class="text-sm mt-0.5">🔒</span>
+                                            </div>
+                                            <!-- P2 -->
+                                            <div id="cb-p2" class="absolute top-1/2 right-12 -translate-y-1/2 w-16 h-16 rounded-full bg-blue-50 border-4 border-blue-500 flex flex-col items-center justify-center z-10 transition-all duration-500">
+                                                <span class="font-black text-blue-900 text-xl">P2</span>
+                                            </div>
+                                            <!-- R2 -->
+                                            <div id="cb-r2" class="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-lg bg-slate-100 border-4 border-slate-600 flex flex-col items-center justify-center z-10 transition-all duration-500">
+                                                <span class="font-bold text-slate-800">R2</span>
+                                                <span id="cb-r2-lock" class="text-sm mt-0.5">🔒</span>
+                                            </div>
+                                            
+                                            <!-- Hand for preemption -->
+                                            <div id="cb-os-hand" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl opacity-0 transform scale-0 transition-all duration-500 z-30">🔨</div>
+                                            
+                                            <!-- Wall for Circular wait -->
+                                            <div id="cb-wall" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-16 bg-red-600 opacity-0 transform rotate-45 transition-all duration-500 z-30 shadow-lg"></div>
+                            
+                                            <!-- SVG Lines -->
+                                            <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;">
+                                                <defs>
+                                                    <marker id="cb-arrow-req" viewBox="0 0 10 10" refX="24" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                                        <path d="M 0 2 L 10 5 L 0 8 z" fill="#ef4444" />
+                                                    </marker>
+                                                    <marker id="cb-arrow-alloc" viewBox="0 0 10 10" refX="24" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                                        <path d="M 0 2 L 10 5 L 0 8 z" fill="#10b981" />
+                                                    </marker>
+                                                </defs>
+                                                <!-- R1 -> P1 (Alloc) -->
+                                                <path id="cb-line-r1-p1" d="M 50% 64 Q 30% 64, 112 50%" fill="none" stroke="#10b981" stroke-width="3" marker-end="url(#cb-arrow-alloc)" class="transition-all duration-500" />
+                                                <!-- P1 -> R2 (Req) -->
+                                                <path id="cb-line-p1-r2" d="M 112 50% Q 30% calc(100% - 64px), 50% calc(100% - 64px)" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#cb-arrow-req)" class="transition-all duration-500 rag-deadlock" />
+                                                <!-- R2 -> P2 (Alloc) -->
+                                                <path id="cb-line-r2-p2" d="M 50% calc(100% - 64px) Q 70% calc(100% - 64px), calc(100% - 112px) 50%" fill="none" stroke="#10b981" stroke-width="3" marker-end="url(#cb-arrow-alloc)" class="transition-all duration-500" />
+                                                <!-- P2 -> R1 (Req) -->
+                                                <path id="cb-line-p2-r1" d="M calc(100% - 112px) 50% Q 70% 64, 50% 64" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#cb-arrow-req)" class="transition-all duration-500 rag-deadlock" />
+                                            </svg>
+                                        </div>
+                                        
+                                        <div id="cb-explanation" class="bg-slate-50 border border-slate-200 p-4 rounded-xl text-sm text-slate-700 min-h-[80px] flex items-center justify-center text-center font-medium transition-all">
+                                            כל 4 התנאים מתקיימים במקביל. תהליך P1 ממתין ל-R2, שמוחזק על ידי P2, שממתין ל-R1 שמוחזק על ידי P1. נוצר מעגל חסום.
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Controls -->
+                                    <div class="flex-[1] flex flex-col gap-3">
+                                        <h4 class="font-bold text-slate-700 text-sm uppercase tracking-wider mb-2">4 תנאי קופמן</h4>
+                                        
+                                        <!-- Mutual Exclusion Toggle -->
+                                        <button id="cb-btn-1" onclick="toggleCoffman(1)" class="relative bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-right hover:border-indigo-300 transition-all group overflow-hidden">
+                                            <div id="cb-bg-1" class="absolute inset-0 bg-indigo-50 opacity-100 transition-opacity"></div>
+                                            <div class="relative z-10 flex justify-between items-center">
+                                                <div>
+                                                    <strong class="block text-slate-800">1. מניעה הדדית</strong>
+                                                    <span class="text-xs text-slate-500">Mutual Exclusion</span>
+                                                </div>
+                                                <div id="cb-tog-1" class="w-10 h-6 bg-indigo-500 rounded-full relative transition-colors shadow-inner flex items-center">
+                                                    <div class="w-4 h-4 bg-white rounded-full absolute transform translate-x-1 transition-transform shadow-sm"></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        
+                                        <!-- Hold & Wait Toggle -->
+                                        <button id="cb-btn-2" onclick="toggleCoffman(2)" class="relative bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-right hover:border-amber-300 transition-all group overflow-hidden">
+                                            <div id="cb-bg-2" class="absolute inset-0 bg-amber-50 opacity-100 transition-opacity"></div>
+                                            <div class="relative z-10 flex justify-between items-center">
+                                                <div>
+                                                    <strong class="block text-slate-800">2. החזק והמתן</strong>
+                                                    <span class="text-xs text-slate-500">Hold and Wait</span>
+                                                </div>
+                                                <div id="cb-tog-2" class="w-10 h-6 bg-amber-500 rounded-full relative transition-colors shadow-inner flex items-center">
+                                                    <div class="w-4 h-4 bg-white rounded-full absolute transform translate-x-1 transition-transform shadow-sm"></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        
+                                        <!-- No Preemption Toggle -->
+                                        <button id="cb-btn-3" onclick="toggleCoffman(3)" class="relative bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-right hover:border-rose-300 transition-all group overflow-hidden">
+                                            <div id="cb-bg-3" class="absolute inset-0 bg-rose-50 opacity-100 transition-opacity"></div>
+                                            <div class="relative z-10 flex justify-between items-center">
+                                                <div>
+                                                    <strong class="block text-slate-800">3. אי-חילוץ</strong>
+                                                    <span class="text-xs text-slate-500">No Preemption</span>
+                                                </div>
+                                                <div id="cb-tog-3" class="w-10 h-6 bg-rose-500 rounded-full relative transition-colors shadow-inner flex items-center">
+                                                    <div class="w-4 h-4 bg-white rounded-full absolute transform translate-x-1 transition-transform shadow-sm"></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        
+                                        <!-- Circular Wait Toggle -->
+                                        <button id="cb-btn-4" onclick="toggleCoffman(4)" class="relative bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-right hover:border-emerald-300 transition-all group overflow-hidden">
+                                            <div id="cb-bg-4" class="absolute inset-0 bg-emerald-50 opacity-100 transition-opacity"></div>
+                                            <div class="relative z-10 flex justify-between items-center">
+                                                <div>
+                                                    <strong class="block text-slate-800">4. המתנה מעגלית</strong>
+                                                    <span class="text-xs text-slate-500">Circular Wait</span>
+                                                </div>
+                                                <div id="cb-tog-4" class="w-10 h-6 bg-emerald-500 rounded-full relative transition-colors shadow-inner flex items-center">
+                                                    <div class="w-4 h-4 bg-white rounded-full absolute transform translate-x-1 transition-transform shadow-sm"></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        
+                                        <button onclick="resetCoffman()" id="cb-reset-btn" class="mt-4 bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors opacity-50 pointer-events-none flex justify-center items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                            איפוס סימולטור
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <script>
+                                    let currentBrokenCondition = 0;
+                                    
+                                    function toggleCoffman(condId) {
+                                        if (currentBrokenCondition !== 0 && currentBrokenCondition !== condId) return; // Only one at a time
+                                        
+                                        const isBreaking = currentBrokenCondition === 0;
+                                        
+                                        if (isBreaking) {
+                                            currentBrokenCondition = condId;
+                                            // Disable other buttons
+                                            for(let i=1; i<=4; i++) {
+                                                if(i !== condId) {
+                                                    document.getElementById('cb-btn-'+i).classList.add('opacity-40', 'pointer-events-none', 'grayscale');
+                                                }
+                                            }
+                                            
+                                            // Toggle clicked button state (turn OFF)
+                                            const togInner = document.getElementById('cb-tog-'+condId).firstElementChild;
+                                            togInner.classList.remove('translate-x-1');
+                                            togInner.classList.add('translate-x-5');
+                                            document.getElementById('cb-tog-'+condId).classList.replace('bg-indigo-500', 'bg-slate-300');
+                                            document.getElementById('cb-tog-'+condId).classList.replace('bg-amber-500', 'bg-slate-300');
+                                            document.getElementById('cb-tog-'+condId).classList.replace('bg-rose-500', 'bg-slate-300');
+                                            document.getElementById('cb-tog-'+condId).classList.replace('bg-emerald-500', 'bg-slate-300');
+                                            document.getElementById('cb-bg-'+condId).classList.replace('opacity-100', 'opacity-0');
+                                            
+                                            // Enable Reset
+                                            const resetBtn = document.getElementById('cb-reset-btn');
+                                            resetBtn.classList.remove('opacity-50', 'pointer-events-none');
+                                            
+                                            // Play animation and break deadlock
+                                            document.getElementById('cb-deadlock-alert').classList.add('opacity-0', 'scale-95');
+                                            document.getElementById('cb-safe-alert').classList.remove('opacity-0', 'scale-95');
+                                            
+                                            // Remove deadlock pulse lines
+                                            document.getElementById('cb-line-p1-r2').classList.remove('rag-deadlock');
+                                            document.getElementById('cb-line-p2-r1').classList.remove('rag-deadlock');
+                                            
+                                            playAnimation(condId);
+                                        }
+                                    }
+                                    
+                                    function playAnimation(condId) {
+                                        const exp = document.getElementById('cb-explanation');
+                                        
+                                        if(condId === 1) { // Mutual Exclusion
+                                            document.getElementById('cb-r1-lock').textContent = '∞';
+                                            document.getElementById('cb-r2-lock').textContent = '∞';
+                                            document.getElementById('cb-r1').classList.add('w-20');
+                                            document.getElementById('cb-r2').classList.add('w-20');
+                                            
+                                            // P1's request becomes green allocation
+                                            const p1r2 = document.getElementById('cb-line-p1-r2');
+                                            p1r2.setAttribute('stroke', '#10b981'); // Green
+                                            p1r2.setAttribute('marker-end', 'url(#cb-arrow-alloc)');
+                                            // P2's request becomes green allocation
+                                            const p2r1 = document.getElementById('cb-line-p2-r1');
+                                            p2r1.setAttribute('stroke', '#10b981'); // Green
+                                            p2r1.setAttribute('marker-end', 'url(#cb-arrow-alloc)');
+                                            
+                                            exp.innerHTML = '<strong class="text-indigo-700 block mb-1">תרופת הפלא: שיתוף (Shared Resources)</strong>כשהמשאב אינו דורש בלעדיות (כמו קובץ לקריאה בלבד), אף אחד לא צריך להמתין. P1 ו-P2 מקבלים גישה ל-R1 ול-R2 במקביל, והמעגל מתבטל.';
+                                        }
+                                        else if(condId === 2) { // Hold and wait
+                                            // P1 drops R1
+                                            const r1p1 = document.getElementById('cb-line-r1-p1');
+                                            r1p1.style.opacity = '0';
+                                            
+                                            // Then P2 takes R1
+                                            setTimeout(() => {
+                                                const p2r1 = document.getElementById('cb-line-p2-r1');
+                                                p2r1.setAttribute('stroke', '#10b981');
+                                                p2r1.setAttribute('marker-end', 'url(#cb-arrow-alloc)');
+                                                // Reverse arrow visually to show allocation to P2
+                                                p2r1.setAttribute('d', 'M 50% 64 Q 70% 64, calc(100% - 112px) 50%');
+                                            }, 500);
+                                            
+                                            exp.innerHTML = '<strong class="text-amber-700 block mb-1">תרופת הפלא: "הכל או כלום"</strong>תהליך לא יכול לאגור משאבים. רגע לפני ש-P1 מבקש את R2, עליו לשחרר קודם את R1. P2 מנצל את ההזדמנות, לוקח את R1, מסיים את עבודתו ומשחרר את R2 עבור P1. השרשרת נקטעת.';
+                                        }
+                                        else if(condId === 3) { // No Preemption
+                                            // Hammer appears
+                                            const hand = document.getElementById('cb-os-hand');
+                                            hand.classList.remove('opacity-0', 'scale-0');
+                                            hand.classList.add('opacity-100', 'scale-110');
+                                            
+                                            // OS forcefully takes R2 from P2
+                                            setTimeout(() => {
+                                                document.getElementById('cb-line-r2-p2').style.opacity = '0'; // break connection
+                                                document.getElementById('cb-p2').classList.replace('bg-blue-50', 'bg-slate-200'); // P2 suspended
+                                                document.getElementById('cb-p2').classList.replace('border-blue-500', 'border-slate-400');
+                                                
+                                                const p1r2 = document.getElementById('cb-line-p1-r2');
+                                                p1r2.setAttribute('stroke', '#10b981'); // give R2 to P1
+                                                p1r2.setAttribute('marker-end', 'url(#cb-arrow-alloc)');
+                                                p1r2.setAttribute('d', 'M 50% calc(100% - 64px) Q 30% calc(100% - 64px), 112 50%'); // R2 -> P1
+                                                
+                                                hand.classList.add('opacity-0', 'scale-0'); // hammer disappears
+                                            }, 800);
+                                            
+                                            exp.innerHTML = '<strong class="text-rose-700 block mb-1">תרופת הפלא: הפקעה בכוח (Preemption)</strong>מערכת ההפעלה מפקיעה את המשאב R2 בכוח מ-P2 ומעבירה אותו ל-P1. P2 מושהה, P1 מסיים ואז מחזיר את המשאב. הקיפאון נשבר, אך זה פוגע ב-P2.';
+                                        }
+                                        else if(condId === 4) { // Circular wait
+                                            // Numbering appears
+                                            document.getElementById('cb-r1-lock').textContent = '#1';
+                                            document.getElementById('cb-r2-lock').textContent = '#2';
+                                            
+                                            // Wall appears between P2 and R1
+                                            const wall = document.getElementById('cb-wall');
+                                            wall.classList.remove('opacity-0');
+                                            wall.classList.add('opacity-100');
+                                            
+                                            // Request bounces off wall
+                                            const p2r1 = document.getElementById('cb-line-p2-r1');
+                                            p2r1.style.strokeDasharray = '5,5';
+                                            
+                                            exp.innerHTML = '<strong class="text-emerald-700 block mb-1">תרופת הפלא: מספור וסדר עולה</strong>משאבים ממוספרים (R1=1, R2=2). כלל ברזל מחייב בקשות בסדר עולה בלבד. P2 שכבר מחזיק ב-R2 (מספר 2) מנסה לבקש את R1 (מספר 1), אבל נחסם ע"י המערכת *לפני* שהוא נכנס למעגל. המעגל הפיזיקלי נמנע.';
+                                        }
+                                    }
+                                    
+                                    function resetCoffman() {
+                                        currentBrokenCondition = 0;
+                                        
+                                        // Reset UI
+                                        for(let i=1; i<=4; i++) {
+                                            document.getElementById('cb-btn-'+i).classList.remove('opacity-40', 'pointer-events-none', 'grayscale');
+                                            
+                                            const togInner = document.getElementById('cb-tog-'+i).firstElementChild;
+                                            togInner.classList.add('translate-x-1');
+                                            togInner.classList.remove('translate-x-5');
+                                            
+                                            const togBg = document.getElementById('cb-tog-'+i);
+                                            togBg.classList.remove('bg-slate-300');
+                                            if(i===1) togBg.classList.add('bg-indigo-500');
+                                            if(i===2) togBg.classList.add('bg-amber-500');
+                                            if(i===3) togBg.classList.add('bg-rose-500');
+                                            if(i===4) togBg.classList.add('bg-emerald-500');
+                                            
+                                            document.getElementById('cb-bg-'+i).classList.replace('opacity-0', 'opacity-100');
+                                        }
+                                        
+                                        document.getElementById('cb-reset-btn').classList.add('opacity-50', 'pointer-events-none');
+                                        
+                                        // Reset graphic states
+                                        document.getElementById('cb-deadlock-alert').classList.remove('opacity-0', 'scale-95');
+                                        document.getElementById('cb-safe-alert').classList.add('opacity-0', 'scale-95');
+                                        
+                                        document.getElementById('cb-r1-lock').textContent = '🔒';
+                                        document.getElementById('cb-r2-lock').textContent = '🔒';
+                                        document.getElementById('cb-r1').classList.remove('w-20');
+                                        document.getElementById('cb-r2').classList.remove('w-20');
+                                        
+                                        document.getElementById('cb-line-r1-p1').style.opacity = '1';
+                                        document.getElementById('cb-line-r2-p2').style.opacity = '1';
+                                        
+                                        document.getElementById('cb-p2').classList.replace('bg-slate-200', 'bg-blue-50');
+                                        document.getElementById('cb-p2').classList.replace('border-slate-400', 'border-blue-500');
+                                        
+                                        const wall = document.getElementById('cb-wall');
+                                        wall.classList.add('opacity-0');
+                                        wall.classList.remove('opacity-100');
+                                        
+                                        const hand = document.getElementById('cb-os-hand');
+                                        hand.classList.add('opacity-0', 'scale-0');
+                                        hand.classList.remove('opacity-100', 'scale-110');
+                                        
+                                        // Reset paths and arrows
+                                        const p1r2 = document.getElementById('cb-line-p1-r2');
+                                        p1r2.setAttribute('stroke', '#ef4444');
+                                        p1r2.setAttribute('marker-end', 'url(#cb-arrow-req)');
+                                        p1r2.setAttribute('d', 'M 112 50% Q 30% calc(100% - 64px), 50% calc(100% - 64px)');
+                                        p1r2.classList.add('rag-deadlock');
+                                        
+                                        const p2r1 = document.getElementById('cb-line-p2-r1');
+                                        p2r1.setAttribute('stroke', '#ef4444');
+                                        p2r1.style.strokeDasharray = 'none';
+                                        p2r1.setAttribute('marker-end', 'url(#cb-arrow-req)');
+                                        p2r1.setAttribute('d', 'M calc(100% - 112px) 50% Q 70% 64, 50% 64');
+                                        p2r1.classList.add('rag-deadlock');
+                                        
+                                        document.getElementById('cb-line-r2-p2').setAttribute('d', 'M 50% calc(100% - 64px) Q 70% calc(100% - 64px), calc(100% - 112px) 50%');
+                                        
+                                        document.getElementById('cb-explanation').innerHTML = 'כל 4 התנאים מתקיימים במקביל. תהליך P1 ממתין ל-R2, שמוחזק על ידי P2, שממתין ל-R1 שמוחזק על ידי P1. נוצר מעגל חסום.';
+                                    }
+                                </script>
+                            </div>
                             </div>
                         </section>
 
@@ -527,7 +948,7 @@
                         <!-- סימולטור 6.1: סימולטור גרף הקצאת משאבים וגילוי קיפאון -->
                         <section id="rag-simulator-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mt-8">
                             <h3 class="text-2xl font-black text-slate-900 mb-2 flex items-center gap-3">
-                                <span>🎮</span> סימולטור 6.1: סימולטור גרף הקצאת משאבים וגילוי קיפאון
+                                <span>🎮</span> סימולטור 6.2: סימולטור גרף הקצאת משאבים וגילוי קיפאון
                             </h3>
                             <p class="text-slate-600 mb-6 leading-relaxed">
                                 הדמיה אינטראקטיבית של גרף הקצאת משאבים (Resource Allocation Graph). הוסיפו תהליכים ומשאבים (עם מספר מופעים), ציירו קשתות בקשה או הקצאה, והפעילו את אלגוריתם הגילוי צעד-אחר-צעד.
@@ -583,11 +1004,11 @@
                                         <div class="space-y-2">
                                             <label class="text-xs font-semibold text-slate-700 block">הוספת צומת חדש:</label>
                                             <div class="flex gap-2">
-                                                <select id="rag-node-type" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1">
+                                                <select id="rag-node-type" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1 text-black">
                                                     <option value="process">תהליך (Process)</option>
                                                     <option value="resource">משאב (Resource)</option>
                                                 </select>
-                                                <input id="rag-node-instances" type="number" min="1" max="5" value="1" title="מספר מופעים (רק למשאבים)" class="text-xs w-12 bg-white border border-slate-200 rounded px-1.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 hidden" />
+                                                <input id="rag-node-instances" type="number" min="1" max="5" value="1" title="מספר מופעים (רק למשאבים)" class="text-xs w-12 bg-white border border-slate-200 rounded px-1.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 hidden text-black" />
                                                 <button onclick="ragAddNode()" class="text-xs bg-blue-600 text-white font-bold px-3 py-1.5 rounded hover:bg-blue-700 active:scale-95 transition-all cursor-pointer">הוסף</button>
                                             </div>
                                         </div>
@@ -596,11 +1017,11 @@
                                         <div class="space-y-2">
                                             <label class="text-xs font-semibold text-slate-700 block">הוספת קשת (קשר):</label>
                                             <div class="flex gap-2 items-center">
-                                                <select id="rag-edge-from" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1">
+                                                <select id="rag-edge-from" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1 text-black">
                                                     <option value="">מקור...</option>
                                                 </select>
                                                 <span class="text-slate-400 text-xs">&larr;</span>
-                                                <select id="rag-edge-to" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1">
+                                                <select id="rag-edge-to" class="text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-100 flex-1 text-black">
                                                     <option value="">יעד...</option>
                                                 </select>
                                                 <button onclick="ragAddEdge()" class="text-xs bg-indigo-600 text-white font-bold px-3 py-1.5 rounded hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer">חבר</button>
@@ -612,24 +1033,325 @@
                                             <button onclick="ragRunDetection()" class="flex-1 text-xs bg-emerald-600 text-white font-bold py-2 rounded hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1 shadow-sm">
                                                 <span>🔍</span> הרץ גילוי קיפאון
                                             </button>
-                                            <button onclick="ragReset()" class="text-xs bg-white border border-slate-200 text-slate-600 py-2 px-3 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer">
+                                            <button onclick="ragReset()" class="text-xs bg-white border border-slate-200 text-slate-800 py-2 px-3 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer font-bold">
                                                 איפוס
                                             </button>
                                         </div>
                                     </div>
 
                                     <!-- Output terminal -->
-                                    <div class="border border-slate-200 rounded-xl bg-slate-900 text-slate-200 p-4 flex flex-col justify-between h-48">
-                                        <div class="flex justify-between items-center mb-2 border-b border-slate-800 pb-1.5">
+                                    <div class="border border-slate-200 rounded-xl bg-slate-50 text-slate-900 p-4 flex flex-col justify-between h-48 shadow-inner">
+                                        <div class="flex justify-between items-center mb-2 border-b border-slate-200 pb-1.5">
                                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">פלט אלגוריתם (RAG Log)</span>
-                                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                         </div>
-                                        <div id="rag-log" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-1 leading-relaxed dark-scroll" style="direction: ltr; text-align: left;">
-                                            <div class="text-slate-500">[System] RAG simulator ready. Add nodes to begin.</div>
+                                        <div id="rag-log" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-1 leading-relaxed" style="direction: ltr; text-align: left;">
+                                            <div class="text-slate-800 font-bold">[System] RAG simulator ready. Add nodes to begin.</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            
+                                <script>
+                                let ragNodes = [];
+                                let ragEdges = [];
+                                let ragNodeIdCounter = 1;
+
+                                function drawRag() {
+                                    const svgNodes = document.getElementById('rag-nodes');
+                                    const svgEdges = document.getElementById('rag-edges');
+                                    const emptyState = document.getElementById('rag-empty-state');
+                                    const fromSelect = document.getElementById('rag-edge-from');
+                                    const toSelect = document.getElementById('rag-edge-to');
+
+                                    // Clear
+                                    svgNodes.innerHTML = '';
+                                    svgEdges.innerHTML = '';
+                                    
+                                    if (ragNodes.length === 0) {
+                                        emptyState.classList.remove('hidden');
+                                        fromSelect.innerHTML = '<option value="">מקור...</option>';
+                                        toSelect.innerHTML = '<option value="">יעד...</option>';
+                                        return;
+                                    }
+                                    emptyState.classList.add('hidden');
+
+                                    // Update selects
+                                    let options = '<option value="">בחר...</option>';
+                                    ragNodes.forEach(n => {
+                                        options += `<option value="${n.id}">${n.type === 'process' ? 'P' : 'R'}${n.id}</option>`;
+                                    });
+                                    fromSelect.innerHTML = options;
+                                    toSelect.innerHTML = options;
+
+                                    // Layout
+                                    const centerX = 250;
+                                    const centerY = 160;
+                                    const radiusX = 180;
+                                    const radiusY = 100;
+                                    
+                                    ragNodes.forEach((node, index) => {
+                                        const angle = (index / ragNodes.length) * 2 * Math.PI - Math.PI / 2; // start from top
+                                        node.x = centerX + radiusX * Math.cos(angle);
+                                        node.y = centerY + radiusY * Math.sin(angle);
+                                        
+                                        // Draw node
+                                        if (node.type === 'process') {
+                                            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                                            circle.setAttribute("cx", node.x);
+                                            circle.setAttribute("cy", node.y);
+                                            circle.setAttribute("r", 20);
+                                            circle.setAttribute("fill", "#eff6ff");
+                                            circle.setAttribute("stroke", "#2563eb");
+                                            circle.setAttribute("stroke-width", 2);
+                                            
+                                            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                                            text.setAttribute("x", node.x);
+                                            text.setAttribute("y", node.y + 5);
+                                            text.setAttribute("text-anchor", "middle");
+                                            text.setAttribute("font-size", "14");
+                                            text.setAttribute("font-weight", "bold");
+                                            text.setAttribute("fill", "#000000");
+                                            text.textContent = "P" + node.id;
+                                            
+                                            svgNodes.appendChild(circle);
+                                            svgNodes.appendChild(text);
+                                        } else {
+                                            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                                            rect.setAttribute("x", node.x - 20);
+                                            rect.setAttribute("y", node.y - 20);
+                                            rect.setAttribute("width", 40);
+                                            rect.setAttribute("height", 40);
+                                            rect.setAttribute("fill", "#f8fafc");
+                                            rect.setAttribute("stroke", "#475569");
+                                            rect.setAttribute("stroke-width", 2);
+                                            rect.setAttribute("rx", 4);
+                                            
+                                            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                                            text.setAttribute("x", node.x);
+                                            text.setAttribute("y", node.y - 25);
+                                            text.setAttribute("text-anchor", "middle");
+                                            text.setAttribute("font-size", "14");
+                                            text.setAttribute("font-weight", "bold");
+                                            text.setAttribute("fill", "#000000");
+                                            text.textContent = "R" + node.id;
+                                            
+                                            svgNodes.appendChild(rect);
+                                            svgNodes.appendChild(text);
+
+                                            // Draw instances (dots)
+                                            const instances = node.instances || 1;
+                                            const dotPositions = [
+                                                [{x:0, y:0}],
+                                                [{x:-8, y:0}, {x:8, y:0}],
+                                                [{x:-8, y:-8}, {x:8, y:-8}, {x:0, y:8}],
+                                                [{x:-8, y:-8}, {x:8, y:-8}, {x:-8, y:8}, {x:8, y:8}],
+                                                [{x:-8, y:-8}, {x:8, y:-8}, {x:0, y:0}, {x:-8, y:8}, {x:8, y:8}]
+                                            ];
+                                            
+                                            const pos = dotPositions[instances - 1] || dotPositions[0];
+                                            pos.forEach(p => {
+                                                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                                                dot.setAttribute("cx", node.x + p.x);
+                                                dot.setAttribute("cy", node.y + p.y);
+                                                dot.setAttribute("r", 3.5);
+                                                dot.setAttribute("fill", "#475569");
+                                                svgNodes.appendChild(dot);
+                                            });
+                                        }
+                                    });
+
+                                    // Draw edges
+                                    ragEdges.forEach(edge => {
+                                        const source = ragNodes.find(n => n.id === edge.sourceId);
+                                        const target = ragNodes.find(n => n.id === edge.targetId);
+                                        if(!source || !target) return;
+
+                                        const dx = target.x - source.x;
+                                        const dy = target.y - source.y;
+                                        const dist = Math.sqrt(dx*dx + dy*dy);
+                                        const ratioSource = 22 / dist;
+                                        const ratioTarget = 26 / dist;
+                                        
+                                        const startX = source.x + dx * ratioSource;
+                                        const startY = source.y + dy * ratioSource;
+                                        const endX = target.x - dx * ratioTarget;
+                                        const endY = target.y - dy * ratioTarget;
+
+                                        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                                        const d = `M ${startX} ${startY} L ${endX} ${endY}`;
+                                        path.setAttribute("d", d);
+                                        
+                                        let strokeColor = "#94a3b8";
+                                        let marker = "url(#arrow)";
+                                        
+                                        if (edge.isCycle) {
+                                            strokeColor = "#ef4444";
+                                            marker = "url(#arrow-deadlock)";
+                                        } else if (source.type === 'process') {
+                                            strokeColor = "#f43f5e";
+                                            marker = "url(#arrow-request)";
+                                        } else {
+                                            strokeColor = "#10b981";
+                                            marker = "url(#arrow-alloc)";
+                                        }
+                                        
+                                        path.setAttribute("stroke", strokeColor);
+                                        path.setAttribute("stroke-width", edge.isCycle ? 3 : 2);
+                                        path.setAttribute("fill", "none");
+                                        path.setAttribute("marker-end", marker);
+                                        
+                                        svgEdges.appendChild(path);
+                                    });
+                                }
+
+                                function ragLog(msg, type='info') {
+                                    const log = document.getElementById('rag-log');
+                                    const div = document.createElement('div');
+                                    if(type === 'error') div.className = 'text-red-600 font-bold';
+                                    else if(type === 'success') div.className = 'text-emerald-600 font-bold';
+                                    else div.className = 'text-slate-800 font-medium';
+                                    div.textContent = `> ${msg}`;
+                                    log.appendChild(div);
+                                    log.scrollTop = log.scrollHeight;
+                                }
+
+                                function ragAddNode() {
+                                    const type = document.getElementById('rag-node-type').value;
+                                    const instances = parseInt(document.getElementById('rag-node-instances').value) || 1;
+                                    
+                                    ragNodes.push({
+                                        id: ragNodeIdCounter++,
+                                        type: type,
+                                        instances: type === 'resource' ? instances : undefined
+                                    });
+                                    
+                                    ragLog(`Added ${type} node ${type==='process'?'P':'R'}${ragNodeIdCounter-1} ${type==='resource'?`(${instances} instances)`:''}`);
+                                    drawRag();
+                                }
+
+                                function ragAddEdge() {
+                                    const fromId = parseInt(document.getElementById('rag-edge-from').value);
+                                    const toId = parseInt(document.getElementById('rag-edge-to').value);
+                                    
+                                    if(!fromId || !toId || fromId === toId) {
+                                        ragLog("Invalid edge selection.", "error");
+                                        return;
+                                    }
+                                    
+                                    const source = ragNodes.find(n => n.id === fromId);
+                                    const target = ragNodes.find(n => n.id === toId);
+                                    
+                                    if (source.type === target.type) {
+                                        ragLog("Edges must be between Process and Resource.", "error");
+                                        return;
+                                    }
+                                    
+                                    if (ragEdges.some(e => e.sourceId === fromId && e.targetId === toId)) {
+                                        ragLog("Edge already exists.", "error");
+                                        return;
+                                    }
+
+                                    if (source.type === 'resource') {
+                                        const currentAllocations = ragEdges.filter(e => e.sourceId === source.id).length;
+                                        if (currentAllocations >= source.instances) {
+                                            ragLog(`Cannot allocate. ${source.instances} instances of R${source.id} are already in use.`, "error");
+                                            return;
+                                        }
+                                    }
+                                    
+                                    ragEdges.push({ sourceId: fromId, targetId: toId, isCycle: false });
+                                    ragLog(`Added edge ${source.type==='process'?'P':'R'}${source.id} -> ${target.type==='process'?'P':'R'}${target.id}`);
+                                    drawRag();
+                                    
+                                    // Reset status since state changed
+                                    document.getElementById('rag-status-badge').textContent = 'ממתין לפעולה';
+                                    document.getElementById('rag-status-badge').className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700';
+                                    ragEdges.forEach(e => e.isCycle = false);
+                                    drawRag();
+                                }
+
+                                function ragReset() {
+                                    ragNodes = [];
+                                    ragEdges = [];
+                                    ragNodeIdCounter = 1;
+                                    document.getElementById('rag-log').innerHTML = '';
+                                    ragLog('System reset.');
+                                    document.getElementById('rag-status-badge').textContent = 'ממתין לפעולה';
+                                    document.getElementById('rag-status-badge').className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700';
+                                    drawRag();
+                                }
+
+                                function ragRunDetection() {
+                                    ragLog("Running Deadlock Detection...");
+                                    ragEdges.forEach(e => e.isCycle = false);
+                                    
+                                    let hasCycle = false;
+                                    const processes = ragNodes.filter(n => n.type === 'process');
+                                    
+                                    for (let p of processes) {
+                                        let visited = new Set();
+                                        let path = [];
+                                        
+                                        if (dfs(p.id, visited, path)) {
+                                            hasCycle = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    function dfs(nodeId, visited, path) {
+                                        visited.add(nodeId);
+                                        path.push(nodeId);
+                                        
+                                        const outEdges = ragEdges.filter(e => e.sourceId === nodeId);
+                                        for (let edge of outEdges) {
+                                            if (path.includes(edge.targetId)) {
+                                                let cycleStartIdx = path.indexOf(edge.targetId);
+                                                let cycleNodes = path.slice(cycleStartIdx);
+                                                cycleNodes.push(edge.targetId);
+                                                
+                                                for(let i=0; i<cycleNodes.length-1; i++) {
+                                                    const e = ragEdges.find(ed => ed.sourceId === cycleNodes[i] && ed.targetId === cycleNodes[i+1]);
+                                                    if(e) e.isCycle = true;
+                                                }
+                                                return true;
+                                            }
+                                            if (!visited.has(edge.targetId)) {
+                                                if (dfs(edge.targetId, visited, path)) {
+                                                    return true;
+                                                }
+                                            }
+                                        }
+                                        path.pop();
+                                        return false;
+                                    }
+                                    
+                                    const badge = document.getElementById('rag-status-badge');
+                                    if (hasCycle) {
+                                        ragLog("DEADLOCK DETECTED! Cycle found.", "error");
+                                        badge.textContent = 'קיפאון אותר!';
+                                        badge.className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-red-100 text-red-700 border border-red-200 animate-pulse';
+                                    } else {
+                                        ragLog("System is safe. No deadlock.", "success");
+                                        badge.textContent = 'מערכת בטוחה';
+                                        badge.className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-green-100 text-green-700 border border-green-200';
+                                    }
+                                    
+                                    drawRag();
+                                }
+
+                                document.getElementById('rag-node-type').addEventListener('change', function() {
+                                    const instInput = document.getElementById('rag-node-instances');
+                                    if(this.value === 'resource') {
+                                        instInput.classList.remove('hidden');
+                                    } else {
+                                        instInput.classList.add('hidden');
+                                    }
+                                });
+
+                                // Ensure it works on load
+                                setTimeout(drawRag, 500);
+                            </script>
                         </section>
                     </div>
                 </div>
@@ -685,6 +1407,297 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Train Controller Simulator -->
+                            <div class="mt-10 bg-slate-50 border border-slate-200 p-6 rounded-2xl shadow-sm" id="train-controller-simulator">
+                                <div class="mb-6">
+                                    <h3 class="font-bold text-slate-800 text-2xl flex items-center gap-3">
+                                        <span class="text-3xl">🚂</span> סימולטור: בקרת הרכבות (4 הגישות)
+                                    </h3>
+                                    <p class="text-slate-600 mt-2">נסה את ארבע האסטרטגיות למניעת קיפאון על גשר בעל נתיב אחד. שתי רכבות מגיעות משני כיוונים מנוגדים - כיצד מערכת ההפעלה תגיב?</p>
+                                </div>
+                                
+                                <div class="flex flex-col lg:flex-row gap-8">
+                                    <!-- Simulation Canvas -->
+                                    <div class="flex-[2] bg-white rounded-xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col min-h-[300px]">
+                                        <!-- Scenario Sky & Ground -->
+                                        <div class="absolute inset-0 bg-blue-50"></div>
+                                        <div class="absolute bottom-0 w-full h-1/3 bg-green-100 border-t-2 border-green-200"></div>
+                                        
+                                        <!-- Bridge Area -->
+                                        <div class="absolute top-1/2 left-0 w-full h-20 -translate-y-1/2 flex items-center justify-center">
+                                            <!-- River -->
+                                            <div class="absolute w-32 h-full bg-blue-300 opacity-60 z-0 rotate-12 transform scale-150 rounded-full blur-md"></div>
+                                            <!-- Bridge Structure -->
+                                            <div id="tc-bridge" class="w-48 h-12 bg-slate-700 relative z-10 rounded-sm shadow-xl transition-all duration-1000 flex flex-col justify-center border-y-4 border-slate-800">
+                                                <div class="w-full h-0.5 bg-yellow-400 opacity-50 mb-1"></div>
+                                                <div id="tc-bridge-divider" class="w-full h-0.5 border-t border-dashed border-yellow-400 opacity-0 transition-opacity"></div>
+                                                <div class="w-full h-0.5 bg-yellow-400 opacity-50 mt-1"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Train A -->
+                                        <div id="tc-train-a" class="absolute top-1/2 left-4 -translate-y-1/2 z-20 flex items-center gap-1 transition-all duration-1000 ease-in-out">
+                                            <div class="w-16 h-10 bg-red-600 rounded-r-lg rounded-l-sm border-2 border-slate-800 flex items-center justify-end px-2 shadow-md relative">
+                                                <div class="w-2 h-4 bg-yellow-300 rounded-sm"></div>
+                                                <!-- Steam -->
+                                                <div id="tc-steam-a" class="absolute -top-6 left-2 w-4 h-4 bg-gray-300 rounded-full opacity-0 animate-ping"></div>
+                                            </div>
+                                            <div class="w-12 h-8 bg-red-700 rounded-sm border-2 border-slate-800"></div>
+                                        </div>
+                                        
+                                        <!-- Train B -->
+                                        <div id="tc-train-b" class="absolute top-1/2 right-4 -translate-y-1/2 z-20 flex items-center gap-1 transition-all duration-1000 ease-in-out flex-row-reverse">
+                                            <div class="w-16 h-10 bg-blue-600 rounded-l-lg rounded-r-sm border-2 border-slate-800 flex items-center justify-start px-2 shadow-md relative">
+                                                <div class="w-2 h-4 bg-yellow-300 rounded-sm"></div>
+                                            </div>
+                                            <div class="w-12 h-8 bg-blue-700 rounded-sm border-2 border-slate-800"></div>
+                                            <!-- Stoplight B -->
+                                            <div id="tc-light-b" class="absolute -top-12 -left-4 w-6 h-14 bg-slate-800 rounded-md border-2 border-slate-900 flex flex-col items-center justify-center gap-1 opacity-0 transition-opacity z-30">
+                                                <div id="tc-light-red" class="w-3 h-3 rounded-full bg-red-500 opacity-20"></div>
+                                                <div id="tc-light-green" class="w-3 h-3 rounded-full bg-green-500 opacity-100 shadow-[0_0_8px_#22c55e]"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Elements for animations -->
+                                        <div id="tc-crash" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl z-40 opacity-0 transform scale-0 transition-all duration-300">💥</div>
+                                        <div id="tc-ostrich" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl z-50 opacity-0 transform scale-0 transition-all duration-700 delay-500">🐦‍⬛🕶️</div>
+                                        
+                                        <div id="tc-radar" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border-4 border-red-500 bg-red-500/20 z-10 opacity-0 pointer-events-none transition-opacity duration-300">
+                                            <div class="w-1/2 h-1/2 bg-red-500/40 rounded-tl-full origin-bottom-right animate-spin" style="animation-duration: 2s;"></div>
+                                        </div>
+                                        
+                                        <div id="tc-crane" class="absolute -top-32 left-1/4 w-8 h-40 bg-yellow-500 border-x-4 border-yellow-600 z-50 transition-all duration-1000 flex flex-col items-center">
+                                            <div class="w-16 h-4 bg-slate-800 mt-auto rounded-t-lg"></div>
+                                        </div>
+                                        
+                                        <div id="tc-thought" class="absolute top-8 left-1/4 bg-white border-2 border-slate-300 p-2 rounded-2xl rounded-bl-none z-40 opacity-0 transition-opacity shadow-lg flex items-center gap-2">
+                                            <span class="text-sm font-bold text-slate-700">🤔 מחשב מסלול...</span>
+                                        </div>
+                                        <div id="tc-workers" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 text-3xl opacity-0 transition-opacity z-30">👷 🏗️ 👷‍♀️</div>
+                                    </div>
+                                    
+                                    <!-- Controls Panel -->
+                                    <div class="flex-[1] flex flex-col gap-3">
+                                        <h4 class="font-bold text-slate-700 text-sm uppercase tracking-wider mb-2">בחר אסטרטגיה</h4>
+                                        
+                                        <button id="tc-btn-ostrich" onclick="runTrainStrategy('ostrich')" class="bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-right hover:border-slate-400 hover:bg-slate-50 transition-all tc-strat-btn">
+                                            <strong class="block text-slate-800">1. בת יענה (התעלמות)</strong>
+                                        </button>
+                                        
+                                        <button id="tc-btn-recover" onclick="runTrainStrategy('recover')" class="bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-right hover:border-slate-400 hover:bg-slate-50 transition-all tc-strat-btn">
+                                            <strong class="block text-slate-800">2. גילוי והתאוששות</strong>
+                                        </button>
+                                        
+                                        <button id="tc-btn-avoid" onclick="runTrainStrategy('avoid')" class="bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-right hover:border-slate-400 hover:bg-slate-50 transition-all tc-strat-btn">
+                                            <strong class="block text-slate-800">3. הימנעות דינמית</strong>
+                                        </button>
+                                        
+                                        <button id="tc-btn-prevent" onclick="runTrainStrategy('prevent')" class="bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-right hover:border-slate-400 hover:bg-slate-50 transition-all tc-strat-btn">
+                                            <strong class="block text-slate-800">4. מניעה מבנית</strong>
+                                        </button>
+                                        
+                                        <div class="mt-4 pt-4 border-t border-slate-200">
+                                            <button onclick="resetTrainSim()" id="tc-btn-reset" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors opacity-50 pointer-events-none flex justify-center items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                Hard Reset
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Explanation Box -->
+                                <div id="tc-explanation" class="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-xl text-blue-900 min-h-[60px] flex items-center font-medium transition-all">
+                                    בחר אחת מהאסטרטגיות למעלה כדי לראות כיצד המערכת תנהל את שתי הרכבות המבקשות לחצות את הגשר באותו הזמן.
+                                </div>
+                                
+                                <script>
+                                    let trainSimRunning = false;
+                                    
+                                    function runTrainStrategy(strategy) {
+                                        if(trainSimRunning) return;
+                                        trainSimRunning = true;
+                                        
+                                        // Disable buttons
+                                        document.querySelectorAll('.tc-strat-btn').forEach(b => {
+                                            b.classList.add('opacity-40', 'pointer-events-none');
+                                        });
+                                        document.getElementById('tc-btn-' + strategy).classList.remove('opacity-40');
+                                        document.getElementById('tc-btn-' + strategy).classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
+                                        
+                                        const trainA = document.getElementById('tc-train-a');
+                                        const trainB = document.getElementById('tc-train-b');
+                                        const crash = document.getElementById('tc-crash');
+                                        const exp = document.getElementById('tc-explanation');
+                                        
+                                        if(strategy === 'ostrich') {
+                                            exp.innerHTML = "<strong>גישת בת היענה:</strong> המערכת נותנת לשתי הרכבות לנסוע מבלי לבדוק כלום. נוצרת התנגשות (Deadlock). המערכת קורסת, דורשת אתחול מחדש (Reset). זה מה שקורה במחשב אישי כשתוכנה נתקעת.";
+                                            exp.className = "mt-6 bg-slate-100 border border-slate-300 p-4 rounded-xl text-slate-700 min-h-[60px] flex items-center font-medium transition-all";
+                                            
+                                            trainA.style.left = 'calc(50% - 32px)';
+                                            trainB.style.right = 'calc(50% - 32px)';
+                                            
+                                            setTimeout(() => {
+                                                crash.classList.remove('opacity-0', 'scale-0');
+                                                crash.classList.add('opacity-100', 'scale-100');
+                                                document.getElementById('tc-steam-a').classList.add('opacity-100');
+                                                
+                                                setTimeout(() => {
+                                                    document.getElementById('tc-ostrich').classList.remove('opacity-0', 'scale-0');
+                                                    document.getElementById('tc-ostrich').classList.add('opacity-100', 'scale-100');
+                                                    enableTrainReset();
+                                                }, 500);
+                                            }, 1000);
+                                        }
+                                        else if(strategy === 'recover') {
+                                            exp.innerHTML = "<strong>גישת גילוי והתאוששות:</strong> הרכבות מתנגשות (נוצר קיפאון). רדאר המערכת מזהה זאת, ומפעיל מנגנון אגרסיבי (מנוף/Rollback) שמחסל/מפקיע את רכבת א', כדי לאפשר לרכבת ב' להמשיך.";
+                                            exp.className = "mt-6 bg-red-50 border border-red-200 p-4 rounded-xl text-red-900 min-h-[60px] flex items-center font-medium transition-all";
+                                            
+                                            trainA.style.left = 'calc(50% - 32px)';
+                                            trainB.style.right = 'calc(50% - 32px)';
+                                            
+                                            setTimeout(() => {
+                                                crash.classList.remove('opacity-0', 'scale-0');
+                                                crash.classList.add('opacity-100', 'scale-100');
+                                                
+                                                setTimeout(() => {
+                                                    document.getElementById('tc-radar').classList.remove('opacity-0');
+                                                    
+                                                    setTimeout(() => {
+                                                        const crane = document.getElementById('tc-crane');
+                                                        crane.style.top = '50%';
+                                                        crane.style.left = 'calc(50% - 48px)';
+                                                        
+                                                        setTimeout(() => {
+                                                            crash.classList.add('opacity-0', 'scale-0');
+                                                            trainA.style.opacity = '0'; // Kill Train A
+                                                            crane.style.top = '-130px'; // Crane leaves
+                                                            document.getElementById('tc-radar').classList.add('opacity-0');
+                                                            
+                                                            setTimeout(() => {
+                                                                trainB.style.right = '110%'; // Train B continues
+                                                                enableTrainReset();
+                                                            }, 1000);
+                                                        }, 1000);
+                                                    }, 1000);
+                                                }, 800);
+                                            }, 1000);
+                                        }
+                                        else if(strategy === 'avoid') {
+                                            exp.innerHTML = "<strong>גישת הימנעות דינמית:</strong> המערכת 'מריצה בראש' סימולציה. היא מבינה שאם שתיהן יסעו יהיה קיפאון, ולכן עוצרת את רכבת ב' (רמזור אדום), נותנת ל-א' לסיים, ורק אז משחררת את ב'.";
+                                            exp.className = "mt-6 bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-900 min-h-[60px] flex items-center font-medium transition-all";
+                                            
+                                            document.getElementById('tc-thought').classList.remove('opacity-0');
+                                            
+                                            setTimeout(() => {
+                                                document.getElementById('tc-thought').classList.add('opacity-0');
+                                                const lightB = document.getElementById('tc-light-b');
+                                                lightB.classList.remove('opacity-0');
+                                                document.getElementById('tc-light-green').classList.replace('opacity-100', 'opacity-20');
+                                                document.getElementById('tc-light-green').style.boxShadow = 'none';
+                                                document.getElementById('tc-light-red').classList.replace('opacity-20', 'opacity-100');
+                                                document.getElementById('tc-light-red').style.boxShadow = '0 0 8px #ef4444';
+                                                
+                                                // Train A goes full path
+                                                trainA.style.left = '110%';
+                                                
+                                                setTimeout(() => {
+                                                    // Light turns green
+                                                    document.getElementById('tc-light-red').classList.replace('opacity-100', 'opacity-20');
+                                                    document.getElementById('tc-light-red').style.boxShadow = 'none';
+                                                    document.getElementById('tc-light-green').classList.replace('opacity-20', 'opacity-100');
+                                                    document.getElementById('tc-light-green').style.boxShadow = '0 0 8px #22c55e';
+                                                    
+                                                    // Train B goes
+                                                    trainB.style.right = '110%';
+                                                    enableTrainReset();
+                                                }, 1500);
+                                            }, 1500);
+                                        }
+                                        else if(strategy === 'prevent') {
+                                            exp.innerHTML = "<strong>גישת מניעה מבנית:</strong> המערכת משנה את חוקי המשחק מיסודם! מתבצעת הרחבה פיזית של הגשר (הוספת משאבים / הסרת מניעה הדדית) כך שהקיפאון לא יכול להתרחש תיאורטית. שתיהן חוצות יחד.";
+                                            exp.className = "mt-6 bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-emerald-900 min-h-[60px] flex items-center font-medium transition-all";
+                                            
+                                            document.getElementById('tc-workers').classList.remove('opacity-0');
+                                            
+                                            setTimeout(() => {
+                                                document.getElementById('tc-bridge').classList.replace('h-12', 'h-24');
+                                                document.getElementById('tc-bridge-divider').classList.remove('opacity-0');
+                                                
+                                                // Adjust trains to top and bottom lanes
+                                                trainA.style.top = 'calc(50% - 12px)';
+                                                trainB.style.top = 'calc(50% + 12px)';
+                                                
+                                                setTimeout(() => {
+                                                    document.getElementById('tc-workers').classList.add('opacity-0');
+                                                    trainA.style.left = '110%';
+                                                    trainB.style.right = '110%';
+                                                    enableTrainReset();
+                                                }, 1500);
+                                            }, 1000);
+                                        }
+                                    }
+                                    
+                                    function enableTrainReset() {
+                                        document.getElementById('tc-btn-reset').classList.remove('opacity-50', 'pointer-events-none');
+                                    }
+                                    
+                                    function resetTrainSim() {
+                                        trainSimRunning = false;
+                                        
+                                        // Reset UI buttons
+                                        document.querySelectorAll('.tc-strat-btn').forEach(b => {
+                                            b.classList.remove('opacity-40', 'pointer-events-none', 'ring-2', 'ring-blue-500', 'bg-blue-50');
+                                        });
+                                        document.getElementById('tc-btn-reset').classList.add('opacity-50', 'pointer-events-none');
+                                        
+                                        const exp = document.getElementById('tc-explanation');
+                                        exp.innerHTML = "בחר אחת מהאסטרטגיות למעלה כדי לראות כיצד המערכת תנהל את שתי הרכבות המבקשות לחצות את הגשר באותו הזמן.";
+                                        exp.className = "mt-6 bg-blue-50 border border-blue-200 p-4 rounded-xl text-blue-900 min-h-[60px] flex items-center font-medium transition-all";
+                                        
+                                        // Reset trains
+                                        const trainA = document.getElementById('tc-train-a');
+                                        const trainB = document.getElementById('tc-train-b');
+                                        trainA.style.transition = 'none';
+                                        trainB.style.transition = 'none';
+                                        trainA.style.left = '1rem';
+                                        trainB.style.right = '1rem';
+                                        trainA.style.top = '50%';
+                                        trainB.style.top = '50%';
+                                        trainA.style.opacity = '1';
+                                        trainB.style.opacity = '1';
+                                        
+                                        // Force reflow
+                                        void trainA.offsetWidth;
+                                        void trainB.offsetWidth;
+                                        
+                                        trainA.style.transition = 'all 1s ease-in-out';
+                                        trainB.style.transition = 'all 1s ease-in-out';
+                                        
+                                        // Reset items
+                                        document.getElementById('tc-crash').classList.add('opacity-0', 'scale-0');
+                                        document.getElementById('tc-crash').classList.remove('opacity-100', 'scale-100');
+                                        document.getElementById('tc-ostrich').classList.add('opacity-0', 'scale-0');
+                                        document.getElementById('tc-ostrich').classList.remove('opacity-100', 'scale-100');
+                                        document.getElementById('tc-steam-a').classList.remove('opacity-100');
+                                        
+                                        document.getElementById('tc-crane').style.top = '-130px';
+                                        document.getElementById('tc-crane').style.left = '25%';
+                                        document.getElementById('tc-radar').classList.add('opacity-0');
+                                        
+                                        document.getElementById('tc-thought').classList.add('opacity-0');
+                                        document.getElementById('tc-light-b').classList.add('opacity-0');
+                                        document.getElementById('tc-light-red').classList.replace('opacity-100', 'opacity-20');
+                                        document.getElementById('tc-light-red').style.boxShadow = 'none';
+                                        document.getElementById('tc-light-green').classList.replace('opacity-20', 'opacity-100');
+                                        document.getElementById('tc-light-green').style.boxShadow = '0 0 8px #22c55e';
+                                        
+                                        document.getElementById('tc-bridge').classList.replace('h-24', 'h-12');
+                                        document.getElementById('tc-bridge-divider').classList.add('opacity-0');
+                                        document.getElementById('tc-workers').classList.add('opacity-0');
+                                    }
+                                </script>
+                            </div>
                         </section>
 
                         <!-- 6.3.1 Ostrich Algorithm -->
@@ -718,6 +1731,7 @@
                                 </p>
                             </div>
                         </section>
+
                     </div>
                 </div>
 
@@ -1184,9 +2198,274 @@
                                                 <div class="text-slate-500">[הבנקאי] הסימולטור מוכן. הזינו נתונים או טענו דוגמה.</div>
                                             </div>
                                         </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                                <script>
+                                    // Banker's Algorithm State
+                                    let bankerProcs = [
+                                        { id: 1, max: [7, 5, 3], alloc: [0, 1, 0] },
+                                        { id: 2, max: [3, 2, 2], alloc: [2, 0, 0] },
+                                        { id: 3, max: [9, 0, 2], alloc: [3, 0, 2] },
+                                        { id: 4, max: [2, 2, 2], alloc: [2, 1, 1] },
+                                        { id: 5, max: [4, 3, 3], alloc: [0, 0, 2] }
+                                    ];
+                                    let bankerNextProcId = 6;
+
+                                    function getBankerElem(id) { return document.getElementById(id); }
+
+                                    function bankerLog(msg, type = 'info') {
+                                        const logEl = getBankerElem('banker-log');
+                                        const div = document.createElement('div');
+                                        let color = 'text-slate-400';
+                                        if(type === 'success') color = 'text-emerald-400 font-bold';
+                                        if(type === 'error') color = 'text-rose-400 font-bold';
+                                        if(type === 'warning') color = 'text-amber-400 font-bold';
+                                        
+                                        const time = new Date().toLocaleTimeString('en-US', {hour12:false});
+                                        div.className = color;
+                                        div.innerHTML = `<span class="text-slate-600 mr-2">[${time}]</span> ${msg}`;
+                                        logEl.appendChild(div);
+                                        logEl.scrollTop = logEl.scrollHeight;
+                                    }
+
+                                    function bankerSetDot(colorClass) {
+                                        getBankerElem('banker-status-dot').className = `w-2.5 h-2.5 rounded-full ${colorClass}`;
+                                    }
+
+                                    function bankerGetAvail() {
+                                        return [
+                                            parseInt(getBankerElem('banker-avail-a').value) || 0,
+                                            parseInt(getBankerElem('banker-avail-b').value) || 0,
+                                            parseInt(getBankerElem('banker-avail-c').value) || 0
+                                        ];
+                                    }
+
+                                    function bankerSetAvail(arr) {
+                                        getBankerElem('banker-avail-a').value = arr[0];
+                                        getBankerElem('banker-avail-b').value = arr[1];
+                                        getBankerElem('banker-avail-c').value = arr[2];
+                                    }
+
+                                    function bankerUpdateTables() {
+                                        const maxBody = getBankerElem('banker-max-table');
+                                        const allocBody = getBankerElem('banker-alloc-table');
+                                        const needBody = getBankerElem('banker-need-table');
+                                        const reqSelect = getBankerElem('banker-req-proc');
+                                        
+                                        maxBody.innerHTML = '';
+                                        allocBody.innerHTML = '';
+                                        needBody.innerHTML = '';
+                                        reqSelect.innerHTML = '';
+
+                                        bankerProcs.forEach((p, i) => {
+                                            // Max row
+                                            maxBody.innerHTML += `
+                                                <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+                                                    <td class="font-bold text-slate-700 py-1">P${p.id}</td>
+                                                    <td><input type="number" min="0" value="${p.max[0]}" onchange="bankerUpdateData(${i}, 'max', 0, this.value)" class="w-8 text-center border rounded py-0.5 text-xs focus:ring-1 focus:ring-blue-500 bg-transparent"></td>
+                                                    <td><input type="number" min="0" value="${p.max[1]}" onchange="bankerUpdateData(${i}, 'max', 1, this.value)" class="w-8 text-center border rounded py-0.5 text-xs focus:ring-1 focus:ring-blue-500 bg-transparent"></td>
+                                                    <td><input type="number" min="0" value="${p.max[2]}" onchange="bankerUpdateData(${i}, 'max', 2, this.value)" class="w-8 text-center border rounded py-0.5 text-xs focus:ring-1 focus:ring-blue-500 bg-transparent"></td>
+                                                </tr>
+                                            `;
+                                            // Alloc row
+                                            allocBody.innerHTML += `
+                                                <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+                                                    <td class="font-bold text-slate-700 py-1">P${p.id}</td>
+                                                    <td><input type="number" min="0" value="${p.alloc[0]}" onchange="bankerUpdateData(${i}, 'alloc', 0, this.value)" class="w-8 text-center border rounded py-0.5 text-xs focus:ring-1 focus:ring-blue-500 bg-transparent"></td>
+                                                    <td><input type="number" min="0" value="${p.alloc[1]}" onchange="bankerUpdateData(${i}, 'alloc', 1, this.value)" class="w-8 text-center border rounded py-0.5 text-xs focus:ring-1 focus:ring-blue-500 bg-transparent"></td>
+                                                    <td><input type="number" min="0" value="${p.alloc[2]}" onchange="bankerUpdateData(${i}, 'alloc', 2, this.value)" class="w-8 text-center border rounded py-0.5 text-xs focus:ring-1 focus:ring-blue-500 bg-transparent"></td>
+                                                </tr>
+                                            `;
+                                            
+                                            // Calculate Need
+                                            const need0 = Math.max(0, p.max[0] - p.alloc[0]);
+                                            const need1 = Math.max(0, p.max[1] - p.alloc[1]);
+                                            const need2 = Math.max(0, p.max[2] - p.alloc[2]);
+                                            
+                                            // Need row (read only)
+                                            needBody.innerHTML += `
+                                                <tr class="border-b border-indigo-100/50 last:border-0">
+                                                    <td class="font-bold text-indigo-700 py-1.5">P${p.id}</td>
+                                                    <td>${need0}</td>
+                                                    <td>${need1}</td>
+                                                    <td>${need2}</td>
+                                                </tr>
+                                            `;
+                                            
+                                            // Select option
+                                            reqSelect.innerHTML += `<option value="${i}">תהליך P${p.id}</option>`;
+                                        });
+                                    }
+
+                                    function bankerUpdateData(index, type, resIndex, val) {
+                                        bankerProcs[index][type][resIndex] = parseInt(val) || 0;
+                                        bankerUpdateTables();
+                                    }
+
+                                    function bankerAddProcess() {
+                                        if (bankerProcs.length >= 7) {
+                                            bankerLog("הגעת למקסימום תהליכים (7).", "warning");
+                                            return;
+                                        }
+                                        bankerProcs.push({ id: bankerNextProcId++, max: [1, 1, 1], alloc: [0, 0, 0] });
+                                        bankerUpdateTables();
+                                    }
+
+                                    function bankerRemoveProcess() {
+                                        if (bankerProcs.length <= 1) {
+                                            bankerLog("חייב להיות לפחות תהליך אחד.", "warning");
+                                            return;
+                                        }
+                                        bankerProcs.pop();
+                                        bankerUpdateTables();
+                                    }
+                                    
+                                    function bankerLoadSample() {
+                                        bankerProcs = [
+                                            { id: 1, max: [7, 5, 3], alloc: [0, 1, 0] },
+                                            { id: 2, max: [3, 2, 2], alloc: [2, 0, 0] },
+                                            { id: 3, max: [9, 0, 2], alloc: [3, 0, 2] },
+                                            { id: 4, max: [2, 2, 2], alloc: [2, 1, 1] },
+                                            { id: 5, max: [4, 3, 3], alloc: [0, 0, 2] }
+                                        ];
+                                        bankerNextProcId = 6;
+                                        bankerSetAvail([3, 3, 2]);
+                                        bankerUpdateTables();
+                                        getBankerElem('banker-log').innerHTML = '';
+                                        bankerLog("נטענה דוגמה קלאסית פתורה של אלגוריתם הבנקאי.", "info");
+                                        bankerSetDot('bg-slate-500');
+                                    }
+
+                                    function bankerCheckSafetyCore(procs, avail) {
+                                        let work = [...avail];
+                                        let finish = new Array(procs.length).fill(false);
+                                        let safeSeq = [];
+                                        let logs = [];
+                                        
+                                        let count = 0;
+                                        while(count < procs.length) {
+                                            let found = false;
+                                            for(let p = 0; p < procs.length; p++) {
+                                                if(!finish[p]) {
+                                                    let need = [
+                                                        Math.max(0, procs[p].max[0] - procs[p].alloc[0]),
+                                                        Math.max(0, procs[p].max[1] - procs[p].alloc[1]),
+                                                        Math.max(0, procs[p].max[2] - procs[p].alloc[2])
+                                                    ];
+                                                    
+                                                    if(need[0] <= work[0] && need[1] <= work[1] && need[2] <= work[2]) {
+                                                        // Can finish
+                                                        work[0] += procs[p].alloc[0];
+                                                        work[1] += procs[p].alloc[1];
+                                                        work[2] += procs[p].alloc[2];
+                                                        finish[p] = true;
+                                                        safeSeq.push('P' + procs[p].id);
+                                                        found = true;
+                                                        count++;
+                                                        logs.push(`תהליך P${procs[p].id} מסיים. פנוי חדש: [${work.join(',')}]`);
+                                                    }
+                                                }
+                                            }
+                                            if(!found) {
+                                                break; // Unsafe
+                                            }
+                                        }
+                                        
+                                        if(count === procs.length) {
+                                            return { safe: true, seq: safeSeq, logs: logs };
+                                        } else {
+                                            let stuck = [];
+                                            finish.forEach((f, i) => { if(!f) stuck.push('P'+procs[i].id); });
+                                            return { safe: false, stuck: stuck, logs: logs };
+                                        }
+                                    }
+
+                                    function bankerRunSafety() {
+                                        bankerLog("--- מתחיל בדיקת יציבות מערכת (Safety Check) ---");
+                                        let avail = bankerGetAvail();
+                                        bankerLog(`מלאי פנוי נוכחי: [${avail.join(',')}]`);
+                                        
+                                        let res = bankerCheckSafetyCore(bankerProcs, avail);
+                                        
+                                        res.logs.forEach(l => bankerLog(l, 'info'));
+                                        
+                                        if(res.safe) {
+                                            bankerLog(`המערכת במצב בטוח! סדר הרצה אשראי: ${res.seq.join(' &rarr; ')}`, 'success');
+                                            bankerSetDot('bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]');
+                                        } else {
+                                            bankerLog(`המערכת במצב לא בטוח (Unsafe)! תהליכים תקועים: ${res.stuck.join(', ')}`, 'error');
+                                            bankerSetDot('bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse');
+                                        }
+                                    }
+
+                                    function bankerSimulateRequest() {
+                                        const pIndex = parseInt(getBankerElem('banker-req-proc').value);
+                                        if(isNaN(pIndex)) return;
+                                        const p = bankerProcs[pIndex];
+                                        const req = [
+                                            parseInt(getBankerElem('banker-req-a').value) || 0,
+                                            parseInt(getBankerElem('banker-req-b').value) || 0,
+                                            parseInt(getBankerElem('banker-req-c').value) || 0
+                                        ];
+                                        
+                                        bankerLog(`--- בקשה חדשה מתהליך P${p.id}: [${req.join(',')}] ---`);
+                                        
+                                        const need = [
+                                            Math.max(0, p.max[0] - p.alloc[0]),
+                                            Math.max(0, p.max[1] - p.alloc[1]),
+                                            Math.max(0, p.max[2] - p.alloc[2])
+                                        ];
+                                        
+                                        // 1. Check Need
+                                        if(req[0] > need[0] || req[1] > need[1] || req[2] > need[2]) {
+                                            bankerLog(`שגיאה: התהליך ביקש יותר ממה שהצהיר כמקסימום! (Need: [${need.join(',')}])`, 'error');
+                                            return;
+                                        }
+                                        
+                                        // 2. Check Available
+                                        let avail = bankerGetAvail();
+                                        if(req[0] > avail[0] || req[1] > avail[1] || req[2] > avail[2]) {
+                                            bankerLog(`המתנה: אין כרגע מספיק משאבים פנויים במערכת. (Avail: [${avail.join(',')}])`, 'warning');
+                                            bankerSetDot('bg-amber-500');
+                                            return;
+                                        }
+                                        
+                                        // 3. Pretend to allocate
+                                        bankerLog("הבקשה חוקית. מקצה וירטואלית ובודק יציבות עתידית...", "info");
+                                        
+                                        let tempProcs = JSON.parse(JSON.stringify(bankerProcs));
+                                        tempProcs[pIndex].alloc[0] += req[0];
+                                        tempProcs[pIndex].alloc[1] += req[1];
+                                        tempProcs[pIndex].alloc[2] += req[2];
+                                        
+                                        let tempAvail = [
+                                            avail[0] - req[0],
+                                            avail[1] - req[1],
+                                            avail[2] - req[2]
+                                        ];
+                                        
+                                        let res = bankerCheckSafetyCore(tempProcs, tempAvail);
+                                        
+                                        if(res.safe) {
+                                            bankerLog(`המצב החדש בטוח. סדר הרצה קיים: ${res.seq.join(' &rarr; ')}`, 'info');
+                                            bankerLog("ההקצאה הווירטואלית אושרה והפכה לאמיתית!", 'success');
+                                            bankerSetDot('bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]');
+                                            
+                                            // Apply to real state
+                                            bankerProcs = tempProcs;
+                                            bankerSetAvail(tempAvail);
+                                            bankerUpdateTables();
+                                        } else {
+                                            bankerLog(`המצב החדש סכנה! המערכת תיכנס למצב לא בטוח (קיפאון פוטנציאלי).`, 'error');
+                                            bankerLog("מבטל הקצאה וירטואלית. התהליך ייכנס להמתנה.", 'warning');
+                                            bankerSetDot('bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse');
+                                        }
+                                    }
+
+                                    // Initialize
+                                    setTimeout(() => { bankerLoadSample(); }, 500);
+                                </script>
                         </section>
                     </div>
                 </div>
@@ -1361,9 +2640,11 @@
                                 <p class="text-slate-700 bg-slate-50 p-3 rounded mb-3 border border-slate-200 leading-relaxed">
                                     <strong>האנלוגיה:</strong> שני אנשים במסדרון צר שמנסים לפנות דרך זה לזה. שניהם זזים ימינה יחד, שמאלה יחד - הם פעילים, אך חוסמים זה את זה לנצח. בתוכנה זה קורה כשתהליכים תופסים ומשחררים משאבים בסנכרון הרסני בניסיון להתחמק מקיפאון.
                                 </p>
-                                <p class="text-sm font-semibold text-blue-800">
-                                    הפתרון: שבירת סימטריה באמצעות המתנה לזמן אקראי שונה לכל תהליך.
-                                </p>
+                                <div class="bg-blue-50 border-r-4 border-blue-500 p-3 rounded-l-lg">
+                                    <p class="text-sm text-blue-900 leading-relaxed">
+                                        <strong class="font-black">הפתרון (Random Backoff):</strong> שבירת סימטריה. במקום להגיב בצורה זהה, כל תהליך ממתין פרק זמן אקראי שונה או מקבל החלטה לא-סימטרית. ממש כפי שבפרוטוקולי תקשורת (Ethernet) מחכים זמן אקראי לאחר התנגשות, הפחתת ה"נימוס הסימטרי" מאפשרת לתהליך אחד לעבור בזמן שהשני ממתין.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 

@@ -1293,6 +1293,63 @@
 
             </article>
 
+<article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mt-6">
+    <h3 class="text-xl font-bold text-blue-800 mb-4">5.4.4 מערכי דיסקים (RAID)</h3>
+    <p class="mb-5 text-slate-700 leading-relaxed">
+        דיסק קשיח בודד סובל משתי בעיות אנושות: הוא איטי (בגלל מגבלות מכניות), ואם הוא קורס - כל המידע שעליו אובד. כדי לפתור זאת, פותחה ארכיטקטורת <strong>RAID (Redundant Array of Independent Disks)</strong>. הרעיון הוא לאגד מספר דיסקים פיזיים למערך אחד, המוצג למערכת ההפעלה כדיסק לוגי יחיד. הבקר של ה-RAID (חומרתי או תוכנתי) מנהל את פיזור הנתונים ביניהם כדי להשיג שילוב של <strong>ביצועים</strong> (עבודה במקביל) ו<strong>אמינות</strong> (יתירות ושחזור מידע).
+    </p>
+    
+    <div class="grid sm:grid-cols-2 gap-6">
+        <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-blue-500 shadow-sm relative">
+            <div class="absolute top-2 left-2 bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">ביצועים מקסימליים</div>
+            <h4 class="font-bold text-slate-800 mb-2 text-lg">RAID 0 (Striping - גיבוב)</h4>
+            <p class="text-slate-600 text-sm mb-3">
+                הנתונים נחתכים ל"רצועות" (Strips) ונכתבים לכל הדיסקים במקביל. אם יש לנו 4 דיסקים, בלוק 1 ייכתב לדיסק הראשון, בלוק 2 לשני וכך הלאה.
+            </p>
+            <ul class="text-sm text-slate-600 space-y-1">
+                <li><span class="text-green-600 font-bold">✓ יתרון:</span> מהירות קריאה וכתיבה אדירה (מוכפלת במספר הדיסקים).</li>
+                <li><span class="text-red-600 font-bold">✗ חיסרון:</span> <strong>אפס יתירות.</strong> אם דיסק אחד קורס, כל המערך נהרס לחלוטין כי חסרים חלקי מידע קריטיים מכל קובץ.</li>
+            </ul>
+        </div>
+
+        <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-green-500 shadow-sm relative">
+            <div class="absolute top-2 left-2 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">אמינות מקסימלית</div>
+            <h4 class="font-bold text-slate-800 mb-2 text-lg">RAID 1 (Mirroring - מראה)</h4>
+            <p class="text-slate-600 text-sm mb-3">
+                כל בלוק נתונים שנכתב לדיסק אחד, משוכפל במדויק ("מועתק כמראה") לדיסק נוסף. המערכת מחזיקה עותק גיבוי מלא בזמן אמת.
+            </p>
+            <ul class="text-sm text-slate-600 space-y-1">
+                <li><span class="text-green-600 font-bold">✓ יתרון:</span> שרידות מושלמת. המערכת תמשיך לעבוד גם אם דיסק שלם יישרף. קריאה מהירה (ניתן לקרוא משני הדיסקים במקביל).</li>
+                <li><span class="text-red-600 font-bold">✗ חיסרון:</span> יקר מאוד. אנו זורקים 50% מנפח האחסון שקנינו רק לטובת הגיבוי.</li>
+            </ul>
+        </div>
+
+        <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-orange-500 shadow-sm relative">
+            <div class="absolute top-2 left-2 bg-orange-100 text-orange-800 text-xs font-bold px-2 py-1 rounded">צוואר בקבוק</div>
+            <h4 class="font-bold text-slate-800 mb-2 text-lg">RAID 4 (Parity - זוגיות)</h4>
+            <p class="text-slate-600 text-sm mb-3">
+                הנתונים מפוזרים במקביל (כמו ב-RAID 0), אך דיסק אחד נבחר להיות <strong>"דיסק הזוגיות" (Parity Disk)</strong>. הוא לא שומר מידע, אלא תוצאה מתמטית (XOR) של הבלוקים המקבילים בשאר הדיסקים. אם דיסק מת, המערכת מחשבת מחדש את המידע החסר בעזרת משוואת ה-XOR.
+            </p>
+            <ul class="text-sm text-slate-600 space-y-1">
+                <li><span class="text-green-600 font-bold">✓ יתרון:</span> שרידות גבוהה עם איבוד נפח של דיסק אחד בלבד (ולא 50% כמו ב-RAID 1).</li>
+                <li><span class="text-red-600 font-bold">✗ חיסרון:</span> <strong>צוואר הבקבוק של הכתיבה.</strong> כל כתיבה לכל דיסק במערך דורשת עדכון של דיסק הזוגיות. דיסק הזוגיות קורס מעומס פניות, בזמן ששאר הדיסקים ממתינים לו.</li>
+            </ul>
+        </div>
+
+        <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-indigo-500 shadow-sm relative">
+            <div class="absolute top-2 left-2 bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">הסטנדרט בתעשייה</div>
+            <h4 class="font-bold text-slate-800 mb-2 text-lg">RAID 5 (Distributed Parity)</h4>
+            <p class="text-slate-600 text-sm mb-3">
+                הפתרון הגאוני לבעיה של RAID 4: אנחנו עדיין משתמשים בבלוקי זוגיות (Parity) כדי לגבות את הנתונים, אך במקום לרכז אותם בדיסק אחד שקורס מעומס, <strong>אנו מפזרים את בלוקי הזוגיות שווה בשווה בין כל הדיסקים במערך</strong>.
+            </p>
+            <ul class="text-sm text-slate-600 space-y-1">
+                <li><span class="text-green-600 font-bold">✓ יתרון:</span> מבטל לחלוטין את צוואר הבקבוק של RAID 4. מספק איזון פנטסטי בין אמינות, נפח אחסון פנוי וביצועי קריאה/כתיבה.</li>
+                <li><span class="text-red-600 font-bold">✗ חיסרון:</span> שחזור דיסק שניזוק דורש משאבי מעבד (חישובי XOR כבדים) ולוקח זמן רב.</li>
+            </ul>
+        </div>
+    </div>
+</article>
+
         </section>
                 </div>
 
@@ -1948,6 +2005,26 @@
     "term": "הסטת גלילים (Cylinder Skew)",
     "definition": "מנגנון לוגי המגדיר הסטה במספור הסקטורים בין מסלולים, כדי שזרוע הדיסק תספיק לזוז למסלול הסמוך והסקטור הראשון יחכה לה בדיוק מתחת לראש, מבלי להפסיד סיבוב שלם.",
     "category": "מושגים כלליים"
+  },
+  {
+    "term": "RAID 0 (Striping)",
+    "definition": "חלוקת נתונים לרצועות ופיזורן על פני מספר דיסקים במקביל. מטרתו הבלעדית היא מקסום ביצועים ומהירות. חסרונו הקטלני: אין יתירות כלל. קריסת דיסק פיזי אחד מובילה לאובדן מוחלט של כל המערך (אפס אמינות).",
+    "category": "דיסקים ומערכות קבצים"
+  },
+  {
+    "term": "RAID 1 (Mirroring)",
+    "definition": "שכפול מדויק של נתונים לשני דיסקים או יותר. מטרתו: אמינות ושרידות קיצונית (המערכת שורדת קריסת דיסק מלאה). חסרונו: עלות גבוהה ובזבוז של 50% משטח האחסון הפיזי לטובת כפילות.",
+    "category": "דיסקים ומערכות קבצים"
+  },
+  {
+    "term": "צוואר הבקבוק של RAID 4",
+    "definition": "ב-RAID 4 הנתונים מפוזרים במקביל, ודיסק אחד ויחיד מוקדש לשמירת הזוגיות (Parity) לצורך שחזור בעת קריסה. צוואר הבקבוק נוצר מכיוון שכל פעולת כתיבה (לכל דיסק במערך) מחייבת עדכון של דיסק הזוגיות, מה שהופך אותו לעמוס בצורה קיצונית ומאט את המערכת.",
+    "category": "דיסקים ומערכות קבצים"
+  },
+  {
+    "term": "RAID 5",
+    "definition": "הפתרון הנפוץ בתעשייה המאזן בין אמינות לביצועים. בניגוד ל-RAID 4, הוא מחלק את בלוקי הזוגיות (Parity) ומפזר אותם שווה בשווה בין כל הדיסקים במערך. פיזור זה מבטל את צוואר הבקבוק בכתיבה ומאפשר שרידות לקריסת דיסק בודד מבלי לאבד 50% מהנפח.",
+    "category": "דיסקים ומערכות קבצים"
   }
 ];
 
