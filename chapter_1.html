@@ -1050,6 +1050,29 @@
                                 ALU, FPU) המסוגל לקרוא ולהריץ מספר פקודות במקביל בכל מחזור שעון.</li>
                         </ul>
                     </div>
+
+                    <div class="deep-dive !my-0 col-span-1 md:col-span-2 mt-0">
+                        <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">הגנה באמצעות Base and Limit
+                            Registers</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-2">
+                            כדי לבודד בין תהליכים, קיימים במעבד שני אוגרי חומרה קריטיים המסייעים ל-MMU לאכוף גבולות
+                            זיכרון. אוגרים אלו <strong>ניתנים לשינוי אך ורק על ידי מערכת ההפעלה במצב מיוחס (Kernel
+                                Mode):</strong>
+                        </p>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 pr-2 mb-2">
+                            <li><strong>אוגר הבסיס (Base Register):</strong> מחזיק את כתובת הזיכרון הפיזית ההתחלתית שבה
+                                נטען התהליך.</li>
+                            <li><strong>אוגר הגבול (Limit Register):</strong> מגדיר את אורך הזיכרון הלוגי המוקצה לתהליך.
+                            </li>
+                        </ul>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            בכל גישה לזיכרון, החומרה מבצעת שתי בדיקות מחמירות ללא תלות בתוכנה:
+                            <br>1. האם הכתובת הלוגית קטנה מאוגר הגבול?
+                            <br>2. לאחר הוספת אוגר הבסיס, האם הכתובת הפיזית חוקית?
+                            <br>כישלון באחת הבדיקות יפעיל פסיקת <strong>Trap</strong> שתוביל ל-<strong>Segmentation
+                                Fault</strong>.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="concept-box">
@@ -1121,7 +1144,13 @@
                     <p class="text-xs text-slate-500 mb-6">לחצו על כל שכבה בפירמידה כדי לקרוא על תכונותיה, מהירותה ונפחה
                         הלוגי.</p>
                     <div class="flex flex-col md:flex-row items-center justify-around gap-8">
-                        <div class="w-full max-w-[320px] pyramid-container">
+                        <div class="w-full max-w-[320px] relative pyramid-container">
+                            <div
+                                class="absolute -right-16 top-0 bottom-0 flex flex-col justify-between py-2 text-[10px] font-bold text-slate-400 text-center">
+                                <div><span class="text-xs">⬆</span><br>מהירות<br>ועלות</div>
+                                <div class="flex-1 border-r-2 border-dashed border-slate-300 mx-auto my-2"></div>
+                                <div>נפח<br><span class="text-xs">⬇</span></div>
+                            </div>
                             <!-- Registers -->
                             <div onclick="selectPyramidLayer('registers')"
                                 class="pyramid-layer bg-red-600 hover:bg-red-500 text-[10px]" style="width: 35%;">אוגרים
@@ -1274,21 +1303,31 @@
 
                     <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
                         <h3 class="text-xl font-bold text-slate-800 mb-2">3. מערכות מקביליות (Multiprocessors)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-2">
+                            מנהלות מחשבים בעלי מספר מעבדים החולקים זיכרון ושעון (Tightly coupled). נחלקות לשתי ארכיטקטורות:
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1 pr-2">
+                            <li><strong>ארכיטקטורה סימטרית (SMP):</strong> כל מעבד יכול להריץ את מערכת ההפעלה, ותהליכים יכולים להיות מתוזמנים על כל אחד מהם באופן שווה.</li>
+                            <li><strong>ארכיטקטורה אסימטרית:</strong> מערכת ההפעלה רצה על מעבד ראשי אחד בלבד (Master), ושאר המעבדים (Slaves) מקבלים ממנו משימות.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">4. מערכות הפעלה מבוזרות (Distributed)</h3>
                         <p class="text-sm text-slate-700 leading-relaxed">
-                            מנהלות מחשבים בעלי מספר מעבדים החולקים זיכרון (SMP). דגש על תקשורת מהירה וסנכרון בין
-                            המעבדים.
+                            החישוב מבוזר בין מספר מעבדים (Loosely coupled), שלכל אחד זיכרון ושעון פרטיים משלו. התקשורת ביניהם נעשית דרך קווי תקשורת לשיתוף משאבים, אמינות גבוהה וביזור עומסים יעיל.
                         </p>
                     </div>
 
                     <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">4. מחשבים אישיים (PCs)</h3>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">5. מחשבים אישיים (PCs)</h3>
                         <p class="text-sm text-slate-700 leading-relaxed">
                             דגש על משתמש יחיד, נוחות שימוש וממשק (GUI), וזמן תגובה מהיר על פני יעילות חומרה מקסימלית.
                         </p>
                     </div>
 
                     <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">5. מערכות זמן-אמת (Real-Time)</h3>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">6. מערכות זמן-אמת (Real-Time)</h3>
                         <p class="text-sm text-slate-700 leading-relaxed mb-2">
                             זמן הביצוע הוא קריטי לפעולה.
                         </p>
@@ -1300,11 +1339,47 @@
                     </div>
 
                     <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">6. מערכות משובצות (Embedded)</h3>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">7. מערכות משובצות (Embedded)</h3>
                         <p class="text-sm text-slate-700 leading-relaxed">
                             מערכות זעירות למכשירי חשמל (כמו מכוניות, מיקרוגלים). חסרות גמישות להתקנת תוכנות, יציבות
                             מוחלטת, ודרישות מחמירות של חיסכון במשאבים.
                         </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm md:col-span-2">
+                        <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">השוואה: מערכות מרובות מעבדים</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-right text-slate-700 border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                                        <th class="p-3">סוג המערכת</th>
+                                        <th class="p-3">ניהול זיכרון ושעון</th>
+                                        <th class="p-3">תפקיד מערכת ההפעלה</th>
+                                        <th class="p-3">מונח מפתח מהמדריך</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    <tr>
+                                        <td class="p-3 font-bold text-slate-900 bg-slate-50/50">מקבילית סימטרית (SMP)</td>
+                                        <td class="p-3">משותף לכל המעבדים</td>
+                                        <td class="p-3">רצה על כל מעבד באופן שווה</td>
+                                        <td class="p-3 font-mono">Tightly coupled</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-slate-900 bg-slate-50/50">מקבילית אסימטרית</td>
+                                        <td class="p-3">משותף לכל המעבדים</td>
+                                        <td class="p-3">רצה על מעבד ה-Master בלבד</td>
+                                        <td class="p-3 font-mono">Master/Slaves</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-slate-900 bg-slate-50/50">מבוזרת (Distributed)</td>
+                                        <td class="p-3">פרטי לכל מעבד בנפרד</td>
+                                        <td class="p-3">מנהלת עומסים ושיתוף משאבים ברשת</td>
+                                        <td class="p-3 font-mono">Loosely coupled</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <!-- ==================== עזרים חזותיים וסימולטורים ==================== -->
@@ -1527,6 +1602,23 @@
                     </div>
 
                     <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">עץ תהליכים (Process Hierarchy): ההבדל בין UNIX
+                            ל-Windows</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-2">
+                            לכל מערכת הפעלה גישה שונה לניהול הקשר בין תהליכים שיוצרים תהליכים אחרים (הורה-בן):
+                        </p>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-2 pr-2">
+                            <li><strong>במערכות דמויות UNIX (כמו Linux):</strong> קיים <strong>עץ תהליכים היררכי
+                                    חזק</strong>. כאשר תהליך מריץ קריאת מערכת <code>fork()</code>, הצאצא שייך לאב. האב
+                                חייב להמתין לבן באמצעות <code>wait()</code>. כל התהליכים במערכת הם צאצאים של תהליך-העל
+                                המקורי (תהליך ה-<code>init</code>).</li>
+                            <li><strong>במערכות Windows:</strong> אין היררכיית עץ אמיתית. כאשר תהליך יוצר תהליך אחר, הוא
+                                מקבל מצביע עליו (Handle), אך כל התהליכים הם למעשה שווים ומנוהלים כרשימה שטוחה על ידי
+                                הקרנל ללא כפיפות מובנית.</li>
+                        </ul>
+                    </div>
+
+                    <div class="concept-box !my-0">
                         <h3 class="text-xl font-bold text-green-900 mb-2">2. אנטומיית מרחב הכתובות (Address Space)</h3>
                         <p class="text-sm text-slate-700 leading-relaxed mb-2">
                             "מגרש המשחקים" המבודד של התהליך בזיכרון ה-RAM מורכב משלושה אזורים:
@@ -1569,7 +1661,21 @@
                     </div>
 
                     <div class="concept-box !my-0">
-                        <h3 class="text-xl font-bold text-green-900 mb-2">6. המעטפת (The Shell)</h3>
+                        <h3 class="text-xl font-bold text-green-900 mb-2">6. קיפאון (Deadlock)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            מצב שבו קבוצת תהליכים תקועה מכיוון שכל תהליך בקבוצה ממתין לאירוע שיכול להיגרם <strong>אך ורק</strong> על ידי תהליך אחר מאותה קבוצה. בצורתו הפשוטה ביותר, התופעה מתרחשת כששני תהליכים מחזיקים משאב בלעדי שהשני חייב כדי להתקדם.
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">7. ניהול זיכרון (Memory Management)</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                            המנגנון המאפשר לשכן מספר תהליכים בזיכרון בו-זמנית, תוך ניהול הזיכרון החופשי, ואף מאפשר הרצת תוכניות שצורכות יותר זיכרון מסך הזיכרון הפיזי הקיים במחשב (על ידי זיכרון וירטואלי).
+                        </p>
+                    </div>
+
+                    <div class="concept-box !my-0 col-span-1 md:col-span-2">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">8. המעטפת (The Shell)</h3>
                         <p class="text-sm text-slate-700 leading-relaxed mb-3">
                             ה-Shell אינו חלק מליבת מערכת ההפעלה, אלא תוכנית משתמש המשמשת ממשק משתמש טקסטואלי המאפשר לאדם
                             להריץ פקודות ולהפעיל תוכניות על ידי הקלדת פקודות (כמו <code>bash</code>, או ה-Command
@@ -1662,12 +1768,11 @@
                             </div>
 
                             <div class="text-[11px] text-slate-500 leading-relaxed p-3 bg-slate-100 rounded-lg">
-                                <strong>הסבר:</strong> כדי שמרחב הכתובות יהיה מבודד באמת, מערכת ההפעלה מסתייעת ברכיב
-                                חומרה הנקרא MMU (יחידת ניהול זיכרון). בשלב זה של הקורס מספיק להתייחס ל-MMU כאל ה'שומר'
-                                הפיזי של המעבד. כאשר תהליך מנסה לחרוג מהגבולות המותרים לו (למשל, לכתוב לאזור Read-Only),
-                                ה-MMU מזהה את החריגה ומקפיץ פסיקה (Trap) למערכת ההפעלה. מערכת ההפעלה, בתגובה, שולחת
-                                לתהליך סיגנל סיום (SIGSEGV) שמחסל אותו מיד. נלמד לעומק כיצד ה-MMU פועל בפרק ניהול
-                                הזיכרון."
+                                <strong>חלוקת תפקידים (חומרה לעומת תוכנה):</strong> ה-<strong>MMU</strong> (יחידת ניהול
+                                זיכרון בחומרה) הוא זה שמזהה בזמן אמת כל ניסיון גישה בלתי חוקי לזיכרון ופולט פסיקת חומרה
+                                (Trap). מערכת ההפעלה (התוכנה), כתגובה לפסיקה, היא זו ששולחת את <strong>סיגנל התוכנה
+                                    (Signal 11 / SIGSEGV)</strong> לתהליך הסורר, המורה על חיסולו, ומדפיסה "Segmentation
+                                fault (core dumped)" למשתמש.
                             </div>
                         </div>
                     </div>
@@ -2189,15 +2294,12 @@
                 </div>
 
                 <div class="deep-dive">
-                    <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">מכונות מדומות ומערכת ה-VM/370</h3>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 border-b pb-2">הבחנה סמנטית: מכונה מורחבת לעומת VM/370</h3>
                     <p class="text-sm text-slate-700 leading-relaxed">
-                        במערכת הווירטואליזציה ההיסטורית <strong>VM/370</strong> של IBM, ה-Hypervisor (שכבת ה-CP) אינה
-                        מתפקדת כ"מכונה מורחבת". היא אינה מספקת אבסטרקציות נוחות למתכנת (כמו ניהול קבצים), אלא משחזרת
-                        העתקים מדויקים של החומרה הפיזית הבלתי-מרוסקת.
+                        חשוב להבחין: מכונה מדומה "רגילה" שמספקת מערכת ההפעלה למתכנת (למשל, יצירת אבסטרקציה של קבצים במקום עבודה עם סקטורים גולמיים) היא למעשה <strong>מכונה מורחבת (Extended Machine)</strong>.
                     </p>
                     <p class="text-sm text-slate-700 leading-relaxed mt-2">
-                        מערכת ההפעלה האורחת הרצה בתוך המכונה המדומה (כמו CMS) היא זו שמספקת את אבסטרקציות המכונה המורחבת
-                        למתכנת.
+                        לעומת זאת, המכונה המדומה בארכיטקטורת <strong>VM/370</strong> של IBM (שכבת ה-CP) <strong>אינה</strong> מכונה מורחבת. היא תוכנה המספקת ממשק של חומרה גולמית (שאינו נוח לתכנות), ועליו מותקנת מערכת הפעלה אורחת (כמו CMS) שהיא זו המספקת בפועל את המכונה המורחבת.
                     </p>
                 </div>
 
@@ -2675,8 +2777,8 @@
                     stackItems: ["nbytes", "buffer", "fd"]
                 },
                 4: {
-                    title: "שלב 4 מתוך 11: קריאה לפונקציית הספרייה read()",
-                    desc: "תוכנית המשתמש מבצעת פקודת <code>CALL</code> לפונקציית הספרייה read הכלולה בספריית ה-C הסטנדרטית. המעבד עדיין במצב משתמש רגיל.",
+                    title: "שלב 4 מתוך 11: מעבר לספריית ה-C",
+                    desc: "מתבצעת פקודת <code>CALL</code> רגילה לפונקציית העטיפה (Wrapper) של <code>read</code> בספרייה. המעבד נשאר במצב משתמש (User Mode).",
                     cpuMode: "User Mode (Mode Bit = 1)",
                     cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF0",
@@ -2686,30 +2788,30 @@
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 5: {
-                    title: "שלב 5 מתוך 11: השמת מזהה הקריאה באוגר",
-                    desc: "פונקציית הספרייה read שמה את המספר המזהה הייחודי של קריאת המערכת (למשל, מספר 3 ב-Linux) לתוך אוגר המעבד <code>EAX</code> / <code>RAX</code>.",
+                    title: "שלב 5 מתוך 11: טעינת אוגרים כהכנה לליבה",
+                    desc: "הספרייה טוענת את קוד קריאת המערכת (למשל, 3) לאוגר <strong>EAX</strong>, ואת הפרמטרים מהמחסנית אל אוגרי חומרה (EBX, ECX, EDX) כדי שהליבה תוכל לקרוא אותם בבטחה.",
                     cpuMode: "User Mode (Mode Bit = 1)",
                     cpuClass: "bg-green-100 text-green-700",
                     spVal: "0x7FFF0FF0",
-                    eaxVal: "3",
+                    eaxVal: "3 (Syscall Code)",
                     activeCol: "user",
                     highlights: ["sim-box-user-lib"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 6: {
-                    title: "שלב 6 מתוך 11: פקודת TRAP (מעבר לליבה)",
-                    desc: "מבוצעת פקודת המכונה המיוחדת <code>TRAP</code>. החומרה משנה באופן מיידי את המצב ב-PSW ל-<strong>Kernel Mode (Mode Bit = 0)</strong> וקופצת לכתובת קבועה מראש במערכת ההפעלה.",
+                    title: "שלב 6 מתוך 11: פקודת ה-TRAP",
+                    desc: "הפונקציה מבצעת הוראת חומרה <code>TRAP</code>. מנגנון החומרה משנה באופן חסוי את המצב ל-<strong>Kernel Mode (Bit=0)</strong>, שומר את ה-PC הנוכחי, וקופץ לווקטור הטיפול בפסיקות של מערכת ההפעלה.",
                     cpuMode: "Kernel Mode (Mode Bit = 0)",
                     cpuClass: "bg-red-100 text-red-700",
                     spVal: "0x7FFF0FF0",
-                    eaxVal: "3",
+                    eaxVal: "3 (Syscall Code)",
                     activeCol: "kernel",
                     highlights: ["sim-box-kernel-trap"],
                     stackItems: ["nbytes", "buffer", "fd", "Return Address"]
                 },
                 7: {
-                    title: "שלב 7 מתוך 11: פענוח הבקשה על ידי ה-Dispatcher",
-                    desc: "מערכת ההפעלה מקבלת שליטה במצב מיוחס. ה-Dispatcher קורא את מזהה הקריאה (3) מאוגר <code>EAX</code> וניגש לטבלת קריאות המערכת (System Call Table) כדי למצוא את כתובת הטיפול.",
+                    title: "שלב 7 מתוך 11: Dispatcher ושליפת פרמטרים",
+                    desc: "מערכת ההפעלה קוראת את מספר הקריאה מ-EAX ומשתמשת בטבלת קריאות המערכת. הליבה <strong>לעולם לא</strong> סומכת על מחסנית המשתמש (מחשש לפריצות אבטחה כגון TOCTOU) וקוראת את הפרמטרים (fd, buffer, nbytes) ישירות מהאוגרים בהם הם אוחסנו.",
                     cpuMode: "Kernel Mode (Mode Bit = 0)",
                     cpuClass: "bg-red-100 text-red-700",
                     spVal: "0x7FFF0FF0",
@@ -3462,6 +3564,16 @@
                     "category": "קבוצה א': תפקידי מערכת ההפעלה ומבט-על"
                 },
                 {
+                    "term": "ניידות התוכנה (Software Portability)",
+                    "definition": "התכונה המאפשרת להריץ תוכנה שנכתבה עבור פלטפורמה אחת על גבי פלטפורמה אחרת. מתחלקת לניידות קוד (קימפול מחדש ללא שינוי קוד המקור) ולניידות בינארית (הרצת קובץ ההרצה כפי שהוא על ארכיטקטורה אחרת).",
+                    "category": "קבוצה א': תפקידי מערכת ההפעלה ומבט-על"
+                },
+                {
+                    "term": "תכנות מונחה עצמים (OOP) במערכות הפעלה",
+                    "definition": "ייצוג שירותי מערכת ההפעלה כתהליכים נפרדים ומוגדרים, כאשר כל תהליך מספק שירות (\"עצם\") ספציפי (כמו שרת קבצים). התקשורת מתבצעת כבקשות לקוח ותשובות שרת, תוך צמצום התלות בחומרה.",
+                    "category": "קבוצה ו': מבנה מערכות הפעלה"
+                },
+                {
                     "term": "מערכת אצווה (Batch System)",
                     "definition": "שיטת עבודה מהדור השני של המחשבים. כדי למנוע מהמעבד היקר לעמוד סרק, אספו קבוצת עבודות (Jobs) על גבי כרטיסי ניקוב, קראו אותן לסרט מגנטי, והמחשב הריץ אותן ברצף אחת אחרי השנייה ללא התערבות אנושית.",
                     "category": "קבוצה ב': אבולוציה היסטורית"
@@ -3650,6 +3762,16 @@
                     "term": "Exokernel",
                     "definition": "ארכיטקטורה שבה הגרעין אינו מספק אבסטרקציות כלל, אלא רק מקצה ומגן על משאבי חומרה גולמיים עבור ספריות ברמת המשתמש (Library OS), המממשות את האבסטרקציות בעצמן באופן מותאם אישית.",
                     "category": "קבוצה ו': מבנה מערכות הפעלה"
+                },
+                {
+                    "term": "ממשק פקודה (CLI) מול ממשק גרפי (GUI)",
+                    "definition": "GUI (Graphical User Interface) מספק חלונות ועכבר לנוחות, בעוד ש-CLI (Command Line Interface) כמו ה-Shell מהווה תוכנית מבוססת טקסט המקבלת פקודות ישירות ומפעילה קריאות מערכת.",
+                    "category": "קבוצה א': תפקידי מערכת ההפעלה ומבט-על"
+                },
+                {
+                    "term": "תקן POSIX",
+                    "definition": "תקן בין-לאומי המגדיר סט אחיד של קריאות מערכת (API) שמערכות הפעלה מבוססות UNIX חייבות לתמוך בו, על מנת להבטיח ניידות קוד ממערכת אחת לאחרת.",
+                    "category": "קבוצה ה': קריאות מערכת ליבה"
                 }
             ];
 
@@ -4065,6 +4187,47 @@
             window.triggerSegfault = triggerSegfault;
             window.updateArchSandbox = updateArchSandbox;
         }
+
+        // הוסף את פונקציית העזר לציור קווים דינמיים לחלון:
+        window.addEventListener('resize', () => {
+            const svgEl = document.getElementById('constraint-lines-svg');
+            if (!svgEl) return;
+
+            // מחיקת הקווים הקיימים
+            while (svgEl.firstChild) {
+                svgEl.removeChild(svgEl.firstChild);
+            }
+
+            // שחזור הקווים לזיווגים הקיימים
+            const gridEl = document.getElementById('constraint-lab-grid');
+            const gridRect = gridEl.getBoundingClientRect();
+
+            if (typeof constraintMatched !== 'undefined') {
+                constraintMatched.forEach(taskId => {
+                    const taskEl = document.getElementById('task-' + taskId);
+                    const solEl = document.getElementById('sol-' + taskId);
+                    if (taskEl && solEl) {
+                        const taskRect = taskEl.getBoundingClientRect();
+                        const solRect = solEl.getBoundingClientRect();
+
+                        const x1 = taskRect.left + taskRect.width / 2 - gridRect.left;
+                        const y1 = taskRect.top + taskRect.height / 2 - gridRect.top;
+                        const x2 = solRect.left + solRect.width / 2 - gridRect.left;
+                        const y2 = solRect.top + solRect.height / 2 - gridRect.top;
+
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', x1);
+                        line.setAttribute('y1', y1);
+                        line.setAttribute('x2', x2);
+                        line.setAttribute('y2', y2);
+                        line.setAttribute('stroke-width', '3');
+                        line.setAttribute('stroke-linecap', 'round');
+                        line.setAttribute('stroke', '#22c55e');
+                        svgEl.appendChild(line);
+                    }
+                });
+            }
+        });
     </script>
 
     <!-- Repository of Guide Questions -->
@@ -4097,9 +4260,82 @@
         </div>
         <div id="questions-os-history"></div>
         <div id="questions-os-hardware"></div>
-        <div id="questions-os-zoo"></div>
-        <div id="questions-os-concepts"></div>
-        <div id="questions-os-syscalls"></div>
+        <div id="questions-os-zoo">
+            <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 my-6 group transition-all duration-300">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.4</span>
+                        <span>במה נבדלים הצרכים של מחשב אישי ממערכות זמן-אמת (Real-Time)?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-2">
+                        מחשב אישי מתמקד בממשק משתמש ובנוחות עבודה (GUI מורכב). מערכות זמן-אמת חייבות להבטיח זמני תגובה
+                        מוחלטים ודטרמיניסטיים ללא עיכובים עבור משימות קריטיות (כמו ציוד רפואי או בקרי טיסה), תוך ויתור
+                        על הוגנות או ממשק ויזואלי מתקדם.
+                    </p>
+                </div>
+            </details>
+        </div>
+        <div id="questions-os-concepts">
+            <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 my-6 group transition-all duration-300">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.5</span>
+                        <span>מה ההבדל בין "תוכנית" (Program) לבין "תהליך" (Process)?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-2">
+                        <b>תוכנית</b> היא ישות פסיבית, קובץ הנמצא באופן סטטי על הדיסק הקשיח. לעומת זאת, <b>תהליך</b> הוא
+                        תוכנית הנמצאת <b>בזמן ריצה</b> (ישות אקטיבית) וכוללת את תמונת הזיכרון שלה, אוגרי המעבד (כולל
+                        Program Counter), המחסנית ומצבה הנוכחי.
+                    </p>
+                </div>
+            </details>
+            <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 my-6 group transition-all duration-300">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.6</span>
+                        <span>מהו ההבדל המהותי בין עץ תהליכים ב-UNIX לגישה ב-Windows?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-2">
+                        במערכות UNIX יש מבנה <b>היררכי קשיח</b> – תהליך שמוליד צאצא אחראי עליו. כל התהליכים הם ענפים תחת
+                        תהליך האב הקדמון <code>init</code>. לעומת זאת, ב-Windows נוצר <b>Handle</b> המצביע על הצאצא
+                        וניתן להעברה, אך אין עץ יוחסין אקטיבי; כל התהליכים מנוהלים עצמאית על ידי ליבת המערכת ואין
+                        מחויבות של האב כלפי הבן.
+                    </p>
+                </div>
+            </details>
+        </div>
+        <div id="questions-os-syscalls">
+            <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 my-6 group transition-all duration-300">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 1.7</span>
+                        <span>האם קיימת חובה טכנית למערכת ההפעלה לספק קריאות מערכת רשמיות? מדוע לא לאפשר כתיבה ישירה
+                            לדיסק?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-4 pt-4 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-2">
+                        קריאות המערכת משמשות כ<b>שערי ההגנה היחידים</b> של מערכת ההפעלה. אילו ניתן היה לכל תוכנית לכתוב
+                        ישירות לבקרי הדיסק (מצב שאינו אפשרי עקב הגנת ה-Mode Bit של המעבד), מערכת ההפעלה הייתה מאבדת את
+                        יכולתה לנהל את המשאבים המשותפים, לבודד תהליכים זה מזה, או לאכוף הרשאות של אבטחת מידע.
+                    </p>
+                </div>
+            </details>
+        </div>
         <div id="questions-os-structure">
             <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-5 group transition-all duration-300">
                 <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">

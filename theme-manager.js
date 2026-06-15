@@ -1,4 +1,3 @@
-// theme-manager.js
 (function () {
     // 1. Get saved theme or default to 'normal'
     let currentTheme = localStorage.getItem('site-theme') || 'normal';
@@ -19,14 +18,9 @@
                 css = `
                     html {
                         filter: invert(0.9) hue-rotate(180deg);
-                        background-color: white; /* Ensure base background is white before inversion */
                     }
                     /* Re-invert media and already-dark elements so they look normal */
-                    img, video, iframe, aside, pre, .bg-slate-900, .bg-slate-800, .bg-slate-950, .text-amber-400, .text-emerald-400, .text-red-400, .bg-darker, .bg-dark, .no-invert {
-                        filter: invert(1) hue-rotate(180deg);
-                    }
-                    /* Simulator specific fixes */
-                    svg, canvas, .sim-dark-element {
+                    img, video, iframe, aside, pre, .bg-slate-900, .bg-slate-800, .bg-darker, .bg-dark, .no-invert {
                         filter: invert(1) hue-rotate(180deg);
                     }
                 `;
@@ -35,7 +29,6 @@
                 css = `
                     html {
                         filter: sepia(0.5) brightness(0.95);
-                        background-color: #fdfbf7;
                     }
                 `;
             }
@@ -51,6 +44,7 @@
         const btn = document.getElementById('theme-toggle-btn');
         if (!btn) return;
         
+        // Using basic emojis or SVG icons depending on your setup
         let iconHtml = '';
         if (currentTheme === 'normal') {
             iconHtml = '☀️'; // Normal mode -> Next is Dark
