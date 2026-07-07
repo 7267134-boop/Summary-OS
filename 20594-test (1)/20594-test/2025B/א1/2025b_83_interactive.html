@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכות הפעלה - מבחן 2025B 83</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1d4ed8',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        accent: '#38bdf8',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Rubik', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .code-block {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            direction: ltr; text-align: left; line-height: 1.6; font-size: 0.95rem;
+            border-radius: 0.75rem; background-color: #1e293b !important; color: #e2e8f0;
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-category {
+            font-size: 0.75rem; font-weight: 700; color: #64748b;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-top: 1.5rem; margin-bottom: 0.75rem; padding-right: 1rem;
+        }
+        
+        .math-box {
+            direction: ltr; font-family: 'Consolas', monospace;
+            background: #f1f5f9; padding: 1rem; border-radius: 0.5rem;
+            border-left: 4px solid #38bdf8; margin-top: 0.5rem; margin-bottom: 0.5rem;
+        }
+
+        .question-box {
+            background-color: white; border: 1px solid #e2e8f0; border-right: 4px solid #3b82f6;
+            border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .mindset-box {
+            background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.75rem;
+            padding: 1.5rem; margin-bottom: 2rem;
+        }
+
+        .solution-box {
+            background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem;
+            padding: 1.5rem; margin-bottom: 2rem; border-right: 4px solid #22c55e;
+        }
+    
+        /* Quiz Styles */
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px solid #e2e8f0;
+            background-color: #f8fafc;
+            color: #334155;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        .option-btn.correct {
+            background-color: #ecfdf5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+        .option-btn.incorrect {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+        .option-btn:disabled {
+            cursor: default;
+        }
+        
+        /* Accordion Styles */
+        details {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        summary {
+            padding: 1.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary {
+            border-bottom-color: #e2e8f0;
+            background-color: #f1f5f9;
+        }
+        details .details-content {
+            padding: 1.5rem;
+            background-color: #ffffff;
+            line-height: 1.7;
+        }
+        aside.collapsed { margin-right: -18rem; }
+        
+        /* Interactive Code Tooltips */
+        .interactive-tooltip {
+            transition: all 0.2s;
+            border-radius: 4px;
+            color: inherit;
+            background-color: transparent;
+            padding: 2px 0;
+        }
+        .interactive-tooltip.tooltip-active-style { cursor: pointer; }
+        .interactive-tooltip.tooltip-active-style:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+        }
+        .cycler-anim { animation: pulse-soft 0.3s ease-in-out; }
+    </style>
+</head>
+
+<body class="text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 bg-dark text-slate-300 flex flex-col h-full shadow-2xl z-20 flex-shrink-0 transition-all duration-300 relative">
+        <div class="p-6 bg-darker border-b border-slate-800">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <i class="fa-solid fa-server text-accent"></i>
+                OS Master
+            </h1>
+            <div class="mt-3 flex items-center gap-2">
+                <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-md">2025B</span>
+                <span class="bg-slate-700 text-slate-300 text-xs font-medium px-2 py-1 rounded-md">83</span>
+            </div>
+        </div>
+
+        <div class="p-4 flex-1 overflow-y-auto">
+
+            <div class="nav-category">חלק א' (30 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q1')" id="btn-q1" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-white border border-primary/30 transition-colors text-right">
+                    <div class="w-8 h-8 rounded-md bg-primary/30 text-accent flex items-center justify-center flex-shrink-0 font-bold">1</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">הרעבה בתזמון</div></div>
+                </button>
+                <button onclick="switchTab('q2')" id="btn-q2" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">2</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">וירטואליזציה VMWARE</div></div>
+                </button>
+                <button onclick="switchTab('q3')" id="btn-q3" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">3</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">קיפאון במשאבים</div></div>
+                </button>
+                <button onclick="switchTab('q4')" id="btn-q4" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">4</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">חישוב כתובת מ-PT</div></div>
+                </button>
+                <button onclick="switchTab('q5')" id="btn-q5" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">5</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">הסיבה לשימוש ב-DMA</div></div>
+                </button>
+                <button onclick="switchTab('q6')" id="btn-q6" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">6</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">חישוב בלוקים I-Node</div></div>
+                </button>
+            </nav>
+
+            <div class="nav-category">חלק ב' (55 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q7')" id="btn-q7" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">7</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">פילוסופים סועדים (סמפורים)</div></div>
+                </button>
+                <button onclick="switchTab('q8')" id="btn-q8" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">8</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">דפדוף Copy-On-Write</div></div>
+                </button>
+                <button onclick="switchTab('q9')" id="btn-q9" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">9</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">סקטור, בלוק וייעול דיסק</div></div>
+                </button>
+            </nav>
+
+            <div class="nav-category">חלק ג' (15 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q10')" id="btn-q10" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">10</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">וקטור פסיקות TRAP</div></div>
+                </button>
+                <button onclick="switchTab('q11')" id="btn-q11" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">11</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">פלט קוד PID_NS (הכשלה)</div></div>
+                </button>
+                <button onclick="switchTab('q12')" id="btn-q12" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">12</div>
+                    <div class="flex-1 min-w-0"><div class="font-medium text-sm">קונטיינרים ו-MOUNT_NS</div></div>
+                </button>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative scroll-smooth h-full p-6 md:p-10 pb-24">
+        
+        <button onclick="toggleSidebar()" class="fixed top-4 right-4 md:top-6 md:right-[19rem] bg-white border border-slate-200 text-slate-600 w-10 h-10 flex items-center justify-center rounded-md shadow-sm hover:bg-slate-50 transition-all duration-300 z-30" id="sidebar-toggle" title="כווץ/הרחב תפריט">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 1 -->
+        <!-- ============================================== -->
+        <div id="tab-q1" class="tab-content block max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 1</h2>
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm leading-relaxed">
+                    הרעבה (Starvation) מתרחשת כאשר תהליך ממתין אינסוף זמן לקבל את המעבד כי תהליכים אחרים תמיד מועדפים על פניו. 
+                    בשיטת SJF (העבודה הקצרה תחילה), אם יש לנו תהליך שדורש זמן ריצה ארוך (למשל שעתיים), וכל הזמן ממשיכות להגיע למערכת משימות קצרצרות (של שנייה), המתזמן תמיד יעדיף את המשימות הקצרות. התהליך הארוך יידחה שוב ושוב עד אין קץ - וזו בדיוק ההגדרה של הרעבה.
+                </p>
+            </div>
+                </div>
+            </details>
+            
+            
+            <div class="question-box">
+
+                <p class="text-slate-900 mb-4 font-semibold text-lg">איזו משימות תזמון SCHEDULING הבאות יכולה לגרום להרעבה?</p>
+                <ul class="space-y-2 mt-6"><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '1')">א. shortest job first</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '1')">ב. first come first served</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '1')">ג. Round robin עם quantum קצר</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '1')">ד. Round robin עם quantum ארוך</button></ul>
+            </div>
+
+            
+
+            
+        
+            <div id="exp-1" style="display: none;" class="fade-in mt-6">
+                <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-6 shadow-sm">
+                    <h4 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-500"></i> פתרון מלא</h4>
+                    <div class="text-slate-700 leading-relaxed">
+                <p class="text-green-800">
+                    התשובה הנכונה היא <strong>א' (Shortest job first)</strong>.<br>
+                    בשיטה זו, המתזמן תמיד בוחר את התהליך בעל זמן הריצה המוערך הקצר ביותר. תהליך ארוך עלול למצוא את עצמו מורעב (Starved) ולא לרוץ לעולם, אם המערכת מוצפת באופן קבוע בתהליכים קצרים חדשים שעוקפים אותו בתור.
+                </p>
+            </div>
+                    <div class='mt-4 pt-4 border-t border-emerald-100/50 text-sm'><strong>למה השאר שגויות?</strong><br><strong>ב. FCFS:</strong> תהליכים מבוצעים לפי סדר הגעתם. כל תהליך יקבל את המעבד בסופו של דבר ולכן אין הרעבה.<br><strong>ג+ד. Round Robin:</strong> שיטה שיתופית הנותנת זמן קצוב (Quantum) לכל תהליך בתורו. מבטיח הוגנות מלאה ולכן אין הרעבה.</div>
+                </div>
+            </div>
+            </div><!-- ============================================== -->
+        <!-- QUESTION 2 -->
+        <!-- ============================================== -->
+        <div id="tab-q2" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 2</h2>
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm leading-relaxed">
+                    כשיש לנו מכונה וירטואלית (VM), לינוקס (האורחת) מאמינה שהיא שולטת על החומרה. כשמשתמש בלינוקס כותב לקובץ, הוא מפעיל System Call שמועבר לקרנל של לינוקס. הקרנל של לינוקס "מנסה" לכתוב לדיסק (פעולת חומרה פריווילגית). 
+                    אבל, בגלל שאנחנו בוירטואליזציה (VT - חומרתית), המעבד מזהה שמערכת אורחת מנסה לעשות פעולת חומרה, ומייצר פסיקה מיוחדת (VM-Exit / Trap). הפסיקה הזו תופסת את הקריאה ומעבירה את השליטה ל-Hypervisor (המודול של VMware שמותקן בתוך הקרנל של ה-Windows המארח). המודול מתרגם את הבקשה ומבקש מ-Windows לעשות את הכתיבה בפועל לדיסק הפיזי.
+                </p>
+            </div>
+                </div>
+            </details>
+            
+            
+            <div class="question-box">
+
+                <p class="text-slate-900 mb-4 font-semibold text-lg">תארו את השתלשלות הפעולות בביצוע SYSTEM CALL כתיבה לקובץ ע"י תהליך המשתמש במערכת LINUX וירטואלית אורחת שרצה על תוכנת VMWARE המשתמשת שיטת וירטואליזציה VT ומופעלת על מערכת WINDOWS. ציינו איזה KERNEL "מנסה" לבצע את הפקודה ומה קורה בפועל.</p>
+                <ul class="space-y-2 mt-6"><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '2')">א. ה- SYSTEM CALL מתבצע ע"י KERNEL של מערכת אורחת GUEST עד הסוף(כולל כתיבה בפועל) אם למערכת אורחת יש מקום בדיסק משלה.</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '2')">ב. ה- SYSTEM CALL מתבצע ישירות ע"י KERNEL של מערכת מארחת HOST בגלל שבזמן התקנת מערכת אורחת (LINUX), VMWARE החליפה את כל קריאות המערכת שלה לקריאות מקבילות של WINDOWS.</button><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '2')">ג. ניסיון כתיבה לדיסק יגרום להפעלת מודול MODULE ב- KERNEL של מערכת המארחת HOST שנוסף שם ע"י VMWARE בזמן ההתקנה או היה שם קודם, והוא מעביר אותה ל KERNEL המארח HOST.</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '2')">ד. ניסיון כתיבה לדיסק יגרום להפעלת מודול MODULE ב- KERNEL של מערכת האורחת GUEST שנוסף שם ע"י VMWARE בזמן ההתקנה או היה שם קודם, והוא מבצע את הכתיבה בפועל.</button></ul>
+            </div>
+
+            
+
+            
+        
+            <div id="exp-2" style="display: none;" class="fade-in mt-6">
+                <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-6 shadow-sm">
+                    <h4 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-500"></i> פתרון מלא</h4>
+                    <div class="text-slate-700 leading-relaxed">
+                <p class="text-green-800">
+                    התשובה הנכונה היא <strong>ג'</strong>.<br>
+                    הקרנל של מערכת ה-Linux (האורחת) הוא זה ש<strong>מנסה</strong> לבצע את פקודת הכתיבה אל החומרה (הדיסק) כרגיל. אולם, בפועל, בגלל מנגנון ה-VT, ניסיון הגישה לחומרה נלכד (Trap) ומועבר לניהולו של ה-Hypervisor – המודול של VMware שיושב בתוך הקרנל של ה-Windows (המארחת). הקרנל של חלונות הוא זה שמבצע בפועל את הכתיבה אל הדיסק הפיזי ומחזיר אשליה של הצלחה למערכת האורחת.
+                </p>
+            </div>
+                    <div class='mt-4 pt-4 border-t border-emerald-100/50 text-sm'><strong>למה השאר שגויות?</strong><br><strong>א.</strong> מערכת אורחת לא מסוגלת לבצע כתיבה בפועל (אין לה גישה אמיתית לחומרה).<br><strong>ב.</strong> תוכנת VMware לא מחליפה את ה-Syscalls בתוך מערכת האורחת (זה היה שובר אותה).<br><strong>ד.</strong> המודול בתוך האורחת (Guest) יכול רק לתווך בקשות, הוא לא מסוגל לבצע את פעולת החומרה הפיזית.</div>
+                </div>
+            </div>
+            </div><!-- ============================================== -->
+        <!-- QUESTION 3 -->
+        <!-- ============================================== -->
+        <div id="tab-q3" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 3</h2>
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm leading-relaxed">
+                    בגרף הקצאת משאבים (Resource Allocation Graph), אם אין מעגלים - אין Deadlock. אך מה קורה כשיש מעגל? 
+                    הכלל במערכות הפעלה קובע: אם יש משאבים עם <strong>מופעים מרובים (Multiple Instances)</strong>, קיום של מעגל הוא רמז לקיפאון אפשרי, אך הוא <strong>לא</strong> תנאי מספיק (כי תהליך אחר מחוץ למעגל יכול לשחרר מופע ולהציל את כולם).
+                    הדרך היחידה שבה מעגל בגרף מוכיח <strong>בוודאות מוחלטת</strong> ומתמטית שיש קיפאון, היא רק בתנאי שלכל משאב יש בדיוק מופע אחד (Single Instance). 
+                </p>
+            </div>
+                </div>
+            </details>
+            
+            
+            <div class="question-box">
+
+                <p class="text-slate-900 mb-4 font-semibold text-lg">במערכת קיימים כמה סוגי משאבים עם מספר עותקים משתנה של כל משאב. באיזה מהמצבים הבאים בהם קיים מעגל בגרף הקצאות המשאבים בפועל, ניתן לומר בוודאות שיש קיפאון deadlock ?</p>
+                <ul class="space-y-2 mt-6"><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '3')">א. כשלפחות עותק מאחד המשאבים המוקצים לכל אחד מתהליכים במערכת הוא חלק מהמעגל.</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '3')">ב. כשלפחות עותק אחד של כל משאב במערכת הוא חלק מהמעגל.</button><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '3')">ג. כשלכל אחד מהמשאבים במערכת יש רק מופע אחד.</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '3')">ד. כשלכל אחד מהמשאבים במערכת יש יותר ממופע אחד.</button></ul>
+            </div>
+
+            
+
+            
+        
+            <div id="exp-3" style="display: none;" class="fade-in mt-6">
+                <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-6 shadow-sm">
+                    <h4 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-500"></i> פתרון מלא</h4>
+                    <div class="text-slate-700 leading-relaxed">
+                <p class="text-green-800">
+                    התשובה הנכונה היא <strong>ג'</strong>.<br>
+                    לפי התיאוריה, כאשר במערכת לכל סוג משאב קיים <strong>רק עותק (מופע) יחיד</strong>, קיומו של מעגל בגרף הקצאת המשאבים מהווה תנאי הכרחי ומספיק (Necessary and Sufficient) לקיפאון. במקרה שיש מספר עותקים למשאב, מעגל אינו מבטיח בוודאות קיפאון, כי תהליך שאינו חלק מהמעגל עשוי לשחרר את אחד העותקים ולשבור את ההמתנה המעגלית.
+                </p>
+            </div>
+                    <div class='mt-4 pt-4 border-t border-emerald-100/50 text-sm'><strong>למה השאר שגויות?</strong><br><strong>א+ב.</strong> מעגל בגרף אינו מבטיח קיפאון כל עוד ישנם עותקים פנויים במקומות אחרים שעשויים להשתחרר (על ידי תהליך שאינו במעגל).<br><strong>ד.</strong> הפוך מהנכון - ריבוי עותקים מצריך גרף חלוקות מורכב יותר (Banker's Algorithm) כדי לזהות קיפאון.</div>
+                </div>
+            </div>
+            </div><!-- ============================================== -->
+        <!-- QUESTION 4 -->
+        <!-- ============================================== -->
+        <div id="tab-q4" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 4</h2>
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm leading-relaxed">
+                    זוהי שאלת חישוב MMU. אנו צריכים לפרק את הכתובת הווירטואלית לשני חלקים: מספר הדף (VPN) והקיזוז (Offset). <br>
+                    אנו מקבלים שה-Offset הוא 11 סיביות. לכן גודל דף הוא 2 בחזקת 11 = 2048 בתים.<br>
+                    כעת נחלק את הכתובת הדצימלית (5000) ב-2048 כדי לגלות באיזה דף היא נופלת. השארית של החילוק תהיה הקיזוז הפנימי שלנו. עם מספר הדף, ניגש לטבלה, נבדוק את ה-Valid Bit, ונמצא את המסגרת הפיזית.
+                </p>
+            </div>
+                </div>
+            </details>
+            
+            
+            <div class="question-box">
+
+                <p class="text-slate-900 mb-4 font-semibold text-lg">נתונה טבלת הדפים של תהליך במערכת, אורך הכתובת הוירטואלית 32 סיביות ואורך שדה ה OFFSET הוא 11 סיביות. כל המספרים בטבלה דצימליים וכל הכתובות של ביית בזיכרון.</p>
+                
+                <table class="w-full text-center border-collapse mb-4 max-w-md mx-auto">
+                    <thead>
+                        <tr class="bg-slate-200">
+                            <th class="border p-2">Page Number</th>
+                            <th class="border p-2">Valid bit</th>
+                            <th class="border p-2">Frame Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="border p-2">0</td><td class="border p-2">1</td><td class="border p-2">1</td></tr>
+                        <tr><td class="border p-2">1</td><td class="border p-2">1</td><td class="border p-2">2</td></tr>
+                        <tr class="bg-blue-50 border-2 border-blue-500"><td class="border p-2 font-bold">2</td><td class="border p-2 font-bold text-green-600">1</td><td class="border p-2 font-bold">0</td></tr>
+                        <tr><td class="border p-2">3</td><td class="border p-2">1</td><td class="border p-2">0</td></tr>
+                        <tr><td class="border p-2">4</td><td class="border p-2 text-red-500">0</td><td class="border p-2">3</td></tr>
+                        <tr><td class="border p-2">5</td><td class="border p-2 text-red-500">0</td><td class="border p-2">0</td></tr>
+                    </tbody>
+                </table>
+                
+                <p class="text-slate-900 mb-4 font-semibold text-lg">לאיזו כתובת פיזית, אם ניתן לחשב, תמופה הכתובת הוירטואלית הבאה : 5000 ?</p>
+                <ul class="space-y-2 mt-6"><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '4')">א. 5000</button><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '4')">ב. 904</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '4')">ג. 7048</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '4')">ד. לא ניתן לחשב</button></ul>
+            </div>
+
+            
+
+            
+        
+            <div id="exp-4" style="display: none;" class="fade-in mt-6">
+                <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-6 shadow-sm">
+                    <h4 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-500"></i> פתרון מלא</h4>
+                    <div class="text-slate-700 leading-relaxed">
+                <div class="text-green-800 text-sm space-y-2">
+                    <p>התשובה הנכונה היא <strong>ב' (904)</strong>.</p>
+                    <p><strong>1. מציאת גודל דף:</strong> מספר סיביות ה-Offset הוא 11, לכן גודל הדף הוא $2^{11} = 2048$ בתים.</p>
+                    <p><strong>2. חילוץ מספר הדף (Page Number):</strong> הכתובת היא 5000. נחלק בגודל הדף: <br>
+                    $\lfloor 5000 / 2048 \rfloor = 2$. (כלומר, נופל בתוך דף מספר 2).</p>
+                    <p><strong>3. חילוץ הקיזוז (Offset):</strong> נמצא את השארית של החלוקה: <br>
+                    $5000 \pmod{2048} = 904$. (כלומר, הבית ה-904 בתוך הדף).</p>
+                    <p><strong>4. תרגום לפיזית מהטבלה:</strong> נסתכל בטבלה בשורה של Page Number = 2. 
+                    ערך ה-Valid Bit הוא 1 (הדף בזיכרון חוקי). 
+                    מספר המסגרת הפיזית (Frame Number) הוא <strong>0</strong>.</p>
+                    <p><strong>5. חישוב כתובת סופית:</strong> כתובת פיזית = (מספר מסגרת $\times$ גודל דף) + קיזוז. <br>
+                    $0 \times 2048 + 904 = 904$.</p>
+                </div>
+            </div>
+                    <div class='mt-4 pt-4 border-t border-emerald-100/50 text-sm'><strong>למה השאר שגויות?</strong><br><strong>א. 5000:</strong> הכתובת הפיזית לא תהיה זהה לוירטואלית כי הדף ממופה למסגרת 0 ולא למסגרת 2.<br><strong>ג. 7048:</strong> זו הייתה התשובה לו הדף היה ממופה למסגרת 3. אך בטבלה, Frame Number הוא 0.<br><strong>ד. לא ניתן לחשב:</strong> שגוי, ה-Valid Bit דלוק (1), ולכן המיפוי תקין.</div>
+                </div>
+            </div>
+            </div><!-- ============================================== -->
+        <!-- QUESTION 5 -->
+        <!-- ============================================== -->
+        <div id="tab-q5" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 5</h2>
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm leading-relaxed">
+                    בעבר, כדי להעביר נתונים מהדיסק לזיכרון, ה-CPU היה צריך להעביר בעצמו בית אחר בית באמצעות טכניקת Programmed I/O, מה שגרם למעבד להיות משותק (Busy Wait) לחלוטין. ה-DMA (Direct Memory Access) הומצא כדי להקל על ה-CPU: המעבד רק נותן את פקודת ההתחלה, ה-DMA מעביר את בלוק הנתונים בשלמותו ל-RAM, והמעבד חופשי לעשות חישובים באותו זמן. בסוף, ה-CPU מקבל פסיקה אחת קטנה במקום מיליון פסיקות. המטרה היא להוריד עומס מהמעבד בתהליך ה-I/O הכללי.
+                </p>
+            </div>
+                </div>
+            </details>
+            
+            
+            <div class="question-box">
+
+                <p class="text-slate-900 mb-4 font-semibold text-lg">מהי הסיבה העיקרית לשימוש ב- DMA?</p>
+                <ul class="space-y-2 mt-6"><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '5')">א. למעבד דרוש פחות זמן לביצוע פקודה חישובית אחת.</button><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '5')">ב. הקטנת הזמן שלוקח למעבד בסה"כ לטפל בפעולות קלט-פלט.</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '5')">ג. למעבד דרוש פחות זמן לביצוע גישה לזיכרון הראשי.</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '5')">ד. מאפשר להתקן, למשל דיסק, להשתמש בזיכרון הראשי כמטמון.</button></ul>
+            </div>
+
+            
+
+            
+        
+            <div id="exp-5" style="display: none;" class="fade-in mt-6">
+                <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-6 shadow-sm">
+                    <h4 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-500"></i> פתרון מלא</h4>
+                    <div class="text-slate-700 leading-relaxed">
+                <p class="text-green-800">
+                    התשובה הנכונה היא <strong>ב'</strong>.<br>
+                    הסיבה המרכזית לשימוש ברכיב ה-DMA היא שחרור המעבד ממעורבות פעילה (וצרכנית זמן אדירה) בהעברת נתונים בין התקני החומרה (I/O) לזיכרון הראשי. ה-DMA חוסך למעבד פסיקות חומרה עבור כל בית שעובר, ובכך מקטין באופן דרמטי את זמן הטיפול הכללי של המעבד במשימות קלט/פלט ומאפשר לו להריץ תהליכים אחרים במקביל (מקביליות חומרה).
+                </p>
+            </div>
+                    <div class='mt-4 pt-4 border-t border-emerald-100/50 text-sm'><strong>למה השאר שגויות?</strong><br><strong>א.</strong> DMA אינו קשור ליחידת ה-ALU ולכן אינו מאיץ פקודות חישוביות.<br><strong>ג.</strong> DMA למעשה מתחרה עם ה-CPU על הגישה לאפיק הזיכרון (Cycle Stealing), כך שהוא לא מקצר את זמן הגישה של המעבד.<br><strong>ד.</strong> התקנים לא משתמשים ב-RAM כמטמון פנימי בגלל ה-DMA; ה-DMA מיועד להעברת בלוקים רשמית, לא כ-Cache חומרתי של ההתקן.</div>
+                </div>
+            </div>
+            </div><!-- ============================================== -->
+        <!-- QUESTION 6 -->
+        <!-- ============================================== -->
+        <div id="tab-q6" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 6</h2>
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm leading-relaxed">
+                    שאלת חישוב I-Node קלאסית. נעבוד בשלבים:<br>
+                    1. נחשב כמות <strong>בלוקי נתונים</strong>: חלוקת גודל הקובץ (3145700) בגודל בלוק ($2 \times 1024 = 2048$). מעגלים תמיד כלפי <strong>מעלה</strong> למספר שלם.<br>
+                    2. נחשב קיבולת של בלוק ניהול: גודל בלוק חלקי גודל כתובת/מצביע ($2048 \div 4 = 512$ מצביעים בבלוק עקיף).<br>
+                    3. נפזר את בלוקי הנתונים ונספור כמה בלוקי ניהול נוספו: נחסר את 10 הישירים. השאר הולכים לעקיף בודד. אם עברנו את 512, נשתמש בעקיף כפול שמוסיף בלוק ראשי + בלוקי משנה. בסוף מחברים נתונים + ניהול.
+                </p>
+            </div>
+                </div>
+            </details>
+            
+            
+            <div class="question-box">
+
+                <p class="text-slate-900 mb-2 font-semibold text-lg">מערכת הקבצים של מערכת הפעלה מסוימת משתמשת בשיטת ה I-node עם פרמטרים הבאים :</p>
+                <ul class="list-disc list-inside text-slate-800 space-y-1 mb-4">
+                    <li>גודל הבלוק במערכת הקבצים הוא 2 Kbytes</li>
+                    <li>כתובת הבלוק היא 4 בתים (bytes)</li>
+                    <li>10 שדות של ה I-node יכולים להחזיק ישירות כתובת הבלוק בדיסק</li>
+                    <li>שדה נוסף אחד נועד להחזיק כתובת של ה single indirect block</li>
+                    <li>עוד שדה נוסף אחד נועד להחזיק כתובת של ה double indirect block</li>
+                    <li>ועוד שדה נוסף אחד נועד להחזיק כתובת של ה triple indirect block</li>
+                </ul>
+                <p class="text-slate-900 mb-4 font-semibold text-lg">
+                    חשבו כמה בלוקים בסה"כ יתפוס קובץ(כולל נתונים ומצביעים, אבל לא כולל את ה I-NODE עצמו) בגודל 3145700 בית(3 מגה בית פחות 28 בית).<br>
+                    הערה: לצורך החישוב 1 KByte = 1024 Byte , 1 MByte = 1024 KByte
+                </p>
+                <ul class="space-y-2 mt-6"><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '6')">א. 1540 Kbytes</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '6')">ב. 1539 Kbytes</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '6')">ג. 1541Kbytes</button><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '6')">ד. 1536Kbytes</button></ul>
+                <p class="text-xs text-slate-500 mt-2">*הערה: הופעה של המילה Kbytes בתשובות במקום "בלוקים" היא שגיאת דפוס שנפלה במבחן המקורי, החישוב הנדרש הוא למספר בלוקים (כפי שיודגם).*</p>
+            </div>
+
+            
+
+            
+        
+            <div id="exp-6" style="display: none;" class="fade-in mt-6">
+                <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-6 shadow-sm">
+                    <h4 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-500"></i> פתרון מלא</h4>
+                    <div class="text-slate-700 leading-relaxed">
+                <div class="text-green-800 text-sm space-y-3">
+                    <p>התשובה הנכונה היא <strong>א' (1540)</strong>.</p>
+                    <p><strong>שלב 1: חישוב מספר בלוקי הנתונים (Data Blocks)</strong><br>
+                    גודל הקובץ: 3,145,700 בתים.<br>
+                    גודל בלוק: $2KB = 2048$ בתים.<br>
+                    חישוב הבלוקים: $3145700 / 2048 \approx 1535.98$. מעגלים תמיד למעלה, ולכן נצטרך בדיוק <strong>1536 בלוקים של נתונים</strong>.</p>
+                    
+                    <p><strong>שלב 2: קיבולת מצביעים בבלוק יחיד</strong><br>
+                    בלוק שוקל 2048 בתים. כל מצביע שוקל 4 בתים.<br>
+                    מספר מצביעים בבלוק ניהול: $2048 / 4 = 512$ מצביעים לבלוק.</p>
+                    
+                    <p><strong>שלב 3: חלוקת הבלוקים וספירת בלוקי ניהול (Pointer Blocks)</strong><br>
+                    יש לנו 1536 בלוקים לאחסן:</p>
+                    <ul class="list-disc list-inside ml-4 space-y-2">
+                        <li><strong>10 הצבעות ישירות:</strong> ממפות 10 בלוקים ישירות. (לא צורך בלוק ניהול כלל).<br>
+                        <em>נותרו למפות:</em> $1536 - 10 = 1526$ בלוקים.</li>
+                        
+                        <li><strong>Single Indirect:</strong> נשתמש בבלוק עקיף בודד אחד (תופס <strong>1 בלוק ניהול</strong>). הוא ממפה עד 512 בלוקים.<br>
+                        <em>נותרו למפות:</em> $1526 - 512 = 1014$ בלוקים.</li>
+                        
+                        <li><strong>Double Indirect:</strong> נותר למפות 1014 בלוקים. ה-I-node יצביע לבלוק כפול ראשי. בלוק זה צריך להצביע על בלוקי Single Indirect. מכיוון שכל Single יכול להכיל 512 מצביעים, נצטרך בדיוק $\lceil 1014 / 512 \rceil = 2$ בלוקים פנימיים (Singles). <br>
+                        סך הכל צרכנו בשלב זה: <strong>1 בלוק ראשי (Double) + 2 בלוקים פנימיים (Singles) = 3 בלוקי ניהול</strong>.</li>
+                    </ul>
+                    <p class="font-bold mt-3">סיכום סך הכל הבלוקים שייתפסו בדיסק: <br>
+                    1536 (בלוקי נתונים) + 1 (בלוק ניהול יחיד) + 3 (בלוקי ניהול כפול) = 1540 בלוקים.</p>
+                </div>
+            </div>
+                    <div class='mt-4 pt-4 border-t border-emerald-100/50 text-sm'><strong>למה השאר שגויות?</strong><br><strong>ב. 1539:</strong> תשובה זו מתעלמת מאחד מבלוקי הניהול (כנראה מהבלוק הראשי של ה-Double Indirect).<br><strong>ג. 1541:</strong> תשובה זו סופרת בלוק מיותר שלא נדרש (למשל סופרת את בלוק ה-I-Node עצמו).<br><strong>ד. 1536:</strong> זו כמות בלוקי הנתונים בלבד, ללא התחשבות בבלוקי המצביעים (Metadata) הנדרשים.</div>
+                </div>
+            </div>
+            </div><!-- ============================================== -->
+        <!-- QUESTION 7 -->
+        <!-- ============================================== -->
+        <div id="tab-q7" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 7 (25 נקודות)</h2>
+            
+            <div class="question-box mb-6 relative">
+                <!-- Floating Circular Cycler -->
+                <button onclick="cycleTooltipState()" class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                    <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                    <i class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                    <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל - בריחוף</span>
+                    <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                    <div class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </button>
+
+                
+                <h4 class="font-bold text-slate-800 mb-2">א. (10 נק')</h4>
+                <p class="text-slate-900 font-semibold text-sm leading-relaxed mb-4">
+                    הוצע שינוי לבעיית N פילוסופים סועדים ו N מזלגות : כל פילוסוף יכול להשתמש בכל שתי מזלגות פנויים שהן לא בהכרח לימינו או שמאלו. ממשו(ב C או פסודוקוד) את הפונקציות הבאות בצורה יעילה ומאפשרת לכמה שיותר פילוסופים לאכול במקביל ללא אפשרות קיפאון. כשאין מזלגות פנויים, פונקציה ()take_forks ממתינה עד שיתפנו. ניתן להשתמש במבני נתונים, משתנים ואמצעי סנכרון לפי הצורך ולהסביר את הבחירה מבחינת היעילות.<br>
+                    n1 ו n2 הם מספרי מזלגות, i – מספר הפילוסוף.<br>
+                    * take_forks(i)<br>
+                    * put_forks(int n1,int n2)
+                </p>
+                
+                <details class="mt-4 mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                    <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> בבעיה המקורית של הפילוסופים, הקיפאון (Deadlock) נוצר כי כל אחד מחזיק מזלג ימין ומחכה למזלג שמאל (המתנה מעגלית). כאן, פילוסוף פשוט קם ולוקח *כל* 2 מזלגות פנויים משולחן משותף. כדי שלא יהיה Deadlock, פעולת הלקיחה של 2 המזלגות יחד חייבת להיות אטומית! (אסור שיקח 1 ויירדם). הדרך היעילה במערכות הפעלה היא להשתמש ב-Mutex כדי להגן על משתנה Counter (כמות המזלגות שנותרו), וב-Condition Variable או Semaphore כדי להרדים פילוסופים כשהמלאי קטן מ-2, ולהעיר אותם כשפילוסוף אחר מחזיר מזלגות.</p>
+                </div>
+                </div>
+            </details>
+                
+                <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                    <p class="text-slate-800 font-semibold mb-2">פתרון סעיף א' (קוד והסבר אופטימלי):</p>
+                    <p class="text-sm text-slate-700 mb-4">נשתמש במשתנה גלובלי המייצג את מספר המזלגות הפנויים, ב-Mutex להגנה על המשתנה, ובסמפור/תור-המתנה (Condition Variable) כדי להימנע מ-Busy Waiting (אשר מבזבז מעבד, כפי שנעשה בטעות בבחינה המקורית).</p>
+                    
+                    <div dir="ltr" class="mb-4">
+                        <pre class="bg-slate-800 text-accent font-mono p-4 rounded text-sm mb-2"><code><mark class="interactive-tooltip" data-key="q7_a_g_1">int forks_count = N;</mark>
+<mark class="interactive-tooltip" data-key="q7_a_g_2">Mutex m;</mark>
+<mark class="interactive-tooltip" data-key="q7_a_g_3">CondVar cv;</mark>
+</code></pre>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <pre class="bg-slate-800 text-green-400 font-mono p-4 rounded text-sm"><code><mark class="interactive-tooltip" data-key="q7_a_t_1">take_forks(int i) {</mark>
+<mark class="interactive-tooltip" data-key="q7_a_t_2">    Lock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_a_t_3">    while (forks_count < 2) {</mark>
+<mark class="interactive-tooltip" data-key="q7_a_t_4">        Wait(cv, m);</mark> 
+<mark class="interactive-tooltip" data-key="q7_a_t_5">    }</mark>
+<mark class="interactive-tooltip" data-key="q7_a_t_6">    forks_count -= 2;</mark>
+<mark class="interactive-tooltip" data-key="q7_a_t_7">    Unlock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_a_t_8">}</mark></code></pre>
+                            <pre class="bg-slate-800 text-purple-400 font-mono p-4 rounded text-sm"><code><mark class="interactive-tooltip" data-key="q7_a_p_1">put_forks(int n1, int n2) {</mark>
+<mark class="interactive-tooltip" data-key="q7_a_p_2">    Lock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_a_p_3">    forks_count += 2;</mark>
+<mark class="interactive-tooltip" data-key="q7_a_p_4">    Broadcast(cv);</mark> 
+<mark class="interactive-tooltip" data-key="q7_a_p_5">    Unlock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_a_p_6">}</mark></code></pre>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-700"><strong>יעילות:</strong> השימוש ב-Wait מונע מצב של Busy Waiting (בניגוד ל-while true עם lock/unlock שזולל זמן מעבד). בדיקת התנאי וההורדה מבוצעים באטומיות, מה שמונע חטיפת מזלג בודד ומונע לחלוטין את ה-Deadlock.</p>
+                </div>
+                </div>
+            </details>
+
+                <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2">ב. (15 נק')</h4>
+                <p class="text-slate-900 font-semibold text-sm leading-relaxed mb-4">
+                    התייחסו לבעיית N פילוסופים סועדים עם N מזלגות עם השינוי הבא:<br>
+                    כדי לאכול כל פילוסוף יכול להצטרך ל 2 מזלגות או רק למזלג אחד- ימין. פילוסוף שקרא לפונקצית לקיחת מזלג ימין בלבד (take_right_fork(int i , לא יוכל לקרוא לפונקציה ללקיחת 2 מזלגות עד שיניח את המזלג ע"י (put_right_fork(int i . משתנה i הוא מספר פילוסוף.<br>
+                    ממשו (ב C או פסודוקוד) את הפונקציות הבאות בצורה הקצרה והיעילה ביותר שתבטיח לכל הפחות ל N/2(N זוגי) פילוסופים לאכול במקביל ללא אפשרות קיפאון. ניתן להשתמש באמצעי סנכרון לפי הצורך ולהסביר את הבחירה מבחינת היעילות.<br>
+                    * take_right_fork(int i)<br>
+                    * put_right_fork(int i)<br>
+                    * take_forks(int i)<br>
+                    * put_forks(int i)
+                </p>
+
+                <details class="mt-4 mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                    <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> פה מסבכים אותנו. יש פילוסופים שלוקחים מזלג אחד, ויש כאלו שלוקחים שניים. הסכנה הגדולה היא שפילוסוף ייקח מזלג ימין אחד, ובמקביל פילוסוף אחר ינסה לקחת 2 מזלגות וייתקע. כיוון שיש לנו קופה משותפת של N מזלגות (ולא שמאל/ימין קלאסי - לפי ניסוח הפונקציות אין פה ID של מזלגות), הפתרון הוא לעקוב אחרי מצב המזלגות הפנויים בעזרת משתנה גלובלי. כדי להבטיח ש-N/2 יוכלו לאכול במקביל ללא קיפאון, אנחנו רק צריכים לוודא שאף פילוסוף לא יעשה "החזק והמתן" על 2 מזלגות (לוקח 1 ומחכה לשני). לכן, מי שצריך 2, לוקח את שניהם במכה אחת באטומיות. מי שצריך 1, פשוט לוקח 1.</p>
+                </div>
+                </div>
+            </details>
+
+                <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                    <p class="text-slate-800 font-semibold mb-2">פתרון סעיף ב':</p>
+                    <p class="text-sm text-slate-700 mb-3">
+                        נמשיך בקו המחשבה של סעיף א'. נשתמש ב-Mutex יחיד להגנה על המשתנה <code>counter=N</code>, ובמנגנון הרדמה (CV) למניעת בזבוז משאבים. כדי למנוע קיפאון כשאנשים לוקחים 1 או 2, חוק הברזל הוא: פעולת הבדיקה והלקיחה (יהא המספר אשר יהא) חייבת להתבצע בתוך נעילה אטומית אחת.
+                    </p>
+                    <div dir="ltr" class="mb-4">
+                        <pre class="bg-slate-800 text-accent font-mono p-4 rounded text-sm mb-2"><code><mark class="interactive-tooltip" data-key="q7_b_g_1">int counter = N;</mark>
+<mark class="interactive-tooltip" data-key="q7_b_g_2">Mutex m;</mark>
+<mark class="interactive-tooltip" data-key="q7_b_g_3">CondVar cv;</mark></code></pre>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <pre class="bg-slate-800 text-blue-300 font-mono p-3 rounded text-xs"><code><mark class="interactive-tooltip" data-key="q7_b_t1_1">take_right_fork(int i) {</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t1_2">    Lock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t1_3">    while(counter < 1) {</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t1_4">        Wait(cv, m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t1_5">    }</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t1_6">    counter -= 1;</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t1_7">    Unlock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t1_8">}</mark></code></pre>
+                            <pre class="bg-slate-800 text-blue-300 font-mono p-3 rounded text-xs"><code><mark class="interactive-tooltip" data-key="q7_b_p1_1">put_right_fork(int i) {</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p1_2">    Lock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p1_3">    counter += 1;</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p1_4">    Broadcast(cv);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p1_5">    Unlock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p1_6">}</mark></code></pre>
+                            <pre class="bg-slate-800 text-green-300 font-mono p-3 rounded text-xs"><code><mark class="interactive-tooltip" data-key="q7_b_t2_1">take_forks(int i) {</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t2_2">    Lock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t2_3">    while(counter < 2) {</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t2_4">        Wait(cv, m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t2_5">    }</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t2_6">    counter -= 2;</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t2_7">    Unlock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_t2_8">}</mark></code></pre>
+                            <pre class="bg-slate-800 text-green-300 font-mono p-3 rounded text-xs"><code><mark class="interactive-tooltip" data-key="q7_b_p2_1">put_forks(int i) {</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p2_2">    Lock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p2_3">    counter += 2;</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p2_4">    Broadcast(cv);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p2_5">    Unlock(m);</mark>
+<mark class="interactive-tooltip" data-key="q7_b_p2_6">}</mark></code></pre>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-700"><strong>הסבר למניעת קיפאון:</strong> הקיפאון נמנע לחלוטין מכיוון שאין כאן "אחזקה והמתנה" בשלבים. כל פילוסוף מבקש את המשאבים שלו (1 או 2) באופן סימולטני. אם אין מספיק במאגר באותו רגע, הוא מוותר על הנעילה והולך לישון (Wait). מכיוון שיש N מזלגות, והלקיחה המקסימלית היא 2, מובטח מתמטית שלפחות N/2 פילוסופים יוכלו לאכול במקביל (אם כל אחד יבקש 2 מזלגות). אין אפשרות לקיפאון כי אף אחד לא מחזיק חצי משאב ומחכה.</p>
+                </div>
+                </div>
+            </details>
+
+            </div>
+        </div><!-- ============================================== -->
+        <!-- QUESTION 8 -->
+        <!-- ============================================== -->
+        <div id="tab-q8" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 8 (15 נקודות)</h2>
+            
+            <div class="question-box mb-6">
+
+                
+                <h4 class="font-bold text-slate-800 mb-2">א. (5 נק') כחלק מאלגוריתם פינוי דפי זיכרון, מערכת הפעלה נתונה עבור כל מסגרת פיזית מנהלת מונה המייצג את מספר פניות אליה. האם עבור המסגרות המאחסנות דפים משותפים בין תהליכים SHARED MEMORY נדרש מונה יחיד או מספר מונים(לפי תהליך)? הסבירו את היתרונות והחסרונות של כל אפשרות אם יש.</h4>
+                <details class="mt-4 mb-4 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                    <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> במערכות הפעלה מודרניות, יש הבחנה בין "מידע מערכתי" לבין "מידע תהליכי". כששני תהליכים (או יותר) משתמשים באותו דף פיזי בזיכרון משותף, חישבו מה יקרה אם מערכת ההפעלה תחזיק רק מונה אחד לכולם. האם המערכת תוכל לדעת מתי תהליך ספציפי הפסיק להשתמש בדף? מנגד, מה תהיה העלות של להחזיק מונה נפרד לכל תהליך?</p>
+                </div>
+                </div>
+            </details>
+                <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                    <p class="text-slate-800 font-semibold mb-2">פתרון סעיף א':</p>
+                    <div class="text-sm text-slate-700 font-medium space-y-3">
+                        <p><strong>גישת המונה היחיד למסגרת הפיזית:</strong><br>
+                        <em>יתרון:</em> קל למימוש ודורש פחות זיכרון לניהול ה-OS. מונה אחד מאפשר למערכת ההפעלה לדעת עד כמה "חמה" המסגרת הפיזית מבחינה מערכתית. אם מספר תהליכים ניגשים לדף המשותף, הערך שלו עולה מהר, ולכן המערכת לא תפנה אותו לדיסק בטעות.<br>
+                        <em>חיסרון:</em> עלול לגרום לעיוותים באלגוריתם הפינוי (כמו LRU). ייתכן שתהליך אחד משתמש בדף המשותף באינטנסיביות עצומה, ותהליך אחר סיים איתו מזמן. אם הדף יפונה (Swapped Out), הוא ייעלם משתי טבלאות הדפים של התהליכים במכה אחת (קטיעה כפולה), גם עבור מי שהשתמש בו.</p>
+                        
+                        <p><strong>גישת מספר מונים (מונה לכל תהליך בטבלת הדפים שלו):</strong><br>
+                        <em>יתרון:</em> מאפשר ל-OS החלטות חכמות ברמת התהליך הלוגי. תהליך שאינו משתמש בדף זמן רב יוכל לפנות אותו מהמרחב הווירטואלי שלו (לא לפנות את הפיזי החוצה, אלא רק לנתק את ההצבעה) ולפנות מקום ב-TLB או בניהול הזיכרון הלוקאלי, בזמן שתהליך אחר ימשיך לעבוד איתו באין מפריע.<br>
+                        <em>חיסרון:</em> מערכת ההפעלה צריכה להחזיק מבני נתונים מורכבים (Reverse Mapping) ולבדוק מספר טבלאות של תהליכים שונים לפני שהיא מחליטה לפנות סופית מסגרת פיזית מה-RAM לדיסק, מה שגורר תקורה (Overhead) בזמן אלגוריתם הפינוי.</p>
+                    </div>
+                </div>
+                </div>
+            </details>
+
+                <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2">ב. (5 נק') כחלק מאלגוריתם פינוי דפי זיכרון מערכת הפעלה נתונה מנהלת מונה המייצג את מספר פניות לכל דף (PAGE) זיכרון. המונה נמצא בטבלת הדפים. מה אמור להיות ערך המונה (ביחס לתהליך האב PARENT) עבור דפי זיכרון בעקבות ביצוע ()fork במערכת המנהלת את הזיכרון על בסיס copy_on_write? הסבירו יתרונות חסרונות של כל אפשרות אם יש.</h4>
+                <details class="mt-4 mb-4 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                    <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> תהליך בן שנוצר ב-Fork מתחיל את חייו בנקודת זמן חדשה, אך עם זיכרון (הצבעות) מאביו עקב מנגנון ה-Copy-On-Write. תחשבו על היתרון והחיסרון של הורשת "מוניטין": אם נוריש לבן את ערך המונה של האב, האם זה משקף את השימוש האמיתי של הבן? ואם נאפס את המונה לבן (0), האם אלגוריתם הפינוי עלול בטעות לזרוק את הדפים האלו החוצה מיד כי הם "קרים"?</p>
+                </div>
+                </div>
+            </details>
+                <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                    <p class="text-slate-800 font-semibold mb-2">פתרון סעיף ב':</p>
+                    <div class="text-sm text-slate-700 font-medium space-y-3">
+                        <p>בביצוע <code>fork</code> עם COW, הבן מקבל טבלת דפים חדשה שמצביעה לדפים הפיזיים של האב בהרשאת Read-Only. עולה השאלה: האם המונים (שנמצאים בטבלת הדפים) מועתקים מהאב או מתאפסים לבן?</p>
+                        
+                        <p><strong>אפשרות 1: העתקת ערך המונה מהאב לבן (הורשה)</strong><br>
+                        <em>יתרון:</em> אלגוריתם הפינוי מזהה מיד שהדפים האלו הם "חשובים וחמים" (Hot Pages). מכיוון שסטטיסטית, ברוב המקרים (למשל פקודת exec עתידית), הבן משתמש מיד במידע קריטי של האב, המערכת לא תמהר לפנות את הדפים הללו החוצה לדיסק, ותמנע Page Faults מיותרים בראשית חיי הבן.<br>
+                        <em>חיסרון:</em> זיכרון וירטואלי של הבן מתחיל עם "היסטוריה מזויפת" שלא הוא ביצע, מה שיכול לעכב פינוי של דפים שהבן בכלל לא מתכוון להשתמש בהם.</p>
+
+                        <p><strong>אפשרות 2: איפוס המונה עבור הבן (לערך 0)</strong><br>
+                        <em>יתרון:</em> הבן מקבל התחלה נקייה ואמיתית. דפים שבהם הוא באמת משתמש יתחממו, ודפים של האב שרק עברו אליו ב-COW אך הוא לא נוגע בהם - יפנו מקום מהר (ינותקו מהטבלה שלו) והוא ינצל את המרחב הלוגי שלו טוב יותר.<br>
+                        <em>חיסרון:</em> בסמוך ל-fork, המונים המאופסים יגרמו למערכת להחשיב את דפי הבן כ"קרים". האלגוריתם עלול להחליט לפנות (Swap Out) למסגרות אלו, מה שיגרור מיידית סדרה כואבת של פסיקות חריגת דף (Page Faults) רגעים ספורים לאחר שהבן נוצר.</p>
+                    </div>
+                </div>
+                </div>
+            </details>
+
+                <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2">ג. (5 נק') בהתייחס לסעיפים א ו-ב, האם קיים הבדל בניהול אזורי זיכרון המאחסנים קוד התוכנית והנתונים?</h4>
+                <details class="mt-4 mb-4 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                    <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> חישבו על האופי של אזור קוד (Text) לעומת אזור נתונים (Data/Heap). אזור הקוד מכיל פקודות מכונה שרק נקראות (Read-Only) ולא אמורות להשתנות לעולם בזמן ריצה, לכן אף אחד לא מבצע Copy-On-Write עליהן. מנגד, הנתונים הם דינמיים ומשתנים, ולכן רק עליהם חלים החוקים של שכפול-בעת-כתיבה ויש צורך לשמור את מצבם המעודכן.</p>
+                </div>
+                </div>
+            </details>
+                <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                    <p class="text-slate-800 font-semibold mb-2">פתרון סעיף ג':</p>
+                    <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                        כן, קיים הבדל תהומי בניהול בין קוד לנתונים.<br>
+                        <strong>אזורי זיכרון של קוד (Text Segment):</strong> הקוד הוא סטטי, אינו משתנה לעולם במהלך הריצה, ומוגדר מראש כ-Read-Only. במערכות הפעלה מודרניות וב-COW, דפי הקוד משותפים באופן מוחלט וקבוע לכל התהליכים (בייחוד באב ובן לאחר Fork, ואפילו בהרצת מספר מופעים של אותה התוכנה). אין לגביהם שום כוונה לשכפל (No Copy-On-Write), שכן אף אחד לא יכול לכתוב אליהם. במקרה של פינוי מהזיכרון, אפילו אין צורך לשמור אותם בקובץ ההחלפה (Swap Space), כי אפשר פשוט לזרוק אותם ולקרוא אותם מחדש מקובץ ההרצה (Exe) מהדיסק.
+                        <br><br>
+                        <strong>אזורי נתונים (Data/Stack/Heap):</strong> אזורים אלו הם דינמיים הניתנים לקריאה וכתיבה (R/W). עליהם בדיוק חל מנגנון ה-Copy-On-Write. האב והבן חולקים אותם זמנית, עד שמישהו מבצע כתיבה לנתון, ואז המערכת משכפלת (מעתיקה פיזית במסגרת חדשה) את הדף רק עבור התהליך ששינה אותו. בעת פינויים (Swap Out), חובה לכתוב את התוכן הנוכחי שלהם לאזור ההחלפה בדיסק, מכיוון שהמידע שלהם השתנה ואינו קיים בשום מקום אחר.
+                    </p>
+                </div>
+                </div>
+            </details>
+
+            </div>
+        </div><!-- ============================================== -->
+        <!-- QUESTION 9 -->
+        <!-- ============================================== -->
+        <div id="tab-q9" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 9 (15 נקודות)</h2>
+            
+            <div class="question-box mb-6">
+                <p class="text-slate-900 font-medium text-sm leading-relaxed mb-4">
+                    כידוע, אחת הבעיות הפוגעות בביצועי מערכת הקבצים היא קבצים שאינם שמורים באופן רציף על הדיסק הקשיח. הסעיפים הבאים מתייחסים להקצאת מקום לקבצים בעזרת אינדקס (I-Node).
+                </p>
+                
+
+                
+                <h4 class="font-bold text-slate-800 mb-2">א. (5 נק') האם הקצאת מקום רציף מועילה לגישה רציפה לקובץ, לאקראית(ישירה) או לשניהם?</h4>
+                
+                <details class="mt-4 mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                    <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> הקצאה רציפה (Contiguous Allocation) פירושה שכל בלוקי הקובץ יושבים אחד אחרי השני בדיסק (בלוק 10, 11, 12...). הגישה ה<strong>רציפה</strong> (Sequential) בברור מרוויחה מזה - קוראים הכל במכה בלי להזיז את מחט הדיסק. בגישה <strong>אקראית</strong> (Random Access) - נניח שאני רוצה את הבית ה-10,000 בקובץ - אני לא צריך לחפש בטבלאות שרשור מסובכות. אני פשוט לוקח את כתובת ההתחלה ומוסיף לה היסט (Base + Offset), מה שמאפשר זינוק ישיר ומהיר בחישוב מתמטי פשוט למיקום הנכון. לכן שניהם מרוויחים.</p>
+                </div>
+                </div>
+            </details>
+
+                <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                    <p class="text-slate-800 font-semibold mb-2">פתרון סעיף א':</p>
+                    <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                        הקצאה רציפה מועילה ומשפרת את הביצועים <strong>בשני המקרים</strong>.<br>
+                        <strong>גישה רציפה (Sequential Access):</strong> אם הקובץ שמור ברצף בלוקים, מחט הכתיבה/קריאה של הדיסק הקשיח מגיעה לנקודת ההתחלה, ופשוט קוראת את כל המידע כרצף ללא צורך לבצע קפיצות (Seek Time) הלוך ושוב לאזורים שונים בדיסק. זה חוסך זמן מכני אדיר ומאיץ את הקריאה למהירות מקסימלית.<br>
+                        <strong>גישה אקראית (Random/Direct Access):</strong> גם כאן היתרון עצום. מאחר והבלוקים מונחים ברצף פיזי, אין שום צורך "לטייל" בטבלאות FAT או בשרשורי I-Node כדי לגלות איפה נמצא בלוק מספר 500 של הקובץ. המערכת מחשבת זאת בפעולת חשבון אחת מיידית בזיכרון (כתובת התחלה + קיזוז הבלוק המבוקש) וגורמת לראש הקריאה לזנק ישירות למטרה המדויקת בדיסק, מה שהופך את השליפה למיידית.
+                    </p>
+                </div>
+                </div>
+            </details>
+
+                <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2">ב. (10 נק') הוצעו שתי שיטות לייעול מערכת קבצים :</h4>
+                <p class="text-sm text-slate-700 mb-2">
+                    1. השארת מקום ריק (רווח) בגודל קבוע לאחר כל קובץ בזמן יצירתו, כך שאם הקובץ צריך לגדול, הוא יכול להתחיל לגדול באופן רציף. המקום השמור לאחר כל קובץ מיועד לקובץ עצמו, אבל מותר להשתמש במקום זה עבור הקצאה לקבצים אחרים אם אין ברירה אחרת (כלומר רק במקרה שאין יותר מקום פנוי על הדיסק חוץ ממקומות השמורים לגדילה של קבצים).<br>
+                    2. הקובץ הראשון יישמר בתחילת הדיסק. בהמשך כל קובץ חדש יישמר החל מאמצע השטח הרציף הארוך ביותר שנשאר בדיסק.
+                </p>
+                <p class="text-slate-900 font-semibold text-sm mb-4">השוו בין שתי השיטות ופרטו את היתרונות והחסרונות של כל אחת.</p>
+                
+                <details class="mt-4 mb-4 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                    <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> נתחו את השיטות מבעד למשקפיים של יעילות שטח מול יעילות זמן. בשיטה הראשונה מקבעים "רווח" פנוי לכל קובץ. מה קורה אם רוב הקבצים לא גדלים (בזבוז)? מה קורה אם הם גדלים הרבה מעבר לרווח? השיטה השנייה גמישה בהרבה ומחפשת את השטח הכי גדול, אבל איך היא תשפיע על זמני החיפוש של מערכת ההפעלה, ומה יקרה לדיסק בטווח הארוך כאשר השטחים הגדולים יתפצלו להמון שטחים קטנים?</p>
+                </div>
+                </div>
+            </details>
+                <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                    <p class="text-slate-800 font-semibold mb-2">פתרון סעיף ב':</p>
+                    <div class="text-sm text-slate-700 font-medium space-y-3">
+                        <p><strong>שיטה 1 (השארת רווח קבוע בסוף כל קובץ):</strong><br>
+                        <em>יתרונות:</em> מבטיחה באופן קשיח וללא חישובים שקובץ שגודל במידה סבירה יישאר רציף. קלה למימוש ומתאימה מאוד לסביבות בהן רוב הקבצים (למשל קבצי לוג) גדלים בצורה צפויה ובגבולות ה"רווח" השמור להם, מה ששומר על ביצועי הדיסק.<br>
+                        <em>חסרונות:</em> בזבוז משאבים (Internal Fragmentation אדירה). אם רוב הקבצים במערכת לא גדלים כלל לאחר יצירתם, שומרים עבורם שטחים ריקים ומיותרים לחלוטין. בנוסף, אם קובץ גדל מעבר לגודל הקבוע שנקבע, הוא בכל מקרה יישבר וייאלץ לדלג לאזור אחר, מה שמבטל את רציפותו.</p>
+
+                        <p><strong>שיטה 2 (הקצאה תמיד מאמצע השטח הרציף הארוך ביותר):</strong><br>
+                        <em>יתרונות:</em> שיטה דינמית וגמישה לחלוטין. היא מבטיחה רווחים מקסימליים אוטומטיים בין הקבצים, מה שמאפשר גדילה גדולה והמשכית כמעט לכל קובץ. אין הקצאת סרק מיותרת בגודל קבוע, אלא ניצול חכם של המרחב. היא גם נוטה לאזן את העומס על פני פלטות הדיסק הקשיח.<br>
+                        <em>חסרונות:</em> תקורה חישובית מורכבת בזמן ההקצאה. מערכת ההפעלה חייבת לנהל ולחפש כל הזמן את "השטח הארוך ביותר" (עץ פנויים או רשימה מקושרת ממוינת גודל). יתרה מזאת, שיטה זו יוצרת כמות אדירה של "חורים" (Gaps) ומקטעים שונים בכל רחבי הדיסק. בעתיד, כששטח הדיסק יתחיל להתמלא, השטחים הפנויים יהפכו להמון מרווחים קטנים מפוזרים, מה שיגרור פרגמנטציה חיצונית חמורה ופיצול קבצים חדשים למספר רב של אזורים קטנים לא רציפים.</p>
+                    </div>
+                </div>
+                </div>
+            </details>
+
+            </div>
+        </div><!-- ============================================== -->
+        <!-- QUESTION 10 -->
+        <!-- ============================================== -->
+        <div id="tab-q10" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 10 (חלק ג')</h2>
+            
+            <div class="question-box mb-6">
+
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+                    הסבירו איך מעבד יודע איפה נמצא הקוד שעליו לבצע בעקבות ביצוע TRAP עם מספר מסוים, לדוגמא int 80h .
+                </p>
+            </div>
+
+            <details class="mt-4 mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> השאלה בוחנת את הבנת מנגנון הפסיקות התוכנתיות (Interrupts/Traps). כשאנחנו כותבים קוד משתמש וקוראים לפונקציה של מערכת ההפעלה (כמו open file), הקוד בסוף מקמפל פקודת אסמבלי כמו <code>int 0x80</code> (בלינוקס קלאסי 32 ביט). המספר 0x80 (או 128 בעשרוני) הוא "אינדקס". במערכת ההפעלה, בעת האתחול, נטענת לזיכרון הראשי טבלה מיוחדת שנקראת IVT (Interrupt Vector Table) או IDT ב-x86. הטבלה הזו היא פשוט מערך של מצביעים. המעבד, ברמת החומרה, לוקח את המספר (0x80), קופץ לשורה 0x80 בטבלה, קורא משם את כתובת הזיכרון של קוד מערכת ההפעלה המטפל, וקופץ אליה תוך מעבר ל-Kernel Mode.</p>
+            </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                
+                <div class="text-sm text-slate-700 font-medium leading-relaxed space-y-3">
+                    <p>בזמן עליית המחשב (Boot), מערכת ההפעלה בונה באזור הזיכרון שלה טבלה מיוחדת הנקראת <strong>טבלת וקטורי הפסיקות (Interrupt Vector Table / IDT)</strong>. טבלה זו מכילה מערך של מצביעים לכתובות זיכרון, כאשר כל כתובת מצביעה לקטע קוד ספציפי בליבה המטפל באירוע אחר (פונקציית טיפול - Interrupt Handler).</p>
+                    <p>כאשר תוכנית מבצעת פקודת TRAP (פסיקת תוכנה) ומעבירה מספר מסוים (למשל הפקודה <code>int 0x80</code> באסמבלי):</p>
+                    <ol class="list-decimal list-inside space-y-1 ml-4">
+                        <li>המעבד עובר בצורה אוטומטית וחומרתית למצב מיוחס (Kernel Mode).</li>
+                        <li>המעבד משתמש במספר שהועבר (למשל 80h הקסדצימלי) כ<strong>אינדקס</strong>, וניגש לשורה ה-80 בטבלת הוקטורים.</li>
+                        <li>הוא שולף מאותה שורה בטבלה את כתובת הזיכרון המדויקת של קוד המטפל בבקשות המערכת (ה-Syscall Handler).</li>
+                        <li>המעבד שומר במחסנית את מצב תוכנית המשתמש הנוכחית (אוגרים ו-PC) וקופץ לבצע את קוד הטיפול בליבה שנמצא בכתובת ששלף.</li>
+                    </ol>
+                </div>
+            </div>
+                </div>
+            </details>
+        </div><!-- ============================================== -->
+        <!-- QUESTION 11 -->
+        <!-- ============================================== -->
+        <div id="tab-q11" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 11 (חלק ג')</h2>
+            <div class="question-box mb-6 relative">
+                <!-- Floating Circular Cycler -->
+                <button onclick="cycleTooltipState()" class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                    <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                    <i class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                    <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל - בריחוף</span>
+                    <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                    <div class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </button>
+
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+                    מה יהיה הפלט אחרי הרצת הקוד הבא במערכת XV6 שתומכת בקונטיינרים?<br>
+                    ידוע שח PID הגדול ביותר שחיה במערכת לפני הרצת הקוד חיה 10 .<br>
+                    ניתן להניח שכל קריאות מערכת מצליחות.
+                </p>
+                <pre class="code-block p-4 m-0 text-sm font-mono" dir="ltr"><code><mark class="interactive-tooltip" data-key="q11_1">pid = fork();</mark>
+<mark class="interactive-tooltip" data-key="q11_2">if (pid == 0) {</mark>
+<mark class="interactive-tooltip" data-key="q11_3">    pid = fork();</mark>
+<mark class="interactive-tooltip" data-key="q11_4">    unshare(PID_NS);</mark>
+<mark class="interactive-tooltip" data-key="q11_5">    if (pid > 0) printf (stdout, "Parent’s perspective on his child: PID=%d \n", pid);</mark>
+<mark class="interactive-tooltip" data-key="q11_6">    else {</mark>
+<mark class="interactive-tooltip" data-key="q11_7">        printf (stdout, " Child's perspective on his parent: PID=%d \n", getppid());</mark>
+<mark class="interactive-tooltip" data-key="q11_8">        printf (stdout, " Child's perspective on himself: PID=%d \n", getpid());</mark>
+<mark class="interactive-tooltip" data-key="q11_9">    }</mark>
+<mark class="interactive-tooltip" data-key="q11_10">}</mark>
+<mark class="interactive-tooltip" data-key="q11_11">else printf(stdout, "Grandparent’s perspective on his child: PID=%d \n", pid);</mark></code></pre>
+            </div>
+
+            <details class="mt-4 mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> זוהי שאלת הכשלה קלאסית ומבריקה בהבנת Namespaces בלינוקס. צריך ללכת שורה-שורה כמו מעבד: <br>
+                1. התהליך המקורי (שנקרא לו הסבא) מריץ <code>fork()</code>. מכיוון שה-PID הגבוה היה 10, התהליך החדש שמיוצר מקבל PID 11 בזיכרון המערכתי הגלובלי. ה-fork מחזיר לסבא 11.<br>
+                2. הסבא קופץ ל-<code>else</code> בסוף ומדפיס 11.<br>
+                3. במקביל, הבן (P11) נכנס לתוך ה-<code>if (pid == 0)</code>. שם הוא מיד מבצע <code>fork()</code> נוסף ליצירת נכד. הנכד מקבל את ה-PID הבא במערכת הגלובלית: 12. ה-fork מחזיר ל-P11 את המספר 12, ולנכד מוחזר 0.<br>
+                4. וכעת להכשלה: מבוצעת פקודת <code>unshare(PID_NS)</code>. הפקודה קובעת ש<strong>כל ילד חדש שיווצר מעתה והלאה על ידי תהליך זה ייכנס ל-Namespace מבודד משלו</strong>. שימו לב: הפקודה לא משפיעה על התהליכים הקוראים אליה בעצמם, והיא בוודאות לא זורקת תהליכים שכבר קיימים לתוך Namespace חדש. לכן, גם P11 וגם P12 (שכבר נוצרו לפני ה-unshare!) נשארים לחלוטין במרחב המערכתי הגלובלי המקורי. לאורך כל שארית הקוד, אין אף יצירת תהליך חדש, ולכן ל-unshare במקרה זה <strong>אין שום השפעה על ההדפסות</strong>! P11 הוא עדיין 11, ו-P12 הוא עדיין 12.</p>
+            </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                
+                <div class="text-sm text-slate-700 font-medium leading-relaxed">
+                    <p class="mb-3"><strong>הפלט שיודפס למסך (סדר ההדפסות יכול להשתנות בגלל מקביליות התהליכים):</strong></p>
+                    <div class="bg-slate-800 text-accent font-mono p-3 rounded text-sm mb-4 inline-block" dir="ltr">
+                        Grandparent’s perspective on his child: PID=11<br>
+                        Parent’s perspective on his child: PID=12<br>
+                         Child's perspective on his parent: PID=11<br>
+                         Child's perspective on himself: PID=12
+                    </div>
+                    
+                    <p class="mt-2 font-bold">הסבר מפורט למניעת ההכשלה:</p>
+                    <p class="mb-2">הסוד של השאלה טמון בהבנת המנגנון של פקודת <code>unshare(PID_NS)</code>.</p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>כאשר התהליך הראשי (נניח תהליך 10) קורא ל-<code>fork()</code>, נוצר תהליך בן (ה-Parent בסיפור שלנו) ומקבל במערכת את ה-PID <strong>11</strong>.</li>
+                        <li>תהליך 10 נכנס לבלוק ה-<code>else</code> בתחתית ומדפיס שהוא רואה את הילד שלו ב-PID=11.</li>
+                        <li>תהליך 11 נכנס לבלוק ה-<code>if</code>. הפעולה הראשונה שהוא עושה היא <code>fork()</code> נוסף. הוא יוצר ילד חדש (ה-Child או הנכד), שמקבל במערכת ההפעלה את ה-PID הגלובלי <strong>12</strong>. בשלב זה יש לנו 3 תהליכים נפרדים וכולם נמצאים במרחב ה-Namespaces הגלובלי המקורי.</li>
+                        <li><strong>רק עכשיו מבוצעת <code>unshare(PID_NS)</code>.</strong> ההתנהגות הטכנית של פקודה זו היא שהיא מעבירה למרחב שמות (Namespace) מבודד <strong>רק את הילדים העתידיים שיווצרו אחרי הקריאה אליה</strong>. הפקודה <strong>אינה</strong> משנה את ה-PID של התהליך הקורא לה (כלומר 11 ו-12 לא הופכים פתאום ל-PID 1 ו-2, אלא נשארים 11 ו-12), והיא גם לא משפיעה רטרואקטיבית על ילדים שכבר נוצרו לפני הקריאה אליה.</li>
+                        <li>מכיוון שלא מבוצע שום <code>fork</code> נוסף עד סוף הקוד, אף תהליך בקוד הזה לא חווה את המרחב המבודד. כולם ממשיכים להדפיס את ה-PIDs המקוריים שלהם מתוך המרחב הגלובלי. תהליך 11 מזהה את הילד 12 ומדפיס 12, ואילו תהליך 12 מדפיס ש-getppid שלו הוא 11, ושלו עצמו הוא 12.</li>
+                    </ul>
+                </div>
+            </div>
+                </div>
+            </details>
+        </div><!-- ============================================== -->
+        <!-- QUESTION 12 -->
+        <!-- ============================================== -->
+        <div id="tab-q12" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 12 (חלק ג')</h2>
+            <div class="question-box mb-6 relative">
+                <!-- Floating Circular Cycler -->
+                <button onclick="cycleTooltipState()" class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                    <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                    <i class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                    <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל - בריחוף</span>
+                    <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                    <div class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </button>
+
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+
+                    <strong>שאלה 12 לנבחנים שלמדו ב 2025</strong><br>
+                    מה יודפס בעקבות הרצת קטע קוד הבא בתוך מערכת xv6 שתומכת בקונטיינרים, ניתן להניח שכל קריאות מערכת מצליחות :
+                </p>
+                <pre class="code-block p-4 m-0 text-sm font-mono" dir="ltr"><code><mark class="interactive-tooltip" data-key="q12_1">unshare (PID_NS);</mark>
+<mark class="interactive-tooltip" data-key="q12_2">unshare (MOUNT_NS);</mark>
+<mark class="interactive-tooltip" data-key="q12_3">int pid = fork();</mark>
+<mark class="interactive-tooltip" data-key="q12_4">if (pid == 0) {</mark>
+<mark class="interactive-tooltip" data-key="q12_5">    mkdir (“MDir”);</mark>
+<mark class="interactive-tooltip" data-key="q12_6">    mount (“internal_fs_b”,”MDir”,0);</mark>
+<mark class="interactive-tooltip" data-key="q12_7">    int fd = open (“MDir/file.txt”,O_CREATE|O_RDWR);</mark>
+<mark class="interactive-tooltip" data-key="q12_8">    write (fd ,”Some text\n”,10);</mark>
+<mark class="interactive-tooltip" data-key="q12_9">    close (fd);</mark>
+<mark class="interactive-tooltip" data-key="q12_10">}</mark>
+<mark class="interactive-tooltip" data-key="q12_11">If (pid>0) {</mark>
+<mark class="interactive-tooltip" data-key="q12_12">    sleep (10000);</mark>
+<mark class="interactive-tooltip" data-key="q12_13">    if (open (“MDir/file.txt”,O_RDONLY) < 0) printf (stderr, "father failed to open\n");</mark>
+<mark class="interactive-tooltip" data-key="q12_14">    else printf (stderr, "father succeeded\n");</mark>
+<mark class="interactive-tooltip" data-key="q12_15">}</mark>
+<mark class="interactive-tooltip" data-key="q12_16">if( pid == 0) {</mark>
+<mark class="interactive-tooltip" data-key="q12_17">    if (open (“MDir/file.txt”,O_RDONLY) < 0) printf (stderr, "son failed to open\n");</mark>
+<mark class="interactive-tooltip" data-key="q12_18">    else printf (stderr, "son succeeded\n");</mark>
+<mark class="interactive-tooltip" data-key="q12_19">}</mark></code></pre>
+            </div>
+
+            <details class="mt-4 mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> השאלה בוחנת את הבנת תזמון הניתוק ממערכת הקבצים. בקוד, קריאת ה-<code>unshare(MOUNT_NS)</code> מבוצעת <strong>לפני</strong> שקוראים ל-<code>fork()</code>. כשעושים זאת, התהליך המקורי מקבל טבלת Mount פרטית משלו, נפרדת משאר המערכת המארחת. ולאחר מכן, כשהוא מבצע <code>fork()</code>, הבן נולד אל תוך המרחב של אביו, ולכן <strong>האב והבן חולקים את אותה טבלת Mount במשותף</strong> (שניהם נמצאים יחד באותו Namespace פרטי שהאב ייצר). <br>
+                מה קורה כשהבן מבצע פקודת <code>mount</code> לתיקייה MDir? מכיוון שהם באותו Mount Namespace, שינוי שטבלת ה-Mount שהבן עושה – מעדכן את הטבלה המשותפת שלהם. לכן האב ששותף לאותו Namespace <strong>בהחלט יכול לראות את העגינה (Mount) שהבן ביצע</strong>, וימצא בהצלחה את הקובץ.
+                </p>
+            </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג פתרון </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box">
+                
+                <div class="text-sm text-slate-700 font-medium leading-relaxed">
+                    <p class="mb-2"><strong>הפלט שיודפס למסך יהיה:</strong></p>
+                    <div class="bg-slate-800 text-accent font-mono p-3 rounded text-sm mb-4 inline-block" dir="ltr">
+                        son succeeded<br>
+                        father succeeded
+                    </div>
+                    
+                    <p><strong>הסבר למנגנון הפעולה:</strong><br>
+                    הכל טמון בסדר הפעולות. פקודת <code>unshare(MOUNT_NS)</code> הופעלה על ידי תהליך האב <strong>לפני</strong> פקודת ה-<code>fork</code>. המשמעות היא שהאב יצר לעצמו מרחב עגינה (Namespace) פרטי ומבודד משאר המערכת. <br>
+                    מיד לאחר מכן, האב ביצע <code>fork()</code>. על פי חוקי מערכות ההפעלה, תהליך בן <strong>יורש וחולק</strong> את מרחב ה-Namespace שבו נמצא אביו בעת ביצוע ה-fork (אלא אם כן הבן מבצע unshare בעצמו לאחר מכן, מה שלא קרה כאן). לכן, <strong>האב והבן נמצאים בתוך אותו Mount Namespace בדיוק</strong>.<br>
+                    כאשר הבן יוצר את התיקייה, מעגן (mount) אליה את המערכת החדשה <code>internal_fs_b</code> ויוצר את הקובץ - הוא מעדכן את טבלת ההצבעות של ה-Namespace. מכיוון שהאב משתמש באותה טבלה בדיוק, כשהוא יתעורר מה-sleep וינסה לגשת ל-<code>MDir/file.txt</code>, הוא יצליח לגשת לאותה נקודת עגינה ולמצוא את הקובץ בהצלחה מלאה. לכן שניהם ידפיסו succeeded.</p>
+                </div>
+            </div>
+                </div>
+            </details>
+
+            <div class="question-box bg-slate-100 border-dashed border-slate-300">
+
+                <p class="text-slate-800 font-medium text-sm mb-3 leading-relaxed">
+                    האם בשביל מימוש מנגנון קונטיינרים נדרשת תמיכת חומרה מעבר למה שקיים במערכת סטנדרטית?<br>
+                    תשובה והסבר :
+                </p>
+                <div class="bg-white p-3 rounded border border-slate-200">
+                    <p class="text-slate-800 text-sm font-semibold mb-1">הפתרון (2024):</p>
+                    <p class="text-sm text-slate-700 font-medium">
+                        <strong>לא, לא נדרשת כל תמיכת חומרה מיוחדת מהמעבד (CPU).</strong><br>
+                        ההבדל העצום בין וירטואליזציה של מכונות וירטואליות (Virtual Machines) לבין קונטיינרים, הוא שווירטואליזציה מתבצעת ברמת החומרה ודורשת טכנולוגיות מעבד כדוגמת Intel VT-x כדי ללכוד פקודות (Trap-and-simulate). לעומת זאת, <strong>קונטיינרים מבוססים על וירטואליזציה ברמת מערכת ההפעלה בלבד (OS-Level Virtualization)</strong>. המנגנון מושג נטו על ידי מבני נתונים תוכנתיים בתוך ליבת מערכת ההפעלה (כמו Namespaces לבידוד מרחבי ראייה, ו-Cgroups לבידוד משאבים). לכן, כל מעבד סטנדרטי המסוגל להריץ לינוקס, יריץ קונטיינרים ללא צורך בשדרוג החומרה.
+                    </p>
+                </div>
+            </div>
+        </div> <!-- Close tab-q12 -->
+        
+        <!-- Navigation Footer (Global for all tabs) -->
+        <div class="max-w-5xl mx-auto mt-12 pt-6 border-t border-slate-200 flex justify-between">
+            <button onclick="navQuestion('prev')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded-lg font-bold transition-colors shadow-sm flex items-center gap-2"><i class="fa-solid fa-arrow-right"></i> שאלה קודמת</button>
+            <button onclick="navQuestion('next')" class="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-md flex items-center gap-2">שאלה הבאה <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+
+    </main>
+
+    <!-- Detailed Explanation Modal -->
+    <div id="explanation-modal"
+        class="fixed inset-0 z-[100] bg-slate-900/5 hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh] pointer-events-auto border border-slate-200/60"
+            id="modal-card" onmouseenter="clearCloseTimer()"
+            onmouseleave="if(tooltipState === 3) closeModal(null, true)">
+
+            <div class="p-4 overflow-y-auto flex-1">
+                <!-- Code Snippet Section -->
+                <div class="bg-[#282c34] rounded-t-2xl p-5 border border-[#3e4451] overflow-x-auto shadow-inner">
+                    <pre dir="ltr" style="margin:0; padding:0; background:transparent;"><code id="modal-code" class="text-[0.95rem] font-mono text-slate-300 leading-relaxed block text-left w-full" style="text-shadow: none;"></code></pre>
+                </div>
+                <!-- Explanation Section -->
+                <div class="bg-blue-50/50 border border-t-0 border-blue-100 rounded-b-2xl p-6 text-slate-700 leading-relaxed text-[1.1rem]">
+                    <p id="modal-explanation"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tooltips Logic
+        let tooltipState = 3; // 1 = none, 2 = click, 3 = hover
+        let hoverCloseTimer = null;
+        
+        const tooltipConfig = {
+            1: { icon: "fa-code", text: "ללא הסברים", color: "text-slate-400", glow: "via-slate-500", glowOp: "opacity-30" },
+            2: { icon: "fa-hand-pointer", text: "מופעל - בלחיצה", color: "text-emerald-400", glow: "via-emerald-400", glowOp: "opacity-70" },
+            3: { icon: "fa-mouse-pointer", text: "מופעל - בריחוף", color: "text-primary", glow: "via-primary", glowOp: "opacity-70" }
+        };
+
+        const explanationsDict = {
+            "q7_a_g_1": "<strong>int forks_count = N;</strong><br>משתנה גלובלי המייצג את מספר המזלגות הזמינים בקופה המשותפת בכל רגע נתון. מתחיל עם N מזלגות כמספר הפילוסופים.",
+            "q7_a_g_2": "<strong>Mutex m;</strong><br>מנעול (Mutex) שנועד להבטיח גישה בלעדית ואטומית למשתנה המשותף forks_count. רק פילוסוף אחד יכול לשנות את מלאי המזלגות בכל רגע.",
+            "q7_a_g_3": "<strong>CondVar cv;</strong><br>תור המתנה (Condition Variable). משמש כדי להרדים פילוסופים כאשר אין מספיק מזלגות (במקום לבזבז זמן מעבד בהמתנה פעילה - Busy Waiting) ולהעיר אותם כשפילוסוף אחר מחזיר מזלגות.",
+            "q7_a_t_1": "<strong>take_forks(int i) {</strong><br>פונקציה המאפשרת לפילוסוף i לקחת שני מזלגות בבת אחת (אטומית) מהקופה.",
+            "q7_a_t_2": "<strong>    Lock(m);</strong><br>רכישת המנעול: לפני שאנו בודקים או משנים את מלאי המזלגות, אנו נועלים את המשתנה הגלובלי כדי למנוע מ-2 פילוסופים לקחת את אותו מזלג.",
+            "q7_a_t_3": "<strong>    while (forks_count < 2) {</strong><br>בדיקת תנאי הלולאה: אנו צריכים שני מזלגות. אם נותרו פחות משניים בקופה, ניכנס ללולאת ההמתנה. חובה להשתמש ב-while ולא ב-if כדי לוודא שוב את התנאי לאחר שמתעוררים מהשינה (מניעת Spurious wakeups).",
+            "q7_a_t_4": "<strong>        Wait(cv, m);</strong><br>המתנה: הפילוסוף הולך לישון בתור ההמתנה (cv) ומייד משחרר את המנעול (m) כדי שאחרים יוכלו להמשיך להחזיר מזלגות או לקחת. כשהוא יתעורר, המנעול יירכש עבורו מחדש בצורה אוטומטית.",
+            "q7_a_t_5": "<strong>    }</strong><br>סיום לולאת ההמתנה: אם הגענו לכאן, סימן ש- forks_count גדול או שווה ל-2, ויש בידינו את המנעול.",
+            "q7_a_t_6": "<strong>    forks_count -= 2;</strong><br>לקיחת המזלגות: עדכון המלאי הגלובלי בצורה בטוחה. לקחנו 2 מזלגות לאכילה.",
+            "q7_a_t_7": "<strong>    Unlock(m);</strong><br>שחרור המנעול: סיימנו את הגישה למשתנה המשותף, נשחרר את המנעול כדי שפילוסופים אחרים יוכלו לגשת לקופה. לאחר מכן נתחיל לאכול.",
+            "q7_a_t_8": "<strong>}</strong><br>סיום הפונקציה.",
+            
+            "q7_a_p_1": "<strong>put_forks(int n1, int n2) {</strong><br>פונקציה המאפשרת לפילוסוף להחזיר את שני המזלגות שסיים להשתמש בהם לקופה.",
+            "q7_a_p_2": "<strong>    Lock(m);</strong><br>רכישת מנעול: לפני שינוי המשתנה הגלובלי המייצג את המלאי.",
+            "q7_a_p_3": "<strong>    forks_count += 2;</strong><br>החזרת המזלגות: הגדלת מלאי המזלגות הזמינים ב-2 בצורה בטוחה.",
+            "q7_a_p_4": "<strong>    Broadcast(cv);</strong><br>שידור לכולם (Broadcast/NotifyAll): אנו מעירים את כל הפילוסופים שישנים בתור ההמתנה, כדי שיתעוררו, יבדקו (דרך לולאת ה-while) האם יש כעת מספיק מזלגות עבורם.",
+            "q7_a_p_5": "<strong>    Unlock(m);</strong><br>שחרור המנעול כדי שאחד מהפילוסופים שהערנו כרגע יוכל באמת לגשת למשתנה ולקחת מזלגות.",
+            "q7_a_p_6": "<strong>}</strong><br>סיום הפונקציה.",
+
+            "q7_b_g_1": "<strong>int counter = N;</strong><br>בדומה לסעיף א', משתנה גלובלי שעוקב אחר מלאי המזלגות. מתחיל ב-N.",
+            "q7_b_g_2": "<strong>Mutex m;</strong><br>מנעול (Mutex) להבטחת גישה בטוחה ואקסקלוסיבית למלאי המזלגות.",
+            "q7_b_g_3": "<strong>CondVar cv;</strong><br>תור המתנה להרדמת פילוסופים כשהמלאי אינו מספיק לדרישתם.",
+
+            "q7_b_t1_1": "<strong>take_right_fork(int i) {</strong><br>פונקציה לפילוסוף המבקש לקחת רק מזלג יחיד (מזלג ימין).",
+            "q7_b_t1_2": "<strong>    Lock(m);</strong><br>רכישת המנעול להגנה על משתנה ה-counter.",
+            "q7_b_t1_3": "<strong>    while(counter < 1) {</strong><br>תנאי ההמתנה: מכיוון שהוא צריך רק מזלג 1, ימתין רק אם המלאי ריק לחלוטין (קטן מ-1).",
+            "q7_b_t1_4": "<strong>        Wait(cv, m);</strong><br>הירדמות בתור ההמתנה ושחרור זמני של המנעול.",
+            "q7_b_t1_5": "<strong>    }</strong><br>סיום ההמתנה - כעת יש לפחות מזלג אחד פנוי ויש לנו מנעול.",
+            "q7_b_t1_6": "<strong>    counter -= 1;</strong><br>לקיחת המזלג: הורדת המלאי ב-1.",
+            "q7_b_t1_7": "<strong>    Unlock(m);</strong><br>שחרור המנעול, המזלג שלנו.",
+            "q7_b_t1_8": "<strong>}</strong><br>סיום הפונקציה.",
+
+            "q7_b_p1_1": "<strong>put_right_fork(int i) {</strong><br>החזרת המזלג היחיד לקופה.",
+            "q7_b_p1_2": "<strong>    Lock(m);</strong><br>רכישת המנעול.",
+            "q7_b_p1_3": "<strong>    counter += 1;</strong><br>עדכון אטומי של המלאי, הוספת 1.",
+            "q7_b_p1_4": "<strong>    Broadcast(cv);</strong><br>הערת כל הפילוסופים שממתינים למזלגות (ייתכן שאחד מהם ממתין בדיוק למזלג ה-1 הזה כדי שיהיו לו 2).",
+            "q7_b_p1_5": "<strong>    Unlock(m);</strong><br>שחרור המנעול כדי שמי שהתעורר יוכל לרוץ.",
+            "q7_b_p1_6": "<strong>}</strong><br>סיום.",
+
+            "q7_b_t2_1": "<strong>take_forks(int i) {</strong><br>פונקציה לפילוסוף המבקש 2 מזלגות במכה אחת.",
+            "q7_b_t2_2": "<strong>    Lock(m);</strong><br>נעילת אזור קריטי.",
+            "q7_b_t2_3": "<strong>    while(counter < 2) {</strong><br>תנאי: הוא צריך 2 מזלגות, לכן חייב לוודא שהמלאי מכיל לפחות 2.",
+            "q7_b_t2_4": "<strong>        Wait(cv, m);</strong><br>מרדים את עצמו ומשחרר מנעול אם אין 2.",
+            "q7_b_t2_5": "<strong>    }</strong><br>התעורר ויש 2 מזלגות זמינים.",
+            "q7_b_t2_6": "<strong>    counter -= 2;</strong><br>לוקח את שני המזלגות במכה אחת אטומית! זה המפתח למניעת Deadlock - אי אפשר לקחת חצי ולחכות לחצי השני.",
+            "q7_b_t2_7": "<strong>    Unlock(m);</strong><br>שחרור המנעול.",
+            "q7_b_t2_8": "<strong>}</strong><br>סיום הפונקציה.",
+
+            "q7_b_p2_1": "<strong>put_forks(int i) {</strong><br>החזרת שני המזלגות לקופה.",
+            "q7_b_p2_2": "<strong>    Lock(m);</strong><br>נעילה.",
+            "q7_b_p2_3": "<strong>    counter += 2;</strong><br>הוספת 2 מזלגות לקופה המשותפת.",
+            "q7_b_p2_4": "<strong>    Broadcast(cv);</strong><br>שידור לכולם להתעורר.",
+            "q7_b_p2_5": "<strong>    Unlock(m);</strong><br>סיום ושחרור מנעול.",
+            "q7_b_p2_6": "<strong>}</strong><br>סיום הפונקציה.",
+
+            "q11_1": "<strong>pid = fork();</strong><br>קריאת המערכת fork() יוצרת תהליך בן (Parent בסיפור שלנו) שמשוכפל מהתהליך המקורי (Grandparent). ידוע שה-PID הכי גבוה עד כה היה 10, לכן התהליך המקורי הוא נניח 10 והבן החדש שנוצר מקבל את ה-PID 11.",
+            "q11_2": "<strong>if (pid == 0) {</strong><br>ה-fork מחזיר לתהליך הבן את הערך 0 (ולאב מחזיר את ה-PID של הבן - 11). לכן, התהליך המקורי יקפוץ ל-else למטה, והתהליך הבן (11) ייכנס לתוך בלוק ה-if.",
+            "q11_3": "<strong>    pid = fork();</strong><br>תהליך 11 מבצע כעת fork() נוסף ויוצר את הנכד (Child בסיפור שלנו). הנכד יקבל את ה-PID הבא במערכת, שהוא 12. כעת יש 3 תהליכים: סבא(10), בן(11) ונכד(12).",
+            "q11_4": "<strong>    unshare(PID_NS);</strong><br>כאן טמון הטריק החשוב ביותר. פקודת unshare מעבירה את הילדים <b>העתידיים</b> שייווצרו לאחר הקריאה לתוך Namespace (מרחב שמות) מבודד. היא <b>אינה</b> מכניסה את התהליך הקורא עצמו ל-Namespace, והיא <b>לא</b> משפיעה על ילדים שכבר נוצרו. מכיוון שתהליך 12 נוצר שורה אחת קודם, הוא נשאר ב-Namespace הגלובלי עם שאר התהליכים!",
+            "q11_5": "<strong>    if (pid > 0) printf (stdout, \"Parent’s perspective on his child: PID=%d \\n\", pid);</strong><br>תהליך 11 (הבן מהשלב הראשון, עכשיו האב של הנכד) מקבל מה-fork שבשורה 3 את ה-PID של ילדו, שהוא 12. הוא נכנס לכאן ומדפיס שהוא רואה את הילד כ-12. (ללא כל שינוי, כי כולם ב-NS גלובלי).",
+            "q11_6": "<strong>    else {</strong><br>הנכד (PID 12), מקבל מה-fork שבשורה 3 את הערך 0, ולכן קופץ לבלוק ה-else.",
+            "q11_7": "<strong>        printf (stdout, \" Child's perspective on his parent: PID=%d \\n\", getppid());</strong><br>הנכד (12) מדפיס את ה-PID של ההורה שלו. מכיוון שההורה הוא 11, וכולם עדיין במרחב השמות הגלובלי (כי לא נוצרו תהליכים חדשים מאז ה-unshare), המערכת מחזירה לו 11.",
+            "q11_8": "<strong>        printf (stdout, \" Child's perspective on himself: PID=%d \\n\", getpid());</strong><br>הנכד (12) מדפיס את ה-PID של עצמו, וכאמור, הוא מעולם לא הוכנס ל-NS החדש כי ה-unshare הופעל רק אחרי שהוא כבר נוצר. לכן הוא מדפיס בגאווה 12.",
+            "q11_9": "<strong>    }</strong><br>סיום בלוק הנכד.",
+            "q11_10": "<strong>}</strong><br>סיום בלוק הבן (ה-if המקורי).",
+            "q11_11": "<strong>else printf(stdout, \"Grandparent’s perspective on his child: PID=%d \\n\", pid);</strong><br>התהליך המקורי ביותר (סבא, PID 10) שלא נכנס ל-if הראשוני, מגיע ישר לכאן ומדפיס. ה-fork הראשון שבשורה 1 החזיר לו את ה-PID 11. לכן הוא מדפיס 11.",
+
+            "q12_1": "<strong>unshare (PID_NS);</strong><br>התהליך המקורי מבקש להתנתק ממרחב השמות של מזהי תהליכים (PID Namespace). פקודה זו משפיעה רק על ילדים עתידיים שיווצרו על ידו, ולא על התהליך עצמו.",
+            "q12_2": "<strong>unshare (MOUNT_NS);</strong><br>התהליך מתנתק גם ממרחב העגינה (Mount Namespace). בניגוד ל-PID, מרחב עגינה חדש נוצר *מיד* עבור התהליך הקורא עצמו, כך שכעת יש לו עותק פרטי ומבודד של עץ התיקיות והעגינות.",
+            "q12_3": "<strong>int pid = fork();</strong><br>האב יוצר תהליך בן. מכיוון שהאב נמצא כעת ב-Mount Namespace משלו, הבן שנוצר <strong>יורש</strong> את אותו Namespace בדיוק ושותף אליו יחד עם אביו.",
+            "q12_4": "<strong>if (pid == 0) {</strong><br>בלוק הקוד שירוץ על ידי תהליך הבן.",
+            "q12_5": "<strong>    mkdir (“MDir”);</strong><br>הבן יוצר תיקייה מקומית בשם MDir.",
+            "q12_6": "<strong>    mount (“internal_fs_b”,”MDir”,0);</strong><br>הבן מעגן מערכת קבצים פנימית על התיקייה MDir. פעולה זו משנה את טבלת ה-Mount המשותפת שלו ושל אביו (שכן שניהם באותו Namespace).",
+            "q12_7": "<strong>    int fd = open (“MDir/file.txt”,O_CREATE|O_RDWR);</strong><br>הבן פותח קובץ בתוך מערכת הקבצים החדשה שיצר (תוך כדי יצירתו אם לא קיים).",
+            "q12_8": "<strong>    write (fd ,”Some text\\n”,10);</strong><br>הבן כותב לתוך הקובץ.",
+            "q12_9": "<strong>    close (fd);</strong><br>הבן סוגר את הקובץ. עד כאן הבן הכין את השטח בתוך ה-Namespace המשותף לו ולאב.",
+            "q12_10": "<strong>}</strong><br>סיום בלוק הבן.",
+            "q12_11": "<strong>If (pid>0) {</strong><br>בלוק הקוד שירוץ על ידי תהליך האב. (שים לב ל-I גדולה בשאלה המקורית).",
+            "q12_12": "<strong>    sleep (10000);</strong><br>האב הולך לישון לזמן ממושך כדי להבטיח שהבן יסיים את כל פעולות העגינה ויצירת הקבצים לפני שהוא ממשיך.",
+            "q12_13": "<strong>    if (open (“MDir/file.txt”,O_RDONLY) < 0) printf (stderr, \"father failed to open\\n\");</strong><br>האב מנסה לפתוח את הקובץ. מכיוון שהוא חולק את ה-Mount Namespace עם הבן (בזכות ה-unshare לפני ה-fork), הוא רואה את העגינה (mount) שהבן ביצע, ויצליח לפתוח את הקובץ.",
+            "q12_14": "<strong>    else printf (stderr, \"father succeeded\\n\");</strong><br>לכן, האב ידפיס בהצלחה.",
+            "q12_15": "<strong>}</strong><br>סיום בלוק האב.",
+            "q12_16": "<strong>if( pid == 0) {</strong><br>שוב בלוק שמיועד רק לבן. כאן הבן מבצע בדיקה נוספת.",
+            "q12_17": "<strong>    if (open (“MDir/file.txt”,O_RDONLY) < 0) printf (stderr, \"son failed to open\\n\");</strong><br>הבן מנסה לקרוא את הקובץ שהוא בעצמו יצר. כמובן שהוא אמור להצליח.",
+            "q12_18": "<strong>    else printf (stderr, \"son succeeded\\n\");</strong><br>הבן מדפיס בהצלחה. לסיכום - הבן מדפיס הצלחה, ולאחר מכן (כשיתעורר מה-sleep) גם האב מדפיס הצלחה.",
+            "q12_19": "<strong>}</strong><br>סיום הקוד."
+        };
+
+        function clearCloseTimer() {
+            if (hoverCloseTimer) {
+                clearTimeout(hoverCloseTimer);
+                hoverCloseTimer = null;
+            }
+        }
+
+        function startCloseTimer() {
+            if (tooltipState !== 3) return;
+            clearCloseTimer();
+            hoverCloseTimer = setTimeout(() => {
+                closeModal(null, true);
+            }, 300);
+        }
+
+        document.addEventListener('click', (event) => {
+            const modal = document.getElementById('explanation-modal');
+            const modalCard = document.getElementById('modal-card');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (!modalCard.contains(event.target) && !event.target.closest('.interactive-tooltip')) {
+                    closeModal(null, true);
+                }
+            }
+        });
+
+        function updateCyclerUI() {
+            const config = tooltipConfig[tooltipState];
+            const btns = document.querySelectorAll('.tooltip-cycler');
+            btns.forEach(btn => {
+                const icon = btn.querySelector('.cycler-icon');
+                const text = btn.querySelector('.cycler-text');
+                const glow = btn.querySelector('.cycler-glow');
+
+                btn.classList.remove('cycler-anim');
+                void btn.offsetWidth;
+                btn.classList.add('cycler-anim');
+
+                if(icon) icon.className = `cycler-icon fa-solid ${config.icon} text-lg ${config.color} transition-transform group-hover:scale-110 my-0.5`;
+                if(text) text.textContent = config.text;
+                if(glow) glow.className = `cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t ${config.glow.replace('via-', 'from-')}/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`;
+            });
+
+            initTooltips();
+        }
+
+        function cycleTooltipState() {
+            tooltipState = tooltipState === 3 ? 1 : tooltipState + 1;
+            localStorage.setItem('osExamTooltipState', tooltipState);
+            updateCyclerUI();
+        }
+
+        function openModal(codeText, explanationHtml) {
+            const modal = document.getElementById('explanation-modal');
+            const modalCard = document.getElementById('modal-card');
+            const modalCode = document.getElementById('modal-code');
+            const modalExplanation = document.getElementById('modal-explanation');
+
+            modalCode.textContent = codeText.replace(/^\n+|\n+$/g, '');
+            modalExplanation.innerHTML = explanationHtml;
+
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalCard.classList.remove('scale-95');
+            modal.classList.add('flex');
+        }
+
+        function closeModal(event, force = false) {
+            if (event && !force) {
+                if (event.target !== document.getElementById('explanation-modal')) return;
+            }
+            const modal = document.getElementById('explanation-modal');
+            const modalCard = document.getElementById('modal-card');
+
+            modal.classList.add('opacity-0');
+            modalCard.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function initTooltips() {
+            const marks = document.querySelectorAll('mark.interactive-tooltip');
+            marks.forEach(m => {
+                m.classList.remove('tooltip-active-style');
+                m.style.pointerEvents = 'none';
+                const newMark = m.cloneNode(true);
+                m.parentNode.replaceChild(newMark, m);
+            });
+
+            if (tooltipState === 1) return;
+
+            const freshMarks = document.querySelectorAll('mark.interactive-tooltip');
+            freshMarks.forEach(m => {
+                m.classList.add('tooltip-active-style');
+                m.style.pointerEvents = 'auto';
+
+                const explanationKey = m.getAttribute('data-key');
+                const explanation = explanationsDict[explanationKey] || "הסבר חסר";
+                const codeText = m.textContent;
+
+                if (tooltipState === 2) {
+                    m.addEventListener('click', () => openModal(codeText, explanation));
+                } else if (tooltipState === 3) {
+                    m.addEventListener('mouseenter', () => {
+                        clearCloseTimer();
+                        openModal(codeText, explanation);
+                    });
+                    m.addEventListener('mouseleave', () => {
+                        startCloseTimer();
+                    });
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedState = localStorage.getItem('osExamTooltipState');
+            if (savedState) tooltipState = parseInt(savedState);
+            updateCyclerUI();
+        });
+
+        const questionsList = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12'];
+        let currentQIndex = 0;
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            const btn = document.getElementById('sidebar-toggle');
+            btn.classList.toggle('md:right-[19rem]');
+        }
+
+        function navQuestion(dir) {
+            if (dir === 'next' && currentQIndex < questionsList.length - 1) {
+                switchTab(questionsList[currentQIndex + 1]);
+            } else if (dir === 'prev' && currentQIndex > 0) {
+                switchTab(questionsList[currentQIndex - 1]);
+            }
+        }
+
+        function switchTab(tabId) {
+            currentQIndex = questionsList.indexOf(tabId);
+            document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'});
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('block');
+                tab.classList.add('hidden');
+            });
+            const selectedTab = document.getElementById('tab-' + tabId);
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
+                selectedTab.classList.add('block');
+            }
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-white');
+                btn.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('bg-slate-800', 'text-white');
+            }
+        }
+        
+        function checkAnswer(btn, isCorrect, questionId) {
+            const container = btn.closest('ul');
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> ' + btn.innerHTML;
+            } else {
+                btn.classList.add('incorrect');
+                btn.innerHTML = '<i class="fa-solid fa-xmark mr-2"></i> ' + btn.innerHTML;
+                buttons.forEach(b => {
+                    if (b.getAttribute('data-correct') === 'true') {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+            
+            const explanations = document.getElementById('exp-' + questionId);
+            if (explanations) {
+                explanations.style.display = 'block';
+                explanations.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+</script>
+</body>
+</html>

@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכות הפעלה - פתרון מבחן מסכם (100% מדויק)</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#475569',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        accent: '#38bdf8',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'Segoe UI', 'Tahoma', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .code-block {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            direction: ltr;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            border-radius: 0.75rem;
+            background-color: #1e293b !important;
+            color: #e2e8f0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-category {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            padding-right: 1rem;
+        }
+
+        .question-box {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-right: 4px solid #3b82f6;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .mindset-box {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .solution-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-right: 4px solid #22c55e;
+        }
+
+        /* Quiz Styles */
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px solid #e2e8f0;
+            background-color: #f8fafc;
+            color: #334155;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .option-btn.correct {
+            background-color: #ecfdf5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        /* Accordion Styles */
+        details {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        summary {
+            padding: 1.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details[open] summary {
+            border-bottom-color: #e2e8f0;
+            background-color: #f1f5f9;
+        }
+
+        details .details-content {
+            padding: 1.5rem;
+            background-color: #ffffff;
+            line-height: 1.7;
+        }
+
+        /* Interactive Code Tooltips - CLEAN and SUBTLE */
+        .interactive-tooltip {
+            transition: all 0.2s;
+            border-radius: 4px;
+            color: inherit;
+            background-color: transparent;
+            padding: 2px 0;
+        }
+
+        .interactive-tooltip.tooltip-active-style {
+            cursor: pointer;
+        }
+
+        /* Very subtle gray background only on hover */
+        .interactive-tooltip.tooltip-active-style:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+        }
+
+        /* Premium Cycler Button Animation */
+        @keyframes pulse-soft {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(0.98);
+            }
+        }
+
+        .cycler-anim {
+            animation: pulse-soft 0.3s ease-in-out;
+        }
+
+        #sidebar {
+            transition: width 0.3s ease, opacity 0.3s ease;
+        }
+
+        #sidebar.collapsed {
+            width: 0 !important;
+            opacity: 0 !important;
+            overflow: hidden !important;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="w-72 bg-dark text-slate-300 flex flex-col h-full shadow-2xl z-20 flex-shrink-0 transition-all duration-300 relative">
+        <div class="p-6 bg-darker border-b border-slate-800">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <i class="fa-solid fa-server text-accent"></i>
+                OS Master
+            </h1>
+            <div class="mt-3 flex items-center gap-2">
+                <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-md">2026A</span>
+                <span class="bg-slate-700 text-slate-300 text-xs font-medium px-2 py-1 rounded-md">85</span>
+            </div>
+        </div>
+
+        <div class="p-4 flex-1 overflow-y-auto">
+            <div class="nav-category">חלק א' (30 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q1')" id="btn-q1"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-white border border-primary/30 transition-colors text-right">
+                    <div
+                        class="w-8 h-8 rounded-md bg-primary/30 text-accent flex items-center justify-center flex-shrink-0 font-bold">
+                        1</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">פעולות Kernel Mode</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q2')" id="btn-q2"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        2</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">וירטואליזציה וקונטיינרים</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q3')" id="btn-q3"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        3</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">מניעת קיפאון (Deadlock)</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q4')" id="btn-q4"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        4</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">דפדוף (Page Faults)</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q5')" id="btn-q5"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        5</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">הסיבה לשימוש ב-DMA</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q6')" id="btn-q6"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        6</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">חישוב גודל קובץ I-Node</div>
+                    </div>
+                </button>
+            </nav>
+
+            <div class="nav-category">חלק ב' (55 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q7')" id="btn-q7"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        7</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">קוראים וכותבים (סמפורים)</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q8')" id="btn-q8"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        8</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">תזמון זיקה ו-TLB</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q9')" id="btn-q9"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        9</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">מערכת קבצים ו-SSD</div>
+                    </div>
+                </button>
+            </nav>
+
+            <div class="nav-category">חלק ג' (15 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q10')" id="btn-q10"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        10</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">קריאת מערכת ו-TRAP</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q11')" id="btn-q11"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        11</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">פלט קוד: PID_NS</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q12')" id="btn-q12"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        12</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">פלט קוד: MOUNT_NS</div>
+                    </div>
+                </button>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative scroll-smooth h-full p-6 md:p-10 pb-24">
+
+        <!-- Sidebar Toggle -->
+        <button onclick="toggleSidebar()"
+            class="fixed top-4 right-4 md:top-6 md:right-[19rem] bg-white border border-slate-200 text-slate-600 w-10 h-10 flex items-center justify-center rounded-md shadow-sm hover:bg-slate-50 transition-all duration-300 z-30"
+            id="sidebar-toggle" title="כווץ/הרחב תפריט">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 1 -->
+        <!-- ============================================== -->
+        <div id="tab-q1" class="tab-content block max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 1</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            מצב ראשוני (Kernel Mode) נדרש כדי לבצע "פקודות פריווילגיות" (Privileged Instructions)
+                            המשפיעות על החומרה או על יציבות המערכת ברמה הבסיסית ביותר. <br>
+                            החלפת תהליכונים ברמת המשתמש (User-level threads) נעשית במרחב משתמש ללא ידיעת הליבה (לכן סעיף
+                            ב' נפסל). קבלת סיגנל היא מנגנון תוכנה סטנדרטי (סעיף ג' נפסל). הוספת פקודה לתיקיית `/bin`
+                            דורשת הרשאות משתמש (Root/Sudo במערכת הקבצים), אך הפעולה עצמה (כתיבה לקובץ דרך API) אינה
+                            פקודת מעבד פריווילגית, ולכן סעיף ד' נפסל. לעומת זאת, חסימת פסיקות חומרה מונעת מהמעבד להגיב
+                            לאירועים ולשעון המערכת - פעולה מסוכנת זו מוגבלת רק לקרנל.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">איזו פעולה מן הפעולות הבאות אפשר לבצע אך ורק במצב
+                    ראשוני (kernel mode) במערכת ההפעלה Linux ?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> חסימת
+                            פסיקות החומרה (disabling hardware interrupts)</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> החלפת
+                            תהליכונים (thread switch) כאשר מדובר בספריית תהליכונים ברמת המשתמש</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> קבלת
+                            איתות(SIGNAL) מתהליך אחר</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> הוספת
+                            פקודה חדשה לתוך תיקיית פקודות המערכת /bin</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-1" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>א'</strong>.<br>
+                    חסימת פסיקות חומרה (למשל הוראת `cli` בארכיטקטורת x86) היא פקודת מעבד פריווילגית. אילו משתמש רגיל היה
+                    יכול לחסום פסיקות, הוא היה עלול למנוע מפסיקת השעון (Timer Interrupt) להגיע, ובכך לתפוס את המעבד לנצח
+                    ולהקריס את המערכת. פעולה זו מותרת אך ורק כאשר המעבד נמצא ב-Kernel Mode.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>ב. החלפת תהליכונים:</strong> החלפת תהליכונים ברמת המשתמש מתבצעת לחלוטין במרחב המשתמש
+                            ע"י ספריית התהליכונים וללא צורך ב-Kernel Mode.</li>
+                        <li><strong>ג. קבלת איתותים:</strong> קבלת איתותים (Signals) והטיפול בהם קורית במצב משתמש (User
+                            Mode), שכן זהו מנגנון תקשורת סטנדרטי למרחב המשתמש.</li>
+                        <li><strong>ד. העתקת פקודה:</strong> העתקת פקודה לתיקיית מערכת צורכת הרשאות משתמש קבצים בלבד
+                            (Root), אך אינה דורשת פקודת מעבד פריווילגית שמחייבת מצב ראשוני ברמת החומרה.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 2 -->
+        <!-- ============================================== -->
+        <div id="tab-q2" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 2</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            וירטואליזציה (Virtual Machine) מדמה <strong>חומרה</strong>. מערכת ההפעלה המארחת (Host) רק
+                            מספקת משאבי חומרה וירטואליים לאורחת. לעומת זאת, קונטיינרים הם וירטואליזציה <strong>ברמת
+                                מערכת ההפעלה</strong> (OS-Level) – הם משתמשים במבני נתונים של הקרנל עצמו (כמו Namespaces
+                            ו-Cgroups) כדי לבודד תהליכים.
+                            לכן, אם האפליקציות שרצות בתוך המערכת האורחת דורשות קונטיינרים, הקרנל המנהל אותן ישירות
+                            (כלומר, הקרנל של המערכת האורחת) חייב להיות זה שתומך בקונטיינרים. למערכת המארחת שמתחת אין שום
+                            קשר לתהליכים הפנימיים של האורחת.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">בהשוואה בין וירטואליזציה וקונטיינריזציה, התייחסו
+                    למקרה בו על מערכת מארחת רצה מערכת אורחת וירטואלית עם אפליקציות שצריכות הרצה בתוך קונטיינרים. תבחרו
+                    בטענה הנכונה ביותר :</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> מנגנון
+                            תמיכה בקונטיינרים נדרש בשתי המערכות.</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> מנגנון
+                            תמיכה בקונטיינרים נדרש רק במערכת מארחת כי מערכת אורחת, בהיותה וירטואלית, מסתמכת על תמיכה
+                            בקונטיינרים של מערכת מארחת.</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> מנגנון
+                            תמיכה בקונטיינרים נדרש רק במערכת אורחת כי יישום מנגנון קונטיינרים כלל אינו קשור למערכת
+                            מארחת.</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> בשתי
+                            המערכות לא נדרשת תמיכה מיוחדת במנגנון קונטיינרים כי מנגנון קונטיינרים מהווה סוג של
+                            וירטואליזציה ולכן כלול מראש במערכת אורחת בהיותה וירטואלי ובמערכת מארחת בהיותה תומכת
+                            בוירטואליזציה.</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-2" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>ג'</strong>.<br>
+                    מערכת ההפעלה האורחת (Guest OS) מנהלת את התהליכים (האפליקציות) שרצים בתוכה. מכיוון שקונטיינרים דורשים
+                    תמיכה ברמת ליבת מערכת ההפעלה המנהלת אותם (כדי לספק בידוד כגון Namespaces), התמיכה נדרשת רק במערכת
+                    האורחת. מערכת ההפעלה המארחת (Host OS) כלל אינה מודעת לתהליכים שרצים בתוך המכונה הווירטואלית, ולכן
+                    אין לה שום קשר או צורך לתמוך במנגנון הקונטיינרים של האורחת.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>א:</strong> המערכת המארחת אינה זקוקה לתמיכה בקונטיינרים, שכן היא אינה מודעת כלל
+                            לתהליכים שרצים בתוך המכונה הוירטואלית ומספקת רק חומרה וירטואלית.</li>
+                        <li><strong>ב:</strong> המערכת המארחת אינה מספקת תמיכה לקונטיינרים עבור האורחת. המערכת האורחת
+                            חייבת קרנל עצמאי התומך בקונטיינרים כדי להפעילם.</li>
+                        <li><strong>ד:</strong> קונטיינר אינו וירטואליזציה חינמית הכלולה ב-VM. זוהי וירטואליזציה ברמת
+                            מערכת ההפעלה שדורשת תמיכה ספציפית מהקרנל (כגון Namespaces ו-Cgroups) שאינה כלולה כברירת מחדל
+                            רק מעצם הווירטואליזציה של החומרה.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 3 -->
+        <!-- ============================================== -->
+        <div id="tab-q3" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 3</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-calculator text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            כדי להבטיח הימנעות מקיפאון, יש להשתמש בנוסחת התרחיש הגרוע ביותר. התרחיש הגרוע ביותר קורה
+                            כאשר כל $P$ התהליכים הצליחו להשיג עותקים, אך לכולם חסר בדיוק עותק אחד כדי לסיים, ואין במערכת
+                            שום עותק פנוי להציל אותם. <br>
+                            כל תהליך צריך עד 4 עותקים ($m=4$). לכן בתרחיש הגרוע כל תהליך יחזיק 3 עותקים וייתקע. סה"כ
+                            העותקים התפוסים יהיה $3P$. כדי שהם "יוכלו לסיים בוודאות", אנו חייבים להבטיח שיישאר במערכת
+                            לפחות עותק אחד נוסף מעבר לכמות הזו, כלומר הדרישה היא שכמות המשאבים $R$ תהיה גדולה מהתרחיש
+                            הגרוע: $R \ge P(m-1) + 1$. נציב את הנתונים שלנו ונפתור את המשוואה.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">הניחו שקיימים 100 עותקים של משאב R במערכת וקיים
+                    מספר תהליכים שכל אחד מהם צריך עד ארבע עותקים של משאב R כדי להסתיים , חשבו כמה תהליכים כאלו לכל היותר
+                    יכולים להיות מופעלים במערכת כדי שיוכלו לסיים בוודאות, בלי שיתרחש קיפאון (deadlock)?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span>
+                            33</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span>
+                            32</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span>
+                            96</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span>
+                            95</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-3" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <div class="text-slate-700 leading-relaxed text-sm space-y-2 mb-4">
+                    <p class="text-green-800">התשובה הנכונה היא <strong>א' (33)</strong>.</p>
+                    <p>נתונים: <br>
+                        מספר העותקים הכולל במערכת: $r = 100$ <br>
+                        דרישה מקסימלית לתהליך: $m = 4$ <br>
+                        מספר התהליכים: $p = ?$</p>
+
+                    <p>לפי תנאי מניעת קיפאון, המערכת בטוחה אם: <br>
+                        $r \ge p \times (m - 1) + 1$</p>
+
+                    <p>נציב את הנתונים:<br>
+                        $100 \ge p \times (4 - 1) + 1$<br>
+                        $100 \ge 3p + 1$<br>
+                        $99 \ge 3p$<br>
+                        $33 \ge p$
+                    </p>
+                    <p>מכאן שמספר התהליכים המקסימלי $p$ שיכול לרוץ בו-זמנית מבלי להגיע לקיפאון הוא <strong>33</strong>.
+                    </p>
+                </div>
+
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>ב. 32:</strong> למרות ש-32 תהליכים לא יגרמו לקיפאון, השאלה מבקשת את המספר המקסימלי
+                            (לכל היותר) של תהליכים היכולים להיות מופעלים. המספר המקסימלי האמיתי הוא 33.</li>
+                        <li><strong>ג. 96:</strong> אם 96 תהליכים יופעלו, בתרחיש הגרוע כל אחד מהם יתפוס עותק אחד. יישארו
+                            4 עותקים חופשיים, אך כולם זקוקים לעוד 3 עותקים, לכן יתרחש קיפאון בוודאות. 96 נובע מחישוב
+                            שגוי של הנוסחה (למשל, החסרת משהו במקום החלוקה).</li>
+                        <li><strong>ד. 95:</strong> בדומה ל-96, בתרחיש הגרוע של 95 תהליכים, כולם מקצים עותק אחד, נשארים
+                            5, מישהו לוקח אותם, ונוצר קיפאון. מספר גדול כל כך רחוק מאוד מהגבול הבטוח.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 4 -->
+        <!-- ============================================== -->
+        <div id="tab-q4" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 4</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            בשאלות כאלו חשוב לבדוק את התאמת כיוון הלולאה לסידור הזיכרון.
+                            קודם נבדוק כמה שורות מטריצה נכנסות בדף אחד. אורך כל שורה הוא 32 איברים, כפול 8 בתים לאיבר =
+                            256 בתים לשורה. גודל דף נתון הוא 512 בתים. לכן בכל דף ייכנסו בדיוק שתי שורות.
+                            המטריצה כולה (32 שורות) תיפרש על פני $32/2 = 16$ דפים. <br>
+                            כעת נסתכל על הקוד: הלולאה החיצונית רצה על השורות (`i`) והפנימית על העמודות (`j`). זה אומר
+                            שאנו סורקים את המטריצה שורה אחרי שורה. זהו בדיוק סדר הזיכרון (row-order)! כלומר, הגישה היא
+                            רציפה לחלוטין.
+                            ניגש לדף 0, נחטוף Page Fault אחד, ואז נרוץ על כל שורה 0 ועל כל שורה 1 שקיימות בו (בלי תקלות
+                            נוספות). רק כשנעבור לשורה 2 נחטוף שוב Page Fault על דף 1. מכאן, נחווה בדיוק תקלת עמוד אחת
+                            לכל דף.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <div class="relative mb-6">
+                    <button onclick="cycleTooltipState()"
+                        class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                        <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                        <i
+                            class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                        <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל -
+                            בריחוף</span>
+                        <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                        <div
+                            class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                        </div>
+                    </button>
+                    <p class="text-slate-900 mb-4 font-semibold text-lg leading-relaxed">
+                        נתונה מערכת עם זיכרון מדומה (virtual memory), המנוהל בשיטת "דפדוף לפי דרישה" ( demand paging ).
+                        נתון כי גודלו של כל דף הוא 512 בתים.<br>
+                        להלן הצהרה של מטריצה D :<br>
+                        <code class="bg-slate-100 px-2 rounded">Double D[32][32];</code><br>
+                        נתון כי גודלו של טיפוס הנתונים Double הוא 8 בתים. האיבר הראשון D[0][0] שמור בתחילת דף.<br>
+                        נוסף על כך , ידוע כי המטריצה שמורה באופן כזה שאיברי השורה הראשונה במטריצה שמורים לפני איברי
+                        השורה השנייה (row-order).<br>
+                        להלן קטע קוד :<br>
+                    </p>
+                    <div dir="ltr">
+                        <pre class="bg-slate-800 text-slate-300 font-mono p-4 rounded text-sm mb-2"><code><mark class="interactive-tooltip" data-key="q4_1">for (int i = 0; i < 32; i++)</mark>
+    <mark class="interactive-tooltip" data-key="q4_2">for (int j = 0; j < 32; j++)</mark>
+        <mark class="interactive-tooltip" data-key="q4_3">D[ i ][ j ] = 0.0;</mark></code></pre>
+                    </div>
+                </div>
+                <p class="text-slate-900 mb-4 font-semibold text-lg">המטריצה לא נמצאת בזיכרון בתחילת הריצה. כמה שגיאות
+                    דף(page fault) יתרחשו אם למטריצה הוקצו ארבע מסגרות(frame) בלבד?</p>
+
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span>
+                            4</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span>
+                            16</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span>
+                            32</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span>
+                            64</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-4" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <div class="text-slate-700 leading-relaxed text-sm space-y-2 mb-4">
+                    <p class="text-green-800">התשובה הנכונה היא <strong>ב' (16)</strong>.</p>
+                    <p><strong>שלב 1: חישוב גודל שורה במטריצה</strong><br>
+                        יש 32 איברים בשורה, כל אחד בגודל 8 בתים.<br>
+                        גודל שורה אחת = $32 \times 8 = 256$ בתים.</p>
+
+                    <p><strong>שלב 2: תפוסת השורות בדף אחד</strong><br>
+                        גודל דף הוא 512 בתים. <br>
+                        מספר השורות שנכנסות בדף אחד: $\frac{512}{256} = 2$ שורות. <br>
+                        כיוון שהמטריצה שמורה ב-Row-order, כל דף מכיל בדיוק 2 שורות רצופות בשלמותן.</p>
+
+                    <p><strong>שלב 3: סך הדפים הנדרשים למטריצה</strong><br>
+                        במטריצה יש 32 שורות בסך הכל. <br>
+                        מספר הדפים הכולל שמחזיק את המטריצה: $\frac{32}{2} = 16$ דפים.</p>
+
+                    <p><strong>שלב 4: ניתוח סדר הגישה בלולאות</strong><br>
+                        הקוד סורק את המטריצה שורה אחר שורה (<code>D[i][j]</code> כאשר <code>i</code> חיצוני). כיוון
+                        שהסריקה חופפת לסידור הפיזי בזיכרון, התוכנית תיגש ברצף לכל הנתונים שבדף הראשון (שורות 0 ו-1),
+                        תגרום ל-Page Fault בגישה הראשונה, תסיים את הדף, ותעבור לדף הבא. <br>
+                        מכיוון שאף פעם איננו חוזרים אחורה לדף קודם, נקבל בדיוק שגיאת דף אחת לכל דף וירטואלי חדש שניגש
+                        אליו. ישנם 16 דפים, ולכן יתרחשו בדיוק <strong>16 שגיאות דף</strong>. <br>
+                        (הערה: העובדה שהוקצו רק 4 מסגרות אינה גורמת להרס (Thrashing) במקרה זה, כי האלגוריתם מתקדם בצורה
+                        טורית ולא זקוק לדפים ישנים שהוחלפו).</p>
+                </div>
+
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>א. 4:</strong> 4 הוא מספר המסגרות (Frames) שהוקצו, אך אנו ניגשים ל-16 דפים שונים בזה
+                            אחר זה. בכל פעם שנעבור דף נצטרך לטעון דף חדש שגורר שגיאת דף (Page fault).</li>
+                        <li><strong>ג. 32:</strong> 32 הוא מספר השורות. שגיאה של 32 הייתה קורית לו כל שורה הייתה תופסת
+                            בדיוק דף שלם (512 בתים במקום 256 בתים במציאות). מכיוון שכל דף מכיל 2 שורות, יש רק חצי מכמות
+                            שגיאות הדף.</li>
+                        <li><strong>ד. 64:</strong> שגיאה של 64 (או מספר גדול בהרבה) הייתה קורית אילו סדר הלולאות היה
+                            הפוך (Column-major order) והיינו חווים שגיאת דף בכל איטרציה במקום גישה רציפה.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 5 -->
+        <!-- ============================================== -->
+        <div id="tab-q5" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 5</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            בעבר, כדי להעביר נתונים מהדיסק לזיכרון, המעבד (CPU) היה חייב להעביר את הנתונים בית אחרי בית
+                            בעצמו (Programmed I/O), תהליך שגזל ממנו את כל המשאבים. ה-DMA (Direct Memory Access) הומצא
+                            כבקר חומרה חיצוני ועצמאי כדי לפתור את הבעיה: המעבד רק נותן לו הוראת התחלה (כתובת יעד, מקור
+                            וכמות), ה-DMA מבצע את כל העברת המסה, ומודיע למעבד בפסיקה אחת בודדת כשסיים. זה מקטין באופן
+                            דרמטי את כמות הזמן שהמעבד מבזבז על קלט/פלט ומפנה אותו לעבודה אמיתית.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">מהי הסיבה העיקרית לשימוש ב- DMA?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> למעבד
+                            דרוש פחות זמן לביצוע פקודה חישובית אחת.</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> הקטנת
+                            הזמן שלוקח למעבד בסה"כ לטפל בפעולות קלט-פלט.</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> למעבד
+                            דרוש פחות זמן לביצוע גישה לזיכרון הראשי.</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> מאפשר
+                            להתקן, למשל דיסק, להשתמש בזיכרון הראשי כמטמון.</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-5" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <div class="text-slate-700 leading-relaxed text-sm space-y-2 mb-4">
+                    <p class="text-green-800">התשובה הנכונה היא <strong>ב'</strong>.</p>
+                    <p>השימוש ב-DMA נועד לשחרר את המעבד (CPU) מהצורך האקטיבי לקרוא ולכתוב כל בית מ/אל אמצעי הקלט/פלט.
+                        בכך, במקום לקבל אלפי פסיקות לכל בלוק מידע (מה שמאט את פעולת המעבד), המעבד מקבל פסיקה אחת בסוף
+                        התהליך כולו. פעולה זו מקטינה באופן משמעותי את התקורה והזמן הכולל שהמעבד צריך להשקיע בטיפול
+                        בפעולות קלט-פלט, ומעלה את ביצועי המערכת (CPU Utilization).</p>
+                </div>
+
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>א:</strong> DMA אינו משפיע על מהירות ביצוע פקודת מעבד בודדת (כמו חיבור או כפל).
+                            המעבד פועל באותו תדר, אך בזכות ה-DMA הוא פנוי לבצע פקודות אחרות במקום לחכות להתקנים איטיים.
+                        </li>
+                        <li><strong>ג:</strong> מהירות הגישה לזיכרון הראשי (RAM) מוכתבת על ידי אפיק הזיכרון וזמני ההשהיה
+                            (Latency) של החומרה הפיזית. DMA לא מאיץ את הזיכרון הראשי, אלא מעתיק אליו נתונים ישירות במקום
+                            שהמעבד יעשה זאת.</li>
+                        <li><strong>ד:</strong> DMA מעביר נתונים מהתקן לזיכרון הראשי, אך הזיכרון הראשי (RAM) אינו משמש
+                            "מטמון עבור הדיסק" באמצעות DMA (Caching נעשה ברמת מערכת ההפעלה, VFS). מטרת ה-DMA היא ייעול
+                            התקורה של פעולות הקלט-פלט על המעבד, ולא אסטרטגיית ניהול מטמון לחומרה.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 6 -->
+        <!-- ============================================== -->
+        <div id="tab-q6" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 6</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-calculator text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            זוהי שאלת חישוב הפוכה: נתנו לנו את סך כל הבלוקים התפוסים (1514), וצריך לברר כמה מתוכם הם נטו
+                            <strong>בלוקי נתונים</strong> (כי רק בלוקי הנתונים קובעים את גודל הקובץ), ולכפול בגודל בלוק.
+                            <br>
+                            נחשב כמה מצביעים נכנסים בבלוק: $2048 / 4 = 512$ מצביעים.<br>
+                            נתחיל למלא לפי הסדר ולסכום תוך כדי פיצול בין Data ל-Pointers:<br>
+                            - 10 בלוקים ישירים משמשים כ-10 Data. <br>
+                            - העקיף היחיד יצרוך 1 Pointer ויספק 512 Data.<br>
+                            - אם נותר עוד, נעבור לכפול שיצרוך בלוקים לניהול, וכל מה שנשאר בפנים יהיה נתונים.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-2 font-semibold text-lg">מערכת הקבצים של מערכת הפעלה מסוימת משתמשת בשיטת ה
+                    I-node עם פרמטרים הבאים :</p>
+                <ul class="list-disc list-inside text-slate-800 space-y-1 mb-4">
+                    <li>גודל הבלוק במערכת הקבצים הוא 2 Kbytes</li>
+                    <li>כתובת הבלוק היא 4 בתים (bytes)</li>
+                    <li>10 שדות של ה I-node יכולים להחזיק ישירות כתובת הבלוק בדיסק</li>
+                    <li>שדה נוסף אחד נועד להחזיק כתובת של ה single indirect block</li>
+                    <li>עוד שדה נוסף אחד נועד להחזיק כתובת של ה double indirect block</li>
+                    <li>ועוד שדה נוסף אחד נועד להחזיק כתובת של ה triple indirect block</li>
+                </ul>
+                <p class="text-slate-900 mb-4 font-semibold text-lg">
+                    חשבו מה הגודל המרבי של קובץ שניתן לאכסן ב 1514 בלוקים בסה"כ(כולל נתונים ומצביעים, אבל לא כולל את ה
+                    I-NODE עצמו)<br>
+                    הערה: לצורך החישוב 1 KByte = 1024 Byte , 1 MByte = 1024 KByte
+                </p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> 3028
+                            Kbytes</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, '6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> 3020
+                            Kbytes</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> 3000
+                            Kbytes</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, '6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> 3008
+                            Kbytes</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-6" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <div class="text-slate-700 leading-relaxed text-sm space-y-3 mb-4">
+                    <p class="text-green-800">התשובה הנכונה היא <strong>ב' (3020)</strong>.</p>
+                    <p><strong>שלב 1: קיבולת מצביעים בבלוק יחיד</strong><br>
+                        בלוק שוקל 2048 בתים ($2KB$). כל מצביע שוקל 4 בתים.<br>
+                        מספר מצביעים (הצבעות לבלוקים) בבלוק ניהול: $2048 / 4 = 512$ מצביעים לבלוק.</p>
+
+                    <p><strong>שלב 2: ניכוי הבלוקים מהסך הכללי (1514)</strong></p>
+                    <ul class="list-disc list-inside ml-4 space-y-2">
+                        <li><strong>10 הצבעות ישירות:</strong> 10 בלוקים הולכים לנתונים. לא בוזבז אף בלוק ניהול. <br>
+                            <em>נשארו:</em> $1514 - 10 = 1504$ בלוקים.
+                        </li>
+
+                        <li><strong>Single Indirect:</strong> נשתמש בבלוק ניהול אחד שמצביע על מקסימום 512 בלוקי נתונים.
+                            מכיוון שיש לנו המון בלוקים מיותרים, הוא יתמלא לחלוטין. הורדנו 1 (ניהול) + 512 (נתונים) = 513
+                            בלוקים.<br>
+                            <em>נשארו:</em> $1504 - 513 = 991$ בלוקים.
+                        </li>
+
+                        <li><strong>Double Indirect:</strong> נשארו 991 בלוקים. כולם ייכנסו תחת ניהול העקיף הכפול. הוא
+                            צורך מיד <strong>בלוק ראשי אחד (ניהול)</strong>. נשארו 990 בלוקים. הבלוק הראשי מצביע על
+                            בלוקי Single Indirect. בלוק Single אחד מכיל עד 512. לכן נכניס בלוק Single אחד (ניהול) שיכיל
+                            512 בלוקי נתונים. הורדנו $1+512=513$. <br>
+                            <em>נשארו:</em> $990 - 513 = 477$ בלוקים. נכניס אותם תחת בלוק Single שני. נוריד 1 עבור בלוק
+                            הניהול שלו. נשארו 476 בלוקי נתונים בלבד.
+                        </li>
+                    </ul>
+                    <p><strong>שלב 3: סיכום בלוקי הנתונים וחישוב גודל</strong><br>
+                        בסך הכל, בלוקי הנתונים נטו שהצלחנו לאחסן הם: <br>
+                        $10 (\text{Direct}) + 512 (\text{Single}) + 512 (\text{Double inner 1}) + 476 (\text{Double
+                        inner 2}) = 1510$ בלוקי נתונים.<br>
+                        גודל הקובץ המרבי יהיה: $1510 \text{ blocks} \times 2 \text{ KBytes} = \textbf{3020 KBytes}$.</p>
+                </div>
+
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>א. 3028:</strong> מספר זה מתקבל בטעות אם כופלים את כל 1514 הבלוקים הפיזיים ב-2
+                            KBytes מבלי לנכות את 4 בלוקי הניהול (המצביעים העקיפים) שבתוכם לא נשמר מידע, מה שסותר את
+                            מנגנון ה-Inode.</li>
+                        <li><strong>ג. 3000:</strong> תוצאה המעידה על טעות בחישוב מספר המצביעים בבלוק או בחישוב שרשרת
+                            ההצבעות העקיפות, או ניכוי כפול של שדות.</li>
+                        <li><strong>ד. 3008:</strong> מספר זה מתקבל אם מורידים רק כמות חלקית ושגויה של בלוקי ניהול במקום
+                            לחשב בצורה מפורטת את החלוקה ההיררכית בעץ ה-Inode.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 7 -->
+        <!-- ============================================== -->
+        <div id="tab-q7" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 7 (25 נקודות)</h2>
+
+            <div class="question-box mb-6 relative">
+                <button onclick="cycleTooltipState()"
+                    class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                    <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                    <i
+                        class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                    <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל -
+                        בריחוף</span>
+                    <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                    <div
+                        class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    </div>
+                </button>
+
+                <h4 class="font-bold text-slate-800 mb-4 text-lg">א. (16 נק')
+                    סיימו את התוכנית להלן עבור בעיית קוראים-כותבים(כאשר קוראים יכולים לקרוא במקביל, כותבים לא יכולים
+                    לכתוב במקביל לא אחד עם השני ולא עם הקוראים).
+                    <br><br>
+                    <strong>הפתרון צריך לתת העדפה לכותבים לגבי מצטרפים חדשים("חדש" מוגדר כמי שעדיין לא הספיק לבצע את
+                        השורה הראשונה של הקוד).</strong> הניחו שכל תוכניות המשתמש מושהות עד סיום <strong>ביצוע קריאת
+                        מערכת.</strong> הסמפורים הם אובייקטים של מערכת(כרגיל).
+                    <br><br>
+                    מלאו בכל שורה ריקה פעולה <strong>אחת בלבד</strong>(פקודה רגילה אחת או פעולה אחת על אמצעי סנכרון).
+                </h4>
+
+                <div dir="ltr" class="mb-6">
+                    <pre class="bg-slate-800 text-slate-300 font-mono p-4 rounded text-sm mb-2 code-block"><code><mark class="interactive-tooltip" data-key="q7_var_1">♦ semaphore BlockRead = 1; // binary semaphore used to block readers</mark>
+<mark class="interactive-tooltip" data-key="q7_var_2">♦ semaphore BlockWrite = 1; // binary semaphore used to allow ONE writer or MANY readers</mark>
+<mark class="interactive-tooltip" data-key="q7_var_3">♦ int Readers = 0, Writers = 0; // count of readers and writers in critical section</mark>
+<mark class="interactive-tooltip" data-key="q7_var_4">♦ semaphore RMutex = 1; // binary semaphore for Readers</mark>
+<mark class="interactive-tooltip" data-key="q7_var_5">♦ semaphore WMutex = 1; // binary semaphore for Writers</mark>
+
+<span class="text-amber-400 font-bold block mb-2 mt-4">Reader</span>
+1.  ________________________; // at most one reader can go before a pending write
+2.  ________________________;
+3.  Readers++;
+4.  if (Readers == 1) // first reader acquire write lock
+5.      ________________________;
+6.  ________________________;
+7.  ________________________;
+8.  &lt; Do the Reading &gt;
+9.  ________________________;
+10. Readers--;
+11. if (Readers == 0) // last (only) reader releases write lock
+12.     ________________________;
+13. ________________________;
+
+<span class="text-rose-400 font-bold block mb-2 mt-4">Writer</span>
+1.  ________________________;
+2.  Writers++;
+3.  if (Writers == 1)
+4.      ________________________;// block readers
+5.  ________________________;
+6.  ________________________;
+7.  &lt; Do the Writing &gt;
+8.  ________________________;
+9.  ________________________;
+10. Writers--;
+11. if (Writers == 0)
+12.     ________________________;// enable readers
+13. ________________________;</code></pre>
+                </div>
+
+                <details class="mb-6 fade-in mt-4">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                    השאלה:</strong> זוהי בעיית Writer-Preference קלאסית. כדי שכותב יקבל העדפה, הדבר
+                                הראשון שהוא עושה ברגע שהוא נכנס (אחרי שהוא מעלה את מונה הכותבים `Writers++`) זה לחסום את
+                                שער הכניסה של הקוראים, כלומר לסגור את `BlockRead`. כך, קוראים חדשים נעצרים לפני כניסתם.
+                                הקוראים שכבר נכנסו וקוראים, יסיימו לאט לאט. האחרון שבהם (`Readers == 0`) ישחרר את
+                                `BlockWrite`, שזהו המנעול שמאפשר לכותב לגשת למידע הפיזי ולכתוב. הכותב האחרון שיסיים
+                                (`Writers == 0`) ישחרר את `BlockRead` ויאפשר שוב זרימה לקוראים הממתינים.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i>
+                            פתרון סעיף א' </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                        <p class="text-slate-800 font-semibold mb-4">קוד הושלם (עברו עם העכבר על הפקודות המודגשות
+                            להסבר):</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" dir="ltr">
+                            <div class="bg-slate-800 rounded">
+                                <div class="text-slate-400 text-xs text-center border-b border-slate-700 p-2 font-bold">
+                                    Reader</div>
+                                <pre class="p-4 m-0 code-block !bg-transparent text-sm"><code><mark class="interactive-tooltip" data-key="q7_r_1">1. down(BlockRead);</mark> 
+<mark class="interactive-tooltip" data-key="q7_r_2">2. down(RMutex);</mark> 
+<mark class="interactive-tooltip" data-key="q7_r_3">3. Readers++;</mark>
+<mark class="interactive-tooltip" data-key="q7_r_4">4. if (Readers == 1) // first reader acquire write lock</mark>
+<mark class="interactive-tooltip" data-key="q7_r_5">5.     down(BlockWrite);</mark>
+<mark class="interactive-tooltip" data-key="q7_r_6">6. up(RMutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_r_7">7. up(BlockRead);</mark> 
+<mark class="interactive-tooltip" data-key="q7_r_8">8. &lt; Do the Reading &gt;</mark>
+<mark class="interactive-tooltip" data-key="q7_r_9">9. down(RMutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_r_10">10. Readers--;</mark>
+<mark class="interactive-tooltip" data-key="q7_r_11">11. if (Readers == 0) // last reader releases write lock</mark>
+<mark class="interactive-tooltip" data-key="q7_r_12">12.    up(BlockWrite);</mark>
+<mark class="interactive-tooltip" data-key="q7_r_13">13. up(RMutex);</mark></code></pre>
+                            </div>
+                            <div class="bg-slate-800 rounded">
+                                <div class="text-slate-400 text-xs text-center border-b border-slate-700 p-2 font-bold">
+                                    Writer</div>
+                                <pre class="p-4 m-0 code-block !bg-transparent text-sm"><code><mark class="interactive-tooltip" data-key="q7_w_1">1. down(WMutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_w_2">2. Writers++;</mark>
+<mark class="interactive-tooltip" data-key="q7_w_3">3. if (Writers == 1)</mark>
+<mark class="interactive-tooltip" data-key="q7_w_4">4.     down(BlockRead); // block new readers</mark>
+<mark class="interactive-tooltip" data-key="q7_w_5">5. up(WMutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_w_6">6. down(BlockWrite);</mark>
+<mark class="interactive-tooltip" data-key="q7_w_7">7. &lt; Do the Writing &gt;</mark>
+<mark class="interactive-tooltip" data-key="q7_w_8">8. up(BlockWrite);</mark>
+<mark class="interactive-tooltip" data-key="q7_w_9">9. down(WMutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_w_10">10. Writers--;</mark>
+<mark class="interactive-tooltip" data-key="q7_w_11">11. if (Writers == 0)</mark>
+<mark class="interactive-tooltip" data-key="q7_w_12">12.    up(BlockRead); // enable readers</mark>
+<mark class="interactive-tooltip" data-key="q7_w_13">13. up(WMutex);</mark></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="h-px bg-slate-200 w-full mb-6"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2 text-lg">ב. (9 נק') הסבירו כיצד הפרוטוקול עובד : האם בכלל ואיך
+                    מבטיח מניעה הדדית, התקדמות (העדר קיפאון) והמתנה מוגבלת.</h4>
+                <p class="text-slate-900 font-semibold text-sm mb-4">הסבירו באיזו מידה ואיך מנגנון הסנכרון מבטיח העדפת
+                    הכותבים.</p>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                    השאלה:</strong> כדאי להפריד את התשובה ל-4 הקריטריונים המבוקשים. <strong>העדפת
+                                    כותבים</strong> מבוססת על החסימה שיוצר הסמפור <code>BlockRead</code> כבר בכניסת
+                                הכותב הראשון. <strong>מניעה הדדית</strong> נשמרת בעזרת מנעול משותף על כתיבה
+                                (<code>BlockWrite</code>). <strong>התקדמות</strong> מובטחת כי אף צד לא מחזיק במשאב קריטי
+                                וממתין לאחר. לגבי <strong>המתנה מוגבלת</strong>, חישבו האם קוראים בטוח ייכנסו בסופו של
+                                דבר אם יגיעו כותבים ברצף ללא הפסקה.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i>
+                            פתרון סעיף ב' </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                        <div class="text-sm text-slate-700 font-medium space-y-4">
+                            <p><strong>כיצד מבטיח העדפת כותבים?</strong><br>
+                                ההעדפה מתבצעת בזכות הסמפור <code>BlockRead</code>. כאשר כותב חדש מגיע (שורה 3 בכותב),
+                                הוא מבצע <code>down(BlockRead)</code>. מרגע זה, <strong>כל קורא חדש</strong> שיגיע,
+                                ייתקע מיד בשורה הראשונה שלו (שורה 1 בקורא). הסמפור ימשיך להיות נעול כל עוד יש כותבים
+                                בתור, וישוחרר רק כשהכותב האחרון יסיים את עבודתו. כך, כותבים תמיד עוקפים קוראים חדשים
+                                בתור הכניסה.</p>
+
+                            <p><strong>מניעה הדדית (Mutual Exclusion):</strong><br>
+                                מובטחת בזכות הסמפור <code>BlockWrite</code> אשר מגן על המשאב הפיזי. הכותב חייב לתפוס
+                                אותו לפני הכתיבה (שורה 6), והקורא הראשון תופס אותו (שורה 5) ומשאיר אותו נעול עד שהקורא
+                                האחרון מסיים (שורה 12). לכן לא יתכן מצב של קורא וכותב או שני כותבים שפעילים יחדיו במשאב.
+                            </p>
+
+                            <p><strong>התקדמות (Progress - העדר קיפאון):</strong><br>
+                                אין חשש לקיפאון מעגלי (Deadlock). קוראים לא מחזיקים בסמפורים ומחכים לסמפורים אחרים
+                                המוחזקים ע"י כותבים בצורה מעגלית. הסמפורים המיועדים להגנה (<code>RMutex</code>
+                                ו-<code>WMutex</code>) מוחזקים לזמן מזערי רק כדי לקדם מונה ולשחרר סמפור אחר ללא תלות.
+                                כאשר קוראים תקועים על <code>BlockRead</code>, הכותבים ימשיכו לרוץ, יסיימו וישחררו אותו.
+                                התהליכים מתקדמים בצורה תקינה.</p>
+
+                            <p><strong>המתנה מוגבלת (Bounded Waiting):</strong><br>
+                                כאן ישנה הסתייגות תיאורטית: מכיוון שמדובר בפרוטוקול של <strong>"העדפת כותבים
+                                    מוחלטת"</strong>, אם יגיעו באופן רצוף ואינסופי כותבים חדשים למערכת, הקוראים שנתקעו
+                                על שורה 1 ימתינו לנצח. במקרה התאורטי הזה, אין הבטחה להמתנה מוגבלת לקוראים (הם מורעבים).
+                                אולם, בראייה מערכתית קבוצתית (בין כותב לכותב), משחרור הסמפור נוצרת התקדמות הוגנת התלויה
+                                בתור הסמפור עצמו (תורי מערכת הפעלה).</p>
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 8 -->
+        <!-- ============================================== -->
+        <div id="tab-q8" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 8 (15 נקודות)</h2>
+
+            <div class="question-box mb-6">
+                <h4 class="font-bold text-slate-800 mb-4 text-lg">א. (5 נק') בהתייחס למעבד מרובה ליבות (multi-core),
+                    הסבירו את היתרון והחיסרון העיקרי בתזמון זיקה (Affinity scheduling) מבחינת מהירות ביצוע הקוד (כולל
+                    מהירות גישה למשתנים).</h4>
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                    השאלה:</strong> כדאי לחשוב על מה קורה לזיכרון המטמון (Cache) ול-TLB כאשר תהליך חוזר
+                                לרוץ על אותה ליבה, לעומת העומס שעשוי להיווצר על ליבה ספציפית בעוד ליבות אחרות פנויות.
+                            </p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i>
+                            פתרון סעיף א' </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                        <div class="text-sm text-slate-700 font-medium space-y-4">
+                            <p>תזמון זיקה (Processor Affinity) הוא אלגוריתם המעדיף לשבץ (Schedule) תהליך שכבר רץ בעבר,
+                                לאותה ליבה פיזית (Core) בדיוק שבה הוא רץ בפעם הקודמת.</p>
+                            <p><strong>היתרון המרכזי: "חימום מטמונים" (Cache Warmth) - הגברת מהירות ביצוע</strong><br>
+                                כאשר תהליך חוזר לרוץ על אותה ליבה, קיים סיכוי גבוה שהמשתנים, קטעי הקוד ונתוני הזיכרון
+                                שהוא השתמש בהם לאחרונה עדיין קיימים בזיכרון המטמון המקומי של הליבה (L1/L2 Cache), וכן
+                                ב-TLB (הממפה כתובות זיכרון וירטואלי לפיזי). העובדה שאין צורך להביא את הנתונים מחדש
+                                מהזיכרון הראשי האיטי, משפרת באופן דראסטי את מהירות הגישה למשתנים ולפקודות הקוד.</p>
+                            <p><strong>החיסרון המרכזי: חוסר איזון עומסים (Load Imbalance)</strong><br>
+                                ההתעקשות על זיקה עלולה ליצור עיוות בתזמון הכללי של המערכת. ייתכן מצב שבו ליבה מס' 1
+                                עמוסה מאוד בתהליכים "הקשורים" אליה וממתינים בתורה (בזבוז זמן בהמתנה), בעוד שליבה מס' 2
+                                עומדת כרגע פנויה לחלוטין וללא מעש. הפסדנו את יתרון המקביליות האמיתית של מעבד מרובה ליבות
+                                במחיר של שמירה על חום המטמון.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="h-px bg-slate-200 w-full mb-6"></div>
+
+                <h4 class="font-bold text-slate-800 mb-4 text-lg">ב. (5 נק') בהנחה שכל ליבה (core) כוללת את הרכיבים
+                    העיקריים של מעבד שלם, הסבירו האם Affinity scheduling משפיע על פספוסי TLB (TLB miss)?</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                    השאלה:</strong> היזכרו בתפקיד של ה-TLB - הוא מתפקד כמטמון חומרה פרטי (מקומי) לכל
+                                ליבה עבור טבלת הדפים. אם תהליך חוזר בדיוק לאותה ליבה, מה הסבירות שתרגומי הכתובות שהוא
+                                זקוק להם (Page to Frame) עדיין נותרו שם מהריצה הקודמת שלו?</p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i>
+                            פתרון סעיף ב' </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                        <div class="text-sm text-slate-700 font-medium space-y-4">
+                            <p><strong>כן, התזמון בהחלט משפיע (ולחיוב) על כמות הפספוסים ב-TLB.</strong></p>
+                            <p>ה-TLB (Translation Lookaside Buffer) הוא רכיב חומרה מהיר בתוך הליבה המשמש כמטמון (Cache)
+                                לשמירת תרגומי כתובות זיכרון וירטואליות לכתובות פיזיות. לכל ליבה (Core) יש רכיב MMU ו-TLB
+                                נפרד משלה. <br>
+                                כאשר תהליך רץ על ליבה מסוימת, ה-TLB שלה מתמלא בתרגומים שרלוונטיים לאותו התהליך (ולטבלת
+                                הדפים הספציפית שלו). אם התהליך יושהה ולאחר מכן ישובץ לפעול על <strong>אותה הליבה
+                                    בדיוק</strong> (הודות ל-Affinity Scheduling), סביר להניח שרשומות ה-TLB שלו עדיין
+                                תקפות ונמצאות שם. תופעה זו מקטינה דרמטית את פספוסי ה-TLB (TLB Misses), חוסכת פניות יקרות
+                                לטבלת הדפים שבזיכרון הראשי, ומאיצה את קצב הרצת הפקודות.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="h-px bg-slate-200 w-full mb-6"></div>
+
+                <h4 class="font-bold text-slate-800 mb-4 text-lg">ג. (5 נק') בהמשך לסעיף א, הסבירו האם Affinity
+                    scheduling מפחית את תקלות עמוד (page faults)?</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                    השאלה:</strong> תקלת עמוד (Page Fault) מתרחשת כאשר עמוד הזיכרון הפיזי כלל לא נמצא
+                                ב-RAM הראשי, ולכן צריך להביא אותו מהדיסק הקשיח. ה-RAM הוא זיכרון גלובלי ומשותף לכלל
+                                הליבות (בניגוד ל-L1/L2 Cache או ל-TLB שהם פרטיים לכל ליבה). האם מעבר בין ליבה 1 לליבה 2
+                                משפיע על הימצאות דף בזיכרון המרכזי המשותף?</p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mb-2 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i>
+                            פתרון סעיף ג' </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                        <div class="text-sm text-slate-700 font-medium leading-relaxed space-y-4">
+                            <p><strong>לא. תזמון זיקה אינו משפיע ואינו מפחית את כמות תקלות העמוד (Page Faults).</strong>
+                            </p>
+                            <p>תקלת עמוד מתרחשת כאשר תהליך מנסה לגשת לדף וירטואלי שאינו קיים כרגע בזיכרון הפיזי הראשי
+                                (RAM), ונדרש להביא אותו מקובץ ההחלפה שבדיסק הקשיח. בניגוד לזיכרון מטמון (L1/L2) או ל-TLB
+                                שהם רכיבים ייחודיים לכל ליבה בנפרד, הזיכרון הראשי (RAM) הוא משאב <strong>משותף וגלובלי
+                                    לכל הליבות במעבד</strong> (גם בארכיטקטורות UMA וגם ב-NUMA, הדף קיים במערכת
+                                כולה).<br>
+                                אם הדף של התהליך "פונה" (Swapped Out) מה-RAM לדיסק על ידי אלגוריתם החלפת הדפים של מערכת
+                                ההפעלה, הוא ייעדר משם ללא שום קשר לליבה שתריץ אותו. בין אם התהליך יעבור לליבה חדשה ובין
+                                אם יישאר בליבה הנוכחית, הוא יחווה את תקלת העמוד וימתין להבאת הדף מהדיסק.</p>
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 9 -->
+        <!-- ============================================== -->
+        <div id="tab-q9" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 9 (15 נקודות)</h2>
+
+            <div class="question-box mb-6">
+                <h4 class="font-bold text-slate-800 mb-4 text-lg">א. (5 נק') האם הקצאת מקום לקבצים בעזרת אינדקס (I-Node)
+                    מתאימה מבחינת יעילות השימוש לדיסק לא מכני SSD? התייחסו בנפרד לקריאה וכתיבה של הנתונים</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                    השאלה:</strong> כונן SSD לא מכיל מחט מכנית ולכן זמן הגישה האקראית (Seek Time) שלו
+                                הוא אפסי. בקריאה: ה-SSD נהנה מאוד משיטת I-Node כי לקפוץ לבלוק אינדקס ואז לבלוק דאטה לוקח
+                                כמעט אפס זמן, לעומת דיסק מכני שקריאות אקראיות חונקות אותו. אבל בכתיבה? כאן מגיעה הבעיה.
+                                כדי לעדכן קובץ קטן ב-I-Node צריך לעדכן גם את בלוק הנתונים, גם את בלוק ה-I-Node עצמו
+                                (Metadata) ואולי בלוק עקיף. אלו כתיבות אקראיות קטנות ורבות. ב-SSD אי אפשר "לדרוס" בית;
+                                חובה למחוק בלוק שלם כדי לכתוב. תופעה זו (Write Amplification) הורסת את ה-SSD ופוגעת מאוד
+                                ביעילות הכתיבה שלו.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i>
+                            פתרון סעיף א' </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                        <div class="text-sm text-slate-700 font-medium leading-relaxed space-y-4">
+                            <p>שיטת ה-I-Node מתאימה ל-SSD לקריאה, אך בעייתית מאוד בכתיבה.</p>
+                            <p><strong>בקריאה (Read): מתאים ויעיל מאוד.</strong> בדיסק SSD אין חלקים נעים, ולכן אין זמן
+                                חיפוש מכני (Zero Seek Time). קריאת נתונים באופן אקראי (Random Read) ממקומות שונים בדיסק
+                                מהירה בדיוק כמו קריאה רציפה. לכן, הקפיצות הנדרשות מבלוק ה-I-Node אל בלוקי הנתונים
+                                המפוזרים נעשות באופן מיידי ויעיל.</p>
+                            <p><strong>בכתיבה (Write): פחות מתאים (חוסר יעילות).</strong> מערכת I-Node דורשת לבצע
+                                עדכונים מרובים וקטנים עבור כל שינוי בקובץ (לעדכן את המידע עצמו, לעדכן את תאריך השינוי
+                                ב-I-Node, לעדכן בלוקי מצביעים עקיפים). כונן SSD סובל מעקב אכילס חמור: לא ניתן פשוט לשכתב
+                                ולדרוס נתונים קיימים. כדי לכתוב, ה-SSD חייב לקחת "בלוק מחיקה" (Erase Block) עצום שלם,
+                                להעתיק את כולו לזיכרון, למחוק אותו פיזית, ואז לכתוב את העדכון הקטן. תופעה זו של עדכוני
+                                Metadata קטנים ואקראיים המובנים ב-I-Node תגרום להגברת כתיבה נוראית (Write Amplification)
+                                ולשחיקה (Wear) מהירה של תאי הפלאש בכונן ה-SSD.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="h-px bg-slate-200 w-full mb-6"></div>
+
+                <h4 class="font-bold text-slate-800 mb-4 text-lg">ב. (10 נק') הסבירו איך מערכת קבצים מבוססת יומן log
+                    יכולה לייעל את שימוש בדיסק SSD.</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                    השאלה:</strong> תזכרו שמערכת מבוססת יומן (Log) כותבת הכל באופן רציף (Sequential
+                                Write) ולא דורסת מידע קיים. איך תכונה זו פותרת את בעיית הכתיבות האקראיות הקטנות והצורך
+                                במחיקת בלוקים שלמים ב-SSD?</p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mb-2 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i>
+                            פתרון סעיף ב' </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                        <div class="text-sm text-slate-700 font-medium leading-relaxed space-y-4">
+                            <p>מערכת קבצים מבוססת יומן (Log-Structured File System) היא הפתרון האולטימטיבי לחסרונות
+                                הכתיבה של ה-SSD שהוצגו בסעיף הקודם.</p>
+                            <p>המערכת הופכת כל רצף של בקשות "כתיבה קטנה ואקראית" (Random Writes) ל-<strong>כתיבה אחת
+                                    גדולה וסדרתית (Sequential Write)</strong>. במקום לגשת לבלוק ה-I-Node הישן ולנסות
+                                לשכתב אותו (פעולה שדורשת מחיקה הרסנית בכונן פלאש), המערכת לוקחת את כל העדכונים (הנתונים
+                                החדשים + עדכוני ה-Metadata), אורזת אותם לגוש אחד גדול, ופשוט <strong>מוסיפה אותם לסוף
+                                    היומן (Append)</strong> במקום פנוי חדש ונקי (Clean Erased Block) על ה-SSD.</p>
+                            <p><strong>כיצד זה מייעל את ה-SSD?</strong></p>
+                            <ol class="list-decimal list-inside space-y-2 ml-4">
+                                <li><strong>ביטול תופעת ה-Write Amplification:</strong> כיוון שאנו רק משרשרים כתיבות
+                                    גדולות לרצף חדש, אנו עוקפים לחלוטין את הצורך במחזור ה"קרא-מחק-כתוב"
+                                    (Read-Modify-Write) של בלוקים קטנים.</li>
+                                <li><strong>Wear Leveling (איזון שחיקה):</strong> מכיוון שהכתיבה נעשית כל פעם בלוקיישן
+                                    רציף וחדש על הדיסק, השחיקה של התאים מתפזרת באופן טבעי ואחיד על פני כל כונן ה-SSD, מה
+                                    שמאריך את תוחלת החיים של ההתקן משמעותית.</li>
+                                <li>הבלוקים הישנים שהפכו ללא-רלוונטיים ינוקו ויאופסו על ידי תהליך רקע של המערכת (Garbage
+                                    Collection / פקודת TRIM) בשעות השפל באופן יעיל במרוכז.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 10 -->
+        <!-- ============================================== -->
+        <div id="tab-q10" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 10 (חלק ג')</h2>
+
+            <div class="question-box mb-6">
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+                    התייחסו ל-3 מושגים : קריאת מערכת עצמה (TRAP), מעטפת קריאת מערכת (לדוגמא Write) ופונקצית ספריה
+                    (לדוגמא Printf) והסבירו בעקבות ביצוע מה מהם נעשה מעבר ממצב משתמש (USER MODE) למצב ראשוני (KERNEL
+                    MODE) ?
+                </p>
+            </div>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                השאלה:</strong> פה בוחנים מי באמת עושה את ה"קסם" של שינוי מצב המעבד. תוכניתן קורא
+                            ל-<code>printf</code>. זוהי פונקציית ספרייה שרצה לגמרי ב-User Mode, מסדרת את המחרוזת ואת
+                            הטיפוסים, אבל לא ניגשת לחומרה. בסוף היא קוראת לפונקציית המעטפת (Wrapper) של מערכת ההפעלה
+                            שנקראת <code>write</code>. פונקציית המעטפת גם היא שייכת לספרייה ורצה במצב משתמש. תפקידה
+                            להכין את האוגרים. ואז – שורת הקוד האחרונה במעטפת היא הוראת האסמבלי <code>TRAP</code> (או
+                            syscall / int 0x80). רק ברגע ביצוע פקודת החומרה TRAP, המעבד לוקח פיקוד, משנה את הדגל שלו
+                            מ-User ל-Kernel, וקופץ לקוד הטיפול בקרנל. לכן התשובה היא אך ורק בעקבות ביצוע ה-TRAP.</p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mb-2 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i> פתרון
+                    </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                    <div class="text-sm text-slate-700 font-medium leading-relaxed space-y-4">
+                        <p>המעבר ממצב משתמש למצב ליבה (Kernel Mode) מתבצע <strong>אך ורק בעקבות ביצוע קריאת המערכת עצמה
+                                ברמת החומרה – פקודת ה-TRAP.</strong></p>
+                        <p><strong>הסבר השתלשלות האירועים:</strong></p>
+                        <ol class="list-decimal list-inside space-y-2 ml-4 mt-2">
+                            <li><strong>פונקציית הספרייה (Printf):</strong> מהווה כלי עזר ברמה גבוהה המופעל לחלוטין
+                                ב-User Mode. היא מעצבת את המחרוזות, ממירה טיפוסים, ואורזת את הנתונים, ולאחר מכן קוראת
+                                למעטפת המערכת. אין לה שום גישה למשאבי קרנל.</li>
+                            <li><strong>מעטפת קריאת מערכת (Write):</strong> פונקציית ה-Wrapper (שגם היא עדיין מבוצעת
+                                ב-User Mode), מקבלת את הבקשה ומכינה את השטח: היא מכניסה את מספרי הפרמטרים ואת קוד הזיהוי
+                                של קריאת המערכת (Syscall ID) לאוגרי המעבד. בשורה האחרונה שלה היא מפעילה את פקודת המעבד
+                                <code>TRAP</code>.
+                            </li>
+                            <li><strong>פקודת ה-TRAP:</strong> זוהי פסיקת חומרה/תוכנה מיוחדת. ברגע שהמעבד מפענח את פקודת
+                                ה-TRAP, הוא משנה את ביט המצב (Mode Bit) שלו באופן חומרתי מ-User ל-Kernel, ועובר להריץ את
+                                קוד הטיפול (Syscall Handler) המצוי בליבת מערכת ההפעלה בסביבה מאובטחת.</li>
+                        </ol>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 11 -->
+        <!-- ============================================== -->
+        <div id="tab-q11" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 11 (חלק ג')</h2>
+
+            <div class="question-box mb-6 relative">
+                <button onclick="cycleTooltipState()"
+                    class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                    <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                    <i
+                        class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                    <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל -
+                        בריחוף</span>
+                    <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                    <div
+                        class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    </div>
+                </button>
+
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+                    מה יהיה הפלט אחרי הרצת הקוד הבא במערכת XV6 שתומכת בקונטיינרים?<br>
+                    ידוע שה-PID הגדול ביותר שהיה במערכת לפני הרצת הקוד היה 15.<br>
+                    ניתן להניח שכל קריאות מערכת מצליחות.
+                </p>
+                <pre class="code-block p-4 m-0 text-sm font-mono"
+                    dir="ltr"><code><mark class="interactive-tooltip" data-key="q11_1">pid = fork();</mark>
+<mark class="interactive-tooltip" data-key="q11_2">if (pid > 0) {</mark>
+    <mark class="interactive-tooltip" data-key="q11_3">unshare(PID_NS);</mark>
+    <mark class="interactive-tooltip" data-key="q11_4">pid = fork();</mark>
+    <mark class="interactive-tooltip" data-key="q11_5">if (pid > 0) printf (stdout, "Parent’s perspective on his child: PID=%d \n", pid);</mark>
+    <mark class="interactive-tooltip" data-key="q11_6">else {</mark>
+        <mark class="interactive-tooltip" data-key="q11_7">printf (stdout, " Child's perspective on his parent: PID=%d \n", getppid());</mark>
+        <mark class="interactive-tooltip" data-key="q11_8">printf (stdout, " Child's perspective on himself: PID=%d \n", getpid());</mark>
+    <mark class="interactive-tooltip" data-key="q11_9">}</mark>
+<mark class="interactive-tooltip" data-key="q11_10">}</mark>
+<mark class="interactive-tooltip" data-key="q11_11">else printf(stdout, "Son perspective on himself: PID=%d \n", getpid);</mark></code></pre>
+            </div>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                השאלה:</strong> פה הקוד מבלבל. שימו לב: האב המקורי (PID נגיד 15) מבצע את ה-fork הראשון.
+                            נוצר בן בשם Son עם PID 16. <br>
+                            1. ה-Son נכנס מיד ל-<code>else</code> בסוף, ומדפיס ש-PID שלו זה מה שמוחזר
+                            מ-<code>getpid</code> (בגרסה המודפסת של המבחן חסר `()` בסוף המילה `getpid` בשורה האחרונה, אז
+                            או שזה מדפיס כתובת של פונקציה או שהוא התכוון ל-16. נסביר שזה 16).<br>
+                            2. האב (PID 15, שקיבל pid=16 ב-fork) נכנס ל-<code>if(pid>0)</code>. הוא קורא
+                            ל-<code>unshare(PID_NS)</code>. כזכור, unshare שולחת למרחב מבודד <strong>רק ילדים חדשים שעוד
+                                לא נוצרו</strong>.<br>
+                            3. האב מבצע <code>fork()</code> חדש. נוצר "Child" שמקבל PID גלובלי 17. כיוון שה-unshare
+                            הופעל, במרחב ה-Namespace החדש שלו ה-Child מתנהג כ-PID 1.<br>
+                            4. האב מדפיס את נקודת המבט שלו על ה-Child (שזה המספר שהוא רואה במרחב הגלובלי, כלומר 17).<br>
+                            5. ה-Child קורא ל-getppid(). כיוון שהאב שלו (15) נמצא מחוץ למחיצה הוירטואלית והילד מבודד
+                            בפנים, המערכת מחזירה תמיד 0 כשמדובר באב "חיצוני". הוא קורא ל-getpid() ומקבל 1 (כי הוא התהליך
+                            הראשון במחיצה).</p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mb-2 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i> פתרון
+                    </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                    <div class="text-sm text-slate-700 font-medium leading-relaxed">
+                        <p class="mb-3"><strong>הפלט שיודפס למסך (סדר ההדפסות תלוי בתזמון המעבד, אך התוכן
+                                קבוע):</strong></p>
+                        <div class="bg-slate-800 text-accent font-mono p-3 rounded text-sm mb-4 inline-block" dir="ltr">
+                            Son perspective on himself: PID=16<br>
+                            Parent’s perspective on his child: PID=17<br>
+                            Child's perspective on his parent: PID=0<br>
+                            Child's perspective on himself: PID=1
+                        </div>
+
+                        <p class="mt-2 font-bold">הסבר מפורט למהלך התוכנית:</p>
+                        <ul class="list-disc list-inside space-y-2 ml-4">
+                            <li><strong>יצירת ה-Son:</strong> התהליך המקורי קורא ל-<code>fork()</code>. מכיוון שה-PID
+                                הגדול ביותר היה 15, נוצר תהליך בן (Son) שמקבל את המספר הגלובלי <strong>16</strong>.
+                                ה-Son הולך לשורת ה-<code>else</code> בסוף הקוד ומדפיס שהוא עצמו מזוהה כ-16 (בלי כל קשר
+                                לקונטיינרים).</li>
+                            <li><strong>יצירת מחיצת קונטיינר (Namespace):</strong> תהליך האב נכנס לבלוק
+                                ה-<code>if</code>. הוא מריץ <code>unshare(PID_NS)</code>. הוראה זו מכריזה שכל יצירת ילד
+                                <strong>עתידית</strong> מנקודה זו והלאה, תכניס את הילד לסביבת PID מבודדת.
+                            </li>
+                            <li><strong>יצירת ה-Child (הילד בקונטיינר):</strong> האב קורא ל-<code>fork()</code> שני.
+                                נוצר ילד חדש שזוכה ל-PID הגלובלי הבא במערכת: <strong>17</strong>. פקודת ה-fork תמיד
+                                מחזירה לאב את ה-PID הרגיל שהוא מכיר מהעולם שלו, לכן האב מקבל 17 ומדפיס: "Parent’s
+                                perspective... PID=17".</li>
+                            <li><strong>נקודת המבט מתוך הקונטיינר:</strong> הילד החדש נכנס לבלוק ה-<code>else</code> (כי
+                                pid==0). הוא נולד לתוך עולם מבודד משלו בגלל ה-unshare. בעולם זה, הוא התהליך הראשון ולכן
+                                פקודת <code>getpid()</code> מחזירה לו <strong>1</strong>. </li>
+                            <li>כשהילד מנסה לברר מי האבא שלו דרך <code>getppid()</code>, הוא פונה למערכת. כיוון שהאב
+                                יושב מחוץ לקונטיינר במרחב הראשי הגלובלי, חוקי הבידוד מונעים מהילד לראות PIDs חיצוניים
+                                כדי לא לשבור את האשליה. במקרה בו ההורה לא נמצא באותו Namespace של הילד, הפקודה מחזירה
+                                למשתמש אוטומטית <strong>0</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 12 -->
+        <!-- ============================================== -->
+        <div id="tab-q12" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 12 (חלק ג')</h2>
+
+            <div class="question-box mb-6 relative">
+                <button onclick="cycleTooltipState()"
+                    class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                    <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                    <i
+                        class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                    <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל -
+                        בריחוף</span>
+                    <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                    <div
+                        class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    </div>
+                </button>
+
+                <h4 class="font-bold text-slate-800 mb-4 text-lg">א. מה יודפס בעקבות הרצת קטע קוד הבא בתוך מערכת xv6
+                    שתומכת בקונטיינרים?<br>
+                    ב. כמה קבצים file.txt יווצרו בסה"כ בדיסק?</h4>
+                <pre class="code-block p-4 m-0 text-sm font-mono" dir="ltr"><code><mark class="interactive-tooltip" data-key="q12_1">int pid = fork();</mark>
+<mark class="interactive-tooltip" data-key="q12_2">if (pid == 0) {</mark>
+    <mark class="interactive-tooltip" data-key="q12_3">unshare (MOUNT_NS);</mark>
+    <mark class="interactive-tooltip" data-key="q12_4">mkdir (“MDirA”);</mark>
+    <mark class="interactive-tooltip" data-key="q12_5">mount (“internal_fs_a”,”MDirA”,0); //mount a preformatted internal_fs_a</mark>
+    <mark class="interactive-tooltip" data-key="q12_6">mkdir (“MDirB”);</mark>
+    <mark class="interactive-tooltip" data-key="q12_7">mount (“internal_fs_b”,”MDirB”,0); //mount a preformatted internal_fs_b</mark>
+
+    <mark class="interactive-tooltip" data-key="q12_8">int fd1 = open (“MDirA/file.txt”,O_CREATE|O_RDWR);</mark>
+    <mark class="interactive-tooltip" data-key="q12_9">write (fd1 ,“Some text\n”,10);</mark>
+    <mark class="interactive-tooltip" data-key="q12_10">close (fd1);</mark>
+    <mark class="interactive-tooltip" data-key="q12_11">int fd2 = open (“MDirB/file.txt”,O_CREATE|O_RDWR);</mark>
+    <mark class="interactive-tooltip" data-key="q12_12">write (fd2 ,“Some text\n”,10);</mark>
+    <mark class="interactive-tooltip" data-key="q12_13">close (fd2);</mark>
+<mark class="interactive-tooltip" data-key="q12_14">}</mark>
+<mark class="interactive-tooltip" data-key="q12_15">If (pid>0) {</mark>
+    <mark class="interactive-tooltip" data-key="q12_16">sleep (10000); // wait for child to finish</mark>
+    <mark class="interactive-tooltip" data-key="q12_17">if (open (“MDirB/file.txt”,O_RDONLY) < 0) printf (stderr, "father failed to open\n");</mark>
+    <mark class="interactive-tooltip" data-key="q12_18">else printf (stderr, "father succeeded\n");</mark>
+<mark class="interactive-tooltip" data-key="q12_19">}</mark>
+<mark class="interactive-tooltip" data-key="q12_20">if( pid == 0) {</mark>
+    <mark class="interactive-tooltip" data-key="q12_21">if (open (“MDirA/file.txt”,O_RDONLY) < 0) printf (stderr, "son failed to open\n");</mark>
+    <mark class="interactive-tooltip" data-key="q12_22">else printf (stderr, "son succeeded\n");</mark>
+<mark class="interactive-tooltip" data-key="q12_23">}</mark></code></pre>
+            </div>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100 p-4">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm"><i class="fa-solid fa-brain ml-1"></i> <strong>הראש של
+                                השאלה:</strong> השאלה הזו ממחישה למה נועד ה-MOUNT_NS. ה-<code>fork()</code> בוצע
+                            <strong>לפני</strong> ה-unshare. מה שאומר שכשנוצר הבן, הוא והאב באותו עולם. אבל אז, הבן נכנס
+                            ומיד קורא ל-<code>unshare(MOUNT_NS)</code>. ברגע זה, טבלת מערכת הקבצים של הבן מתפצלת
+                            (מתנתקת) מטבלת מערכת הקבצים של האב. כל <code>mount</code> שהבן עושה (ל-MDirA ו-MDirB) יתרחש
+                            <strong>אך ורק בתוך ה"מפה" של הבן</strong>. האבא, שהמשיך לישון בחוץ, לעולם לא יראה את מערכות
+                            הקבצים שהבן עיגן. לכן האב ייכשל בפתיחת הקובץ. הבן לעומתו נמצא במפה בה העגינה התרחשה, והוא
+                            יצליח לקרוא מהרצפה שלו.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mb-2 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 text-xl"></i> פתרון
+                    </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-slate-50 border-t border-slate-100 p-4">
+                    <div class="text-sm text-slate-700 font-medium leading-relaxed">
+                        <p class="mb-2"><strong>פתרון סעיף א' (מה יודפס למסך):</strong></p>
+                        <div class="bg-slate-800 text-accent font-mono p-3 rounded text-sm mb-4 inline-block" dir="ltr">
+                            father failed to open<br>
+                            son succeeded
+                        </div>
+
+                        <p class="mb-4"><strong>הסבר:</strong> כאשר הבן מריץ <code>unshare(MOUNT_NS)</code>, הוא מייצר
+                            לעצמו העתק פרטי ונפרד לחלוטין של מפת העגינה (Mount Table) במערכת הקבצים. לאחר מכן הוא מבצע
+                            פקודות <code>mount</code>. פקודות אלו מעדכנות את ההצבעות <strong>רק בתוך המרחב של
+                                הבן</strong>. האב, שלא חווה את הניתוק, ממשיך להחזיק במפה המקורית שבה מערכות הקבצים A ו-B
+                            לא עוגנו מעולם על התיקיות הללו. כשהאב מתעורר, התיקייה MDirB נראית עבורו ריקה, ולכן פתיחת
+                            הקובץ מתוכה נכשלת.<br>
+                            הבן, לעומת זאת, נמצא באותו מרחב עגינה פרטי שבו הוא עצמו מיפה את הכוננים, ולכן פקודת ה-open
+                            שלו מסתיימת בהצלחה.</p>
+
+                        <hr class="my-4 border-slate-300">
+
+                        <p class="mb-2"><strong>פתרון סעיף ב' (כמה קבצים יווצרו בדיסק):</strong></p>
+                        <p class="font-bold text-lg mb-1">תשובה: 2 קבצים.</p>
+                        <p>פקודות ה-write בקוד הצליחו ללא שום שגיאה בתוך סביבת הבן. העובדה שהאבא לא יכול לראות אותם בגלל
+                            בידוד תוכנתי של טבלאות עגינה, לא מוחקת אותם מהפיזיקה של הדיסק. בפועל נוצרו שני קבצים שונים:
+                            קובץ `file.txt` אחד נכתב פיזית על מערכת הקבצים שיושבת ב-`internal_fs_a`, וקובץ `file.txt`
+                            שני נכתב פיזית על מערכת הקבצים שיושבת ב-`internal_fs_b`.</p>
+                    </div>
+                </div>
+            </details>
+
+        </div>
+
+        <!-- Footer (Global) -->
+        <div class="max-w-5xl mx-auto mt-12 pt-6 border-t border-slate-200 flex justify-between">
+            <button onclick="navQuestion('prev')"
+                class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded-lg font-bold transition-colors shadow-sm flex items-center gap-2"><i
+                    class="fa-solid fa-arrow-right"></i> שאלה קודמת</button>
+            <button onclick="navQuestion('next')"
+                class="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-md flex items-center gap-2">שאלה
+                הבאה <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+    </main>
+
+    <!-- Detailed Explanation Modal -->
+    <div id="explanation-modal"
+        class="fixed inset-0 z-[100] bg-slate-900/5 hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh] pointer-events-auto border border-slate-200/60"
+            id="modal-card" onmouseenter="clearCloseTimer()"
+            onmouseleave="if(tooltipState === 3) closeModal(null, true)">
+
+            <div class="p-4 overflow-y-auto flex-1">
+                <!-- Code Snippet Section -->
+                <div class="bg-[#282c34] rounded-t-2xl p-5 border border-[#3e4451] overflow-x-auto shadow-inner">
+                    <pre dir="ltr"
+                        style="margin:0; padding:0; background:transparent;"><code id="modal-code" class="text-[0.95rem] font-mono text-slate-300 leading-relaxed block text-left w-full" style="text-shadow: none;"></code></pre>
+                </div>
+                <!-- Explanation Section -->
+                <div
+                    class="bg-blue-50/50 border border-t-0 border-blue-100 rounded-b-2xl p-6 text-slate-700 leading-relaxed text-[1.1rem]">
+                    <p id="modal-explanation"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const explanationsDict = {
+            "q4_1": "<strong>for (int i = 0; i < 32; i++)</strong><br>הלולאה החיצונית רצה על השורות. כלומר אנו ניגשים לשורה הראשונה (i=0), עוברים על כל העמודות שלה, ואז עוברים לשורה השנייה. זוהי גישה רציפה בזיכרון (Row-Order).",
+            "q4_2": "<strong>for (int j = 0; j < 32; j++)</strong><br>הלולאה הפנימית רצה על העמודות. מכיוון שמערכים נשמרים בזיכרון שורה אחר שורה, סריקת עמודות בתוך השורה מנצלת את ה-Locality of Reference.",
+            "q4_3": "<strong>D[ i ][ j ] = 0.0;</strong><br>גישה לתא ואיפוסו. בתא הראשון בדף חדש יתרחש Page Fault, ושאר התאים באותו הדף ייגשו ישירות מהזיכרון הפיזי ללא תקלות.",
+            "q7_var_1": "<strong>semaphore BlockRead = 1;</strong><br>סמפור זה משמש כ'שער כניסה'. כותב נועל אותו כדי לעצור קוראים חדשים מלהיכנס, וכך משיג העדפת כותבים.",
+            "q7_var_2": "<strong>semaphore BlockWrite = 1;</strong><br>מגן על הגישה הפיזית למידע. הוא מבטיח מניעה הדדית (Mutual Exclusion) בין כותב לכותב אחר, ובין קוראים לכותב.",
+            "q7_var_3": "<strong>int Readers = 0, Writers = 0;</strong><br>מונים (Counters). כל תהליך שמגיע למערכת, מעדכן את המונה המתאים כדי לדעת האם הוא הראשון או האחרון מסוגו.",
+            "q7_var_4": "<strong>semaphore RMutex = 1;</strong><br>מגן על מונה הקוראים (Readers). מבטיח שפעולות על המונה יהיו אטומיות.",
+            "q7_var_5": "<strong>semaphore WMutex = 1;</strong><br>מגן על מונה הכותבים (Writers). מבטיח שפעולות העדכון על המונה יהיו אטומיות ובטוחות בסביבה מרובת תהליכים.",
+            "q7_r_1": "<strong>1. down(BlockRead);</strong><br>הקורא מנסה להיכנס למערכת. אם כותב נוכח, השער נעול (0) והקורא ממתין כאן. אם פתוח, הוא יורד ל-0.",
+            "q7_r_2": "<strong>2. down(RMutex);</strong><br>הקורא נועל את המונה כדי שיוכל לעדכן אותו בבטחה מבלי שקורא אחר יתערב באמצע.",
+            "q7_r_3": "<strong>3. Readers++;</strong><br>עדכון המונה: קורא נוסף הצטרף למערכת.",
+            "q7_r_4": "<strong>4. if (Readers == 1)</strong><br>הקורא בודק - האם אני הקורא הראשון שהגיע למערכת הריקה?",
+            "q7_r_5": "<strong>5. down(BlockWrite);</strong><br>אם הוא הראשון, עליו לנעול את המשאב הפיזי בפני כותבים. כעת אף כותב לא יכול לכתוב.",
+            "q7_r_6": "<strong>6. up(RMutex);</strong><br>סיימנו לעדכן את המונה, אפשר לשחרר את מנעול המונה לקוראים אחרים.",
+            "q7_r_7": "<strong>7. up(BlockRead);</strong><br>חשוב מאוד: הקורא פותח מחדש את שער הכניסה (BlockRead) כדי שקוראים נוספים יוכלו להיכנס לקרוא במקביל אליו.",
+            "q7_r_8": "<strong>8. &lt; Do the Reading &gt;</strong><br>שלב הקריאה עצמו מהמאגר. מספר קוראים יכולים לשהות כאן במקביל (Concurrent Reading).",
+            "q7_r_9": "<strong>9. down(RMutex);</strong><br>הקורא סיים ורוצה לעזוב. הוא נועל שוב את המונה שלו כדי להפחית ממנו בבטחה.",
+            "q7_r_10": "<strong>10. Readers--;</strong><br>הקורא עוזב ולכן המונה מופחת ב-1.",
+            "q7_r_11": "<strong>11. if (Readers == 0)</strong><br>הקורא בודק - האם אני הקורא האחרון שעוזב את המערכת?",
+            "q7_r_12": "<strong>12. up(BlockWrite);</strong><br>אם הוא האחרון, המערכת כעת ריקה מקוראים! עליו לשחרר את המשאב הפיזי כדי שכותבים יוכלו סוף סוף לכתוב.",
+            "q7_r_13": "<strong>13. up(RMutex);</strong><br>משחרר את המנעול של קטע העדכון של מונה הקוראים.",
+            "q7_w_1": "<strong>1. down(WMutex);</strong><br>הכותב נועל את מונה הכותבים כדי לעדכן אותו בבטחה.",
+            "q7_w_2": "<strong>2. Writers++;</strong><br>עדכון המונה: כותב נוסף הצטרף. כעת ברור למערכת שיש כותבים בתור.",
+            "q7_w_3": "<strong>3. if (Writers == 1)</strong><br>האם אני הכותב הראשון שמגיע למערכת?",
+            "q7_w_4": "<strong>4. down(BlockRead);</strong><br>אם הוא הראשון, עליו לנעול מיד את שער הכניסה לקוראים! זהו המנגנון המעניק לכותבים את ההעדפה (Writer Preference). קוראים חדשים ייתקעו בחוץ.",
+            "q7_w_5": "<strong>5. up(WMutex);</strong><br>סיימנו לעדכן את מונה הכותבים.",
+            "q7_w_6": "<strong>6. down(BlockWrite);</strong><br>הכותב מנסה לגשת למשאב הפיזי. אם יש קוראים שעדיין קוראים בפנים, הוא ימתין כאן. מובטחת מניעה הדדית.",
+            "q7_w_7": "<strong>7. &lt; Do the Writing &gt;</strong><br>שלב הכתיבה - הכותב מעדכן את המאגר הפיזי בבטחה. הכתיבה נעשית באקסקלוסיביות.",
+            "q7_w_8": "<strong>8. up(BlockWrite);</strong><br>הכותב סיים לכתוב ומשחרר את המשאב הפיזי עבור הכותב הבא שממתין.",
+            "q7_w_9": "<strong>9. down(WMutex);</strong><br>הכותב מתכוון לעזוב, ולכן עליו לעדכן את המונה.",
+            "q7_w_10": "<strong>10. Writers--;</strong><br>הפחתת המונה כיוון שהכותב סיים לחלוטין את עבודתו.",
+            "q7_w_11": "<strong>11. if (Writers == 0)</strong><br>האם לא נותרו יותר שום כותבים בתור?",
+            "q7_w_12": "<strong>12. up(BlockRead);</strong><br>אם הוא הכותב האחרון, עליו לפתוח מחדש את שער הכניסה לאפשר לקוראים לחזור ולשטוף את המערכת.",
+            "q7_w_13": "<strong>13. up(WMutex);</strong><br>משחרר את המנעול של מונה הכותבים.",
+            "q11_1": "<strong>pid = fork();</strong><br>התהליך המקורי (נגיד PID 15) יוצר בן ראשון (Son) שיקבל PID 16.",
+            "q11_2": "<strong>if (pid > 0) {</strong><br>האב נכנס לכאן (כי pid == 16, שזה גדול מ-0). הבן (Son) קופץ ל-else בסוף.",
+            "q11_3": "<strong>unshare(PID_NS);</strong><br>האב מנתק את ה-Namespace של ה-PIDs עבור כל הילדים העתידיים שלו. כלומר, ילדים חדשים ייוולדו למרחב מבודד.",
+            "q11_4": "<strong>pid = fork();</strong><br>האב יוצר ילד שני (Child). ה-Child מקבל PID גלובלי 17 (בעולם האמיתי).",
+            "q11_5": "<strong>if (pid > 0) ...</strong><br>האב נמצא בעולם הגלובלי, ולכן הוא רואה את ה-PID האמיתי של הילד השני (17) ומדפיס אותו.",
+            "q11_6": "<strong>else {</strong><br>הילד השני (Child) נכנס לכאן (pid == 0).",
+            "q11_7": "<strong>printf (..., getppid());</strong><br>ה-Child מנסה לראות מי האבא שלו. אבל האבא (15) לא נמצא במרחב המבודד שלו, ולכן המערכת מחזירה 0.",
+            "q11_8": "<strong>printf (..., getpid());</strong><br>ה-Child הוא התהליך הראשון שנוצר במרחב המבודד (PID_NS), ולכן מבחינתו ה-PID שלו הוא 1.",
+            "q11_9": "<strong>}</strong><br>סיום בלוק הילד השני.",
+            "q11_10": "<strong>}</strong><br>סיום בלוק האב.",
+            "q11_11": "<strong>else ...</strong><br>הילד הראשון (Son, PID 16) נכנס לכאן מיד בהתחלה (כי לאב הוא החזיר 16, אבל לעצמו הוא החזיר 0). הוא נמצא בעולם הרגיל ולכן ידפיס 16.",
+            "q12_1": "<strong>int pid = fork();</strong><br>התהליך מפצל את עצמו לשניים: אב ובן. ה-fork קורה בעולם המשותף.",
+            "q12_2": "<strong>if (pid == 0) {</strong><br>הבן נכנס לבלוק הזה. האב ממשיך הלאה ל-If (pid>0).",
+            "q12_3": "<strong>unshare (MOUNT_NS);</strong><br>הבן מנתק את טבלת העגינה (Mount Table) שלו מטבלת המערכת. מעכשיו, כל עגינה (mount) שהוא יעשה תהיה פרטית לו בלבד והאב לא יראה אותה!",
+            "q12_4": "<strong>mkdir (“MDirA”);</strong><br>יוצר תיקייה חדשה בשם MDirA.",
+            "q12_5": "<strong>mount (“internal_fs_a”,”MDirA”,0);</strong><br>מעגן מערכת קבצים פנימית א' על התיקייה MDirA במרחב שלו.",
+            "q12_6": "<strong>mkdir (“MDirB”);</strong><br>יוצר תיקייה חדשה בשם MDirB.",
+            "q12_7": "<strong>mount (“internal_fs_b”,”MDirB”,0);</strong><br>מעגן מערכת קבצים פנימית ב' על התיקייה MDirB במרחב שלו.",
+            "q12_8": "<strong>int fd1 = open (“MDirA/file.txt”...);</strong><br>פותח (ויוצר) קובץ טקסט בתוך התיקייה MDirA (שהיא בעצם מערכת הקבצים internal_fs_a).",
+            "q12_9": "<strong>write (fd1 ,“Some text\\n”,10);</strong><br>כותב נתונים לקובץ הראשון. קובץ פיזי ראשון נוצר בדיסק!",
+            "q12_10": "<strong>close (fd1);</strong><br>סוגר את הקובץ.",
+            "q12_11": "<strong>int fd2 = open (“MDirB/file.txt”...);</strong><br>פותח (ויוצר) קובץ טקסט בתוך התיקייה MDirB (שהיא בעצם מערכת הקבצים internal_fs_b).",
+            "q12_12": "<strong>write (fd2 ,“Some text\\n”,10);</strong><br>כותב נתונים לקובץ השני. קובץ פיזי שני נוצר בדיסק!",
+            "q12_13": "<strong>close (fd2);</strong><br>סוגר את הקובץ. הבן מסיים את בלוק ה-if שלו ויוצא.",
+            "q12_14": "<strong>}</strong><br>סיום בלוק הבן הראשון.",
+            "q12_15": "<strong>If (pid>0) {</strong><br>האב נכנס לבלוק הזה.",
+            "q12_16": "<strong>sleep (10000);</strong><br>האב הולך לישון כדי לתת לבן זמן לרוץ ולסיים את העבודה (למרות שתזמון עדיף לעשות עם wait, השאלה מניחה שזה מספיק).",
+            "q12_17": "<strong>if (open (“MDirB/file.txt”...) < 0) ...</strong><br>כשהאב מתעורר הוא מנסה לפתוח את הקובץ. אבל האב יושב במרחב המקורי, והתיקייה MDirB ריקה בו (מעולם לא עוגנה אליה internal_fs_b במרחב שלו). הפתיחה נכשלת!",
+            "q12_18": "<strong>else printf (stderr, \"father succeeded\\n\");</strong><br>לכאן הוא לא יגיע.",
+            "q12_19": "<strong>}</strong><br>סיום הבלוק של האב.",
+            "q12_20": "<strong>if( pid == 0) {</strong><br>הבן מגיע גם לכאן (pid שלו הוא 0).",
+            "q12_21": "<strong>if (open (“MDirA/file.txt”...) < 0) ...</strong><br>הבן מנסה לקרוא את הקובץ שיצר. כיוון שהוא נמצא במרחב שבו MDirA היא עגינה חוקית, הפתיחה מצליחה!",
+            "q12_22": "<strong>else printf (stderr, \"son succeeded\\n\");</strong><br>יודפס בהצלחה!",
+            "q12_23": "<strong>}</strong><br>סיום בלוק הקריאה של הבן."
+        };
+
+        // Tooltips Logic
+        let tooltipState = 3; // 1 = none, 2 = click, 3 = hover
+        let hoverCloseTimer = null;
+
+        const tooltipConfig = {
+            1: { icon: "fa-code", text: "ללא הסברים", color: "text-slate-400", glow: "from-slate-500", glowOp: "opacity-30" },
+            2: { icon: "fa-hand-pointer", text: "מופעל - בלחיצה", color: "text-emerald-400", glow: "from-emerald-400", glowOp: "opacity-70" },
+            3: { icon: "fa-mouse-pointer", text: "מופעל - בריחוף", color: "text-primary", glow: "from-primary", glowOp: "opacity-70" }
+        };
+
+        function clearCloseTimer() {
+            if (hoverCloseTimer) {
+                clearTimeout(hoverCloseTimer);
+                hoverCloseTimer = null;
+            }
+        }
+
+        function startCloseTimer() {
+            if (tooltipState !== 3) return;
+            clearCloseTimer();
+            hoverCloseTimer = setTimeout(() => {
+                closeModal(null, true);
+            }, 300);
+        }
+
+        document.addEventListener('click', (event) => {
+            const modal = document.getElementById('explanation-modal');
+            const modalCard = document.getElementById('modal-card');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (!modalCard.contains(event.target) && !event.target.closest('.interactive-tooltip')) {
+                    closeModal(null, true);
+                }
+            }
+        });
+
+        function updateCyclerUI() {
+            const config = tooltipConfig[tooltipState];
+            const btns = document.querySelectorAll('.tooltip-cycler');
+            btns.forEach(btn => {
+                const icon = btn.querySelector('.cycler-icon');
+                const text = btn.querySelector('.cycler-text');
+                const glow = btn.querySelector('.cycler-glow');
+
+                btn.classList.remove('cycler-anim');
+                void btn.offsetWidth;
+                btn.classList.add('cycler-anim');
+
+                if (icon) icon.className = `cycler-icon fa-solid ${config.icon} text-lg ${config.color} transition-transform group-hover:scale-110 my-0.5`;
+                if (text) text.textContent = config.text;
+                if (glow) glow.className = `cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t ${config.glow}/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`;
+            });
+
+            initTooltips();
+        }
+
+        function cycleTooltipState() {
+            tooltipState = tooltipState === 3 ? 1 : tooltipState + 1;
+            localStorage.setItem('osExamTooltipState', tooltipState);
+            updateCyclerUI();
+        }
+
+        function openModal(codeText, explanationHtml) {
+            const modal = document.getElementById('explanation-modal');
+            const modalCard = document.getElementById('modal-card');
+            const modalCode = document.getElementById('modal-code');
+            const modalExplanation = document.getElementById('modal-explanation');
+
+            modalCode.textContent = codeText.replace(/^\n+|\n+$/g, '');
+            modalExplanation.innerHTML = explanationHtml;
+
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalCard.classList.remove('scale-95');
+            modal.classList.add('flex');
+        }
+
+        function closeModal(event, force = false) {
+            if (event && !force) {
+                if (event.target !== document.getElementById('explanation-modal')) return;
+            }
+            const modal = document.getElementById('explanation-modal');
+            const modalCard = document.getElementById('modal-card');
+
+            modal.classList.add('opacity-0');
+            modalCard.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function initTooltips() {
+            const marks = document.querySelectorAll('mark.interactive-tooltip');
+            marks.forEach(m => {
+                m.classList.remove('tooltip-active-style');
+                m.style.pointerEvents = 'none';
+                const newMark = m.cloneNode(true);
+                m.parentNode.replaceChild(newMark, m);
+            });
+
+            if (tooltipState === 1) return;
+
+            const freshMarks = document.querySelectorAll('mark.interactive-tooltip');
+            freshMarks.forEach(m => {
+                m.classList.add('tooltip-active-style');
+                m.style.pointerEvents = 'auto';
+
+                const explanationKey = m.getAttribute('data-key');
+                const explanation = explanationsDict[explanationKey] || "הסבר חסר";
+                const codeText = m.textContent;
+
+                if (tooltipState === 2) {
+                    m.addEventListener('click', () => openModal(codeText, explanation));
+                } else if (tooltipState === 3) {
+                    m.addEventListener('mouseenter', () => {
+                        clearCloseTimer();
+                        openModal(codeText, explanation);
+                    });
+                    m.addEventListener('mouseleave', () => {
+                        startCloseTimer();
+                    });
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedState = localStorage.getItem('osExamTooltipState');
+            if (savedState) tooltipState = parseInt(savedState);
+            updateCyclerUI();
+        });
+
+        const questionsList = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12'];
+        let currentQIndex = 0;
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            const btn = document.getElementById('sidebar-toggle');
+            btn.classList.toggle('md:right-[19rem]');
+        }
+
+        function navQuestion(dir) {
+            if (dir === 'next' && currentQIndex < questionsList.length - 1) {
+                switchTab(questionsList[currentQIndex + 1]);
+            } else if (dir === 'prev' && currentQIndex > 0) {
+                switchTab(questionsList[currentQIndex - 1]);
+            }
+        }
+
+        function switchTab(tabId) {
+            currentQIndex = questionsList.indexOf(tabId);
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('block');
+                tab.classList.add('hidden');
+            });
+            const selectedTab = document.getElementById('tab-' + tabId);
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
+                selectedTab.classList.add('block');
+            }
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white";
+                btn.querySelector('div:first-child').className = "w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold";
+            });
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-white border border-primary/30 transition-colors text-right";
+                activeBtn.querySelector('div:first-child').className = "w-8 h-8 rounded-md bg-primary/30 text-accent flex items-center justify-center flex-shrink-0 font-bold";
+            }
+        }
+
+        function checkAnswer(btn, isCorrect, questionId) {
+            const container = btn.closest('ul');
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> ' + btn.innerHTML;
+            } else {
+                btn.classList.add('incorrect');
+                btn.innerHTML = '<i class="fa-solid fa-xmark mr-2"></i> ' + btn.innerHTML;
+                buttons.forEach(b => {
+                    if (b.getAttribute('data-correct') === 'true') {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            const explanations = document.getElementById('exp-' + questionId);
+            if (explanations) {
+                explanations.style.display = 'block';
+                explanations.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    </script>
+</body>
+
+</html>
