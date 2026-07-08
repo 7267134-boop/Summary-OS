@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכות הפעלה - פתרון מבחן מסכם (100% מדויק)</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#475569',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        accent: '#38bdf8',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'Segoe UI', 'Tahoma', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .code-block {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            direction: ltr;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            border-radius: 0.75rem;
+            background-color: #1e293b !important;
+            color: #e2e8f0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-category {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            padding-right: 1rem;
+        }
+
+        .question-box {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-right: 4px solid #3b82f6;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .mindset-box {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .solution-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-right: 4px solid #22c55e;
+        }
+
+        /* Quiz Styles */
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px solid #e2e8f0;
+            background-color: #f8fafc;
+            color: #334155;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .option-btn.correct {
+            background-color: #ecfdf5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        /* Accordion Styles */
+        details {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        summary {
+            padding: 1.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details[open] summary {
+            border-bottom-color: #e2e8f0;
+            background-color: #f1f5f9;
+        }
+
+        details .details-content {
+            padding: 1.5rem;
+            background-color: #ffffff;
+            line-height: 1.7;
+        }
+
+        /* Interactive Code Tooltips */
+        .interactive-tooltip {
+            transition: all 0.2s;
+            border-radius: 4px;
+            color: inherit;
+            background-color: transparent;
+            padding: 2px 0;
+        }
+
+        .interactive-tooltip.tooltip-active-style {
+            cursor: pointer;
+        }
+
+        .interactive-tooltip.tooltip-active-style:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+        }
+
+        @keyframes pulse-soft {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(0.98);
+            }
+        }
+
+        .cycler-anim {
+            animation: pulse-soft 0.3s ease-in-out;
+        }
+
+        #sidebar {
+            transition: margin 0.3s ease;
+        }
+
+        aside.collapsed {
+            margin-right: -18rem;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="w-72 bg-dark text-slate-300 flex flex-col h-full shadow-2xl z-20 flex-shrink-0 transition-all duration-300 relative">
+        <div class="p-6 bg-darker border-b border-slate-800">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <i class="fa-solid fa-server text-accent"></i>
+                OS Master
+            </h1>
+            <p class="text-sm text-slate-400 mt-2">2026b_81 <br><span class="text-xs text-slate-500">נוסח מקורי
+                    מלא</span></p>
+        </div>
+
+        <div class="p-4 flex-1 overflow-y-auto">
+            <div class="nav-category">חלק א' (30 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q1')" id="btn-q1"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-white border border-primary/30 transition-colors text-right">
+                    <div
+                        class="w-8 h-8 rounded-md bg-primary/30 text-accent flex items-center justify-center flex-shrink-0 font-bold">
+                        1</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">יתרון מודל מונוליתי</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q2')" id="btn-q2"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        2</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">וירטואליזציה VT</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q3')" id="btn-q3"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        3</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">זיכרון משותף</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q4')" id="btn-q4"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        4</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">טבלת דפים מהופכת</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q5')" id="btn-q5"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        5</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">חסימת פסיקות – חיסרון עיקרי</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q6')" id="btn-q6"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        6</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">I-Node: יתרון בלוקים גדולים</div>
+                    </div>
+                </button>
+            </nav>
+
+            <div class="nav-category">חלק ב' (55 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q7')" id="btn-q7"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        7</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">סמפור קבוצתי</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q8')" id="btn-q8"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        8</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">רמות טבלת דפים</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q9')" id="btn-q9"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        9</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">סקטור, בלוק ו-SSD</div>
+                    </div>
+                </button>
+            </nav>
+
+            <div class="nav-category">חלק ג' (15 נק')</div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('q10')" id="btn-q10"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        10</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm">וקטור פסיקות (TRAP)</div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q11')" id="btn-q11"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        11</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm"> הוספת תמיכה בקונטיינרים </div>
+                    </div>
+                </button>
+                <button onclick="switchTab('q12')" id="btn-q12"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white">
+                    <div
+                        class="w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold">
+                        12</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm"> BARE METAL מסוג 1 </div>
+                    </div>
+                </button>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative scroll-smooth h-full p-6 md:p-10 pb-24">
+
+        <!-- Sidebar Toggle -->
+        <button onclick="toggleSidebar()"
+            class="fixed top-4 right-4 md:top-6 md:right-[19rem] bg-white border border-slate-200 text-slate-600 w-10 h-10 flex items-center justify-center rounded-md shadow-sm hover:bg-slate-50 transition-all duration-300 z-30"
+            id="sidebar-toggle" title="כווץ/הרחב תפריט">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 1 -->
+        <!-- ============================================== -->
+        <div id="tab-q1" class="tab-content block max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 1</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            במבנה מונוליתי (Monolithic Kernel), כל שירותי ורכיבי מערכת ההפעלה (ניהול זיכרון, מערכת
+                            קבצים, מנהלי התקנים, תזמון תהליכים וכו') מאוגדים יחד ורצים בתוך אותו מרחב כתובות יחיד של
+                            הליבה (Kernel Space). כתוצאה מכך, כאשר רכיב אחד של המערכת צריך להעביר מידע או לבקש שירות
+                            מרכיב אחר, הוא עושה זאת באמצעות קריאה פשוטה ומהירה לפונקציה (Function Call), בדיוק כמו
+                            בתוכנית רגילה.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">כאשר מדובר על מבנה מונוליתי של מערכת הפעלה, מהי
+                    התכונה אשר מהווה יתרון מובהק של המודל ביחס למודלים אחרים?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'q1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> תקורה
+                            (overhead) תקשורת נמוכה בין כל רכיבי מערכת ההפעלה</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> מהירות
+                            ביצוע כל קריאות המערכת</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> תקורה
+                            (overhead) תקשורת נמוכה בין תהליכי המשתמש</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q1')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> יציבות
+                            המערכת</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-q1" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>א'</strong>.<br>
+                    היתרון המובהק והגדול ביותר של ארכיטקטורה מונוליתית הוא הביצועים הגבוהים הנובעים מ<strong>תקורה
+                        (Overhead) מזערית בתקשורת הפנימית של מערכת ההפעלה</strong>. מכיוון שכל הרכיבים חולקים את אותו
+                    מרחב זיכרון, אין צורך במנגנונים מורכבים וכבדים כדי שהם ידברו זה עם זה. התקשורת מתבצעת כקריאה רגילה
+                    לפונקציה.
+                    זאת בניגוד גמור למודלים כמו שרת-לקוח (Microkernel), שבהם רכיבים שונים רצים כתהליכים נפרדים ב-User
+                    Space. במודל כזה, כל תקשורת בין רכיבי המערכת דורשת מנגנון העברת הודעות (Message Passing), מעברים
+                    מרובים בין מצב משתמש למצב ליבה (Mode Switches) והחלפות הקשר (Context Switches), מה שיוצר תקורה גבוהה
+                    ומאט את המערכת משמעותית.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>ב' שגוי:</strong> למרות שקריאות מערכת במודל מונוליתי הן לרוב מהירות (שוב, בגלל שאין
+                            צורך ב-Message passing אחרי המעבר לליבה), לא ניתן לומר ככלל ש"מהירות ביצוע <em>כל</em>
+                            קריאות המערכת" היא היתרון המובהק של המבנה עצמו. היתרון האדריכלי שמגדיר את המודל הוא הדרך שבה
+                            הרכיבים <strong>בתוך</strong> הליבה מתקשרים זה עם זה, ולא בהכרח המהירות האבסולוטית של כל
+                            פנייה של המשתמש.</li>
+                        <li><strong>ג' שגוי:</strong> תקשורת בין תהליכי משתמש (IPC - Inter-Process Communication) תמיד
+                            דורשת התערבות מסוימת של מערכת ההפעלה, ללא קשר למבנה שלה. היתרון של המודל המונוליתי מתייחס
+                            לתקשורת <strong>בין רכיבי מערכת ההפעלה עצמה</strong>, ולא בין תוכניות רגילות שרצות מחוץ לה.
+                        </li>
+                        <li><strong>ד' שגוי בבירור:</strong> יציבות המערכת היא דווקא <strong>החיסרון</strong> המרכזי של
+                            מודל מונוליתי. מכיוון שכל רכיבי מערכת ההפעלה חולקים מרחב כתובות אחד, באג קריטי או קריסה של
+                            רכיב בודד עלולים לדרוס זיכרון של רכיב אחר ולהביא לקריסה של המערכת כולה (Kernel Panic). מודל
+                            Microkernel נחשב להרבה יותר יציב מהבחינה הזו.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 2 -->
+        <!-- ============================================== -->
+        <div id="tab-q2" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 2</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            כדי לאפשר וירטואליזציה יעילה בשיטת "לכוד והדמה" (Trap and Emulate), כל הפקודות שמשפיעות על
+                            משאבי המערכת או תלויות במיקום שלהן בזיכרון נקראות <strong>פקודות רגישות (Sensitive
+                                Instructions)</strong>. הכלל של פופק וגולדברג (Popek and Goldberg) קובע שארכיטקטורת מעבד
+                            תומכת בוירטואליזציה רק אם כל הפקודות הרגישות שלה הן גם <strong>פקודות מיוחסות (Privileged
+                                Instructions)</strong> – כלומר, פקודות שגורמות לפסיקה (TRAP) כאשר מנסים להריץ אותן במצב
+                            משתמש. במעבדי x86 הישנים היו פקודות רגישות שלא גרמו לפסיקה, מה שהקשה מאוד על וירטואליזציה.
+                            טכנולוגיות חומרה כמו VT פתרו את זה.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">איזו תכונה של מעבד CPU הכלולה ב VT (Virtualization
+                    technology) מאפשרת וירטואליזציה יעילה?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> ניסיון
+                            ביצוע פקודות מיוחסות (privileged instructions) במצב משתמש user mode גורם לפסיקה
+                            TRAP</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'q2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> ניסיון
+                            ביצוע פקודות רגישות (sensitive instructions) במצב משתמש user mode גורם לפסיקה TRAP</button>
+                    </li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> פסיקות
+                            חומרה מטופלות רק במצב ראשוני kernel mode של מעבד</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q2')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> פסיקות
+                            תוכנה TRAP גורמות למעבד לעבור ממצב משתמש user mode למצב ראשוני kernel mode</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-q2" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>ב'</strong>.<br>
+                    הבסיס לוירטואליזציה (כמו זו שמנוהלת על ידי ה-Hypervisor/VMM) הוא שהמערכת האורחת (Guest OS) רצה למעשה
+                    במצב שאינו ה-Kernel האמיתי של החומרה. כאשר מערכת ההפעלה האורחת מנסה לבצע פעולה שמשנה את מצב החומרה
+                    (<strong>פקודה רגישה</strong>), ה-Hypervisor חייב לדעת מזה כדי לדמות את הפעולה בעצמו.
+                    טכנולוגיית VT בחומרה מוודאת שכל <strong>פקודה רגישה (Sensitive instruction)</strong> שניסיון להריץ
+                    אותה נעשה מתוך המערכת האורחת, תייצר באופן מיידי פסיקה (TRAP / VM-Exit) שתעביר את השליטה
+                    ל-Hypervisor. כך ה-Hypervisor יכול "ללכוד" את הבקשה, "לדמות" את הפעולה עבור המערכת האורחת, ולהחזיר
+                    לה את השליטה מבלי שתרגיש שאינה רצה על חומרה פיזית אמיתית.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>א' שגוי:</strong> העובדה שפקודות מיוחסות (Privileged) גורמות ל-TRAP כשהן רצות ב-User
+                            Mode היא תכונת בסיס של <strong>כל</strong> מעבד מודרני התומך במערכות הפעלה עם הגנת זיכרון
+                            (Ring 0 / Ring 3), ללא שום קשר לוירטואליזציה או ל-VT. החידוש של VT הוא הרחבת ה-TRAP גם
+                            לפקודות <em>רגישות</em> שאינן בהכרח מיוחסות.</li>
+                        <li><strong>ג' שגוי:</strong> למרות שנכון שפסיקות חומרה מטופלות במצב Kernel, משפט זה מתאר את
+                            מנגנון הפסיקות הכללי של מעבדים ומערכות הפעלה. הוא אינו מצביע על התכונה הספציפית ב-VT שמאפשרת
+                            את הווירטואליזציה עצמה.</li>
+                        <li><strong>ד' שגוי:</strong> מעבר ממצב משתמש למצב ליבה בעקבות פסיקת תוכנה (System Call / TRAP)
+                            הוא מנגנון התקשורת הסטנדרטי בין תוכניות רגילות למערכת ההפעלה. זה קורה בכל מחשב, גם כזה שלא
+                            תומך או לא מריץ וירטואליזציה כלל.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 3 -->
+        <!-- ============================================== -->
+        <div id="tab-q3" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 3</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            במערכות הפעלה מודרניות, כל תהליך "חי" בתוך <strong>מרחב כתובות וירטואלי</strong> (Virtual
+                            Address Space) משלו, שהוא מבודל לחלוטין מתהליכים אחרים. תהליך לא יכול לגשת ישירות לזיכרון
+                            הפיזי (RAM), אלא רק לכתובות וירטואליות שמערכת ההפעלה "ממפה" (Mapping) עבורו לכתובות פיזיות
+                            בעזרת טבלת דפים. כאשר משתמשים בזיכרון משותף (Shared Memory) לצורך תקשורת בין תהליכים, מערכת
+                            ההפעלה מקצה אזור בזיכרון הפיזי, אך כדי שהתהליכים יוכלו באמת לקרוא או לכתוב אליו, האזור הפיזי
+                            הזה חייב להיות מתורגם וזמין בתוך העולם הווירטואלי של כל אחד מהם.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">במהלך ריצת שני תהליכים במערכת הפעלה המנהלת את
+                    זיכרון ראשי כזיכרון וירטואלי, ע&quot;פ בקשת אחד מהתהליכים, נוצר ע&quot;י מערכת ההפעלה אזור זיכרון
+                    משותף SHARED MEMORY בין שני התהליכים. במצב זה:</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'q3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> האזור
+                            המשותף חייב להיות ממופה MAPPED למרחב הכתובות של שני התהליכים</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> גישה
+                            לאזור המשותף מתבצעת בעזרת קריאת מערכת</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> האזור
+                            המשותף חייב להיות ממופה למרחב הכתובות רק של התהליך שלא יצר אותו</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q3')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> האזור
+                            המשותף חייב להיות ממופה למרחב הכתובות רק של התהליך שלא יצר אותו רק אם האזור מיועד לקריאה
+                            וכתיבה. אם הוא מיועד רק לקריאה, אינו צורך במיפוי</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-q3" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>א'</strong>.<br>
+                    במערכת עם זיכרון וירטואלי, הדרך היחידה שבה תהליך יכול לגשת למידע כלשהו (לקרוא או לכתוב) היא אם
+                    הכתובת ממופה בתוך מרחב הכתובות הווירטואלי שלו (Page Table). לכן, כדי ששני תהליכים נפרדים יוכלו לשתף
+                    ביניהם מידע על גבי אותו אזור זיכרון פיזי, מערכת ההפעלה חייבת לקחת את דפי הזיכרון הפיזיים
+                    ו<strong>למפות</strong> אותם גם למרחב הכתובות של התהליך הראשון (היוצר) וגם למרחב הכתובות של התהליך
+                    השני. כל תהליך עשוי לגשת לאזור דרך כתובת וירטואלית <em>שונה</em> משלו, אבל מאחורי הקלעים שתיהן
+                    יצביעו לאותו מקום בדיוק בזיכרון הפיזי.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>ב' שגוי:</strong> זהו בדיוק היתרון העצום של זיכרון משותף! יצירת האזור וחיבורו
+                            (Attach) אכן דורשים קריאות מערכת (כמו <code>shmget</code> או <code>mmap</code>), אבל ברגע
+                            שהאזור ממופה, <strong>הגישה עצמה</strong> (קריאת נתונים או כתיבתם) מתבצעת כגישת זיכרון רגילה
+                            לחלוטין, ללא שום צורך בקריאת מערכת (System Call).</li>
+                        <li><strong>ג' שגוי:</strong> התהליך שיצר את הזיכרון המשותף כנראה עשה זאת כדי לכתוב אליו מידע
+                            שהתהליך השני יקרא, או להפך. ללא מיפוי למרחב הכתובות שלו עצמו, התהליך היוצר לא יוכל לגשת
+                            לזיכרון שהוא זה רגע ביקש. לכן המיפוי חייב להיות לשניהם.</li>
+                        <li><strong>ד' שגוי בבירור:</strong> במערכת זיכרון וירטואלי אין דבר כזה "לגשת לזיכרון ללא
+                            מיפוי". ה-MMU חייב לדעת לאן לגשת בזיכרון הפיזי כשהוא מקבל בקשה לכתובת וירטואלית. בין אם
+                            הפעולה היא קריאה (Read) ובין אם היא כתיבה (Write), אם הכתובת אינה ממופה בטבלת הדפים, המערכת
+                            תזרוק שגיאת הרשאה (Segmentation Fault / Page Fault). פעולת קריאה מחייבת מיפוי בדיוק כמו
+                            כתיבה.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 4 -->
+        <!-- ============================================== -->
+        <div id="tab-q4" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 4</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            בטבלת דפים רגילה (Standard Page Table), מערכת ההפעלה שומרת טבלה עבור כל תהליך בנפרד, ויש בה
+                            כניסה (Entry) לכל דף וירטואלי במרחב הכתובות של התהליך. במערכות מודרניות של 64-ביט, מרחב
+                            הכתובות הווירטואלי הוא עצום, ולכן טבלאות דפים רגילות גוזלות המון זיכרון. הגישה של טבלת דפים
+                            הפוכה (Inverted Page Table) באה לפתור זאת על ידי היפוך זווית ההסתכלות: במקום למפות מהמרחב
+                            הווירטואלי (הענק) לפיזי, ממפים מהמרחב הפיזי (המוגבל והאמיתי) לוירטואלי.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">מהו מספר הכניסות (entries) בטבלת הדפים המהופכת
+                    (inverted page table)?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> כמספר
+                            הדפים בזיכרון המדומה</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'q4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> כמספר
+                            המסגרות (frames) בזיכרון הפיזי</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> כמספר
+                            הדפים המקסימאלי שיכול לדרוש תהליך</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q4')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> כמספר
+                            הגדול ביותר שניתן לרשום בשדה הכתובת הווירטואלית</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-q4" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>ב'</strong>.<br>
+                    בטבלת דפים הפוכה, קיימת רק טבלה גלובלית אחת לכל המערכת, ללא קשר למספר התהליכים שרצים. בטבלה זו, כל
+                    כניסה (Entry/שורה) מייצגת בדיוק מסגרת אחת (Frame) קיימת בזיכרון הפיזי (RAM) של המחשב. בתוך כל כניסה
+                    נשמר המידע לגבי איזה תהליך (PID) ואיזה דף וירטואלי (Page Number) מאכלסים כרגע את אותה מסגרת פיזית.
+                    מכיוון שהטבלה בנויה מראש לפי המבנה הפיזי של הזיכרון, מספר הכניסות בה שווה תמיד למספר המסגרות בזיכרון
+                    הפיזי. היתרון הגדול הוא שגודל הטבלה קבוע וקטן משמעותית ביחס לטבלאות דפים רגילות.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>א' שגוי:</strong> אם מספר הכניסות בטבלה היה תואם למספר הדפים בזיכרון המדומה
+                            (הווירטואלי), זו הייתה ההגדרה הקלאסית של טבלת דפים <em>רגילה</em> (Forward-mapped), ולא
+                            הפוכה. זו בדיוק הבעיה שהטבלה ההפוכה באה לפתור.</li>
+                        <li><strong>ג' שגוי:</strong> מספר הדפים המקסימלי שתהליך מסוים יכול לדרוש נגזר מגודל מרחב
+                            הכתובות הווירטואלי שמערכת ההפעלה מקצה לו. טבלת דפים הפוכה מתעלמת לחלוטין מגודל הדרישה
+                            הפוטנציאלית של התהליכים, ומתמקדת אך ורק במה שקיים בפועל בזיכרון הפיזי.</li>
+                        <li><strong>ד' שגוי:</strong> המספר הגדול ביותר שניתן לרשום בשדה הכתובת הווירטואלית מגדיר את
+                            גודלו של מרחב הזיכרון הווירטואלי הכולל (למשל, $2^{64}$ במערכות מודרנות). הגודל העצום הזה הוא
+                            בדיוק הסיבה לשימוש בטבלה ההפוכה, שגודלה אינו תלוי כלל בשדה הכתובת הווירטואלית, אלא רק בנפח
+                            ה-RAM הפיזי המותקן במחשב.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 5 -->
+        <!-- ============================================== -->
+        <div id="tab-q5" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 5</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            מניעה הדדית (Mutual Exclusion) נועדה למנוע משני תהליכים או יותר לגשת לאותו קטע קריטי במקביל,
+                            כדי למנוע מצב תחרות (Race Condition). דרך פרימיטיבית מאוד להבטיח שתהליך לא יופרע בזמן שהוא
+                            מבצע את הקטע הקריטי היא פשוט "לכבות" את מנגנון הפסיקות של המעבד (Disabling Interrupts).
+                            מכיוון שמתזמן התהליכים של מערכת ההפעלה מסתמך על פסיקות שעון (Timer Interrupts) כדי להפקיע את
+                            המעבד מתהליך אחד ולהעביר אותו לאחר, חסימת הפסיקות מבטיחה שהתהליך הנוכחי ימשיך לרוץ ללא כל
+                            הפרעה עד שהוא יחזיר את הפסיקות לפעולה. עם זאת, לתהליך ה"אלים" הזה יש השלכות רוחביות חמורות
+                            על המערכת כולה.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">מהו מבין המפורט מהווה החיסרון העיקרי של חסימת
+                    פסיקות כמנגנון למניעה הדדית?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> בזבוז
+                            זמן המעבד על המתנה פעילה BUSY WAITING</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'q5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> חוסר
+                            יכולת של מערכת ההפעלה להתייחס לאירועי התקני חומרה הקיימים במערכת</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> תקורה
+                            גבוהה בעקבות הצורך בביצוע החלפות קשר CONTEXT SWITCH רבות</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q5')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> אף תשובה
+                            המפורטת למעלה איננה נכונה</button></li>
+                </ul>
+            </div>
+
+
+            <div id="exp-q5" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון
+                    המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>ב'</strong>.<br>
+                    פסיקות (Interrupts) הן דרך התקשורת העיקרית והקריטית ביותר בין החומרה למערכת ההפעלה. כרטיס
+                    רשת
+                    שמקבל חבילת נתונים, דיסק קשיח שסיים לקרוא קובץ, או אפילו המקלדת כשהמשתמש לוחץ על מקש – כולם
+                    מאותתים למערכת ההפעלה שהם צריכים תשומת לב באמצעות פסיקת חומרה.
+                    כאשר תהליך או תרד חוסם את הפסיקות לחלוטין כדי להיכנס לקטע קריטי, הוא בעצם "מעוור ומחריש" את
+                    המעבד. בזמן הזה, אם התקני חומרה ינסו לאותת למערכת ההפעלה על אירועים חשובים – היא פשוט לא
+                    תשמע
+                    אותם. אם התהליך ישהה בקטע הקריטי זמן רב מדי (או גרוע מכך, ייתקע בלולאה אינסופית או בבאג),
+                    המערכת
+                    תפספס אירועי חומרה קריטיים, מה שעלול להוביל לאובדן נתונים (למשל, באפר של כרטיס רשת שעולה על
+                    גדותיו) ובמקרה הקיצון – לקפיאה מוחלטת של המערכת מכיוון שגם פסיקת השעון (שמאפשרת למערכת
+                    ההפעלה
+                    לקחת חזרה את השליטה) חסומה.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+
+                        <li><strong>א' שגוי:</strong> המתנה פעילה (Busy Waiting) היא חיסרון שמאפיין מנגנוני סנכרון
+                            אחרים,
+                            כמו Spinlock, שבו תהליך נתקע בלולאה שבודקת שוב ושוב אם המנעול השתחרר, ובכך "שורף" מחזורי
+                            שעון.
+                            חסימת פסיקות לא גורמת להמתנה פעילה; היא פשוט מונעת מתהליכים אחרים לרוץ בכלל.</li>
+                        <li><strong>ג' שגוי:</strong> ההפך הגמור הוא הנכון. מטרת חסימת הפסיקות היא בדיוק למנוע את פסיקת
+                            השעון כדי לעצור את המתזמן מלבצע החלפת הקשר (Context Switch) בזמן שהתהליך נמצא בקטע הקריטי.
+                            לכן,
+                            מנגנון זה לא מגדיל את מספר החלפות ההקשר, אלא משבית אותן זמנית.</li>
+                        <li><strong>ד' שגוי:</strong> מכיוון שתשובה ב' מתארת במדויק את אחד החסרונות המרכזיים של השיטה.
+                            (הערת
+                            צד: חיסרון קריטי נוסף הוא שבמערכות מרובות ליבות, חסימת פסיקות בליבה אחת לא תמנע מתהליך שרץ
+                            על
+                            ליבה אחרת להיכנס לאותו קטע קריטי במקביל.)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 6 -->
+        <!-- ============================================== -->
+        <div id="tab-q6" class="tab-content hidden max-w-5xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 6</h2>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            במערכת קבצים, הנתונים לא נכתבים כדידים בודדים, אלא מאוגדים ליחידות לוגיות שנקראות "בלוקים"
+                            (Blocks). גודל הבלוק נקבע בעת פירמוט מערכת הקבצים (לרוב בין 1KB ל-64KB ואף יותר). בחירת גודל
+                            הבלוק דורשת איזון (Trade-off): בלוקים קטנים מקטינים את בזבוז המקום עבור קבצים קטנים
+                            (פרגמנטציה פנימית), אך דורשים המון בלוקים ולכן המון מצביעים ב-I-Node כדי לאחסן קובץ גדול.
+                            לעומת זאת, בלוקים גדולים מבזבזים קצת יותר מקום לקבצים קטנים, אך הופכים את הטיפול במסת נתונים
+                            גדולה להרבה יותר פשוט ורציף.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="question-box">
+                <p class="text-slate-900 mb-4 font-semibold text-lg">מה היתרון של בלוקים גדולים יחסית לקטנים במערכת
+                    קבצים מבוססת I-Nodes?</p>
+                <ul class="space-y-3 text-slate-800">
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">א</span> בקבצים
+                            גדולים ה I-Node יהיה קטן יותר</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ב</span> אפשר
+                            לשמור יותר בלוקים של נתונים (DATA BLOCKS) בתוך ה I-Node עצמו</button></li>
+                    <li><button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'q6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ג</span> קריאת
+                            אותה כמות גדולה (במספר בתים BYTES) של הנתונים בדרך כלל תהיה מהירה יותר</button></li>
+                    <li><button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'q6')"><span
+                                class="font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-2">ד</span> קריאת
+                            בלוק מספר 5 בגישה סדרתית תהיה מהירה יותר</button></li>
+                </ul>
+            </div>
+
+            <div id="exp-q6" style="display: none;" class="solution-box fade-in">
+                <h3 class="text-lg font-bold text-green-900 mb-2"><i class="fa-solid fa-check ml-1"></i> הפתרון המלא:
+                </h3>
+                <p class="text-green-800 mb-4">
+                    התשובה הנכונה היא <strong>ג'</strong>.<br>
+                    היתרון המשמעותי ביותר של שימוש בבלוקים גדולים הוא שיפור בביצועי הקלט/פלט (I/O) כשקוראים או כותבים
+                    כמויות מידע גדולות. נניח שמערכת ההפעלה צריכה לקרוא 1 מגה-בייט של נתונים. אם גודל הבלוק הוא 4KB, היא
+                    תצטרך לאתר, למפות ולקרוא 256 בלוקים שונים (מה שעשוי לדרוש חיפוש במצביעים עקיפים ב-I-Node ותנועות
+                    רבות של ראש הקריאה בדיסק). לעומת זאת, אם גודל הבלוק הוא 64KB, היא תצטרך לגשת ל-16 בלוקים בלבד. פחות
+                    חיפושים (Seeks), פחות קריאות של מטא-דאטה, וקריאה רציפה יותר של נתונים מביאים למהירות גבוהה הרבה יותר
+                    בקריאת אותה כמות בתים בדיוק.
+                </p>
+                <div class="bg-white/60 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-900 mb-2">למה שאר האפשרויות שגויות?</h4>
+                    <ul class="list-disc list-inside text-sm text-green-800 space-y-2">
+                        <li><strong>א' שגוי בגלל</strong> במרבית מערכות הקבצים (כמו משפחת ext בלינוקס), גודל
+                            מבנה ה-I-Node עצמו הוא קבוע מראש (לרוב 128 או 256 בתים) ונקבע כשהמחיצה נוצרת. הגודל הפיזי של
+                            מבנה ה-I-Node אינו מתכווץ או גדל דינמית בהתאם לגודל הקובץ או גודל הבלוקים במערכת.
+                        </li>
+                        <li><strong>ב' שגוי בגלל</strong> בל-I-Node יש מבנה נתונים קשיח המכיל מספר קבוע של
+                            "תאים" עבור מצביעים ישירים (למשל, 12 או 15 מצביעים במערכות קלאסיות). הגדלת גודל הבלוק מאפשרת
+                            לאותם 12 מצביעים להצביע על הרבה יותר בתים (כי כל בלוק מכיל יותר מידע), אבל היא בשום אופן לא
+                            מגדילה את כמות הבלוקים (המצביעים) שאפשר לדחוף פיזית לתוך גוף ה-I-Node עצמו. המספר נשאר קבוע.
+                        </li>
+                        <li><strong>ד' שגוי בגלל</strong> קריאת "בלוק מספר 5" כשלעצמה לא תהיה בהכרח מהירה יותר. למעשה,
+                            כדי לקרוא ספציפית את הנתונים שנמצאים אי שם באמצע בלוק 5, המערכת עשויה לקרוא לתוך הזיכרון
+                            חתיכת מידע (בלוק) גדולה בהרבה ממה שהיא באמת צריכה באותו רגע, מה שדווקא עלול לקחת מעט יותר
+                            זמן ברמת הפעולה הבודדת. היתרון מגיע לידי ביטוי רק בנפחים גדולים (Throughput), ולא בזמן הגישה
+                            הנקודתי (Latency) לבלוק אינדקסיבי ספציפי.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 7 -->
+        <!-- ============================================== -->
+        <div id="tab-q7" class="tab-content hidden max-w-5xl mx-auto fade-in" dir="rtl">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 7 (25 נקודות)</h2>
+
+            <div class="question-box mb-6 relative">
+                <!-- Floating Circular Cycler -->
+                <button onclick="cycleTooltipState()"
+                    class="tooltip-cycler fixed top-8 left-8 w-24 h-24 bg-white/60 backdrop-blur-md border border-slate-200/50 hover:border-primary/50 hover:bg-white/80 rounded-full transition-all shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-0.5 z-50 group overflow-hidden">
+                    <span class="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1">הסברי קוד</span>
+                    <i
+                        class="cycler-icon fa-solid fa-mouse-pointer text-lg text-primary transition-transform group-hover:scale-110 my-0.5"></i>
+                    <span class="cycler-text text-slate-800 text-[10px] font-bold text-center leading-tight">מופעל -
+                        בריחוף</span>
+                    <span class="text-slate-400 text-[8px]">לחץ לשינוי</span>
+                    <div
+                        class="cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    </div>
+                </button>
+
+                <h4 class="font-bold text-slate-800 mb-2">א. (8 נק') נתונה בעיית מניעה ההדדית שבה ל N תהליכים יש קטע קוד
+                    שכל N התהליכים חייבים לבצע ביחד. כלומר, עליהם להיכנס לקטע הקוד הזה <strong>יחד</strong> ולצאת ממנו
+                    <strong>יחד</strong>.
+                </h4>
+                <p class="text-slate-700 mb-4">לפיכך, המבנה של תהליך הוא כפי שמוצג להלן:</p>
+
+                <!-- Structure Table (No Borders) -->
+                <div class="mb-6 p-4 bg-slate-50 rounded font-mono text-sm">
+                    <div class="flex justify-between items-center py-1">
+                        <div class="text-left" dir="ltr">loop</div>
+                        <div class="text-right"></div>
+                    </div>
+                    <div class="flex justify-between items-center py-1 pl-4">
+                        <div class="text-left" dir="ltr">Non inclusion section</div>
+                        <div class="text-right"></div>
+                    </div>
+                    <div class="flex justify-between items-center py-1 pl-4 bg-blue-50/50 rounded">
+                        <div class="text-left font-bold text-blue-700" dir="ltr">Inclusion Entry Code</div>
+                        <div class="text-right font-bold text-blue-800">פרוטוקול כניסה לקטע המשותף</div>
+                    </div>
+                    <div class="flex justify-between items-center py-1 pl-4">
+                        <div class="text-left" dir="ltr">Inclusion Code</div>
+                        <div class="text-right text-slate-600">קטע הקוד המשותף</div>
+                    </div>
+                    <div class="flex justify-between items-center py-1 pl-4 bg-purple-50/50 rounded">
+                        <div class="text-left font-bold text-purple-700" dir="ltr">Inclusion Exit Code</div>
+                        <div class="text-right font-bold text-purple-800">פרוטוקול יציאה מהקטע המשותף</div>
+                    </div>
+                    <div class="flex justify-between items-center py-1">
+                        <div class="text-left" dir="ltr">end loop</div>
+                        <div class="text-right"></div>
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-slate-800 mt-2">כתבו את פסודוקוד הכניסה לקטע הקריטי ואת פסודוקוד היציאה תוך
+                    שימוש במספר קבוע(לא תלוי ב N) וקטן ככל הניתן של סמפורים בינריים. ציינו את הערך ההתחלתי של הסמפורים.
+                    בנוסף, אפשר להשתמש במשתנים לוקליים וגלובליים. את הגלובליים אפשר להכריז, לדוגמא : global int var=0
+                </h4>
+            </div>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            הבעיה הזו עוסקת במנגנון שנקרא <strong>Reusable Barrier (מחסום לשימוש חוזר)</strong>. היות
+                            והתהליכים רצים בלולאה, אי אפשר להסתפק במחסום כניסה אחד פשוט, משום שתהליכים מהירים עלולים
+                            לסיים את קטע הקוד ולחזור פנימה בסיבוב הבא <em>לפני</em> שתהליכים איטיים הספיקו בכלל לצאת
+                            מהסיבוב הקודם!<br><br>
+                            הפתרון דורש שני סמפורים שפועלים כ"קרוסלה" (Turnstile) - קרוסלת כניסה וקרוסלת יציאה.<br>
+                            <strong>שלב 1 (כניסה):</strong> כל התהליכים מחכים בקרוסלת הכניסה (הנעולה). כשהתהליך האחרון
+                            (ה-N-י) מגיע, הוא "נועל" את קרוסלת היציאה, ופותח את קרוסלת הכניסה, מה שיוצר אפקט שרשרת
+                            (Cascading Wakeup) שמעביר את כולם פנימה.<br>
+                            <strong>שלב 2 (יציאה):</strong> כל התהליכים מחכים בקרוסלת היציאה. כשהתהליך האחרון (ה-N-י)
+                            מסיים, הוא "נועל" מחדש את קרוסלת הכניסה (הכנה לסיבוב הבא), ופותח את קרוסלת היציאה לכולם.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג
+                        פתרון סעיף א'</span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box border-l-4 border-l-blue-500 border-r-0 py-4 mb-6">
+                        <p class="text-slate-800 font-semibold mb-2">פתרון סעיף א' (מנגנון Reusable Barrier):</p>
+
+                        <div dir="ltr" class="mb-4">
+                            <pre class="bg-slate-800 text-slate-300 font-mono p-4 rounded text-sm mb-4 code-block"
+                                dir="ltr"><code><mark class="interactive-tooltip" data-key="q7_init_1">global int count = 0; // מונה תהליכים שהגיעו</mark>
+<mark class="interactive-tooltip" data-key="q7_init_2">Semaphore mutex = 1; // הגנה על משתנה count</mark>
+<mark class="interactive-tooltip" data-key="q7_init_3">Semaphore turnstile1 = 0; // קרוסלת מחסום כניסה (נעולה בהתחלה)</mark>
+<mark class="interactive-tooltip" data-key="q7_init_4">Semaphore turnstile2 = 1; // קרוסלת מחסום יציאה (פתוחה בהתחלה, תינעל מיד)</mark></code></pre>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-800 rounded">
+                                    <div
+                                        class="text-slate-400 text-xs text-center border-b border-slate-700 p-2 font-bold">
+                                        Inclusion Entry Code</div>
+                                    <pre class="p-4 m-0 code-block !bg-transparent text-sm"
+                                        dir="ltr"><code><mark class="interactive-tooltip" data-key="q7_entry_1">Down(mutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_2">count++;</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_3">if (count == N) {</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_4">  Down(turnstile2); // נועל את היציאה מראש</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_5">  Up(turnstile1);   // פותח את הכניסה (התהליך האחרון פותח לראשון)</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_6">}</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_7">Up(mutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_8">Down(turnstile1); // המתנה בקרוסלת הכניסה</mark>
+<mark class="interactive-tooltip" data-key="q7_entry_9">Up(turnstile1);   // התהליך שעובר פותח מיד לבא אחריו</mark></code></pre>
+                                </div>
+                                <div class="bg-slate-800 rounded">
+                                    <div
+                                        class="text-slate-400 text-xs text-center border-b border-slate-700 p-2 font-bold">
+                                        Inclusion Exit Code</div>
+                                    <pre class="p-4 m-0 code-block !bg-transparent text-sm"
+                                        dir="ltr"><code><mark class="interactive-tooltip" data-key="q7_exit_1">Down(mutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_2">count--;</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_3">if (count == 0) {</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_4">  Down(turnstile1); // נועל מחדש את הכניסה לסיבוב הבא</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_5">  Up(turnstile2);   // פותח את היציאה (האחרון שסיים משחרר את כולם)</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_6">}</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_7">Up(mutex);</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_8">Down(turnstile2); // המתנה בקרוסלת היציאה</mark>
+<mark class="interactive-tooltip" data-key="q7_exit_9">Up(turnstile2);   // התהליך שעוזב פותח לבא אחריו</mark></code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+            <h4 class="font-bold text-slate-800 mb-2">ב. (12 נק') נתונה בעיית מניעה ההדדית קצת שונה מסעיף א', בה ל N
+                תהליכים יש קטע קוד ש K מתוכם כש K < N חייבים לבצע ביחד. כלומר, עליהם להיכנס לקטע הקוד הזה <strong>
+                    יחד</strong> ולצאת ממנו <strong>יחד</strong>. בנוסף, ידוע (לא צריך לדאוג להבטיח שאין קבוצות נוספות)
+                    שבכל רגע נתון רק קבוצה אחת של K תהליכים אמורה להיות בתוך הקטע.<br><br>
+                    קוד הכניסה והיציאה צריכים להשתמש במספר קבוע(לא תלוי ב K ו N) וכמה שיותר קטן של סמפורים בינריים. אלו
+                    שורות הקוד, אם בכלל, צריך להוסיף/לשנות ביחס לסעיף א'? ציינו את השורות שצריך להוסיף והסבירו למה, או
+                    הסבירו למה אין צורך לשנות.</h4>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            המפתח בסעיף הזה נמצא בהנחה שהכותב סיפק: <strong>"ידוע שבכל רגע נתון רק קבוצה אחת של K
+                                תהליכים אמורה להיות בתוך הקטע"</strong>. <br>
+                            המשמעות של המשפט הזה היא שאנחנו לא צריכים לדאוג ממצב של "התנגשות" מחוץ למנגנון – תהליכים
+                            אחרים פשוט לא יגיעו ויפריעו כל עוד קבוצת ה-K תהליכים הראשונה נמצאת בתהליך. לכן, אין שום
+                            שינוי מהותי בהיגיון (זה אותו Barrier מאובטח מהסעיף הקודם), הדבר היחיד שמשתנה הוא "תנאי
+                            השחרור" – מי הוא התהליך האחרון שפותח את הדלת לכולם?
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג
+                        פתרון סעיף ב'</span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box border-l-4 border-l-purple-500 border-r-0 py-4 mb-6">
+                        <p class="text-slate-800 font-semibold mb-2">תשובה והסבר:</p>
+                        <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                            השינוי היחיד שנדרש לבצע הוא החלפת הקבוע <strong>N</strong> בקבוע <strong>K</strong> בתנאי
+                            הבדיקה של פרוטוקול הכניסה. בשורות הקוד:
+                            <br><br>
+                            במקום השורה: <code>if (count == N)</code><br>
+                            נכתוב את השורה: <code
+                                class="bg-purple-100 px-2 py-1 rounded text-purple-800 font-bold">if (count == K)</code>
+                            <br><br>
+                            <strong>הסבר מדוע אין צורך בשינויים נוספים:</strong><br>
+                            מכיוון שמובטח לנו מפורשות כי רק קבוצה אחת תהיה בפנים ואין קבוצות נוספות שמנסות להידחף
+                            במקביל, אין סכנה של "הסתננות" תהליכים עודפים. ברגע שהגיעו K תהליכים בדיוק, התהליך ה-K מהווה
+                            את התהליך ה"אחרון" של הקבוצה והוא זה שיפתח את שערי קרוסלת הכניסה עבור חבריו (על ידי
+                            `Up(turnstile1)`). כל תהליך העבודה של הפרוטוקול מסעיף א' נשאר מאובטח ותקין לחלוטין.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+            <h4 class="font-bold text-slate-800 mb-2">ג. (5 נק') בהמשך לסעיף ב', אלו מורכבויות, אם בכלל, יוצרת הורדת
+                המגבלה "ידוע שבכל רגע נתון רק קבוצה אחת של K תהליכים אמורה להיות בתוך הקטע"?<br><br>הסבירו את המורכבויות
+                או הסבירו למה הפתרון מסעיף ב' ימשיך להיות תקין. בכל מקרה לא צריך להציג פתרון למורכבויות אם יש.</h4>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            הורדת המגבלה פירושה שבעוד שקבוצה אחת של K תהליכים נמצאת בתוך "הקטע המשותף" או מתחילה לצאת
+                            ממנו, תהליכים חדשים ששייכים לקבוצה הבאה יכולים להתחיל להגיע ולהפעיל את פונקציית הכניסה
+                            (Entry Code).
+                            מה יקרה למשתנה <code>count</code> (המונה) אם תהליכים חדשים יכנסו לפני שהקבוצה הקודמת סיימה
+                            לצאת ולהוריד את המונה חזרה ל-0?
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג
+                        פתרון סעיף ג'</span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box border-l-4 border-l-rose-500 border-r-0 py-4">
+                        <p class="text-slate-800 font-semibold mb-2">תשובה והסבר:</p>
+                        <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                            הורדת המגבלה הורסת את הפתרון הקיים לחלוטין ויוצרת מורכבות קריטית המכונה בספרות
+                            <strong>Generation Mixing (ערבוב דורות/מחזורים)</strong>.
+                            <br><br>
+                            בפתרון שלנו, אנו נסמכים על כך שהמונה מגיע ל-K (בכניסה) ויורד לאפס (ביציאה), ורק במצבי הקיצון
+                            הללו מתבצע היפוך של מצב שערי ה-Turnstile (פתיחה וסגירה).
+                            <br><br>
+                            <strong>מה יקרה בפועל?</strong><br>
+                            אם קבוצה ראשונה של K תהליכים נכנסה לקטע המשותף (המונה <code>count=K</code>), ושערי הכניסה
+                            פתוחים עבורה, עלולים להגיע כעת תהליכים חדשים השייכים לקבוצה השנייה. מכיוון שהמונה טרם התאפס,
+                            הגעת התהליכים החדשים תעלה את המונה ל-K+1, K+2 וכן הלאה. <br><br>
+                            כתוצאה מכך:<br>
+                            1. <strong>הסתננות:</strong> התהליכים החדשים יצליחו לחמוק פנימה דרך שער הכניסה
+                            (<code>turnstile1</code>) שעדיין נשאר פתוח מקבוצה 1 (בגלל אפקט הקרוסלה), וכך יהיו יותר מ-K
+                            תהליכים בו זמנית בקטע המשותף.<br>
+                            2. <strong>קיפאון (Deadlock):</strong> כאשר התהליכים של הקבוצה הראשונה יסיימו וינסו לצאת, הם
+                            יורידו את המונה – אך בגלל שנוספו תהליכים חדשים, המונה <strong>לעולם לא יגיע ל-0</strong>.
+                            לכן, התנאי <code>if (count == 0)</code> לא יתקיים, דלת היציאה (<code>turnstile2</code>) לא
+                            תיפתח, וכל התהליכים ייתקעו לנצח במחסום היציאה.
+                        </p>
+                    </div>
+                </div>
+            </details>
+        </div>
+        <!-- ============================================== -->
+        <!-- QUESTION 8 -->
+        <!-- ============================================== -->
+        <div id="tab-q8" class="tab-content hidden max-w-5xl mx-auto fade-in" dir="rtl">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 8 (15 נקודות)</h2>
+
+            <div class="question-box mb-6">
+
+                <p class="text-slate-800 font-medium mb-4 leading-relaxed">
+                    נתונה מערכת המשתמשת בזיכרון מדפדף עם גודל דף 4MByte (4 מגה בית). אורך הכתובת הווירטואלית 64 bits (64
+                    סיביות) וכל תהליך מקבל את מרחב הזיכרון הווירטואלי המרבי האפשרי ע"פ הנתונים שבשאלה. מערכת מתוכננת
+                    לנהל את זיכרון ראשי RAM פיזי בגודל 16GByte (16 ג'יגה בית). אורך כל שורה בטבלת הדפים הוא המספיק בדיוק
+                    כדי לשמור את מספר מסגרת זיכרון(PHYSICAL FRAME NUMBER) ועוד 4 סיביות מידע נוסף.
+                </p>
+
+                <h4 class="font-bold text-slate-800 mb-2">א. (8 נק') לכמה רמות צריך לחלק את טבלת הדפים בשביל שכל אחת
+                    מטבלאות הדפים תיכנס בדיוק לדף אחד?<br>אפשר לפתור בעזרת משוואה ובניסוי וטעייה. (חישוב והסבר:)</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm leading-relaxed">
+                                כדי לגלות לכמה רמות יש לחלק את הטבלה, עלינו להבין קודם כמה שורות (PTEs) נכנסות בדף אחד.
+                                לשם כך, חשב את גודל ההיסט (Offset) מתוך גודל הדף הנתון. לאחר מכן, חשב את מספר הביטים
+                                הנדרש למספר המסגרת (PFN) מתוך הזיכרון הפיזי, הוסף את 4 סיביות המידע, ומצא את גודלה של
+                                שורה בודדת.<br><br>
+                                כעת בדוק כמה שורות כאלו יכנסו בדף אחד של 4MB. כשתמצא את מספר השורות, תוכל לדעת כמה ביטים
+                                מתוך הכתובת הווירטואלית דרושים לאינדוקס רמה אחת. חלק את מספר הביטים שנותרו ל-VPN (הכתובת
+                                הווירטואלית ללא ההיסט) במספר ביטי האינדוקס של רמה אחת, ותקבל את מספר הרמות הנדרשות.
+                            </p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mt-4 mb-8 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i>
+                            הצג פתרון סעיף א'</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                        <div class="solution-box border-l-4 border-l-blue-500 border-r-0 py-4 mb-6">
+                            <p class="text-slate-800 font-semibold mb-2">פתרון סעיף א':</p>
+                            <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                                <strong>התשובה היא 2 רמות בדיוק.</strong><br><br>
+
+                                <strong>הסבר וחישוב צעד אחר צעד:</strong><br>
+                            </p>
+                            <ul class="list-disc pl-5 mb-4 text-sm text-slate-700 font-medium leading-relaxed">
+                                <li><strong>חישוב ביטי ההיסט (Offset):</strong> גודל דף הוא 4MB, כלומר \(2^2 \cdot
+                                    2^{20} = 2^{22}\) בתים. מכאן שנדרשות <strong>22 סיביות</strong> עבור ההיסט.</li>
+                                <li><strong>חישוב גודל מסגרת ו-PFN:</strong> זיכרון פיזי הוא 16GB, השווה ל-\(2^4 \cdot
+                                    2^{30} = 2^{34}\) בתים. מספר המסגרות בזיכרון הפיזי הוא \( \frac{2^{34}}{2^{22}} =
+                                    2^{12} \). לפיכך, ה-PFN דורש <strong>12 סיביות</strong>.</li>
+                                <li><strong>חישוב גודל רשומה בטבלה (PTE):</strong> אורך הרשומה שווה לאורך ה-PFN ועוד 4
+                                    סיביות המידע הנוסף: 12 + 4 = 16 סיביות, שזה בדיוק <strong>2 בתים</strong> (\(2^1\)
+                                    Bytes).</li>
+                                <li><strong>חישוב מספר הרשומות בדף (גודל רמה אחת):</strong> כל טבלת דפים צריכה להיכנס
+                                    בדיוק לדף אחד של 4MB. נחלק את גודל הדף בגודל הרשומה: \( \frac{2^{22}}{2^1} = 2^{21}
+                                    \) רשומות (כניסות) בטבלה. לכן, לאינדוקס של טבלה ברמה אחת נדרשות <strong>21
+                                        סיביות</strong> בכתובת הווירטואלית.</li>
+                                <li><strong>חלוקה למספר רמות:</strong> אורך הכתובת הווירטואלית הוא 64 סיביות. נחסיר את
+                                    22 סיביות ההיסט ונקבל <strong>42 סיביות</strong> המיועדות ל-VPN (אינדוקס טבלאות).
+                                    מכיוון שכל רמה צריכה 21 סיביות, נקבל \( \frac{42}{21} = 2 \). כלומר, נדרשות בדיוק
+                                    <strong>2 רמות</strong>.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2">ב. (3 נק') בהמשך לסעיף א'. כמה טבלאות דפים ברמה הנמוכה ביותר
+                    יהיו בסה"כ?<br>(הסבר וחישוב:)</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm leading-relaxed">
+                                זכור כי המערכת מיוצגת במבנה של עץ. הרמה הראשונה (העליונה) היא השורש, ובה יש טבלה אחת
+                                בלבד המכילה כניסות המצביעות לטבלאות שברמה הבאה מתחתיה. מכיוון שהוסבר כי כל תהליך מקבל את
+                                "מרחב הזיכרון הווירטואלי המרבי האפשרי", משמעות הדבר היא שכל הכניסות האפשריות ברמת השורש
+                                נמצאות בשימוש. כמה כניסות כאלה חישבנו שיש בטבלה אחת בסעיף הקודם?
+                            </p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mt-4 mb-8 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i>
+                            הצג פתרון סעיף ב'</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                        <div class="solution-box border-l-4 border-l-purple-500 border-r-0 py-4">
+                            <p class="text-slate-800 font-semibold mb-2">פתרון סעיף ב':</p>
+                            <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                                <strong>התשובה היא \(2^{21}\) טבלאות דפים.</strong><br><br>
+
+                                <strong>הסבר הרציונל וחישוב:</strong><br>
+                                בטבלת דפים בעלת שתי רמות (כפי שמצאנו בסעיף א'), קיימת ברמה הראשונה (רמת השורש) טבלת דפים
+                                יחידה. בתוך טבלה יחידה זו ישנן \(2^{21}\) רשומות/כניסות, כאשר כל כניסה מצביעה לטבלת דפים
+                                משלה ברמה הנמוכה ביותר (הרמה השנייה).<br>
+                                מאחר והשאלה מציינת במפורש שכל תהליך מקבל את מרחב הזיכרון המרבי האפשרי, עץ טבלאות הדפים
+                                הווירטואלי מנוצל במלואו והינו עץ "מלא". כלומר, כל אחת מ-\(2^{21}\) הכניסות שברמה הראשונה
+                                היא תקינה (Valid) ומצביעה לטבלה נפרדת ברמה התחתונה. לכן, סך כל טבלאות הדפים ברמה הנמוכה
+                                ביותר זהה למספר ההצבעות שיצאו מטבלת השורש, דהיינו \(2^{21}\) טבלאות.
+                            </p>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2">ג. (4 נק') מה הם היתרונות והחסרונות בשימוש בדפים גדולים במקום
+                    דפים קטנים?<br>
+                    1. מבחינת מספר שגיאות דף<br>
+                    2. מבחינת זמן טיפול בכל שגיאת דף בודדת<br>
+                    (תשובה והסבר:)</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm leading-relaxed">
+                                חשוב על הדינמיקה שבין המעבד לדיסק: כאשר דף הוא גדול (למשל 4MB), מערכת ההפעלה טוענת כמות
+                                עצומה של נתונים ברצף. איך זה ישפיע על התדירות שבה נצטרך לגשת שוב לדיסק בהמשך העבודה של
+                                התוכנית? במקביל, ככל שה"חבילה" שצריך לטעון גדולה וכבדה יותר, כמה זמן ייקח בפועל להעתיק
+                                אותה פיזית מהדיסק האיטי אל תוך זיכרון ה-RAM?
+                            </p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mt-4 mb-8 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i>
+                            הצג פתרון סעיף ג'</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                        <div class="solution-box border-l-4 border-l-purple-500 border-r-0 py-4">
+                            <p class="text-slate-800 font-semibold mb-2">פתרון סעיף ג':</p>
+
+                            <ol class="list-decimal pl-5 space-y-4 text-sm text-slate-700 font-medium leading-relaxed"
+                                dir="rtl">
+                                <li><strong>מבחינת מספר שגיאות דף (יתרון מובהק):</strong><br>
+                                    השימוש בדפים גדולים מקטין משמעותית את כמות שגיאות הדף (Page Faults) הכוללת המתרחשת
+                                    במערכת. הסיבה העיקרית נעוצה בעקרון המקומיות המרחבית (Spatial Locality) – כאשר מערכת
+                                    ההפעלה נדרשת לטעון דף גדול של 4MB מהדיסק אל הזיכרון הראשי, היא מביאה בבת אחת גוש
+                                    עצום ורציף של קוד ונתונים. מאחר שהגישות הבאות של התוכנית לזיכרון הן בדרך כלל בסמיכות
+                                    לגישות הקודמות, רוב הגישות ימצאו כבר זמינות בתוך הדף הענק שנטען, ולא יגרמו לשגיאות
+                                    דף נוספות בתדירות גבוהה.</li>
+
+                                <li><strong>מבחינת זמן הטיפול בכל שגיאת דף בודדת (חיסרון מובהק):</strong><br>
+                                    זמן הטיפול וההמתנה (Latency) הנדרש לפתרון שגיאת דף בודדת יגדל בצורה ניכרת. הסיבה לכך
+                                    היא שהדיסק (שממנו טוענים את הדף החסר) הוא רכיב חומרה איטי. כאשר המערכת צריכה להעתיק
+                                    כמות מידע עצומה של 4MB מתוך אמצעי האחסון, הפעולה תדרוש הרבה יותר זמן ותעבורה מאשר
+                                    טעינה של דף קטן (כדוגמת דף טיפוסי של 4KB). כתוצאה מכך, התהליך יישאר במצב "חסום"
+                                    (Blocked) למשך זמן ארוך בהרבה בכל פעם שהוא יחווה שגיאת דף.</li>
+                            </ol>
+
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </div>
+        <!-- ============================================== -->
+        <!-- QUESTION 9 -->
+        <!-- ============================================== -->
+        <div id="tab-q9" class="tab-content hidden max-w-5xl mx-auto fade-in" dir="rtl">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 9 (15 נקודות)</h2>
+
+            <div class="question-box mb-6">
+
+                <h4 class="font-bold text-slate-800 mb-2">א. (8 נק') התייחסו לשרת אכסון קבצים מבוסס דיסק קשיח מכני HARD
+                    DISK.<br>
+                    הקבצים בשרת רק נוצרים ונמחקים, אין עדכוני קבצים. הקבצים בגדלים שונים, אבל בהערכה גסה ניתן לחלק אותם
+                    ל 3 קבוצות: קטנים, בינוניים וגדולים.<br><br>
+                    תבחרו את מבנה מערכת הקבצים המתאים ביותר לפי נתוני השאלה והסבירו את מיקום ואופן שמירת הקבצים המאפשרים
+                    שיפור יעילות, אם יש כזה.<br>
+                    (תשובה והסבר:)</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm leading-relaxed">
+                                מהו "צוואר הבקבוק" הכי גדול של דיסק מכני? התזוזה של המחט הפיזית (Seek Time). כדי למזער
+                                את התזוזות, האידיאל הוא שכל קובץ ייקרא כיחידה אחת רצופה מתחילתו ועד סופו. איזו שיטת
+                                הקצאת קבצים מבטיחה רציפות כזו? <br><br>
+                                עם זאת, לשיטה הזו יש בדרך כלל בעיה קשה – היא נוטה ליצור "חורים" בגדלים שונים כשהקבצים
+                                נמחקים (פרגמנטציה חיצונית). כאן נכנסים הנתונים שבשאלה: אנחנו יודעים ש<strong>אין
+                                    עדכונים</strong> (הקובץ לא יגדל פתאום), ואנחנו יודעים שיש רק <strong>3 גדלים
+                                    טיפוסיים</strong>. איך הנתונים הללו מאפשרים לנו לחלק את הדיסק פיזית מראש כדי להעלים
+                                את בעיית ה"חורים"?
+                            </p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mt-4 mb-8 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i>
+                            הצג פתרון סעיף א'</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                        <div class="solution-box border-l-4 border-l-blue-500 border-r-0 py-4 mb-6">
+                            <p class="text-slate-800 font-semibold mb-2">פתרון סעיף א' (עבור דיסק HDD):</p>
+
+                            <p class="text-sm text-slate-700 font-medium leading-relaxed mb-4">
+                                <strong>מבנה מערכת הקבצים:</strong> הקצאה רציפה (Contiguous Allocation).<br><br>
+                                <strong>הסבר ואופן שמירת הקבצים (לשיפור יעילות מרבי):</strong><br>
+                                מאחר ומדובר בדיסק מכני, המטרה העליונה היא צמצום זמני החיפוש המכניים (Seek Time) וזמני
+                                ההמתנה לסיבוב (Rotational Latency). הקצאה רציפה מחייבת שמירת כל קובץ על סקטורים/בלוקים
+                                עוקבים פיזית, ולכן מציעה את ביצועי הקריאה המהירים ביותר האפשריים.<br><br>
+                                בדרך כלל, החסרונות של הקצאה רציפה פוסלים אותה משימוש מודרני, אך <u>נתוני השאלה פותרים
+                                    אותם באופן מושלם</u>:
+                            </p>
+                            <ul class="list-disc pl-5 mb-4 text-sm text-slate-700 font-medium leading-relaxed">
+                                <li><strong>"אין עדכוני קבצים":</strong> פותר את בעיית הגידול. כיוון שקובץ לא יגדל אחרי
+                                    יצירתו, אנו יודעים את גודלו מראש ולא צריך להעתיקו מחדש למקום אחר (אין פרגמנטציה
+                                    פנימית או צורך בהקצאה מחדש).</li>
+                                <li><strong>"ניתן לחלק ל-3 קבוצות גודל":</strong> פותר את בעיית הפרגמנטציה החיצונית
+                                    (External Fragmentation) - שהיא היווצרות "חורים" בלתי מנוצלים בעקבות מחיקת
+                                    קבצים.<br>
+                                    <strong>שיפור היעילות (המיקום):</strong> נחלק את הדיסק ל-3 מחיצות (Zones) פיזיות
+                                    נפרדות – אחת לקבצים קטנים, אחת לבינוניים ואחת לגדולים.
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </details>
+
+                <div class="h-px bg-slate-200 w-full mb-4"></div>
+
+                <h4 class="font-bold text-slate-800 mb-2">ב. (7 נק') התייחסו לשרת אכסון קבצים מבוסס דיסק SSD
+                    אלקטרוני.<br>
+                    הקבצים בשרת רק נוצרים ונמחקים, אין עדכוני קבצים. הקבצים בגדלים שונים, אבל בהערכה גסה ניתן לחלק אותם
+                    ל 3 קבוצות: קטנים, בינוניים וגדולים.<br><br>
+                    תבחרו את מבנה מערכת הקבצים המתאים ביותר לפי נתוני השאלה והסבירו את מיקום ואופן שמירת הקבצים המאפשרים
+                    שיפור יעילות, אם יש כזה.<br>
+                    (תשובה והסבר:)</h4>
+
+                <details class="mb-6 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i
+                                class="fa-solid fa-lightbulb text-amber-500 text-xl"></i> רמז </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                        <div class="mindset-box">
+                            <p class="text-blue-800 text-sm leading-relaxed">
+                                במעבר לכונן SSD, חוקי המשחק משתנים לחלוטין. אין מחט! גישה אקראית (Random Access) לבלוק
+                                מפוזר זהה בזמנה לגישה רציפה (Sequential). האם עדיין צריך להתאמץ לשמור נתונים ברצף
+                                פיזי?<br><br>
+                                זאת ועוד: בתוך בקר ה-SSD קיימת שכבה בלתי-נראית למערכת ההפעלה שנקראת FTL (Flash
+                                Translation Layer). ה-FTL "מרמה" את מערכת ההפעלה, לוקח בלוקים וזורק אותם באופן אקראי על
+                                פני שבבי זיכרון שונים כדי לאזן בלאי (Wear Leveling). אם כך, האם ה"חלוקה לאזורים" שעשינו
+                                בסעיף א' בכלל רלוונטית כאן? איזו מערכת קבצים גמישה וקלה לניהול תתאים יותר כשאין קנס על
+                                פיצול?
+                            </p>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="mt-4 mb-8 fade-in">
+                    <summary>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i>
+                            הצג פתרון סעיף ב'</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </summary>
+                    <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                        <div class="solution-box border-l-4 border-l-purple-500 border-r-0 py-4">
+                            <p class="text-slate-800 font-semibold mb-2">פתרון סעיף ב' (עבור דיסק SSD):</p>
+
+                            <p class="text-sm text-slate-700 font-medium leading-relaxed mb-4">
+                                <strong>מבנה מערכת הקבצים:</strong> מבוססת אינדקס / הצבעות (Indexed Allocation /
+                                I-Node).<br><br>
+                                <strong>הסבר ואופן שמירת הקבצים:</strong><br>
+                                בשונה מדיסק מכני, כונן SSD מבוסס על זיכרון פלאש וללא חלקים נעים. כתוצאה מכך, <strong>אין
+                                    זמן חיפוש מכני (Seek Time = 0)</strong>. המשמעות היא שקריאת בלוקים המפוזרים לוגית על
+                                פני הדיסק לוקחת כמעט אותו זמן כמו קריאת בלוקים רציפים. לכן, שיטת הקצאה מבוססת אינדקס
+                                (דוגמת ext4 וטבלאות ה-I-Node שלה) היא האידיאלית, גמישה ביותר לניהול הקצאות ומחיקות,
+                                ואינה גוררת תקורות ביצועים.<br><br>
+                                <strong>לגבי "מיקום" הקבצים:</strong> למערכת ההפעלה <strong>אין שום שליטה או משמעות
+                                    לקביעת המיקום הפיזי</strong> ב-SSD. בקר הכונן מפעיל שכבת תרגום קשיחה הנקראת FTL
+                                (Flash Translation Layer). שכבה זו ממפה את הכתובות הלוגיות שמערכת ההפעלה מבקשת לכתובות
+                                פיזיות שונות לחלוטין באופן רנדומלי, במטרה לפזר את השחיקה (Wear Leveling). לכן, אין שום
+                                טעם לחלק את הדיסק לאזורים (Zones) כמו בסעיף א'.
+                            </p>
+
+
+                            <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                                <strong>שיפור יעילות אופציונלי (לגבי אופן השמירה):</strong><br>
+                                עבור קבוצת ה<strong>קבצים הקטנים</strong>, ניתן ליישם טכניקה של <em>Inline Data</em>
+                                מכיוון שהקובץ קטן מאוד ואין חשש שיגדל בעתיד (אין עדכונים), ניתן לשמור את
+                                תוכן הנתונים עצמו ישירות בתוך מבנה ה-I-Node על הדיסק, במקום להשתמש בו כמצביע לבלוק
+                                חיצוני. פעולה זו חוסכת I/O נוסף (קריאת בלוק אחד במקום שניים). כמו כן, במחיקת קבצים רצוי
+                                להשתמש בפקודת TRIM, שתודיע לבקר ה-SSD שהבלוק פנוי ותקל עליו את תהליך איסוף הזבל הפנימי
+                                (Garbage Collection).
+                            </p>
+
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </div>
+        <!-- ============================================== -->
+        <!-- QUESTION 10 -->
+        <!-- ============================================== -->
+        <div id="tab-q10" class="tab-content hidden max-w-5xl mx-auto fade-in" dir="rtl">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 10 (5 נקודות)</h2>
+
+            <div class="question-box mb-6">
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+                    האם קיימת אפשרות עקרונית שאותו מספר קריאת מערכת (TRAP) ישמש לביצוע פעולות שונות משמעותית בעקבות
+                    הקריאה (למשל ביצוע READ, WRITE ו FORK)?<br>
+                    אם עניתם כן, הסבירו איך, אם עניתם לא, הסבירו למה.
+                </p>
+            </div>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            חשבו על האופן שבו מערכות הפעלה מודרניות (כמו Linux או Windows) מתוכננות. קיימות מאות קריאות
+                            מערכת שונות (פתיחת קובץ, קריאה, כתיבה, יצירת תהליך, סגירת שקע תקשורת ועוד). האם זה הגיוני או
+                            אפשרי להקצות <strong>מספר פסיקת חומרה (Interrupt Number) ייעודי</strong> ונפרד לכל אחת
+                            מהפקודות הללו? מלאי הפסיקות במעבד הוא מוגבל מאוד.<br><br>
+                            דמיינו כניסה למודיעין של בניין ענק. במקום שיהיו 300 דלתות שונות (TRAP לכל פקודה), יש רק
+                            <strong>דלת כניסה אחת ראשית</strong>. כולם נכנסים דרכה. איך השומר בדלת יודע לאן לכוון כל אדם
+                            שנכנס? (רמז: הוא מבקש ממנו פתק עם "קוד יעד" שנכתב מראש). איפה נשמר ה"פתק" הזה בעולם של
+                            המעבד?
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג
+                        פתרון מלא</span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box border-l-4 border-l-blue-500 border-r-0 py-4 mb-8">
+                        <p class="text-slate-800 font-semibold mb-2">הפתרון המלא:</p>
+                        <div class="text-sm text-slate-700 font-medium leading-relaxed space-y-4">
+
+                            <p class="text-base text-blue-800 font-bold">
+                                כן, האפשרות בהחלט קיימת עקרונית (ולמעשה, כך בדיוק בנויות רוב מערכות ההפעלה המסורתיות,
+                                כגון לינוקס עם הפסיקה 0x80).
+                            </p>
+
+                            <p><strong>הסבר המנגנון (איך זה מתבצע בפועל):</strong></p>
+                            <p>
+                                במקום להקצות עשרות או מאות מספרי פסיקות (Interrupt Vectors) שונים בטבלת ה-IDT עבור כל
+                                פקודה בנפרד, מערכת ההפעלה מקצה <strong>מספר TRAP אחד ויחיד</strong> שמשמש כ"שער כניסה"
+                                כללי ומרכזי אל הליבה (Kernel). כדי להבדיל בין הפעולות השונות (READ לעומת FORK), משתמשים
+                                במנגנון "ריבוב" מבוסס תוכנה:
+                            </p>
+
+                            <ol class="list-decimal list-inside space-y-3 ml-4 mt-2">
+                                <li><strong>הכנת הנתונים (מצב משתמש):</strong> לפני שתוכנית המשתמש קוראת לפקודת ה-TRAP,
+                                    היא מניחה מספר מזהה ייחודי (Syscall Number) בתוך <strong>אוגר ספציפי של
+                                        המעבד</strong> (לרוב אוגר כמו <code>EAX</code> או <code>RAX</code>). למשל, היא
+                                    תשים '3' עבור קריאה, '4' עבור כתיבה, או '2' עבור FORK.</li>
+                                <li><strong>מעבר ההקשר (Context Switch):</strong> מתבצעת פקודת ה-TRAP (למשל,
+                                    <code>int 0x80</code>). המעבד עובר למצב ליבה (Kernel Mode) וקופץ אוטומטית לקוד
+                                    הניתוב המרכזי (Syscall Dispatcher) שמוגדר לאותו TRAP בטבלת הפסיקות.
+                                </li>
+                                <li><strong>הניתוב בתוכנה (מצב ליבה):</strong> הליבה בודקת את הערך שהונח באותו אוגר. היא
+                                    משתמשת במספר הזה כאינדקס כדי לגשת ל<strong>טבלת קריאות המערכת (System Call
+                                        Table)</strong> – שזוהי טבלת תוכנה שמכילה מערך של מצביעים לפונקציות.</li>
+                                <li><strong>הביצוע:</strong> הליבה קופצת (מבצעת קריאה לפונקציה) לכתובת שנמצאה באותו
+                                    אינדקס. כך, פסיקת חומרה אחת ויחידה מנותבת בתוכנה למאות פונקציות שונות לחלוטין.</li>
+                            </ol>
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- QUESTION 11 -->
+        <!-- ============================================== -->
+        <div id="tab-q11" class="tab-content hidden max-w-5xl mx-auto fade-in" dir="rtl">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 11 (5 נקודות)</h2>
+
+            <div class="question-box mb-6 relative">
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+                    צוות מתכנתים נדרש להוסיף תמיכה בקונטיינרים למערכת דמוית LINUX שלא תמכה בהם קודם.<br>
+                    האם אחרי הוספת מנגנון יצירת והגדרת משאבי קונטיינרים (כולל קריאות מערכת חדשות הנדרשות לזה), האם יהיה
+                    צורך לשנות את קוד מקור של חלק <strong>מקריאות מערכת</strong> קיימות?<br>
+                    <span class="font-normal text-base block mt-2">
+                        - אם עניתם לא, תסבירו איך כל קריאות המערכת הקיימות ימשיכו לעבוד בצורה תקינה.<br>
+                        - אם עניתם כן, תסבירו בצורה כללית ותנו דוגמא אלו קריאות מערכת יהיה צורך לשנות ומה השינוי העיקרי
+                        הנדרש באופן ביצוען שלהם.
+                    </span>
+                </p>
+            </div>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            חשבו על המהות של קונטיינר - יצירת "אשליה" של בידוד מוחלט לתהליכים שרצים בתוכו. לפני הוספת
+                            הקונטיינרים, המערכת ניהלה מאגר נתונים גלובלי אחד משותף (למשל, עץ תהליכים אחד, מערכת קבצים
+                            אחת).<br><br>
+                            אם תהליך בתוך קונטיינר קורא לפונקציה ותיקה ובסיסית כמו <code>getpid()</code>, הוא מצפה לקבל
+                            את המספר הווירטואלי שלו (למשל תהליך מספר 1), ולא את המספר האמיתי הגלובלי בשרת. האם פונקציה
+                            ותיקה שנכתבה בימי ה"עולם הגלובלי" יודעת בעצמה לספק את האשליה הזו ולסנן מידע לפי קונטיינרים
+                            בלי שישכתבו אותה מחדש?
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג
+                        פתרון מלא</span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box border-l-4 border-l-green-500 border-r-0 py-4 mb-8">
+                        <p class="text-slate-800 font-semibold mb-2">הפתרון המלא:</p>
+                        <div class="text-sm text-slate-700 font-medium leading-relaxed">
+                            <p class="mb-3 text-base"><strong>התשובה היא כן מוחלט. יהיה צורך הכרחי לשנות את קוד המקור של
+                                    קריאות מערכת קיימות רבות.</strong></p>
+
+                            <p class="mt-2 font-bold text-slate-800">הסבר כללי:</p>
+                            <p class="mb-4">
+                                קונטיינרים מייצרים בידוד בין תהליכים באמצעות מנגנון הליבה של <strong>מרחבי שמות
+                                    (Namespaces)</strong>. לפני הוספת התמיכה בקונטיינרים, כל קריאות המערכת (System
+                                Calls) נכתבו תחת ההנחה שיש "עולם גלובלי אחד" – עץ תהליכים יחיד, מערכת קבצים אחת, ומרחב
+                                רשת אחד משותף.<br>
+                                ברגע שמוסיפים קונטיינרים, הליבה (Kernel) הופכת ל"מודעת-הקשר" (Context-Aware). קריאות
+                                המערכת הישנות חייבות לעבור התאמה כדי שיוכלו קודם כל לבדוק <em>לאיזה מרחב שמות שייך
+                                    התהליך שקרא להן</em>. רק לאחר מכן, הקריאה תוכל "לתרגם" ולסנן את התשובה כך שתשקף אך
+                                ורק את המרחב המבודד (הקונטיינר) של אותו תהליך, ולא את המידע החשוף של כלל המערכת.
+                            </p>
+
+                            <p class="mt-2 font-bold text-slate-800">דוגמאות לשינויים בקריאות מערכת:</p>
+                            <ul class="list-disc list-inside space-y-4 ml-4 mt-2">
+                                <li>
+                                    <strong>קריאת המערכת <code>getpid()</code>:</strong><br>
+                                    במערכת הישנה, הפונקציה פשוט ניגשה למבנה הנתונים של התהליך והחזירה את ה-PID הגלובלי
+                                    שלו בצורה ישירה.<br>
+                                    לאחר הוספת הקונטיינרים, התהליך בתוך הקונטיינר בטוח שהוא רץ במערכת מבודדת, והוא מצפה
+                                    לראות את ה-PID המקומי שלו (למשל, תהליך מספר 1). לכן, יש לשנות את קריאת המערכת כך
+                                    שתזהה תחילה באיזה <em>PID Namespace</em> נמצא התהליך הקורא לה, ותבצע המרה (Mapping)
+                                    מה-PID הגלובלי (למשל 1450) ל-PID הלוקאלי הווירטואלי שמיוצג בתוך אותו קונטיינר
+                                    ספציפי.
+                                </li>
+                                <li>
+                                    <strong>קריאת המערכת <code>kill(pid, signal)</code>:</strong><br>
+                                    במערכת הישנה, הפונקציה חיפשה את ה-PID שניזן לה ברשימת כלל התהליכים ושלחה לו אות.<br>
+                                    לאחר השינוי, הפונקציה חייבת להיות מעודכנת כך שתבדוק את גבולות ה-Namespace. עליה
+                                    לוודא שתהליך המטרה שמנסים להרוג אכן שייך לאותו מרחב שמות של התהליך היוזם, וכן לתרגם
+                                    את המספר הלוקאלי שסופק לה למספר הגלובלי האמיתי של התהליך. פעולה זו היא קריטית כדי
+                                    למנוע פרצת אבטחה שבה תהליך בקונטיינר יוכל "לרצוח" תהליכים של קונטיינרים אחרים או של
+                                    מערכת ההפעלה המארחת.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+        <!-- ============================================== -->
+        <!-- QUESTION 12 -->
+        <!-- ============================================== -->
+        <div id="tab-q12" class="tab-content hidden max-w-5xl mx-auto fade-in" dir="rtl">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">שאלה 12 (5 נקודות)</h2>
+
+            <div class="question-box mb-6 relative">
+                <p class="text-slate-900 font-semibold text-lg leading-relaxed mb-4">
+                    נתון תהליך האמור לרוץ <strong>בקונטיינר</strong> במערכת הפעלה שרצה במכונה וירטואלית על רב-פקח BARE
+                    METAL מסוג 1 HYPERVISOR. האם חייב להיות מנגנון מיוחד לתמיכה בקונטיינרים או שווירטאליזציה תמיד כוללת
+                    בתוכה בין היתר גם מימוש קונטיינרים?<br><br>
+                    <span class="font-normal text-base block mt-2">
+                        - אם עניתם כן, הסבירו לאיזה גורם (מערכת הפעלה או רב-פקח) צריך להיות מנגנון תמיכה
+                        בקונטיינרים.<br>
+                        - אם עניתם לא, הסבירו את ההבדל בין מנגנון מימוש קונטיינרים הקיים במערכת לא וירטואלית לבין
+                        המנגנון הקיים במערכת וירטואלית.
+                    </span>
+                </p>
+            </div>
+
+            <details class="mb-6 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                        רמז </span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-amber-50/20 border-t border-slate-100">
+                    <div class="mindset-box">
+                        <p class="text-blue-800 text-sm leading-relaxed">
+                            כדי לענות על השאלה, חישבו על השכבות השונות במחשב ועל תחומי האחריות שלהן:<br><br>
+                            <strong>הרב-פקח (Hypervisor)</strong> יושב ממש על החומרה. הוא יודע לחלק מעבד, זיכרון ורשת
+                            כדי לייצר "מחשבים וירטואליים" (VMs). האם הוא יודע מה זה "תהליך" (Process)? לא. מבחינתו, כל
+                            מכונה וירטואלית היא פשוט קופסה שחורה שמריצה פקודות בינאריות.<br><br>
+                            <strong>קונטיינרים</strong>, לעומת זאת, אינם מכונות וירטואליות אמיתיות שמדמות חומרה. הם בסך
+                            הכל <strong>תהליכים מבודדים</strong> ברמת התוכנה. מי הגורם היחיד במחשב שמנהל תהליכים, מקצה
+                            להם מזהים (PIDs) ויודע לבודד אותם ברמה הלוגית באמצעות Namespaces? התשובה לשאלה זו תוביל אתכם
+                            מיד לגורם שחייב להכיל את מנגנון התמיכה.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mt-4 mb-8 fade-in">
+                <summary>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-emerald-500 text-xl"></i> הצג
+                        פתרון מלא</span>
+                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                </summary>
+                <div class="details-content text-slate-700 bg-emerald-50/20 border-t border-slate-100">
+                    <div class="solution-box border-l-4 border-l-green-500 border-r-0 py-4 mb-8">
+                        <p class="text-slate-800 font-semibold mb-2">הפתרון המלא:</p>
+                        <div class="text-sm text-slate-700 font-medium leading-relaxed">
+                            <p class="mb-3"><strong>התשובה היא כן:</strong> חייב להיות מנגנון מיוחד. וירטואליזציה (ניהול
+                                מכונות וירטואליות) אינה כוללת בתוכה אוטומטית מימוש של קונטיינרים.</p>
+
+                            <p class="mt-2 font-bold">הגורם שצריך להכיל את מנגנון התמיכה:</p>
+                            <p class="mb-3">הגורם שחייב להכיל את התמיכה במנגנון הקונטיינרים הוא <strong>מערכת ההפעלה
+                                    האורחת (Guest OS)</strong> שרצה בתוך המכונה הווירטואלית, ולא הרב-פקח (Hypervisor).
+                            </p>
+
+                            <p class="mt-2 font-bold">הסבר הלוגיקה והארכיטקטורה:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong>תפקיד הרב-פקח (Hypervisor):</strong> רב-פקח (ובמיוחד Type 1 Bare Metal) עוסק
+                                    אך ורק ב<em>וירטואליזציה של חומרה (Hardware Virtualization)</em>. הוא לוקח משאבים
+                                    פיזיים של השרת (מעבד, זיכרון, כרטיס רשת) ומחלק אותם למכונות וירטואליות עצמאיות.
+                                    הרב-פקח "עיוור" לחלוטין למבנים הלוגיים שרצים בתוך אותן מכונות – הוא אינו מנהל קבצים,
+                                    אינו מתעסק בקריאות מערכת (Syscalls) ואין לו כל מושג מהו "תהליך" (Process). מכיוון
+                                    שקונטיינר מבוסס ביסודו על בידוד של תהליכים, לרב-פקח אין שום קשר אליו ואין לו יכולת
+                                    לממש אותו.</li>
+                                <li><strong>תפקיד מערכת ההפעלה:</strong> קונטיינרים מייצגים <em>וירטואליזציה ברמת מערכת
+                                        ההפעלה (OS-Level Virtualization)</em>. כדי לבודד תהליך וליצור ממנו קונטיינר,
+                                    נדרשת ליבה (Kernel) שמסוגלת לספק מנגנונים תוכנתיים מורכבים כגון מרחבי שמות
+                                    (Namespaces) לבידוד סביבת הריצה, וקבוצות שליטה (Cgroups) לניהול והגבלת משאבים.</li>
+                                <li><strong>המסקנה:</strong> למערכת ההפעלה כלל לא משנה אם היא הותקנה ישירות על ברזל פיזי
+                                    (Bare Metal) או שהיא רצה כ"אורחת" בתוך מכונה וירטואלית מעל Hypervisor. האחריות
+                                    הבלעדית ליצירת הקונטיינרים, ניהולם והרצתם מוטלת על הליבה של מערכת ההפעלה עצמה.
+                                    תפקידו של הרב-פקח מסתכם באספקת תשתית החומרה הווירטואלית שעליה פועלת אותה מערכת
+                                    הפעלה.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- Footer (Global) -->
+        <div class="max-w-5xl mx-auto mt-12 pt-6 border-t border-slate-200 flex justify-between">
+            <button onclick="navQuestion('prev')"
+                class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded-lg font-bold transition-colors shadow-sm flex items-center gap-2"><i
+                    class="fa-solid fa-arrow-right"></i> &#1513;&#1488;&#1500;&#1492;
+                &#1511;&#1493;&#1491;&#1502;&#1514;</button>
+            <button onclick="navQuestion('next')"
+                class="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-md flex items-center gap-2">&#1513;&#1488;&#1500;&#1492;
+                &#1492;&#1489;&#1488;&#1492; <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+
+        <!-- Detailed Explanation Modal -->
+        <div id="explanationModal"
+            class="fixed inset-0 z-[100] bg-slate-900/5 hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
+            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh] pointer-events-auto border border-slate-200/60"
+                id="modal-card">
+                <div class="p-4 overflow-y-auto flex-1">
+                    <div class="bg-[#282c34] rounded-t-2xl p-5 border border-[#3e4451] overflow-x-auto shadow-inner">
+                        <pre dir="ltr"
+                            style="margin:0; padding:0; background:transparent;"><code id="modalCode" class="text-[0.95rem] font-mono text-slate-300 leading-relaxed block text-left w-full" style="text-shadow: none;"></code></pre>
+                    </div>
+                    <div
+                        class="bg-blue-50/50 border border-t-0 border-blue-100 rounded-b-2xl p-6 text-slate-700 leading-relaxed text-[1.1rem]">
+                        <p id="modalExplanation"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const explanationsDict = {
+                // ==========================================
+                // שאלה 7 - הסברים למנגנון Reusable Barrier
+                // ==========================================
+
+                "q7_init_1": "משתנה גלובלי (משותף לכל התהליכים) שתפקידו לספור כמה תהליכים הגיעו לנקודת המפגש. הוא מאפשר לנו לזהות מי הוא התהליך 'האחרון' שאמור לפתוח את השער לכולם.",
+                "q7_init_2": "סמפור בינארי (מנעול - Mutex) שתפקידו להגן על הגישה למשתנה המונה (count). מכיוון שכמה תהליכים עלולים לנסות לקדם את המונה בו-זמנית, חובה למנוע מצב מירוץ (Race Condition) כדי שהספירה תהיה מדויקת.",
+                "q7_init_3": "סמפור בינארי המשמש כ'קרוסלת כניסה' (Turnstile). הוא מאותחל ל-0 (נעול), כך שכל תהליך שמגיע מוקדם ייחסם פה וימתין בסבלנות עד שהתהליך האחרון (ה-N-י) יגיע ויפתח אותו.",
+                "q7_init_4": "סמפור בינארי המשמש כ'קרוסלת יציאה'. הוא מאותחל ל-1 (פתוח כביכול), אך למעשה יינעל מיד על ידי התהליך האחרון שמגיע בכניסה. תפקידו לעצור תהליכים מהירים מלצאת החוצה ולחזור ללולאה לפני שכולם סיימו להיכנס.",
+
+                "q7_entry_1": "התהליך שמגיע נועל את המנעול. הוא מבקש בלעדיות כדי שיוכל לעדכן את המונה בבטחה מבלי שתהליך אחר יפריע לו באותו חלקיק שנייה.",
+                "q7_entry_2": "קידום המונה: 'הגעתי!'. כעת המערכת יודעת שעוד תהליך הצטרף לקבוצה שממתינה להיכנס לקטע המשותף.",
+                "q7_entry_3": "בדיקה קריטית: האם אני התהליך ה-N (האחרון בקבוצה שהגיעה)? אם כן, האחריות לנהל את פתיחת השערים מוטלת עליי.",
+                "q7_entry_4": "התהליך האחרון נועל את קרוסלת היציאה (turnstile2) מראש. זה מבטיח שכאשר נשחרר עכשיו את כולם פנימה, אף אחד לא יוכל בטעות לסיים את העבודה ולברוח החוצה בטרם עת.",
+                "q7_entry_5": "התהליך האחרון פותח את קרוסלת הכניסה. הפעולה הזו תשחרר את התהליך הראשון שנתקע שם בהמתנה, ומתחילה תגובת שרשרת שתכניס את כולם.",
+                "q7_entry_6": "סיום תנאי התהליך האחרון.",
+                "q7_entry_7": "שחרור המנעול. פעולת הרישום והבדיקה הסתיימה בבטחה, וכעת תהליך אחר יכול לגשת אל המונה.",
+                "q7_entry_8": "נקודת העצירה המרכזית בכניסה (Turnstile). כל תהליך שמגיע (למעט הראשון שישוחרר על ידי האחרון) נחסם כאן וממתין לאישור כניסה.",
+                "q7_entry_9": "תגובת השרשרת (Cascading Wakeup): כל תהליך שעובר את הקרוסלה מתחייב לפתוח אותה מיד עבור התהליך שבא אחריו בתור. כך כולם נכנסים בזה אחר זה כמעט באותו רגע מבלי לנעול אחד את השני בחוץ.",
+
+                "q7_exit_1": "תהליך שסיים את העבודה בקטע המשותף ורוצה לעזוב נועל את המנעול, כדי שיוכל להוריד את המונה בבטחה.",
+                "q7_exit_2": "הורדת המונה: 'סיימתי, אני בדרך החוצה'.",
+                "q7_exit_3": "בדיקה קריטית ביציאה: האם אני התהליך האחרון לעזוב (המונה חזר ל-0)? אם כן, עליי להכין את השטח למחזור העבודה הבא.",
+                "q7_exit_4": "התהליך האחרון נועל מחדש את קרוסלת הכניסה (turnstile1). זהו שלב הכרחי שמבטיח שכאשר תתחיל הלולאה הבאה (בסיבוב חדש), שער הכניסה שוב יהיה נעול למצטרפים הראשונים עד שכולם יגיעו.",
+                "q7_exit_5": "התהליך האחרון פותח את קרוסלת היציאה. הפעולה הזו משחררת את הראשון שממתין שם לצאת (זוכרים שנעלנו אותה בכניסה?), ומתחילה תגובת שרשרת חדשה החוצה.",
+                "q7_exit_6": "סיום תנאי התהליך האחרון ביציאה.",
+                "q7_exit_7": "שחרור המנעול לאחר סיום העדכון ביציאה.",
+                "q7_exit_8": "נקודת העצירה המרכזית ביציאה. תהליכים שסיימו את הקטע המשותף מהר ממתינים כאן באופן מאובטח עד שגם התהליך האיטי ביותר יסיים את עבודתו ויגיע לנקודה זו.",
+                "q7_exit_9": "תגובת שרשרת ביציאה (Cascading Wakeup): כל תהליך שיוצא פותח מיד את הדלת עבור התהליך הבא אחריו בתור היציאה, עד שכל הקבוצה משתחררת יחד חזרה לתחילת הלולאה.",
+            };
+
+            let tooltipState = 1;
+            let closeTimer = null;
+
+            const tooltipConfig = {
+                1: { icon: "fa-code", text: "ללא הסברים", color: "text-slate-400", glow: "from-slate-500", glowOp: "opacity-30" },
+                2: { icon: "fa-hand-pointer", text: "מופעל - בלחיצה", color: "text-emerald-400", glow: "from-emerald-400", glowOp: "opacity-70" },
+                3: { icon: "fa-mouse-pointer", text: "מופעל - בריחוף", color: "text-primary", glow: "from-primary", glowOp: "opacity-70" }
+            };
+
+            function updateCyclerUI() {
+                const config = tooltipConfig[tooltipState];
+                const btns = document.querySelectorAll('.tooltip-cycler');
+                btns.forEach(btn => {
+                    const icon = btn.querySelector('.cycler-icon');
+                    const text = btn.querySelector('.cycler-text');
+                    const glow = btn.querySelector('.cycler-glow');
+
+                    btn.classList.remove('cycler-anim');
+                    void btn.offsetWidth;
+                    btn.classList.add('cycler-anim');
+
+                    if (icon) icon.className = `cycler-icon fa-solid ${config.icon} text-lg ${config.color} transition-transform group-hover:scale-110 my-0.5`;
+                    if (text) text.textContent = config.text;
+                    if (glow) glow.className = `cycler-glow absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t ${config.glow}/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`;
+                });
+
+                const tooltipTexts = document.querySelectorAll('.interactive-tooltip');
+                tooltipTexts.forEach(el => {
+                    if (tooltipState === 1) {
+                        el.classList.remove('tooltip-active-style', 'cycler-anim');
+                        void el.offsetWidth;
+                        el.classList.add('cycler-anim');
+                    } else {
+                        el.classList.add('tooltip-active-style');
+                        el.classList.remove('cycler-anim');
+                        void el.offsetWidth;
+                        el.classList.add('cycler-anim');
+                    }
+                });
+
+                initTooltips();
+            }
+
+            function cycleTooltipState() {
+                tooltipState = (tooltipState % 3) + 1;
+                localStorage.setItem('osExamTooltipState', tooltipState);
+                updateCyclerUI();
+            }
+
+            function openModal(codeText, explanation) {
+                document.getElementById('modalCode').innerText = codeText.replace(/^\n+|\n+$/g, '');
+                document.getElementById('modalExplanation').innerHTML = explanation;
+                const modal = document.getElementById('explanationModal');
+                const modalCard = document.getElementById('modal-card');
+
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                modalCard.classList.remove('scale-95');
+                modal.classList.add('flex');
+            }
+
+            function closeModal(event, force = false) {
+                if (event && !force) {
+                    if (event.target !== document.getElementById('explanationModal')) return;
+                }
+                const modal = document.getElementById('explanationModal');
+                const modalCard = document.getElementById('modal-card');
+
+                modal.classList.add('opacity-0');
+                modalCard.classList.add('scale-95');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+                clearCloseTimer();
+            }
+
+            function startCloseTimer() {
+                clearCloseTimer();
+                closeTimer = setTimeout(() => {
+                    closeModal();
+                }, 500); // ms delay before closing
+            }
+
+            function clearCloseTimer() {
+                if (closeTimer) {
+                    clearTimeout(closeTimer);
+                    closeTimer = null;
+                }
+            }
+
+            function initTooltips() {
+                document.querySelectorAll('.interactive-tooltip').forEach(m => {
+                    const newM = m.cloneNode(true);
+                    m.parentNode.replaceChild(newM, m);
+                });
+
+                document.querySelectorAll('.interactive-tooltip').forEach(m => {
+                    const key = m.getAttribute('data-key');
+                    const explanation = explanationsDict[key];
+                    const codeText = m.innerText.trim();
+
+                    if (!explanation) return;
+
+                    if (tooltipState === 2) {
+                        m.addEventListener('click', () => openModal(codeText, explanation));
+                    } else if (tooltipState === 3) {
+                        m.addEventListener('mouseenter', () => {
+                            clearCloseTimer();
+                            openModal(codeText, explanation);
+                        });
+                        m.addEventListener('mouseleave', () => {
+                            startCloseTimer();
+                        });
+                    }
+                });
+            }
+
+            document.addEventListener('click', (event) => {
+                const modal = document.getElementById('explanationModal');
+                const modalCard = document.getElementById('modal-card');
+                if (modal && !modal.classList.contains('hidden')) {
+                    if (!modalCard.contains(event.target) && !event.target.closest('.interactive-tooltip')) {
+                        closeModal();
+                    }
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const savedState = localStorage.getItem('osExamTooltipState');
+                if (savedState) tooltipState = parseInt(savedState);
+                updateCyclerUI();
+
+                const modalContent = document.querySelector('#explanationModal > div');
+                if (modalContent) {
+                    modalContent.addEventListener('mouseenter', clearCloseTimer);
+                    modalContent.addEventListener('mouseleave', startCloseTimer);
+                }
+            });
+
+            const questionsList = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12'];
+            let currentQIndex = 0;
+
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('collapsed');
+                const btn = document.getElementById('sidebar-toggle');
+                btn.classList.toggle('md:right-[19rem]');
+                const icon = btn.querySelector('i');
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.className = 'fa-solid fa-chevron-left';
+                } else {
+                    icon.className = 'fa-solid fa-bars';
+                }
+            }
+
+            function navQuestion(dir) {
+                if (dir === 'next' && currentQIndex < questionsList.length - 1) {
+                    switchTab(questionsList[currentQIndex + 1]);
+                } else if (dir === 'prev' && currentQIndex > 0) {
+                    switchTab(questionsList[currentQIndex - 1]);
+                }
+            }
+
+            function switchTab(tabId) {
+                currentQIndex = questionsList.indexOf(tabId);
+                document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('block');
+                    tab.classList.add('hidden');
+                });
+                const selectedTab = document.getElementById('tab-' + tabId);
+                if (selectedTab) {
+                    selectedTab.classList.remove('hidden');
+                    selectedTab.classList.add('block');
+                }
+
+                document.querySelectorAll('nav button').forEach(btn => {
+                    btn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white";
+                    btn.querySelector('div:first-child').className = "w-8 h-8 rounded-md bg-slate-800 flex items-center justify-center flex-shrink-0 font-bold";
+                });
+                const activeBtn = document.getElementById('btn-' + tabId);
+                if (activeBtn) {
+                    activeBtn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-white border border-primary/30 transition-colors text-right";
+                    activeBtn.querySelector('div:first-child').className = "w-8 h-8 rounded-md bg-primary/30 text-accent flex items-center justify-center flex-shrink-0 font-bold";
+                }
+            }
+
+            function checkAnswer(btn, isCorrect, questionId) {
+                const container = btn.closest('ul');
+                const buttons = container.querySelectorAll('button');
+                buttons.forEach(b => b.disabled = true);
+
+                if (isCorrect) {
+                    btn.classList.add('correct');
+                    btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> ' + btn.innerHTML;
+                } else {
+                    btn.classList.add('incorrect');
+                    btn.innerHTML = '<i class="fa-solid fa-xmark mr-2"></i> ' + btn.innerHTML;
+                    buttons.forEach(b => {
+                        if (b.getAttribute('data-correct') === 'true') {
+                            b.classList.add('correct');
+                        }
+                    });
+                }
+
+                const explanations = document.getElementById('exp-' + questionId);
+                if (explanations) {
+                    explanations.style.display = 'block';
+                    explanations.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        </script>
+    </main>
+</body>
+
+</html>
