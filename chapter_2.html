@@ -998,175 +998,333 @@
 
                 <!-- State Machine -->
                 <article class="mb-12">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4">2.1.5 מכונת המצבים (State Machine)</h3>
-                    <p class="text-sm text-slate-750 mb-6">
-                        כדי לנהל את המעברים המהירים, מערכת ההפעלה מתייחסת לכל תהליך כנמצא באחד ממצבים מוגדרים מראש.
-                        תרשים של מודל שבעת המצבים המורחב (7-State Model):
-                    </p>
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-lg">2.1.5</span>
+                            מכונת המצבים הקלאסית (3-State Model)
+                        </h3>
+                        <p class="text-base text-slate-700 leading-relaxed">
+                            מערכת ההפעלה מנהלת אלפי תהליכים בו זמנית, אך למעבד (CPU) יש מספר מוגבל של ליבות. כדי לנהל את
+                            ה"ריקוד" הזה מבלי שתהליכים יפריעו זה לזה, מערכת ההפעלה מגדירה מצבים ברורים שלפיהם היא יודעת
+                            מה כל תהליך עושה כרגע.
+                            <br><br>
+                            המודל הקלאסי מכיל 3 מצבים עיקריים. הבנת המעברים ביניהם היא המפתח להבנת האופן שבו מחשב מודרני
+                            עובד:
+                        </p>
+                    </div>
 
                     <!-- Interactive State Machine Simulator -->
-                    <div class="bg-slate-900 text-slate-100 p-6 rounded-2xl shadow-xl mb-6 border border-slate-800 flex flex-col items-center"
-                        id="state-machine-sim" dir="ltr">
+                    <div class="bg-slate-900 rounded-3xl shadow-2xl mb-8 border border-slate-800 overflow-hidden flex flex-col"
+                        id="state-machine-sim">
 
-                        <div class="relative w-full max-w-[650px] h-[300px] mx-auto bg-slate-950 overflow-hidden rounded-xl border border-slate-800"
-                            id="sm-diagram">
-                            <!-- Edges (SVG for lines) -->
-                            <svg class="absolute inset-0 w-full h-full pointer-events-none" id="sm-edges">
+                        <!-- Header -->
+                        <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                            <h4 class="text-slate-200 font-bold text-lg">סימולטור מתזמן התהליכים (Scheduler)</h4>
+                            <span class="flex h-3 w-3 relative">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </span>
+                        </div>
+
+                        <!-- Diagram Area -->
+                        <div class="relative w-full h-[380px] bg-slate-900/50 overflow-hidden" dir="ltr"
+                            id="sim-canvas">
+
+                            <!-- SVG Lines -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
                                 <defs>
-                                    <marker id="arrow-sm" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6"
+                                    <!-- Arrowhead for standard lines -->
+                                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6"
                                         markerHeight="6" orient="auto-start-reverse">
-                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+                                    </marker>
+                                    <!-- Arrowhead for active transitions -->
+                                    <marker id="arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6"
+                                        markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
                                     </marker>
                                 </defs>
-                                <!-- New -> Ready -->
-                                <line x1="600" y1="50" x2="520" y2="50" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" stroke-dasharray="4" />
-                                <!-- Running -> Exit -->
-                                <line x1="100" y1="50" x2="60" y2="50" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" stroke-dasharray="4" />
-                                <!-- Running -> Ready -->
-                                <line x1="210" y1="60" x2="440" y2="60" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" stroke-dasharray="4" />
-                                <!-- Ready -> Running -->
-                                <line x1="440" y1="80" x2="210" y2="80" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" />
-                                <!-- Running -> Blocked -->
-                                <line x1="170" y1="90" x2="290" y2="190" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" />
-                                <!-- Blocked -> Ready -->
-                                <line x1="360" y1="190" x2="480" y2="90" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" />
 
-                                <!-- Suspend transitions -->
-                                <!-- Blocked -> B-Suspend -->
-                                <line x1="265" y1="220" x2="160" y2="220" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" />
-                                <!-- B-Suspend -> Blocked (Resume) -->
-                                <line x1="160" y1="230" x2="265" y2="230" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" stroke-dasharray="2" />
-                                <!-- Ready -> R-Suspend -->
-                                <line x1="510" y1="90" x2="540" y2="190" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" />
-                                <!-- R-Suspend -> Ready (Resume) -->
-                                <line x1="520" y1="190" x2="490" y2="90" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" stroke-dasharray="2" />
-                                <!-- B-Suspend -> R-Suspend (I/O completion while swapped) -->
-                                <line x1="160" y1="250" x2="490" y2="250" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" />
-                                <!-- New -> R-Suspend -->
-                                <line x1="600" y1="60" x2="560" y2="200" stroke="#64748b" stroke-width="2"
-                                    marker-end="url(#arrow-sm)" stroke-dasharray="2" />
+                                <!-- Ready to Running (Dispatch) -->
+                                <path d="M 75% 70% C 75% 40%, 65% 25%, 55% 25%" fill="none" stroke="#475569"
+                                    stroke-width="3" stroke-dasharray="6" marker-end="url(#arrow)" id="line-dispatch" />
+
+                                <!-- Running to Ready (Timeout/Preempt) -->
+                                <path d="M 45% 25% C 35% 25%, 25% 40%, 25% 70%" fill="none" stroke="#475569"
+                                    stroke-width="3" stroke-dasharray="6" marker-end="url(#arrow)" id="line-timeout" />
+
+                                <!-- Running to Blocked (I/O Request) -->
+                                <path d="M 50% 30% L 50% 65%" fill="none" stroke="#475569" stroke-width="3"
+                                    marker-end="url(#arrow)" id="line-io-req" />
+
+                                <!-- Blocked to Ready (I/O Done) -->
+                                <path d="M 55% 75% L 70% 75%" fill="none" stroke="#475569" stroke-width="3"
+                                    marker-end="url(#arrow)" id="line-io-done" />
                             </svg>
 
-                            <!-- The Ball (Process) -->
-                            <div id="sm-process-ball"
-                                class="absolute w-8 h-8 bg-amber-400 rounded-full shadow-[0_0_15px_rgba(251,191,36,0.8)] z-20 transition-all duration-700 ease-in-out flex items-center justify-center text-amber-900 font-bold text-[10px] transform -translate-x-1/2 -translate-y-1/2"
-                                style="top: 30px; left: 600px;">
+                            <!-- State Nodes -->
+
+                            <!-- RUNNING NODE -->
+                            <div
+                                class="absolute top-[25%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 w-32">
+                                <div
+                                    class="w-20 h-20 bg-emerald-950 border-4 border-emerald-500 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center relative overflow-hidden group">
+                                    <div class="absolute inset-0 bg-emerald-500/20 animate-pulse"></div>
+                                    <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <span
+                                    class="mt-2 text-emerald-400 font-bold bg-slate-950/80 px-3 py-1 rounded-full text-sm border border-emerald-900">Running</span>
+                            </div>
+
+                            <!-- READY NODE -->
+                            <div
+                                class="absolute top-[75%] left-[75%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 w-32">
+                                <div
+                                    class="w-20 h-20 bg-sky-950 border-4 border-sky-500 rounded-full shadow-[0_0_20px_rgba(14,165,233,0.3)] flex items-center justify-center">
+                                    <svg class="w-10 h-10 text-sky-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                    </svg>
+                                </div>
+                                <span
+                                    class="mt-2 text-sky-400 font-bold bg-slate-950/80 px-3 py-1 rounded-full text-sm border border-sky-900">Ready</span>
+                            </div>
+
+                            <!-- BLOCKED NODE -->
+                            <div
+                                class="absolute top-[75%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 w-32">
+                                <div
+                                    class="w-20 h-20 bg-rose-950 border-4 border-rose-500 rounded-lg shadow-[0_0_20px_rgba(244,63,94,0.3)] flex items-center justify-center transform rotate-45">
+                                    <svg class="w-8 h-8 text-rose-400 -rotate-45" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <span
+                                    class="mt-2 text-rose-400 font-bold bg-slate-950/80 px-3 py-1 rounded-full text-sm border border-rose-900">Blocked</span>
+                            </div>
+
+                            <!-- THE PROCESS BALL -->
+                            <!-- Initial position aligns with READY node (left: 75%, top: 75%) -->
+                            <div id="sim-process"
+                                class="absolute w-10 h-10 bg-gradient-to-br from-amber-300 to-amber-600 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.8)] z-30 transition-all duration-700 ease-in-out flex items-center justify-center text-amber-950 font-black text-sm transform -translate-x-1/2 -translate-y-1/2 border-2 border-amber-200"
+                                style="top: 75%; left: 75%;">
                                 P1
                             </div>
 
-                            <!-- State Nodes -->
-                            <!-- New -->
-                            <div
-                                class="absolute top-[30px] left-[600px] border-2 border-indigo-500 bg-indigo-950/90 text-indigo-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[80px] transform -translate-x-1/2 -translate-y-1/2 text-xs">
-                                New
+                        </div>
+
+                        <!-- Controls Console -->
+                        <div class="bg-slate-950 p-6 border-t border-slate-800" dir="rtl">
+                            <h5 class="text-slate-400 text-sm mb-3 font-semibold uppercase tracking-wider">לוח בקרה -
+                                פעולות מערכת</h5>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+
+                                <button id="btn-dispatch"
+                                    class="group flex flex-col items-center p-3 bg-slate-900 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-500 rounded-xl transition-all text-slate-300 hover:text-emerald-400 text-sm font-bold shadow-sm">
+                                    <span class="block text-lg mb-1">▶️</span>
+                                    <span>הקצאת מעבד</span>
+                                    <span class="text-[10px] text-slate-500 font-normal mt-1">(Dispatch)</span>
+                                </button>
+
+                                <button id="btn-preempt"
+                                    class="group flex flex-col items-center p-3 bg-slate-900 hover:bg-sky-950 border border-slate-700 hover:border-sky-500 rounded-xl transition-all text-slate-300 hover:text-sky-400 text-sm font-bold shadow-sm">
+                                    <span class="block text-lg mb-1">⏱️</span>
+                                    <span>פסיקת שעון</span>
+                                    <span class="text-[10px] text-slate-500 font-normal mt-1">(Preempt / Timeout)</span>
+                                </button>
+
+                                <button id="btn-io-req"
+                                    class="group flex flex-col items-center p-3 bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-500 rounded-xl transition-all text-slate-300 hover:text-rose-400 text-sm font-bold shadow-sm">
+                                    <span class="block text-lg mb-1">📥</span>
+                                    <span>בקשת קלט/פלט</span>
+                                    <span class="text-[10px] text-slate-500 font-normal mt-1">(I/O Request)</span>
+                                </button>
+
+                                <button id="btn-io-done"
+                                    class="group flex flex-col items-center p-3 bg-slate-900 hover:bg-amber-950 border border-slate-700 hover:border-amber-500 rounded-xl transition-all text-slate-300 hover:text-amber-400 text-sm font-bold shadow-sm">
+                                    <span class="block text-lg mb-1">✅</span>
+                                    <span>סיום קלט/פלט</span>
+                                    <span class="text-[10px] text-slate-500 font-normal mt-1">(I/O Completion)</span>
+                                </button>
+
                             </div>
-                            <!-- Exit -->
+
+                            <!-- Terminal output -->
                             <div
-                                class="absolute top-[30px] left-[50px] border-2 border-slate-500 bg-slate-800 text-slate-300 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[80px] transform -translate-x-1/2 -translate-y-1/2 text-xs">
-                                Exit
-                            </div>
-                            <!-- Running -->
-                            <div
-                                class="absolute top-[70px] left-[150px] border-2 border-emerald-500 bg-emerald-950/90 text-emerald-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[120px] transform -translate-x-1/2 -translate-y-1/2">
-                                Running
-                            </div>
-                            <!-- Ready (with Tooltip) -->
-                            <div
-                                class="absolute top-[70px] left-[500px] border-2 border-sky-500 bg-sky-950/90 text-sky-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[120px] transform -translate-x-1/2 -translate-y-1/2 group">
-                                Ready
-                                <!-- Tooltip -->
-                                <div
-                                    class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-100 text-slate-800 font-bold text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-md border border-slate-300">
-                                    נמצא בתור ה-Ready Queue
+                                class="mt-4 bg-black rounded-lg p-3 font-mono text-sm min-h-[60px] flex items-center border border-slate-800 shadow-inner relative overflow-hidden">
+                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-sky-500" id="terminal-indicator">
                                 </div>
+                                <span id="sim-log" class="text-sky-400 pl-4 pr-2">
+                                    [מערכת אתחלה] תהליך P1 נוצר והוכנס לתור המוכנים (Ready). ממתין למעבד.
+                                </span>
                             </div>
-                            <!-- Blocked -->
-                            <div
-                                class="absolute top-[220px] left-[325px] border-2 border-rose-500 bg-rose-950/90 text-rose-400 px-4 py-2 rounded-xl shadow-lg text-center font-bold z-10 w-[120px] transform -translate-x-1/2 -translate-y-1/2">
-                                Blocked
-                            </div>
-
-                            <!-- Suspend Nodes -->
-                            <!-- Blocked-Suspend -->
-                            <div
-                                class="absolute top-[220px] left-[100px] border-2 border-orange-500 bg-orange-950/90 text-orange-400 px-2 py-1.5 rounded-xl shadow-lg text-center font-bold text-xs z-10 w-[110px] transform -translate-x-1/2 -translate-y-1/2 leading-tight">
-                                Blocked<br>Suspend
-                            </div>
-                            <!-- Ready-Suspend -->
-                            <div
-                                class="absolute top-[220px] left-[550px] border-2 border-fuchsia-500 bg-fuchsia-950/90 text-fuchsia-400 px-2 py-1.5 rounded-xl shadow-lg text-center font-bold text-xs z-10 w-[110px] transform -translate-x-1/2 -translate-y-1/2 leading-tight">
-                                Ready<br>Suspend
-                            </div>
-                        </div>
-
-                        <!-- Controls -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 w-full max-w-[650px]" dir="rtl">
-                            <button onclick="moveSmBall('running')"
-                                class="bg-emerald-900/50 hover:bg-emerald-800/80 text-emerald-300 border border-emerald-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
-                                🟢 למעבד (Dispatch)
-                            </button>
-                            <button onclick="moveSmBall('ready')"
-                                class="bg-sky-900/50 hover:bg-sky-800/80 text-sky-300 border border-sky-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
-                                🔵 הפקעה / התעוררות
-                            </button>
-                            <button onclick="moveSmBall('blocked')"
-                                class="bg-rose-900/50 hover:bg-rose-800/80 text-rose-300 border border-rose-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
-                                🔴 המתנה לקלט (I/O)
-                            </button>
-                            <button onclick="moveSmBall('suspend')"
-                                class="bg-purple-900/50 hover:bg-purple-800/80 text-purple-300 border border-purple-700 font-bold py-2 px-3 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
-                                🟣 השהיה (Swap Out)
-                            </button>
-                        </div>
-                        <div class="mt-4 p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-400 w-full max-w-[650px] text-center"
-                            id="sm-terminal" dir="rtl">
-                            [מערכת] תהליך P1 רץ כעת על המעבד (Running). נסו להזיז אותו למצבים השונים!
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- Explanations of States -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
                         <div
-                            class="bg-emerald-50/50 p-4 rounded-xl border-r-4 border-emerald-500 border-l border-t border-b border-emerald-100">
-                            <strong class="text-emerald-800 block mb-1 text-sm">רץ (Running)</strong>
-                            <span class="text-xs text-slate-700 leading-relaxed">התהליך שולט כרגע במעבד ומבצע
-                                פקודות.</span>
+                            class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div
+                                    class="w-10 h-10 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold">
+                                    R</div>
+                                <h4 class="font-bold text-slate-800 text-lg">מוכן (Ready)</h4>
+                            </div>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                התהליך טעון בזיכרון הראשי (RAM) ויש לו את כל מה שהוא צריך כדי לפעול. הדבר היחיד שחסר לו
+                                הוא <strong>זמן מעבד</strong>. הוא ממתין בתור (Ready Queue) עד שמנהל המשימות (Scheduler)
+                                יחליט שתורו לרוץ.
+                            </p>
                         </div>
+
                         <div
-                            class="bg-rose-50/50 p-4 rounded-xl border-r-4 border-rose-500 border-l border-t border-b border-rose-100">
-                            <strong class="text-rose-800 block mb-1 text-sm">חסום (Blocked)</strong>
-                            <span class="text-xs text-slate-700 leading-relaxed">התהליך לא יכול להמשיך לרוץ כי הוא ממתין
-                                למשהו (למשל, שקובץ ייקרא מהדיסק).</span>
+                            class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-200 hover:shadow-md transition-shadow relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-full h-1 bg-emerald-500"></div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div
+                                    class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold">
+                                    ▶</div>
+                                <h4 class="font-bold text-slate-800 text-lg">רץ (Running)</h4>
+                            </div>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                התהליך שולט כרגע פיזית במעבד (CPU). המעבד קורא את הפקודות של התהליך אחת אחרי השנייה
+                                ומבצע אותן. במעבד בעל ליבה אחת, <strong>רק תהליך אחד בלבד</strong> יכול להיות במצב זה
+                                בכל רגע נתון.
+                            </p>
                         </div>
+
                         <div
-                            class="bg-sky-50/50 p-4 rounded-xl border-r-4 border-sky-500 border-l border-t border-b border-sky-100">
-                            <strong class="text-sky-800 block mb-1 text-sm">מוכן (Ready)</strong>
-                            <span class="text-xs text-slate-700 leading-relaxed">התהליך יכול לרוץ טכנית, אבל הוא ממתין
-                                בתור עד ש"מתזמן התהליכים" יקצה לו את המעבד.</span>
+                            class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div
+                                    class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center font-bold">
+                                    ⏸</div>
+                                <h4 class="font-bold text-slate-800 text-lg">חסום (Blocked)</h4>
+                            </div>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                התהליך לא יכול להמשיך את חישוביו. הוא פנה לדיסק קשיח, לרשת, או שהוא ממתין להקלדה
+                                מהמשתמש. כדי לא לבזבז את זמן המעבד היקר, מערכת ההפעלה מעבירה אותו למצב השהיה עד שהמידע
+                                יגיע.
+                            </p>
                         </div>
+
                     </div>
 
-                    <div class="tip-box">
-                        <strong class="text-amber-955 block mb-2 text-sm">מכונת המצבים המשוכללת:</strong>
-                        <p class="text-slate-700 text-xs leading-relaxed">
-                            קיימים מצבים נוספים כמו "חדש", "סיום", ובעיקר "חסום בדיסק" ו"מוכן בדיסק". כאשר הזיכרון הראשי
-                            (RAM) מתמלא, מערכת ההפעלה מבצעת פינוי זיכרון על ידי החלפה (Swapping) של דפי תהליך שאינם
-                            בשימוש אל הזיכרון המשני (Disk) (קובץ החלפה / Swap), כדי לפנות מקום לתהליכים שחייבים לרוץ
-                            כעת.
+                    <!-- Educational Deep Dive -->
+                    <div class="bg-slate-50 border-l-4 border-indigo-500 p-5 rounded-r-xl">
+                        <h5 class="font-bold text-indigo-900 mb-2">למה אי אפשר לעבור מ-Blocked ישירות ל-Running?</h5>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            דמיינו תור לקופה בסופרמרקט (המעבד). אם לקוח שכח ארנק והלך להביא אותו מהרכב (מצב Blocked),
+                            כשהוא חוזר עם הארנק (סיום הקלט/פלט), הוא לא יכול פשוט לדחוף את מי שכרגע נמצא בקופה
+                            (Running).
+                            מערכת ההפעלה דורשת סדר והוגנות: תהליך שסיים להמתין חוזר לתור ההמתנה (Ready), ורק ה-Scheduler
+                            יחליט מתי מגיע תורו לחזור לקופה (למעבד).
                         </p>
                     </div>
                 </article>
 
+                <script>
+                    // שימוש בפונקציה מבודדת (IIFE) - מבטיח שאין התנגשויות עם קוד ישן או משתנים גלובליים ב-Canvas.
+                    // הקוד רץ אוטומטית כשהסקריפט נטען ומקים מערכת סגורה משלו.
+                    (function () {
+                        // מצב נוכחי מבודד ומוגן
+                        let state = 'ready';
+
+                        // משיכת אלמנטים מה-DOM פעם אחת
+                        const processDiv = document.getElementById('sim-process');
+                        const logDiv = document.getElementById('sim-log');
+                        const terminalIndicator = document.getElementById('terminal-indicator');
+
+                        const btnDispatch = document.getElementById('btn-dispatch');
+                        const btnPreempt = document.getElementById('btn-preempt');
+                        const btnIoReq = document.getElementById('btn-io-req');
+                        const btnIoDone = document.getElementById('btn-io-done');
+
+                        // פונקציית עדכון תצוגה בלבד
+                        function updateVisuals(newState) {
+                            // עדכון המיקום לפי אחוזים (מותאם לרספונסיביות)
+                            if (newState === 'running') {
+                                processDiv.style.top = '25%';
+                                processDiv.style.left = '50%';
+                            } else if (newState === 'ready') {
+                                processDiv.style.top = '75%';
+                                processDiv.style.left = '75%';
+                            } else if (newState === 'blocked') {
+                                processDiv.style.top = '75%';
+                                processDiv.style.left = '25%';
+                            }
+                        }
+
+                        // פונקציה להצגת הודעות במסוף ההתראות
+                        function showLog(message, isError = false) {
+                            logDiv.innerText = message;
+                            if (isError) {
+                                logDiv.className = "text-rose-400 pl-4 pr-2 font-bold";
+                                terminalIndicator.className = "absolute left-0 top-0 bottom-0 w-1 bg-rose-500";
+                            } else {
+                                logDiv.className = "text-emerald-400 pl-4 pr-2";
+                                terminalIndicator.className = "absolute left-0 top-0 bottom-0 w-1 bg-emerald-500";
+                            }
+
+                            // אפקט הבהוב קל לטקסט
+                            logDiv.style.opacity = '0';
+                            setTimeout(() => logDiv.style.opacity = '1', 50);
+                        }
+
+                        // --- חיבור אירועי הלחיצה לכפתורים (הדרך הבטוחה ביותר ב-JS) ---
+
+                        // Dispatch (Ready -> Running)
+                        btnDispatch.addEventListener('click', () => {
+                            if (state === 'running') return showLog("שגיאה: התהליך כבר רץ על המעבד.", true);
+                            if (state === 'blocked') return showLog("שגיאה: תהליך חסום חייב קודם לקבל את הנתונים שלו ולהפוך למוכן (Ready).", true);
+
+                            // אם הגענו לכאן, המצב חוקי (Ready)
+                            state = 'running';
+                            updateVisuals(state);
+                            showLog("[מערכת] Dispatch: התהליך נמשך מתור המוכנים ורץ כעת על ה-CPU.");
+                        });
+
+                        // Preempt / Timeout (Running -> Ready)
+                        btnPreempt.addEventListener('click', () => {
+                            if (state === 'ready') return showLog("שגיאה: התהליך כבר נמצא בתור המוכנים.", true);
+                            if (state === 'blocked') return showLog("שגיאה: תהליך חסום אינו משתמש במעבד, לכן אי אפשר לעשות לו פסיקה.", true);
+
+                            state = 'ready';
+                            updateVisuals(state);
+                            showLog("[מערכת] Timeout: זמן המעבד שהוקצב נגמר. התהליך הוחזר לתור המוכנים.");
+                        });
+
+                        // I/O Request (Running -> Blocked)
+                        btnIoReq.addEventListener('click', () => {
+                            if (state !== 'running') return showLog("שגיאה: רק תהליך שרץ כרגע על המעבד יכול לבקש קלט/פלט.", true);
+
+                            state = 'blocked';
+                            updateVisuals(state);
+                            showLog("[מערכת] I/O Request: התהליך ממתין לפעולה חיצונית (כמו דיסק) ופינה את המעבד.");
+                        });
+
+                        // I/O Done (Blocked -> Ready)
+                        btnIoDone.addEventListener('click', () => {
+                            if (state !== 'blocked') return showLog("שגיאה: התהליך אינו ממתין לקלט/פלט ולכן פעולה זו לא רלוונטית.", true);
+
+                            state = 'ready';
+                            updateVisuals(state);
+                            showLog("[מערכת] I/O Complete: המידע הגיע! התהליך עבר לתור המוכנים וימתין למעבד.");
+                        });
+
+                    })();
+                </script>
                 <!-- Implementation -->
                 <article class="mb-10">
                     <h3 class="text-xl font-bold text-slate-800 mb-4">2.1.6 יישום תהליכים</h3>
@@ -2599,7 +2757,8 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                                     </div>
                                     <p class="text-[10px] text-slate-600 bg-blue-50/60 p-2 rounded-lg leading-relaxed">
                                         <strong class="text-rose-600">הכשל (אפקט השיירה):</strong> חישוב ארוך אחד יחסום
-                                        אחריו עשרות תהליכים קצרים. המעבד מנוצל, אך ה-I/O מושבת.</p>
+                                        אחריו עשרות תהליכים קצרים. המעבד מנוצל, אך ה-I/O מושבת.
+                                    </p>
                                 </div>
                                 <div
                                     class="bg-white p-4 rounded-xl border border-blue-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between">
@@ -2614,7 +2773,8 @@ semaphore full = <span class="token-function">0</span>;  <span class="token-comm
                                     <p class="text-[10px] text-slate-600 bg-blue-50/60 p-2 rounded-lg leading-relaxed">
                                         <strong class="text-emerald-700">היתרון:</strong> מביא לזמן ההמתנה הממוצע הקצר
                                         ביותר מתמטית.<br><strong class="text-slate-800 mt-1 block">החיסרון:</strong>
-                                        דורש להיות נביא - לא יודעים כמה זמן תהליך ירוץ.</p>
+                                        דורש להיות נביא - לא יודעים כמה זמן תהליך ירוץ.
+                                    </p>
                                 </div>
                                 <div
                                     class="bg-white p-4 rounded-xl border border-blue-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between">
