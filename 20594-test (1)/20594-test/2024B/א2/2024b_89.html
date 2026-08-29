@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - מבחן</title>
+    <meta name="ai-document-summary" content="מבחן זה מכיל שאלות בנושאים הבאים: חלק א' - אמריקאי 1 הרשאות Kernel 2 Hypervisor Type 2 3 דפים גדולים ב-Paging 4 תהליכוני גרעין 5 מצב בטוח (Deadlock) 6 זיכרון משותף חלק ב' - פתוח 7 סמפורים הוגנים 8 טבלאות דפים 9 מערכות קבצים חלק ג' - מושגים וקוד 10 מנגנון TRAP 11 Namespaces ו-Kill 12 וירטואליזציה מול קונטיינרים">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -1518,6 +1519,32 @@ return; }
             if (selectedTab) {
                 selectedTab.classList.remove('hidden');
                 selectedTab.classList.add('block');
+            // Update AI Context dynamically (STRICT MODE)
+            let aiMeta = document.querySelector('meta[name="ai-document-summary"]');
+            let activeTabText = "";
+            if (typeof selectedTab !== 'undefined' && selectedTab) {
+                activeTabText = selectedTab.innerText || selectedTab.textContent;
+            } else if (typeof activeTab !== 'undefined' && activeTab) {
+                activeTabText = activeTab.innerText || activeTab.textContent;
+            }
+            if (aiMeta && activeTabText) {
+                if (activeTabText.length > 5000) activeTabText = activeTabText.substring(0, 5000) + "...";
+                // OVERWRITE completely to prevent distraction
+                aiMeta.content = "Current Question Context:\n" + activeTabText;
+            }
+            
+            // Hide inactive tabs from AI screen readers and DOM scrapers
+            document.querySelectorAll('.tab-content').forEach(t => {
+                if (t.classList.contains('hidden')) {
+                    t.setAttribute('aria-hidden', 'true');
+                    t.setAttribute('data-nosnippet', 'true');
+                    t.setAttribute('data-ai-ignore', 'true');
+                } else {
+                    t.removeAttribute('aria-hidden');
+                    t.removeAttribute('data-nosnippet');
+                    t.removeAttribute('data-ai-ignore');
+                }
+            });
             }
             document.querySelectorAll('aside button').forEach(btn => {
                 if(btn.id && btn.id.startsWith('btn-')) {
@@ -1557,5 +1584,8 @@ return; }
             }
         }
     </script>
+    <script src="../../../../ai_widget.js"></script>
 </body>
 </html>
+
+

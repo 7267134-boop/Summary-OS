@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פתרון מבחן מסכם (100% מדויק)</title>
+    <meta name="ai-document-summary" content="מבחן זה מכיל שאלות בנושאים הבאים: חלק א' (30 נק') 1 מצב Zombie 2 וירטואליזציה ומעבד 3 זמן תגובה 4 מינימום Page Faults 5 מצב בטוח (בנקאי) 6 עלות גישה ל-INode חלק ב' (55 נק') 7 קוראים וכותבים 8 טבלת דפים ברמות 9 מערכת קבצים Ext2 חלק ג' (15 נק') 10 TRAP וממשקים 11 XV6 Namespaces 12 וירטואליזציה vs קונטיינרים">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -2102,6 +2103,32 @@
             const activeTab = document.getElementById('tab-' + tabId);
             if (activeTab) {
                 activeTab.classList.remove('hidden'); activeTab.classList.add('block');
+            // Update AI Context dynamically (STRICT MODE)
+            let aiMeta = document.querySelector('meta[name="ai-document-summary"]');
+            let activeTabText = "";
+            if (typeof selectedTab !== 'undefined' && selectedTab) {
+                activeTabText = selectedTab.innerText || selectedTab.textContent;
+            } else if (typeof activeTab !== 'undefined' && activeTab) {
+                activeTabText = activeTab.innerText || activeTab.textContent;
+            }
+            if (aiMeta && activeTabText) {
+                if (activeTabText.length > 5000) activeTabText = activeTabText.substring(0, 5000) + "...";
+                // OVERWRITE completely to prevent distraction
+                aiMeta.content = "Current Question Context:\n" + activeTabText;
+            }
+            
+            // Hide inactive tabs from AI screen readers and DOM scrapers
+            document.querySelectorAll('.tab-content').forEach(t => {
+                if (t.classList.contains('hidden')) {
+                    t.setAttribute('aria-hidden', 'true');
+                    t.setAttribute('data-nosnippet', 'true');
+                    t.setAttribute('data-ai-ignore', 'true');
+                } else {
+                    t.removeAttribute('aria-hidden');
+                    t.removeAttribute('data-nosnippet');
+                    t.removeAttribute('data-ai-ignore');
+                }
+            });
             }
             document.querySelectorAll('aside nav button, aside div button').forEach(btn => {
                 btn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white mb-1";
@@ -2384,6 +2411,9 @@
             switchTab('q1');
         });
     </script>
+    <script src="../../../../ai_widget.js"></script>
 </body>
 
 </html>
+
+

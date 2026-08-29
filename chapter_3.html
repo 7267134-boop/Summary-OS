@@ -1,10 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פרק 3: ניהול זיכרון</title>
+    <meta name="ai-document-summary" content="פרק 3 עוסק בניהול זיכרון (Memory Management). הנושאים המפורטים: ניהול זיכרון ישיר, הפשטת הזיכרון ליצירת מרחב כתובות וירטואלי, מנגנון ההחלפה (Swapping) לניהול עומס. זיכרון מדומה (Virtual Memory), עקרונות הדפדוף (Paging), תרגום כתובות על ידי MMU וטבלאות דפים. אלגוריתמים בסיסיים ומתקדמים להחלפת דפים במקרה של חוסר דף (Page Fault). ניהול זיכרון מקומי וגלובלי. סגמנטציה (קיטוע זיכרון - Segmentation) לשיתוף זיכרון ולניהול מבנים דינמיים, ושילוב דפדוף וסגמנטציה בגישה היברידית.">
+
 
     <!-- Google Fonts Heebo -->
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
@@ -461,11 +463,16 @@
                     <h2 class="text-5xl font-black text-slate-800 tracking-tight mb-4">פרק 3: ניהול זיכרון</h2>
                     <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 mb-8">
                         <p class="text-lg text-slate-700 leading-relaxed mb-3">
-                            פרק זה עוסק באחת ממשימותיה העיקריות של מערכת ההפעלה: <strong>ניהול הזיכרון</strong>. 
-                            נפתח בחזרה קצרה על סקירת החומרה של זיכרון המחשב, ולאחר מכן נבחן את התפתחות שיטות הניהול – מניהול זיכרון ישיר, דרך הפשטת הזיכרון באמצעות מרחבי כתובות והחלפה (Swapping), ועד לשיטה הנפוצה ביותר כיום: <strong>זיכרון מדומה (Virtual Memory)</strong> הממומש באמצעות דפדוף (Paging).
+                            פרק זה עוסק באחת ממשימותיה העיקריות של מערכת ההפעלה: <strong>ניהול הזיכרון</strong>.
+                            נפתח בחזרה קצרה על סקירת החומרה של זיכרון המחשב, ולאחר מכן נבחן את התפתחות שיטות הניהול –
+                            מניהול זיכרון ישיר, דרך הפשטת הזיכרון באמצעות מרחבי כתובות והחלפה (Swapping), ועד לשיטה
+                            הנפוצה ביותר כיום: <strong>זיכרון מדומה (Virtual Memory)</strong> הממומש באמצעות דפדוף
+                            (Paging).
                         </p>
                         <p class="text-lg text-slate-700 leading-relaxed">
-                            בהמשך הפרק נסקור בהרחבה את האלגוריתמים השונים להחלפת דפים ונדון בשיקולי תכנון ומימוש הנדסיים במערכות דפדוף. מומלץ להיעזר בסימולטורים המוטמעים ביחידה זו כדי להמחיש את המנגנונים התיאורטיים.
+                            בהמשך הפרק נסקור בהרחבה את האלגוריתמים השונים להחלפת דפים ונדון בשיקולי תכנון ומימוש הנדסיים
+                            במערכות דפדוף. מומלץ להיעזר בסימולטורים המוטמעים ביחידה זו כדי להמחיש את המנגנונים
+                            התיאורטיים.
                         </p>
                     </div>
                 </header>
@@ -747,7 +754,8 @@
                                 <div class="w-full sm:w-3/4">
                                     <p class="text-sm text-slate-700 mb-2">שיטה זו מייעלת את החיפוש על ידי תחזוקת
                                         <strong>מספר רשימות נפרדות</strong> עבור גדלים נפוצים של בקשות זיכרון (למשל:
-                                        רשימה לחורים של 4KB, רשימה ל-8KB וכו').</p>
+                                        רשימה לחורים של 4KB, רשימה ל-8KB וכו').
+                                    </p>
                                     <p class="text-sm text-green-700"><strong>היתרון:</strong> מציאת חור בגודל נפוץ
                                         נעשית באופן מיידי (O(1)).</p>
                                     <p class="text-sm text-red-600 mt-1"><strong>החיסרון:</strong> שילוב חורים סמוכים
@@ -764,7 +772,8 @@
                                         שגודלם הוא תמיד <strong>חזקה של 2</strong>. כאשר מגיעה בקשה לזיכרון, המערכת
                                         מחפשת את הבלוק הפנוי הקטן ביותר שגדול או שווה לבקשה. אם הבלוק גדול מדי, הוא
                                         <strong>מפוצל לשני חצאים שווים</strong> ("חברים" - Buddies), והתהליך חוזר על
-                                        עצמו עד להגעה לגודל הרצוי.</p>
+                                        עצמו עד להגעה לגודל הרצוי.
+                                    </p>
                                     <p class="text-sm text-indigo-800 font-bold mb-1">מנגנון השחרור:</p>
                                     <p class="text-sm text-slate-700 mb-2">כאשר בלוק משוחרר, המערכת בודקת מיד האם ה"חבר"
                                         המקורי שלו (החצי השני מאותו פיצול) גם הוא פנוי. אם כן, הם מתמזגים חזרה לבלוק
@@ -1485,7 +1494,7 @@
                     </script>
 
                     <!-- שאלות מנחות 3.3.3 -->
-                    
+
                 </div>
 
                 <hr class="border-slate-200 mx-6">
@@ -1787,7 +1796,7 @@
                     </script>
 
                     <!-- שאלות מנחות 3.3.4 -->
-                    
+
                 </div>
             </div>
         </div>
@@ -2659,7 +2668,8 @@
                             3.5.0 מדיניות הבאה (Fetch Policy)</h3>
                         <p class="mb-4 text-slate-700 text-sm">לפני שמחליטים איזה דף לפנות, יש לשאול:
                             <strong>מתי</strong> אנו מביאים דף מהדיסק אל הזיכרון הראשי? מדריך הלמידה מציג שתי גישות
-                            עקרוניות:</p>
+                            עקרוניות:
+                        </p>
 
                         <div class="grid md:grid-cols-2 gap-6">
                             <div class="bg-white border-2 border-slate-200 rounded-lg p-5 shadow-sm">
@@ -2668,7 +2678,8 @@
                                 <p class="text-sm text-slate-700 mb-3">הגישה הסטנדרטית והנפוצה. דף מובא לזיכרון
                                     <strong>אך ורק</strong> כאשר התוכנית מנסה לגשת אליו בפועל ונוצרת פסיקת חוסר דף (Page
                                     Fault). תוכניות מתחילות לרוץ עם 0 דפים בזיכרון, וצוברות אותם תוך כדי ריצה (תופעה
-                                    המכונה "התנעה קרה" - Cold Start).</p>
+                                    המכונה "התנעה קרה" - Cold Start).
+                                </p>
                                 <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">יתרון:
                                     חיסכון בזיכרון. מובא רק מה שנחוץ בוודאות.</span>
                             </div>
@@ -2773,7 +2784,8 @@
                                     הדף המקובלת לכל תהליך.</li>
                                 <li><strong class="text-red-700">חציית חסם עליון:</strong> אם התהליך מייצר יותר מדי
                                     פסיקות דף בזמן קצר, זהו סימן מובהק לכך שחסר לו זיכרון (הוא קרוב לפרפור). המערכת
-                                    <strong>תקצה לו מסגרות פיזיות נוספות</strong> כדי להרגיע את קצב הפסיקות.</li>
+                                    <strong>תקצה לו מסגרות פיזיות נוספות</strong> כדי להרגיע את קצב הפסיקות.
+                                </li>
                                 <li><strong class="text-green-700">חציית חסם תחתון:</strong> אם התהליך כמעט ואינו מייצר
                                     פסיקות דף, סימן שיש לו עודף זיכרון מעבר לצרכיו בפועל. המערכת <strong>תיקח ממנו
                                         מסגרות</strong> לטובת תהליכים אחרים שזקוקים להן.</li>
@@ -4181,16 +4193,16 @@
                                             </div>
 
                                             <!-- OS messages -->
-                                            
+
                                         </div>
                                     </div>
                                 </div>
 
-                                
+
 
                                 <div id="sim6-msg"
-                                                class="block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center opacity-0 text-white border-slate-600">
-                                            </div>
+                                    class="block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center opacity-0 text-white border-slate-600">
+                                </div>
 
                                 <script>
                                     let sim6Interval = null;
@@ -4290,7 +4302,7 @@
 
                                                 document.getElementById('sim6-btn-pf').disabled = true;
                                                 document.getElementById('sim6-btn-pf').classList.add('opacity-50', 'cursor-not-allowed');
-                                                
+
                                                 document.getElementById('sim6-btn-dma').disabled = false;
                                                 document.getElementById('sim6-btn-dma').classList.remove('opacity-50', 'cursor-not-allowed');
                                             }
@@ -4298,83 +4310,83 @@
                                     }
 
                                     function triggerPF() {
-    if (!sim6Running) return;
+                                        if (!sim6Running) return;
 
-    document.getElementById('sim6-btn-pf').disabled = true;
-    document.getElementById('sim6-btn-pf').classList.add('opacity-50', 'cursor-not-allowed');
-    const msg = document.getElementById('sim6-msg');
-    const isLocked = document.getElementById('sim6-toggle').checked;
-    const scanner = document.getElementById('sim6-scanner');
+                                        document.getElementById('sim6-btn-pf').disabled = true;
+                                        document.getElementById('sim6-btn-pf').classList.add('opacity-50', 'cursor-not-allowed');
+                                        const msg = document.getElementById('sim6-msg');
+                                        const isLocked = document.getElementById('sim6-toggle').checked;
+                                        const scanner = document.getElementById('sim6-scanner');
 
-    msg.textContent = 'פסיקת דף! מתחיל סריקה...';
-    msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-white border-slate-600';
+                                        msg.textContent = 'פסיקת דף! מתחיל סריקה...';
+                                        msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-white border-slate-600';
 
-    scanner.style.opacity = '1';
-    scanner.style.left = getScannerOffset(0) + 'px'; // Frame 1
+                                        scanner.style.opacity = '1';
+                                        scanner.style.left = getScannerOffset(0) + 'px'; // Frame 1
 
-    setTimeout(() => {
-        scanner.style.left = getScannerOffset(1) + 'px'; // Frame 2
+                                        setTimeout(() => {
+                                            scanner.style.left = getScannerOffset(1) + 'px'; // Frame 2
 
-        setTimeout(() => {
-            if (!isLocked) {
-                // Evict Frame 2
-                msg.textContent = 'ה-RAM מלא. מפנה את מסגרת 2 לטובת דף חדש...';
-                msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-red-400 border-red-800';
+                                            setTimeout(() => {
+                                                if (!isLocked) {
+                                                    // Evict Frame 2
+                                                    msg.textContent = 'ה-RAM מלא. מפנה את מסגרת 2 לטובת דף חדש...';
+                                                    msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-red-400 border-red-800';
 
-                // המתן שנייה כדי לדמות את קריאת הדיסק של התהליך החדש
-                setTimeout(() => {
-                    document.getElementById('sim6-f2-txt').textContent = 'NEW PROCESS (טרי)';
-                    document.getElementById('sim6-f2-txt').className = 'mt-auto text-xs text-emerald-300 text-center font-bold z-10 bg-emerald-900/80 rounded px-1';
-                    msg.textContent = 'תהליך חדש נטען בהצלחה למסגרת 2! אולם ה-DMA עדיין כותב לשם...';
-                    msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-orange-400 border-orange-800';
+                                                    // המתן שנייה כדי לדמות את קריאת הדיסק של התהליך החדש
+                                                    setTimeout(() => {
+                                                        document.getElementById('sim6-f2-txt').textContent = 'NEW PROCESS (טרי)';
+                                                        document.getElementById('sim6-f2-txt').className = 'mt-auto text-xs text-emerald-300 text-center font-bold z-10 bg-emerald-900/80 rounded px-1';
+                                                        msg.textContent = 'תהליך חדש נטען בהצלחה למסגרת 2! אולם ה-DMA עדיין כותב לשם...';
+                                                        msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-orange-400 border-orange-800';
 
-                    // הפיצוץ והדריסה
-                    setTimeout(() => {
-                        document.getElementById('sim6-explosion').style.opacity = '1';
-                        clearInterval(sim6Interval);
-                        sim6Running = false;
-                        document.getElementById('sim6-laser').style.opacity = '0';
-                        document.getElementById('sim6-btn-dma').disabled = false;
-                        document.getElementById('sim6-btn-dma').classList.remove('opacity-50', 'cursor-not-allowed');
-                        msg.textContent = 'אסון! ה-DMA דרס נתונים של התהליך החדש (Data Corruption)!';
-                        msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-white bg-red-600 border-red-400 ring-4 ring-red-400 shadow-red-500/50';
-                        scanner.style.opacity = '0';
-                    }, 1500);
+                                                        // הפיצוץ והדריסה
+                                                        setTimeout(() => {
+                                                            document.getElementById('sim6-explosion').style.opacity = '1';
+                                                            clearInterval(sim6Interval);
+                                                            sim6Running = false;
+                                                            document.getElementById('sim6-laser').style.opacity = '0';
+                                                            document.getElementById('sim6-btn-dma').disabled = false;
+                                                            document.getElementById('sim6-btn-dma').classList.remove('opacity-50', 'cursor-not-allowed');
+                                                            msg.textContent = 'אסון! ה-DMA דרס נתונים של התהליך החדש (Data Corruption)!';
+                                                            msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-white bg-red-600 border-red-400 ring-4 ring-red-400 shadow-red-500/50';
+                                                            scanner.style.opacity = '0';
+                                                        }, 1500);
 
-                }, 1500);
+                                                    }, 1500);
 
-            } else {
-                // Frame 2 locked. Evict Frame 3.
-                msg.textContent = 'מסגרת 2 נעולה (L=1). מדלג...';
+                                                } else {
+                                                    // Frame 2 locked. Evict Frame 3.
+                                                    msg.textContent = 'מסגרת 2 נעולה (L=1). מדלג...';
 
-                setTimeout(() => {
-                    scanner.style.left = getScannerOffset(2) + 'px'; // Frame 3
+                                                    setTimeout(() => {
+                                                        scanner.style.left = getScannerOffset(2) + 'px'; // Frame 3
 
-                    setTimeout(() => {
-                        msg.textContent = 'מפנה את מסגרת 3...';
-                        msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-green-400 border-green-800';
+                                                        setTimeout(() => {
+                                                            msg.textContent = 'מפנה את מסגרת 3...';
+                                                            msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-green-400 border-green-800';
 
-                        document.getElementById('sim6-f2').classList.remove('border-blue-500');
-                        document.getElementById('sim6-f2').classList.add('border-green-500');
+                                                            document.getElementById('sim6-f2').classList.remove('border-blue-500');
+                                                            document.getElementById('sim6-f2').classList.add('border-green-500');
 
-                        document.getElementById('sim6-f3-txt').textContent = 'NEW PROCESS';
-                        document.getElementById('sim6-f3-txt').className = 'mt-auto text-xs text-green-300 text-center font-bold z-10 bg-green-900/80 rounded px-1';
-                        document.getElementById('sim6-f3').classList.add('border-green-500', 'shadow-[0_0_15px_rgba(16,185,129,0.2)]');
+                                                            document.getElementById('sim6-f3-txt').textContent = 'NEW PROCESS';
+                                                            document.getElementById('sim6-f3-txt').className = 'mt-auto text-xs text-green-300 text-center font-bold z-10 bg-green-900/80 rounded px-1';
+                                                            document.getElementById('sim6-f3').classList.add('border-green-500', 'shadow-[0_0_15px_rgba(16,185,129,0.2)]');
 
-                        scanner.style.opacity = '0';
+                                                            scanner.style.opacity = '0';
 
-                        setTimeout(() => {
-                            msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-white border-slate-600';
-                            msg.textContent = 'בקר ה-DMA ממשיך לכתוב בבטחה למסגרת 2. התהליך החדש מוגן במסגרת 3.';
-                        }, 1500);
-                    }, 600);
-                }, 600);
-            }
-        }, 600);
-    }, 600);
-}
+                                                            setTimeout(() => {
+                                                                msg.className = 'block w-full max-w-3xl mx-auto mt-8 text-center text-base font-bold opacity-100 bg-slate-800 px-4 py-3 rounded-xl border-2 shadow-lg transition-all relative z-50 min-h-[50px] flex items-center justify-center text-white border-slate-600';
+                                                                msg.textContent = 'בקר ה-DMA ממשיך לכתוב בבטחה למסגרת 2. התהליך החדש מוגן במסגרת 3.';
+                                                            }, 1500);
+                                                        }, 600);
+                                                    }, 600);
+                                                }
+                                            }, 600);
+                                        }, 600);
+                                    }
 
-                    </script>
+                                </script>
 
 
 
@@ -6653,228 +6665,246 @@
 
     <!-- Repository of Guide Questions -->
     <div id="questions-repo" class="hidden">
-    <div id="questions-tab-3-0"></div>
-    <div id="questions-tab-3-1"></div>
-    <div id="questions-tab-3-2"></div>
+        <div id="questions-tab-3-0"></div>
+        <div id="questions-tab-3-1"></div>
+        <div id="questions-tab-3-2"></div>
 
-    <div id="questions-paging-concepts">
-        <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.1</span>
-                    <span>חישוב גודל טבלת דפים רגילה במרחב 32-bit</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">השאלה:</strong> במערכת שבה מרחב הכתובות הווירטואלי הוא בגודל
-                $32	ext{-bit}$, גודל הדף הוא $4	ext{ KB}$, וגודל כניסה בטבלה (PTE) הוא $4	ext{ bytes}$, מהו גודל טבלת הדפים?
-                <br><strong class="text-slate-800 mt-2 block">תשובה:</strong>
-                המערכת כוללת $2^{20}$ דפים וירטואליים. מכיוון שכל כניסה בטבלה צורכת
-                $4	ext{ bytes}$, גודל הטבלה כולה יהיה $2^{20} 	imes 4	ext{ bytes} = 4	ext{ MB}$.
-            </div>
-        </details>
-        
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.2</span>
-                    <span>מה קורה כאשר כל השורות בטבלת ה-TLB מנוצלות (מלאות)?</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">תשובה:</strong>
-                <p class="mt-1">
-                    מדיניות פינוי תוכן השורות של ה-TLB והחלפתו ממומשת בחומרה (בדרך כלל באמצעות אלגוריתם LRU). כאשר הטבלה מלאה, החומרה תבחר רשומה
-                    ישנה שלא נעשה בה שימוש לאחרונה, תפנה אותה (תדרוס אותה), ובמקומה תרשום את התרגום החדש שהובא
-                    מהזיכרון הראשי.
-                </p>
-            </div>
-        </details>
-        
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.3</span>
-                    <span>מה קורה לתוכן ה-TLB כאשר מבוצעת החלפת הקשר (Context Switch) בין תהליכים?</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">תשובה:</strong>
-                <p class="mt-1">
-                    מאחר שלכל תהליך יש טבלת דפים משלו ומיפוי שונה לחלוטין לזיכרון הפיזי, תרגומי הכתובות השמורים
-                    ב-TLB שייכים לתהליך הישן ואינם תקפים עבור התהליך החדש. בעת החלפת הקשר, מערכת ההפעלה חייבת <b>לרוקן (Flush)</b> את כל שורות ה-TLB, אלא אם קיים תמיכה במזהה ASID.
-                </p>
-            </div>
-        </details>
-        
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.4</span>
-                    <span>הבדל בין exclusive cache לבין inclusive cache</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">תשובה:</strong>
-                <ul class="list-disc list-inside space-y-1.5 mt-1">
-                    <li><b>מטמון מכיל (Inclusive):</b> כל בלוק ב-L1 חייב להימצא גם ב-L2. מחיקה מ-L2 גוררת מחיקה מ-L1.</li>
-                    <li><b>מטמון בלעדי (Exclusive):</b> בלוק נמצא לכל היותר ברמת מטמון אחת במקביל. מונע כפילויות ומנצל מקסימום שטח.</li>
-                </ul>
-            </div>
-        </details>
-        
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.5</span>
-                    <span>חישוב גודל טבלת דפים רגילה במערכת של 64-bit</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">השאלה:</strong>
-                <p class="mt-1">
-                    נתון כי: כתובת וירטואלית היא בגודל $64	ext{-bit}$, גודל דף הוא $8	ext{ KB}$, וגודל כניסה (PTE) הוא $8	ext{ bytes}$. מהו גודל טבלת הדפים במערכת?
-                </p>
-                <strong class="text-slate-800 mt-2 block">הפתרון:</strong>
-                <p class="mt-1">
-                    גודל דף הוא $8	ext{ KB} = 2^{13}	ext{ bytes}$. 
-                    מספר הדפים: $rac{2^{64}}{2^{13}} = 2^{51}	ext{ pages}$.
-                    גודל הטבלה: $2^{51} 	imes 2^3	ext{ bytes} = 2^{54}	ext{ bytes} = 16	ext{ Petabytes}$.
-                </p>
-            </div>
-        </details>
-        
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.6</span>
-                    <span>חישוב גודל טבלת דפים מהופכת (Inverted Page Table)</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">השאלה:</strong>
-                <p class="mt-1">
-                    נתון כי: גודל הזיכרון הפיזי הוא $1	ext{ GB}$, גודל דף הוא $8	ext{ KB}$, וגודל כניסה בטבלת הדפים הוא $4	ext{ bytes}$. מהו גודל טבלת הדפים המהופכת?
-                </p>
-                <strong class="text-slate-800 mt-2 block">הפתרון:</strong>
-                <p class="mt-1">
-                    מספר מסגרות הזיכרון (Frames) ב-RAM: $rac{1	ext{ GB}}{8	ext{ KB}} = rac{2^{30}}{2^{13}} = 2^{17}	ext{ frames}$.
-                    גודל הטבלה הכולל: $2^{17} 	imes 4	ext{ bytes} = 2^{19}	ext{ bytes} = 512	ext{ KB}$.
-                </p>
-            </div>
-        </details>
-    </div>
+        <div id="questions-paging-concepts">
+            <details class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.1</span>
+                        <span>חישוב גודל טבלת דפים רגילה במרחב 32-bit</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">השאלה:</strong> במערכת שבה מרחב הכתובות הווירטואלי הוא בגודל
+                    $32 ext{-bit}$, גודל הדף הוא $4 ext{ KB}$, וגודל כניסה בטבלה (PTE) הוא $4 ext{ bytes}$, מהו גודל
+                    טבלת הדפים?
+                    <br><strong class="text-slate-800 mt-2 block">תשובה:</strong>
+                    המערכת כוללת $2^{20}$ דפים וירטואליים. מכיוון שכל כניסה בטבלה צורכת
+                    $4 ext{ bytes}$, גודל הטבלה כולה יהיה $2^{20} imes 4 ext{ bytes} = 4 ext{ MB}$.
+                </div>
+            </details>
 
-    <div id="questions-tab-3-4">
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.7</span>
-                    <span>מדוע מערכת ההפעלה אינה יכולה לדעת בבירור לאיזה דף תיעשה הפנייה הבאה?</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">התשובה האקדמית:</strong>
-                <p class="mt-1">
-                    חיזוי עתידי מושלם שקול לפתרון <b>בעיית העצירה (Halting Problem)</b> שהיא בלתי כריעה במדעי המחשב. ריצת התוכנית תלויה בקלטים דינמיים ופקודות מותנות.
-                </p>
-            </div>
-        </details>
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.2</span>
+                        <span>מה קורה כאשר כל השורות בטבלת ה-TLB מנוצלות (מלאות)?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-1">
+                        מדיניות פינוי תוכן השורות של ה-TLB והחלפתו ממומשת בחומרה (בדרך כלל באמצעות אלגוריתם LRU). כאשר
+                        הטבלה מלאה, החומרה תבחר רשומה
+                        ישנה שלא נעשה בה שימוש לאחרונה, תפנה אותה (תדרוס אותה), ובמקומה תרשום את התרגום החדש שהובא
+                        מהזיכרון הראשי.
+                    </p>
+                </div>
+            </details>
 
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.8</span>
-                    <span>הבדלי תקורה בפינוי דף נקי לעומת דף מלוכלך ב-NRU</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">תשובה:</strong>
-                <p class="mt-1">
-                    דף מלוכלך ($M=1$) שונה מאז שנטען ל-RAM, ולכן פינויו מחייב כתיבה שלו חזרה לדיסק לפני טעינת הדף החדש, דבר המייצר תקורה כפולה של גישה לדיסק (לעומת דף נקי שפשוט נדרס).
-                </p>
-            </div>
-        </details>
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.3</span>
+                        <span>מה קורה לתוכן ה-TLB כאשר מבוצעת החלפת הקשר (Context Switch) בין תהליכים?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-1">
+                        מאחר שלכל תהליך יש טבלת דפים משלו ומיפוי שונה לחלוטין לזיכרון הפיזי, תרגומי הכתובות השמורים
+                        ב-TLB שייכים לתהליך הישן ואינם תקפים עבור התהליך החדש. בעת החלפת הקשר, מערכת ההפעלה חייבת
+                        <b>לרוקן (Flush)</b> את כל שורות ה-TLB, אלא אם קיים תמיכה במזהה ASID.
+                    </p>
+                </div>
+            </details>
 
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.9</span>
-                    <span>אלגוריתם אופטימלי וסיבית השינוי (M)</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">התשובה האקדמית:</strong>
-                <p class="mt-1">
-                    מטרת אלגוריתם האופטימלי היא למזער את <b>כמות פסיקות הדף (Page Faults)</b> עצמן. התייחסות לסיבית השינוי יכולה לסייע בצמצום כמות פעולות הכתיבה לדיסק (התקורה), אך אינה משפיעה על מספר הפסיקות הכולל ולכן האלגוריתם מתעלם ממנה.
-                </p>
-            </div>
-        </details>
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.4</span>
+                        <span>הבדל בין exclusive cache לבין inclusive cache</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 mt-1">
+                        <li><b>מטמון מכיל (Inclusive):</b> כל בלוק ב-L1 חייב להימצא גם ב-L2. מחיקה מ-L2 גוררת מחיקה
+                            מ-L1.</li>
+                        <li><b>מטמון בלעדי (Exclusive):</b> בלוק נמצא לכל היותר ברמת מטמון אחת במקביל. מונע כפילויות
+                            ומנצל מקסימום שטח.</li>
+                    </ul>
+                </div>
+            </details>
 
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.10</span>
-                    <span>במה מתבטא הייעול של אלגוריתם השעון לעומת אלגוריתם ההזדמנות השנייה?</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">תשובה:</strong>
-                <p class="mt-1">
-                    במקום לעקור דפים מראש הרשימה המקושרת ולהעבירם לסופה בתוכנה, אלגוריתם השעון משתמש ברשימה מעגלית ומקדם מצביע (מחוג). תנועת המחוג מחליפה את התנועה הפיזית של מצביעי הדפים בזיכרון וחוסכת זמן.
-                </p>
-            </div>
-        </details>
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.5</span>
+                        <span>חישוב גודל טבלת דפים רגילה במערכת של 64-bit</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">השאלה:</strong>
+                    <p class="mt-1">
+                        נתון כי: כתובת וירטואלית היא בגודל $64 ext{-bit}$, גודל דף הוא $8 ext{ KB}$, וגודל כניסה (PTE)
+                        הוא $8 ext{ bytes}$. מהו גודל טבלת הדפים במערכת?
+                    </p>
+                    <strong class="text-slate-800 mt-2 block">הפתרון:</strong>
+                    <p class="mt-1">
+                        גודל דף הוא $8 ext{ KB} = 2^{13} ext{ bytes}$.
+                        מספר הדפים: $rac{2^{64}}{2^{13}} = 2^{51} ext{ pages}$.
+                        גודל הטבלה: $2^{51} imes 2^3 ext{ bytes} = 2^{54} ext{ bytes} = 16 ext{ Petabytes}$.
+                    </p>
+                </div>
+            </details>
 
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.11</span>
-                    <span>האם ייתכן שאלגוריתם השעון לא יעצור לעולם?</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">תשובה:</strong>
-                <p class="mt-1">
-                    <b>לא.</b> במקרה הגרוע ביותר (שבו לכולם $R=1$), המחוג יעבור עליהם, יאפס לכולם את ה-$R$, וכשיחזור לדף הראשון ימצא אותו עם $R=0$ ויפנה אותו מיד.
-                </p>
-            </div>
-        </details>
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.6</span>
+                        <span>חישוב גודל טבלת דפים מהופכת (Inverted Page Table)</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">השאלה:</strong>
+                    <p class="mt-1">
+                        נתון כי: גודל הזיכרון הפיזי הוא $1 ext{ GB}$, גודל דף הוא $8 ext{ KB}$, וגודל כניסה בטבלת הדפים
+                        הוא $4 ext{ bytes}$. מהו גודל טבלת הדפים המהופכת?
+                    </p>
+                    <strong class="text-slate-800 mt-2 block">הפתרון:</strong>
+                    <p class="mt-1">
+                        מספר מסגרות הזיכרון (Frames) ב-RAM: $rac{1 ext{ GB}}{8 ext{ KB}} = rac{2^{30}}{2^{13}} =
+                        2^{17} ext{ frames}$.
+                        גודל הטבלה הכולל: $2^{17} imes 4 ext{ bytes} = 2^{19} ext{ bytes} = 512 ext{ KB}$.
+                    </p>
+                </div>
+            </details>
+        </div>
 
-        <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
-            <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.12</span>
-                    <span>שכלול אלגוריתם השעון על ידי הוספת התייחסות לסיבית השינוי (M)</span>
-                </span>
-                <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
-                <strong class="text-slate-800">תשובה:</strong>
-                <p class="mt-1">
-                    ניתן לחלק את הדפים ל-4 קבוצות עדיפות לפי ערכי $(R, M)$, כאשר קבוצה 0 היא $(0,0)$ וקבוצה 3 היא $(1,1)$. המחוג יסרוק במטרה למצוא קודם דף מקבוצה 0 (נקי ולא בשימוש) כדי לחסוך קריאות לדיסק.
-                </p>
-            </div>
-        </details>
-    </div>
+        <div id="questions-tab-3-4">
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.7</span>
+                        <span>מדוע מערכת ההפעלה אינה יכולה לדעת בבירור לאיזה דף תיעשה הפנייה הבאה?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">התשובה האקדמית:</strong>
+                    <p class="mt-1">
+                        חיזוי עתידי מושלם שקול לפתרון <b>בעיית העצירה (Halting Problem)</b> שהיא בלתי כריעה במדעי המחשב.
+                        ריצת התוכנית תלויה בקלטים דינמיים ופקודות מותנות.
+                    </p>
+                </div>
+            </details>
 
-    <div id="questions-design-policies"></div>
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.8</span>
+                        <span>הבדלי תקורה בפינוי דף נקי לעומת דף מלוכלך ב-NRU</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-1">
+                        דף מלוכלך ($M=1$) שונה מאז שנטען ל-RAM, ולכן פינויו מחייב כתיבה שלו חזרה לדיסק לפני טעינת הדף
+                        החדש, דבר המייצר תקורה כפולה של גישה לדיסק (לעומת דף נקי שפשוט נדרס).
+                    </p>
+                </div>
+            </details>
 
-    <div id="questions-implementation-issues"></div>
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה 3.9</span>
+                        <span>אלגוריתם אופטימלי וסיבית השינוי (M)</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">התשובה האקדמית:</strong>
+                    <p class="mt-1">
+                        מטרת אלגוריתם האופטימלי היא למזער את <b>כמות פסיקות הדף (Page Faults)</b> עצמן. התייחסות לסיבית
+                        השינוי יכולה לסייע בצמצום כמות פעולות הכתיבה לדיסק (התקורה), אך אינה משפיעה על מספר הפסיקות
+                        הכולל ולכן האלגוריתם מתעלם ממנה.
+                    </p>
+                </div>
+            </details>
 
-    <div id="questions-segmentation"></div>
-</div><!-- Questions Modal Overlay -->
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה
+                            3.10</span>
+                        <span>במה מתבטא הייעול של אלגוריתם השעון לעומת אלגוריתם ההזדמנות השנייה?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-1">
+                        במקום לעקור דפים מראש הרשימה המקושרת ולהעבירם לסופה בתוכנה, אלגוריתם השעון משתמש ברשימה מעגלית
+                        ומקדם מצביע (מחוג). תנועת המחוג מחליפה את התנועה הפיזית של מצביעי הדפים בזיכרון וחוסכת זמן.
+                    </p>
+                </div>
+            </details>
+
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300 mb-4">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה
+                            3.11</span>
+                        <span>האם ייתכן שאלגוריתם השעון לא יעצור לעולם?</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-1">
+                        <b>לא.</b> במקרה הגרוע ביותר (שבו לכולם $R=1$), המחוג יעבור עליהם, יאפס לכולם את ה-$R$, וכשיחזור
+                        לדף הראשון ימצא אותו עם $R=0$ ויפנה אותו מיד.
+                    </p>
+                </div>
+            </details>
+
+            <details class="bg-blue-50/30 border border-blue-100 rounded-xl p-4 group transition-all duration-300">
+                <summary class="font-bold text-blue-900 cursor-pointer list-none flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-black">שאלה מנחה
+                            3.12</span>
+                        <span>שכלול אלגוריתם השעון על ידי הוספת התייחסות לסיבית השינוי (M)</span>
+                    </span>
+                    <span class="text-blue-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-blue-100/50 text-slate-700 text-sm leading-relaxed">
+                    <strong class="text-slate-800">תשובה:</strong>
+                    <p class="mt-1">
+                        ניתן לחלק את הדפים ל-4 קבוצות עדיפות לפי ערכי $(R, M)$, כאשר קבוצה 0 היא $(0,0)$ וקבוצה 3 היא
+                        $(1,1)$. המחוג יסרוק במטרה למצוא קודם דף מקבוצה 0 (נקי ולא בשימוש) כדי לחסוך קריאות לדיסק.
+                    </p>
+                </div>
+            </details>
+        </div>
+
+        <div id="questions-design-policies"></div>
+
+        <div id="questions-implementation-issues"></div>
+
+        <div id="questions-segmentation"></div>
+    </div><!-- Questions Modal Overlay -->
     <div id="questions-modal"
         class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
         <div
@@ -6897,7 +6927,7 @@
             </div>
         </div>
     </div>
-
+    <script src="ai_widget.js"></script>
 </body>
 
 </html>

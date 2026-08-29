@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פתרון מבחן מסכם (100% מדויק)</title>
+    <meta name="ai-document-summary" content="מבחן זה מכיל שאלות בנושאים הבאים: חלק א' (30 נק') 1 יתרון מודל מונוליתי 2 וירטואליזציה VT 3 זיכרון משותף 4 טבלת דפים מהופכת 5 חסימת פסיקות – חיסרון עיקרי 6 I-Node: יתרון בלוקים גדולים חלק ב' (55 נק') 7 סמפור קבוצתי 8 רמות טבלת דפים 9 סקטור, בלוק ו-SSD חלק ג' (15 נק') 10 וקטור פסיקות (TRAP) 11 הוספת תמיכה בקונטיינרים 12 BARE METAL מסוג 1">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -1964,6 +1965,32 @@
                 if (selectedTab) {
                     selectedTab.classList.remove('hidden');
                     selectedTab.classList.add('block');
+            // Update AI Context dynamically (STRICT MODE)
+            let aiMeta = document.querySelector('meta[name="ai-document-summary"]');
+            let activeTabText = "";
+            if (typeof selectedTab !== 'undefined' && selectedTab) {
+                activeTabText = selectedTab.innerText || selectedTab.textContent;
+            } else if (typeof activeTab !== 'undefined' && activeTab) {
+                activeTabText = activeTab.innerText || activeTab.textContent;
+            }
+            if (aiMeta && activeTabText) {
+                if (activeTabText.length > 5000) activeTabText = activeTabText.substring(0, 5000) + "...";
+                // OVERWRITE completely to prevent distraction
+                aiMeta.content = "Current Question Context:\n" + activeTabText;
+            }
+            
+            // Hide inactive tabs from AI screen readers and DOM scrapers
+            document.querySelectorAll('.tab-content').forEach(t => {
+                if (t.classList.contains('hidden')) {
+                    t.setAttribute('aria-hidden', 'true');
+                    t.setAttribute('data-nosnippet', 'true');
+                    t.setAttribute('data-ai-ignore', 'true');
+                } else {
+                    t.removeAttribute('aria-hidden');
+                    t.removeAttribute('data-nosnippet');
+                    t.removeAttribute('data-ai-ignore');
+                }
+            });
                 }
 
                 document.querySelectorAll('nav button').forEach(btn => {
@@ -2003,6 +2030,9 @@
             }
         </script>
     </main>
+    <script src="../../../ai_widget.js"></script>
 </body>
 
 </html>
+
+

@@ -1,10 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>פרק 7: וירטואליזציה וענן</title>
+    <meta name="ai-document-summary" content="פרק 7 עוסק בווירטואליזציה (Virtualization) ובענן. הנושאים המפורטים: איחוד שרתים, ניוד מערכות, בידוד מידור ובטיחות, יתרונות הענן. תפקיד ומיקום ה-VMM (Virtual Machine Monitor / Hypervisor). היסטוריה והתפתחות מווירטואליזציה מלאה לסיוע חומרה (Intel VT / AMD-V). ארכיטקטורת KVM. תנאים למימוש יעיל והקשר של מיקרו-קרנל ל-Hypervisor. וירטואליזציה פארא-וירטואלית, VMI ו-Paravirtops. וירטואליזציה של זיכרון ותרגום כתובות מורכב דרך טבלאות צלליות (Shadow Page Tables). מחשוב ענן (Cloud Computing) ווירטואליזציה ברמת מערכת ההפעלה (קונטיינרים).">
+
 
     <!-- Google Fonts Heebo -->
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
@@ -1142,8 +1144,10 @@
                         <p class="text-sm text-blue-800">
                             המעבר בין העולמות אינו חינמי. מעבר מה-VMM לאורח נקרא <strong>VM-Entry</strong>, וחזרה מהאורח
                             ל-VMM עקב פעולה חריגה נקראת <strong>VM-Exit</strong>. תהליך זה של "World Switch" שומר ומשחזר
-                            עשרות אוגרים של המעבד במבנה זיכרון מיוחד הנקרא <strong>VMCS (Virtual Machine Control Structure)</strong>. 
-                            <span class="bg-blue-200 px-1 rounded">חשוב להדגיש: ה-VMCS אינו נוצר למכונה (VM), אלא נשמר פרטנית עבור כל vCPU (מעבד וירטואלי)!</span> 
+                            עשרות אוגרים של המעבד במבנה זיכרון מיוחד הנקרא <strong>VMCS (Virtual Machine Control
+                                Structure)</strong>.
+                            <span class="bg-blue-200 px-1 rounded">חשוב להדגיש: ה-VMCS אינו נוצר למכונה (VM), אלא נשמר
+                                פרטנית עבור כל vCPU (מעבד וירטואלי)!</span>
                             מעברים אלו גוררים "קנס" ביצועים (Overhead) של מאות
                             עד אלפי מחזורי שעון בכל קפיצה.
                         </p>
@@ -2326,12 +2330,22 @@
                         </div>
                     </div>
 
-                    <div class="bg-indigo-50 p-5 rounded-lg border border-indigo-200 shadow-sm flex flex-col justify-between mt-4">
+                    <div
+                        class="bg-indigo-50 p-5 rounded-lg border border-indigo-200 shadow-sm flex flex-col justify-between mt-4">
                         <div>
-                            <h4 class="font-bold text-indigo-900 mb-2">גישת ביניים: פרא-וירטואליזציה (MMU Paravirtualization)</h4>
-                            <p class="text-sm text-slate-700 leading-relaxed font-normal">במקום לשלם את המחיר הכבד של פסיקות חומרה (TRAPs) שנוצרות מגישה לטבלאות צל, מערכת ההפעלה האורחת מותאמת אישית לווירטואליזציה. היא לא מנסה לשנות ישירות את טבלאות הדפים שלה.</p>
+                            <h4 class="font-bold text-indigo-900 mb-2">גישת ביניים: פרא-וירטואליזציה (MMU
+                                Paravirtualization)</h4>
+                            <p class="text-sm text-slate-700 leading-relaxed font-normal">במקום לשלם את המחיר הכבד של
+                                פסיקות חומרה (TRAPs) שנוצרות מגישה לטבלאות צל, מערכת ההפעלה האורחת מותאמת אישית
+                                לווירטואליזציה. היא לא מנסה לשנות ישירות את טבלאות הדפים שלה.</p>
                         </div>
-                        <p class="text-sm mt-3 text-slate-700 leading-relaxed font-normal bg-white p-2 rounded border border-indigo-100">במקום זאת, כל אימת שהאורחת רוצה לעדכן את מיפוי הזיכרון (לדוגמה, להקצות דף לתהליך חדש), היא אורזת את כל הבקשות שלה ושולחת אותן במרוכז ל-Hypervisor באמצעות <strong class="text-indigo-600 font-mono">mmu_update Hypercall</strong> (קריאת שרת). ה-Hypervisor מבצע את העדכון עבורה ביעילות. (הערה: גישה זו נזנחה כמעט לחלוטין עם כניסת פתרונות ה-EPT בחומרה).</p>
+                        <p
+                            class="text-sm mt-3 text-slate-700 leading-relaxed font-normal bg-white p-2 rounded border border-indigo-100">
+                            במקום זאת, כל אימת שהאורחת רוצה לעדכן את מיפוי הזיכרון (לדוגמה, להקצות דף לתהליך חדש), היא
+                            אורזת את כל הבקשות שלה ושולחת אותן במרוכז ל-Hypervisor באמצעות <strong
+                                class="text-indigo-600 font-mono">mmu_update Hypercall</strong> (קריאת שרת).
+                            ה-Hypervisor מבצע את העדכון עבורה ביעילות. (הערה: גישה זו נזנחה כמעט לחלוטין עם כניסת
+                            פתרונות ה-EPT בחומרה).</p>
                     </div>
 
                     <!-- Address Translation Simulator -->
@@ -2359,9 +2373,11 @@
                                 <div class="mt-6 p-4 bg-slate-100 rounded-lg border border-slate-200 w-full">
                                     <div class="flex justify-between items-center mb-3 border-b border-slate-300 pb-2">
                                         <span class="text-xs font-bold text-slate-700">מונה חריגות (VM-Exits):</span>
-                                        <span id="mmu-exits-counter" class="bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded text-sm font-mono">0</span>
+                                        <span id="mmu-exits-counter"
+                                            class="bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded text-sm font-mono">0</span>
                                     </div>
-                                    <button onclick="triggerSptWrite()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded shadow-sm transition active:scale-95 text-xs">
+                                    <button onclick="triggerSptWrite()"
+                                        class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded shadow-sm transition active:scale-95 text-xs">
                                         דמה כתיבה לטבלת הדפים ע"י ה-Guest
                                     </button>
                                 </div>
@@ -2509,7 +2525,7 @@
                             const directArrow = document.getElementById('spt-direct-arrow');
 
                             if (!consoleEl) return;
-                            
+
                             consoleEl.classList.remove('hidden');
                             document.getElementById('stage-gpt').style.opacity = '1';
                             document.getElementById('stage-arrow1').style.opacity = '0.3';
@@ -2519,13 +2535,13 @@
                             const randomGPA = '0x' + Math.floor(Math.random() * 9000 + 1000).toString(16).toUpperCase().padStart(4, '0');
                             const mappedHPA = '0x' + (parseInt(randomGPA, 16) + 0x7000).toString(16).toUpperCase().padStart(4, '0');
 
-                            if(gptRes) gptRes.innerText = randomGPA;
+                            if (gptRes) gptRes.innerText = randomGPA;
 
                             if (sim75ActiveMode === 'shadow') {
                                 sim75ExitsCount++;
-                                if(exitsEl) exitsEl.textContent = sim75ExitsCount;
-                                if(sptRes) sptRes.innerText = mappedHPA;
-                                
+                                if (exitsEl) exitsEl.textContent = sim75ExitsCount;
+                                if (sptRes) sptRes.innerText = mappedHPA;
+
                                 consoleEl.innerHTML = `
                                     <div class="text-right">
                                         <span class="text-rose-500 font-bold">[VM EXIT]</span> מערכת ההפעלה האורחת ניסתה לעדכן את טבלת הדפים שלה ל-<code class="font-mono text-xs">${randomGPA}</code>.<br>
@@ -2546,60 +2562,84 @@
                         }
                     </script>
 
-                    <div class="mt-8 bg-white p-5 rounded-2xl border border-emerald-200 text-emerald-950 shadow-sm relative overflow-hidden" id="page-walk-sim">
+                    <div class="mt-8 bg-white p-5 rounded-2xl border border-emerald-200 text-emerald-950 shadow-sm relative overflow-hidden"
+                        id="page-walk-sim">
                         <strong class="block mb-2 text-xl font-bold text-emerald-800 flex items-center gap-2">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
                             האתגר החדש: 2D Page Walk (הליכה דו-מימדית במבוך)
                         </strong>
                         <p class="text-[15px] text-slate-700 leading-relaxed mb-4">
-                            בארכיטקטורת x86-64 קיימות 4 רמות של טבלאות דפים. כדי לתרגם כתובת, ה-MMU של החומרה חייב לקרוא את הטבלה ברמה הראשונה של האורחת. אבל איפה הטבלה הזו יושבת בזיכרון הפיזי האמיתי? כדי למצוא אותה, על כל צעד בטבלאות האורחת (הליכה אופקית), החומרה חייבת לבצע הליכה מלאה של 4 רמות בטבלאות ה-EPT (הליכה אנכית).
+                            בארכיטקטורת x86-64 קיימות 4 רמות של טבלאות דפים. כדי לתרגם כתובת, ה-MMU של החומרה חייב לקרוא
+                            את הטבלה ברמה הראשונה של האורחת. אבל איפה הטבלה הזו יושבת בזיכרון הפיזי האמיתי? כדי למצוא
+                            אותה, על כל צעד בטבלאות האורחת (הליכה אופקית), החומרה חייבת לבצע הליכה מלאה של 4 רמות
+                            בטבלאות ה-EPT (הליכה אנכית).
                             <br>
-                            במקרה הרע (TLB Miss), תרגום כתובת בודדת דורש <strong class="text-rose-600 bg-rose-50 px-1 rounded font-mono border border-rose-200">$24$ גישות פיזיות לזיכרון!</strong> החישוב הוא: 5 הליכות ב-EPT (עבור CR3 ועבור 4 רמות האורחת) כפול 4 רמות בכל הליכת EPT = 20 גישות, ועוד 4 קריאות של הדפים של האורחת.
+                            במקרה הרע (TLB Miss), תרגום כתובת בודדת דורש <strong
+                                class="text-rose-600 bg-rose-50 px-1 rounded font-mono border border-rose-200">$24$
+                                גישות פיזיות לזיכרון!</strong> החישוב הוא: 5 הליכות ב-EPT (עבור CR3 ועבור 4 רמות האורחת)
+                            כפול 4 רמות בכל הליכת EPT = 20 גישות, ועוד 4 קריאות של הדפים של האורחת.
                         </p>
                         <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 flex flex-col gap-3">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-sm text-emerald-800">סימולטור 2D Page Walk: צפה ב-24 הגישות לזיכרון</span>
-                                <button onclick="start2DWalk()" id="btn-walk" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-5 rounded shadow-sm transition active:scale-95 text-xs">הפעל הליכה</button>
+                                <span class="font-bold text-sm text-emerald-800">סימולטור 2D Page Walk: צפה ב-24 הגישות
+                                    לזיכרון</span>
+                                <button onclick="start2DWalk()" id="btn-walk"
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-5 rounded shadow-sm transition active:scale-95 text-xs">הפעל
+                                    הליכה</button>
                             </div>
                             <div class="w-full bg-slate-200/80 rounded-full h-3 overflow-hidden shadow-inner">
-                                <div id="walk-progress" class="bg-emerald-500 h-3 rounded-full transition-all duration-300 relative shadow-[0_0_8px_rgba(16,185,129,0.5)]" style="width: 0%"></div>
+                                <div id="walk-progress"
+                                    class="bg-emerald-500 h-3 rounded-full transition-all duration-300 relative shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                    style="width: 0%"></div>
                             </div>
                             <div class="flex justify-between text-xs font-bold text-slate-500 px-1">
                                 <span>0 גישות</span>
-                                <span><span id="walk-counter" class="text-emerald-700 font-mono text-sm">0</span> / 24 גישות</span>
+                                <span><span id="walk-counter" class="text-emerald-700 font-mono text-sm">0</span> / 24
+                                    גישות</span>
                             </div>
-                            <div id="walk-log" class="text-sm font-mono text-slate-700 bg-white p-3 rounded-lg border border-slate-200 min-h-[44px] mt-2 shadow-sm" dir="ltr">
+                            <div id="walk-log"
+                                class="text-sm font-mono text-slate-700 bg-white p-3 rounded-lg border border-slate-200 min-h-[44px] mt-2 shadow-sm"
+                                dir="ltr">
                                 &gt; ממתין לתחילת הליכה...
                             </div>
                         </div>
                         <div class="mt-5 pt-4 border-t border-emerald-100/60">
                             <h5 class="font-bold text-base text-emerald-800 mb-2 flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
                                 אופטימיזציית חומרה: VPID (Virtual Processor ID)
                             </h5>
                             <p class="text-[15px] text-slate-700 leading-relaxed">
-                                כדי למזער את הנזק של הליכות אלו, נוסף תיוג <strong class="text-indigo-600 font-mono bg-indigo-50 px-1 rounded border border-indigo-100">VPID</strong>. החומרה מתייגת את רשומות המטמון של ה-TLB של המעבד עם מזהה של ה-vCPU הספציפי, כך שניתן לבצע VM-Exit וחזרה מבלי למחוק (Flush) את כל זיכרון ה-TLB.
+                                כדי למזער את הנזק של הליכות אלו, נוסף תיוג <strong
+                                    class="text-indigo-600 font-mono bg-indigo-50 px-1 rounded border border-indigo-100">VPID</strong>.
+                                החומרה מתייגת את רשומות המטמון של ה-TLB של המעבד עם מזהה של ה-vCPU הספציפי, כך שניתן
+                                לבצע VM-Exit וחזרה מבלי למחוק (Flush) את כל זיכרון ה-TLB.
                             </p>
                         </div>
                     </div>
-                    
+
                     <script>
                         let isWalking = false;
                         async function start2DWalk() {
                             if (isWalking) return;
                             isWalking = true;
-                            
+
                             const btn = document.getElementById('btn-walk');
                             const progress = document.getElementById('walk-progress');
                             const counter = document.getElementById('walk-counter');
                             const log = document.getElementById('walk-log');
-                            
+
                             btn.classList.add('opacity-50', 'cursor-not-allowed');
                             btn.innerText = 'הולך...';
-                            
+
                             let accesses = 0;
                             log.innerHTML = '&gt; מתחיל תרגום כתובת 0xVIRT_ADDR...<br>';
-                            
+
                             const steps = [
                                 { name: "Guest CR3 (holds GPA of PML4)", desc: "קורא Guest CR3. מה הכתובת האמיתית (HPA) שלו?" },
                                 { name: "Guest PML4 (holds GPA of PDPT)", desc: "נמצא Guest PML4. קורא את ההצבעה ל-PDPT. איפה זה פיזית?" },
@@ -2607,10 +2647,10 @@
                                 { name: "Guest PD (holds GPA of PT)", desc: "נמצא Guest PD. קורא את ההצבעה ל-PT. איפה זה פיזית?" },
                                 { name: "Data Page (Final HPA)", desc: "נמצא ה-Guest PT. קראנו ממנו את ה-GPA של הנתונים! כעת לתרגום ה-EPT הסופי לנתונים עצמם." }
                             ];
-                            
+
                             for (let i = 0; i < steps.length; i++) {
                                 log.innerHTML = `<div class="text-indigo-600 font-bold mb-1">&gt; ${steps[i].desc}</div>` + log.innerHTML;
-                                
+
                                 for (let j = 1; j <= 4; j++) {
                                     await new Promise(r => setTimeout(r, 200));
                                     accesses++;
@@ -2618,7 +2658,7 @@
                                     counter.innerText = accesses;
                                     log.innerHTML = `<div class="text-slate-400 text-xs ml-4 border-l-2 border-slate-200 pl-2">&nbsp;&nbsp;[EPT Walk] רמה ${j}/4... (${accesses})</div>` + log.innerHTML;
                                 }
-                                
+
                                 if (i < 4) {
                                     await new Promise(r => setTimeout(r, 200));
                                     accesses++;
@@ -2626,7 +2666,7 @@
                                     counter.innerText = accesses;
                                 }
                             }
-                            
+
                             log.innerHTML = `<div class="text-emerald-600 font-bold mt-2 border-b border-emerald-100 pb-1 mb-2">&gt; תרגום הושלם! סה"כ 24 גישות פיזיות עבור קריאה וירטואלית בודדת (TLB Miss).</div>` + log.innerHTML;
                             btn.classList.remove('opacity-50', 'cursor-not-allowed');
                             btn.innerText = 'הפעל שוב';
@@ -2768,7 +2808,10 @@
                         </h3>
                         <p class="text-slate-650 text-sm leading-relaxed font-normal">
                             במקום לדמות חומרה ישנה, מתקינים באורח <strong>דרייבר VirtIO</strong> מיוחד שיודע שהוא בסביבה
-                            וירטואלית. התקשורת מול ה-Hypervisor מתבצעת בזיכרון משותף דרך תורי הודעות אסינכרוניים הממומשים כ-<strong>חוצצי טבעת (Ring Buffers)</strong> עמוקים הנקראים Virtqueues. מבנה זה מאפשר למערכת האורחת "להעמיס" עשרות בקשות רשת אל הטבעת ולשלוח התראה יחידה (VM-Exit בודד) ל-Hypervisor (Batching), מה שמייעל את התקורה דרמטית.
+                            וירטואלית. התקשורת מול ה-Hypervisor מתבצעת בזיכרון משותף דרך תורי הודעות אסינכרוניים
+                            הממומשים כ-<strong>חוצצי טבעת (Ring Buffers)</strong> עמוקים הנקראים Virtqueues. מבנה זה
+                            מאפשר למערכת האורחת "להעמיס" עשרות בקשות רשת אל הטבעת ולשלוח התראה יחידה (VM-Exit בודד)
+                            ל-Hypervisor (Batching), מה שמייעל את התקורה דרמטית.
                         </p>
                     </div>
 
@@ -2976,12 +3019,19 @@
                     </div>
 
                     <div class="deep-dive !my-0 mt-6">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">3. מודעות לטופולוגיית החומרה: NUMA (Non-Uniform Memory Access)</h3>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">3. מודעות לטופולוגיית החומרה: NUMA
+                            (Non-Uniform Memory Access)</h3>
                         <p class="text-sm text-slate-700 leading-relaxed font-normal mb-3">
-                            בשרתים ענקיים מרובי-מעבדים (Multi-Socket), הזיכרון הראשי (RAM) מחולק פיזית בין המעבדים. כל מעבד פיזי מקושר ישירות לבנק הזיכרון ה"מקומי" שלו, אך אם הוא צריך לגשת לבנק זיכרון של מעבד אחר, הבקשה צריכה לעבור דרך אפיק הקישור הפנימי של הלוח, מה שיוצר עיכוב (Latency) משמעותי הנקרא <strong>NUMA Penalty</strong>.
+                            בשרתים ענקיים מרובי-מעבדים (Multi-Socket), הזיכרון הראשי (RAM) מחולק פיזית בין המעבדים. כל
+                            מעבד פיזי מקושר ישירות לבנק הזיכרון ה"מקומי" שלו, אך אם הוא צריך לגשת לבנק זיכרון של מעבד
+                            אחר, הבקשה צריכה לעבור דרך אפיק הקישור הפנימי של הלוח, מה שיוצר עיכוב (Latency) משמעותי
+                            הנקרא <strong>NUMA Penalty</strong>.
                         </p>
                         <p class="text-sm text-slate-700 leading-relaxed font-normal">
-                            ה-Hypervisor חייב להיות "מודע ל-NUMA". כאשר הוא מקצה זיכרון למכונה וירטואלית ומתזמן את ה-vCPUs שלה, הוא שואף להפעיל טכניקה הנקראת <strong>NUMA Pinning</strong> – הצמדת ה-vCPUs של המכונה למעבד פיזי ספציפי, והקצאת הזיכרון של המכונה אך ורק מבנק הזיכרון המקומי של אותו מעבד. התעלמות מטופולוגיית ה-NUMA תוביל לירידה דרסטית בביצועי השרתים.
+                            ה-Hypervisor חייב להיות "מודע ל-NUMA". כאשר הוא מקצה זיכרון למכונה וירטואלית ומתזמן את
+                            ה-vCPUs שלה, הוא שואף להפעיל טכניקה הנקראת <strong>NUMA Pinning</strong> – הצמדת ה-vCPUs של
+                            המכונה למעבד פיזי ספציפי, והקצאת הזיכרון של המכונה אך ורק מבנק הזיכרון המקומי של אותו מעבד.
+                            התעלמות מטופולוגיית ה-NUMA תוביל לירידה דרסטית בביצועי השרתים.
                         </p>
                     </div>
 
@@ -4497,6 +4547,7 @@
             });
         });
     </script>
+    <script src="ai_widget.js"></script>
 </body>
 
 </html>

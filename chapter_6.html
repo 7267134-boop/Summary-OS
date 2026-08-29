@@ -1,10 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פרק 6: קיפאון (Deadlock)</title>
+    <meta name="ai-document-summary" content="פרק 6 עוסק בקיפאון (Deadlock). הנושאים המפורטים: מודלים של משאבים, בקשה, שימוש ושחרור. הגדרת קיפאון ו-4 תנאי קופמן להתרחשותו (מניעה הדדית, החזק והמתן, אי-חילוץ, המתנה מעגלית). ייצוג בעזרת גרפי הקצאת משאבים וזיהוי מעגלים. אלגוריתם הבנקאי (Banker's Algorithm) מאת דייקסטרה לניהול והימנעות מקיפאון, זיהוי מצבים בטוחים (Safe State) ומצבים לא בטוחים. חסרונות אלגוריתם הבנקאי בסביבות מציאותיות. גישות למניעה: שבירת אחד מתנאי קופמן (כמו הגבלת סדר משאבים כדי למנוע מעגליות). הרעבה (Starvation) ודרכי התמודדות.">
+
     <!-- Google Fonts Heebo -->
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
         rel="stylesheet">
@@ -2503,7 +2505,8 @@
                             <!-- Strategy 1 -->
                             <div class="border-t-4 border-amber-500 bg-slate-50 p-6 rounded-xl shadow-sm">
                                 <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
-                                    <span>🔌</span> 1. התאוששות על ידי חילוץ משאבים (Preemption)</h3>
+                                    <span>🔌</span> 1. התאוששות על ידי חילוץ משאבים (Preemption)
+                                </h3>
                                 <p class="text-slate-700 leading-relaxed">
                                     בגישה זו, מערכת ההפעלה בוחרת משאב שמוחזק על ידי אחד מהתהליכים בקיפאון, ופשוט לוקחת
                                     אותו ממנו בכוח (מפקיעה אותו) ומוסרת אותו לתהליך אחר כדי שיסיים וישבור את המעגל.
@@ -2518,7 +2521,8 @@
                             <!-- Strategy 2 -->
                             <div class="border-t-4 border-indigo-500 bg-slate-50 p-6 rounded-xl shadow-sm">
                                 <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
-                                    <span>⏱️</span> 2. התאוששות על ידי חזרה לאחור (Rollback)</h3>
+                                    <span>⏱️</span> 2. התאוששות על ידי חזרה לאחור (Rollback)
+                                </h3>
                                 <p class="text-slate-700 leading-relaxed">
                                     אם אי אפשר סתם לקחת משאב, אולי אפשר לקחת את התהליך עצמו אחורה בזמן? במערכות הדורשות
                                     אמינות גבוהה (כמו מסדי נתונים), התהליכים מבצעים נקודות שמירה (Checkpoints) תקופתיות
@@ -2535,7 +2539,8 @@
                             <!-- Strategy 3 -->
                             <div class="border-t-4 border-rose-500 bg-slate-50 p-6 rounded-xl shadow-sm">
                                 <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
-                                    <span>💀</span> 3. התאוששות על ידי חיסול תהליכים (Killing)</h3>
+                                    <span>💀</span> 3. התאוששות על ידי חיסול תהליכים (Killing)
+                                </h3>
                                 <p class="text-slate-700 leading-relaxed mb-4">
                                     זהו הפתרון הפשוט, הנפוץ וה"מלוכלך" ביותר. כדי לשבור את מעגל הקיפאון, מערכת ההפעלה
                                     מאלצת סיום חריג (Abort) של אחד התהליכים במעגל. עם מותו, המערכת משחררת את כל המשאבים
@@ -2803,7 +2808,8 @@
                             <li>המערכת חוזרת לשלב 1 עם המלאי המעודכן ומחפשת תהליך נוסף שיכול לסיים.</li>
                             <li>אם האלגוריתם הצליח לסמן את כל התהליכים כמסיימים, המשמעות היא שהמצב החדש הוא בטוח.
                                 <strong>רק במקרה כזה</strong>, ההקצאה הווירטואלית הופכת לאמיתית, והמשאב מוענק לתהליך
-                                שביקש אותו.</li>
+                                שביקש אותו.
+                            </li>
                         </ol>
 
                         <div class="thought-box">
@@ -3437,7 +3443,8 @@
                                     הנדרשות לו בזו אחר זו, מבלי לשחרר אף מנעול.</li>
                                 <li><strong>שלב 2 (התכווצות / Shrinking Phase):</strong> לאחר שהתהליך השיג את המנעול
                                     האחרון שנדרש לו והשלים את פעולתו, הוא מתחיל לשחרר את המנעולים, ומאותו רגע
-                                    <strong>אסור לו לבקש מנעולים חדשים</strong>.</li>
+                                    <strong>אסור לו לבקש מנעולים חדשים</strong>.
+                                </li>
                             </ul>
                             <div class="bg-amber-50 p-3 rounded-lg border-r-4 border-amber-500 mb-3">
                                 <strong class="text-amber-900 text-sm">התוספת הקריטית למניעת קיפאון:</strong>
@@ -3649,7 +3656,8 @@
                         <div id="ch6-flashcard-stats-container"
                             class="hidden text-xs font-bold text-slate-500 bg-slate-200 px-3 py-1.5 rounded-md">נחשפו:
                             <span id="ch6-flashcard-opened-count" class="text-blue-600 font-extrabold text-sm">0</span>
-                            מתוך <span id="ch6-flashcard-total-count" class="font-bold">24</span></div>
+                            מתוך <span id="ch6-flashcard-total-count" class="font-bold">24</span>
+                        </div>
                         <button onclick="ch6_resetFlashcards()"
                             class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-1.5 px-4 rounded-lg text-xs transition-colors cursor-pointer active:scale-95">איפוס
                             כרטיסיות</button>
@@ -3707,7 +3715,8 @@
                                     class="font-bold text-emerald-900 mb-3 text-lg underline decoration-emerald-300 decoration-2 underline-offset-4">
                                     תשובה פתורה:</h4>
                                 <p class="mb-3">1. חישוב פנויים: הוקצו עד כה $2+3+4+1=10$ כוננים. מתוך 12, נותרו
-                                    <strong>2 פנויים</strong>.</p>
+                                    <strong>2 פנויים</strong>.
+                                </p>
                                 <ol class="list-decimal list-inside space-y-2 text-emerald-900 mb-4 font-medium">
                                     <li>מלאי פנוי התחלתי: <strong>2 עותקים</strong>.</li>
                                     <li>למי יספיקו 2 פנויים? ל-P2 (צריך 2) או P4 (צריך 2). נבחר ב-<strong>P4</strong>.
@@ -3717,7 +3726,8 @@
                                         העותקים שהיו מוקצים לו. המלאי הפנוי כעת: $3+3=6$.</li>
                                     <li>למי יספיקו 6 פנויים? ל-<strong>P1</strong> (צריך 4) ול-P3 (צריך 5). נבחר את
                                         <strong>P1</strong>. הוא רץ, מסיים, ומשחרר את 2 העותקים שלו. המלאי הפנוי כעת:
-                                        $6+2=8$.</li>
+                                        $6+2=8$.
+                                    </li>
                                     <li>לבסוף, נריץ את <strong>P3</strong> (צריך 5 מתוך 8 פנויים). הוא מסיים בשלום
                                         ומשחרר את 4 העותקים שלו. המלאי הסופי: $8+4=12$ (כלל המשאבים במערכת, הוכחה לכך
                                         שהכל חזר).</li>
@@ -5393,6 +5403,7 @@
             }
         });
     </script>
+    <script src="ai_widget.js"></script>
 </body>
 
 </html>

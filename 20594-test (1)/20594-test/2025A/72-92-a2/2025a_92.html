@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פתרון מבחן מסכם (100% מדויק)</title>
+    <meta name="ai-document-summary" content="מבחן זה מכיל שאלות בנושאים הבאים: חלק א' (30 נק') 1 SOFT LINK לעומת HARD LINK 2 וירטואליזציה (Trap-and-simulate) 3 Shared Memory vs Message Passing 4 תרגום כתובת 9000 (8KB Page) 5 חיסרון של User Threads 6 חישוב גודל I-Node (3076 בלוקים) חלק ב' (55 נק') 7 סנכרון ופקודת CAS 8 Clock Algorithm וקבוצת עבודה 9 בדיקת Consistency וסדר פעולות חלק ג' (15 נק') 10 העברת פרמטרים ו-USER SPACE 11 פלט קוד: PID_NS לפני/אחרי fork 12 שאלות בחירה (2025/2024)">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -1949,6 +1950,32 @@
             if (activeTab) {
                 activeTab.classList.remove('hidden');
                 activeTab.classList.add('block');
+            // Update AI Context dynamically (STRICT MODE)
+            let aiMeta = document.querySelector('meta[name="ai-document-summary"]');
+            let activeTabText = "";
+            if (typeof selectedTab !== 'undefined' && selectedTab) {
+                activeTabText = selectedTab.innerText || selectedTab.textContent;
+            } else if (typeof activeTab !== 'undefined' && activeTab) {
+                activeTabText = activeTab.innerText || activeTab.textContent;
+            }
+            if (aiMeta && activeTabText) {
+                if (activeTabText.length > 5000) activeTabText = activeTabText.substring(0, 5000) + "...";
+                // OVERWRITE completely to prevent distraction
+                aiMeta.content = "Current Question Context:\n" + activeTabText;
+            }
+            
+            // Hide inactive tabs from AI screen readers and DOM scrapers
+            document.querySelectorAll('.tab-content').forEach(t => {
+                if (t.classList.contains('hidden')) {
+                    t.setAttribute('aria-hidden', 'true');
+                    t.setAttribute('data-nosnippet', 'true');
+                    t.setAttribute('data-ai-ignore', 'true');
+                } else {
+                    t.removeAttribute('aria-hidden');
+                    t.removeAttribute('data-nosnippet');
+                    t.removeAttribute('data-ai-ignore');
+                }
+            });
             }
         }
 
@@ -2200,6 +2227,9 @@
             updateCyclerUI();
         });
     </script>
+    <script src="../../../../ai_widget.js"></script>
 </body>
 
 </html>
+
+

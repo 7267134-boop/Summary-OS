@@ -1,10 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פרק 5: קלט/פלט (I/O)</title>
+    <meta name="ai-document-summary" content="פרק 5 עוסק בקלט/פלט (I/O). הנושאים המפורטים: חומרת I/O, התקנים, בקרים (Device Controllers), שיטות מיעון, פסיקות חומרה. תוכנת ה-I/O: קלט/פלט דרך מעבד ראשי, מונחה אירועים (פסיקות) ושכבות תוכנה. מנהל פסיקות, מנהלי התקנים (Device Drivers) ומערכת הפעלה עצמאית מהתקן. דיסקים קשיחים: חומרה, עיצוב (Formatting), אלגוריתמי תזמון זרוע (FCFS, SSTF, SCAN). מערכי דיסקים ויתירות נתונים (RAID). ניהול שעונים ומתנדים מבוססי חומרה, ותפקידי השעון לניהול פסיקות זמן, תזמון משימות (Timer Interrupts).">
+
     <!-- Google Fonts Heebo -->
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
         rel="stylesheet">
@@ -611,7 +613,8 @@
                                     <li class="pl-2 border-b border-slate-100 pb-2">המעבד חוזר מיד להריץ תוכניות אחרות
                                         בזמן שה-DMA עובד.</li>
                                     <li class="pl-2 border-b border-slate-100 pb-2">ה-DMA מנהל את העברת הבלוקים בעצמו
-                                        <strong>ישירות</strong> מהדיסק לזיכרון הראשי (RAM).</li>
+                                        <strong>ישירות</strong> מהדיסק לזיכרון הראשי (RAM).
+                                    </li>
                                     <li class="pl-2">כשהוא מסיים, ה-DMA שולח <strong>פסיקה (Interrupt)</strong> למעבד
                                         כדי להכריז: "המשימה בוצעה".</li>
                                 </ol>
@@ -794,7 +797,8 @@
                                         <span
                                             class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">1</span>
                                         <p class="text-slate-700 pt-1">בקר ההתקן (או ה-DMA) שולח אות חשמלי לרכיב שנקרא
-                                            <strong>בקר פסיקות (Interrupt Controller)</strong>.</p>
+                                            <strong>בקר פסיקות (Interrupt Controller)</strong>.
+                                        </p>
                                     </li>
                                     <li class="flex gap-3">
                                         <span
@@ -813,7 +817,8 @@
                                             class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">4</span>
                                         <p class="text-slate-700 pt-1">המעבד משתמש במספר הפסיקה כאינדקס לטבלת
                                             <strong>וקטור הפסיקות (Interrupt Vector)</strong> בזיכרון, שם הוא מוצא את
-                                            הכתובת של קוד מערכת ההפעלה שמיועד לטפל בהתקן הספציפי הזה (ISR).</p>
+                                            הכתובת של קוד מערכת ההפעלה שמיועד לטפל בהתקן הספציפי הזה (ISR).
+                                        </p>
                                     </li>
                                 </ul>
                             </div>
@@ -1083,7 +1088,8 @@
                                         <p class="text-indigo-900 text-sm pt-1">ה-ISR משחרר את התהליך שהמתין (פעולת
                                             <code class="bg-white px-1 rounded">Up</code> לסמפור). התהליך חוזר ל"מוכן
                                             לריצה". מבחינת התהליך – הוא פשוט נרדם והתעורר עם נתונים מוכנים, שום דבר לא
-                                            קטע אותו.</p>
+                                            קטע אותו.
+                                        </p>
                                     </li>
                                 </ul>
                             </div>
@@ -1094,7 +1100,8 @@
                             <h3 class="text-xl font-bold text-blue-800 mb-4">5.3.2 מתאמי התקנים (Device Drivers)</h3>
                             <p class="mb-4 text-slate-700">כל יצרן חומרה (Intel, Nvidia) מייצר בקרים שונים עם פקודות
                                 שונות. מתאם ההתקן הוא "המתורגמן הרשמי" שמקבל פקודה סטנדרטית ממערכת ההפעלה (כמו
-                                <code>Read Block</code>) ומתרגם אותה לפעולות חשמליות מול אוגרי הבקר.</p>
+                                <code>Read Block</code>) ומתרגם אותה לפעולות חשמליות מול אוגרי הבקר.
+                            </p>
 
                             <div class="grid md:grid-cols-2 gap-4">
                                 <div
@@ -1658,15 +1665,18 @@
                                         <div
                                             class="flex-1 bg-white p-2 text-center rounded border border-slate-200 text-sm">
                                             <strong class="block text-indigo-600">קדם-אות (Preamble)</strong> רצף ביטים
-                                            לסנכרון הראש.</div>
+                                            לסנכרון הראש.
+                                        </div>
                                         <div
                                             class="flex-1 bg-white p-2 text-center rounded border border-slate-200 text-sm">
                                             <strong class="block text-emerald-600">נתונים (Data)</strong> המידע עצמו
-                                            (512/4096).</div>
+                                            (512/4096).
+                                        </div>
                                         <div
                                             class="flex-1 bg-white p-2 text-center rounded border border-slate-200 text-sm">
                                             <strong class="block text-purple-600">קוד תיקון שגיאות (ECC)</strong> לזיהוי
-                                            ותיקון פגמים פיזיים.</div>
+                                            ותיקון פגמים פיזיים.
+                                        </div>
                                     </div>
 
                                     <strong class="text-slate-700 block mb-2 text-sm">🛠️ טריקים הנדסיים לשיפור
@@ -1788,7 +1798,8 @@
                                     <p class="text-slate-600 text-sm mb-2">בוחרים תמיד את הבקשה הקרובה ביותר למיקום
                                         הנוכחי של הזרוע.</p>
                                     <div class="bg-green-50 text-green-800 text-xs p-2 rounded mb-2">
-                                        <strong>יתרון:</strong> ממזער תנועות ומשפר תפוקה.</div>
+                                        <strong>יתרון:</strong> ממזער תנועות ומשפר תפוקה.
+                                    </div>
                                     <div class="bg-orange-50 text-orange-800 text-xs p-2 rounded">
                                         <strong>חיסרון (הרעבה - Starvation):</strong> אם יש עומס באזור צפוף באמצע הדיסק,
                                         בקשות בקצוות עלולות להמתין לנצח.
@@ -4145,7 +4156,7 @@
             updateToggleBtnIcon(isCollapsed);
         }
     </script>
-
+    <script src="ai_widget.js"></script>
 </body>
 
 </html>

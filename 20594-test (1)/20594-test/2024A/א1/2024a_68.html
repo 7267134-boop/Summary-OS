@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פתרון מבחן מסכם</title>
+    <meta name="ai-document-summary" content="מבחן זה מכיל שאלות בנושאים הבאים: חלק א' (30 נק') 1 זמן תגובה ותזמון 2 Hypervisor וסוגיו 3 מבנה ה-PCB 4 חוטים ברמת משתמש 5 אלגוריתם הבנקאי 6 חישוב ב-I-node חלק ב' (55 נק') 7 סנכרון יצרן-צרכן 8 סחרור ושעון 9 הקצאת קבצים בדיסק חלק ג' (15 נק') 10 קריאות מערכת 11 קונטיינרים ו-PID 12 מגבלות קונטיינרים">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -1611,6 +1612,32 @@ Child's perspective on his parent: PID=0</code></pre>
             if (selectedTab) {
                 selectedTab.classList.remove('hidden');
                 selectedTab.classList.add('block');
+            // Update AI Context dynamically (STRICT MODE)
+            let aiMeta = document.querySelector('meta[name="ai-document-summary"]');
+            let activeTabText = "";
+            if (typeof selectedTab !== 'undefined' && selectedTab) {
+                activeTabText = selectedTab.innerText || selectedTab.textContent;
+            } else if (typeof activeTab !== 'undefined' && activeTab) {
+                activeTabText = activeTab.innerText || activeTab.textContent;
+            }
+            if (aiMeta && activeTabText) {
+                if (activeTabText.length > 5000) activeTabText = activeTabText.substring(0, 5000) + "...";
+                // OVERWRITE completely to prevent distraction
+                aiMeta.content = "Current Question Context:\n" + activeTabText;
+            }
+            
+            // Hide inactive tabs from AI screen readers and DOM scrapers
+            document.querySelectorAll('.tab-content').forEach(t => {
+                if (t.classList.contains('hidden')) {
+                    t.setAttribute('aria-hidden', 'true');
+                    t.setAttribute('data-nosnippet', 'true');
+                    t.setAttribute('data-ai-ignore', 'true');
+                } else {
+                    t.removeAttribute('aria-hidden');
+                    t.removeAttribute('data-nosnippet');
+                    t.removeAttribute('data-ai-ignore');
+                }
+            });
             }
             document.querySelectorAll('nav button').forEach(btn => {
                 btn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-right text-slate-400 hover:text-white";
@@ -1664,5 +1691,8 @@ Child's perspective on his parent: PID=0</code></pre>
 
         switchTab('q1');
     </script>
+    <script src="../../../../ai_widget.js"></script>
 </body>
 </html>
+
+

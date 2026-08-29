@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - סימולטור מבחנים מסכם</title>
+    <meta name="ai-document-summary" content="מבחן זה מכיל שאלות בנושאים הבאים: חלק א' - אמריקאי 1 פסיקות חומרה 2 פרה-וירטואליזציה 3 קישורים (Links) 4 תהליכוני משתמש 5 אלגוריתם הבנקאי 6 חישוב I-node חלק ב' - שאלות פתוחות 7 יצרן-צרכן (סנכרון) 8 אלגוריתם דפדוף 9 ניהול קבצי וידאו חלק ג' - מושגים וקונטיינרים 10 העברת פרמטרים בגרעין 11 xv6 קונטיינרים (PID) 12 קריאות מערכת בקונטיינר">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -2165,6 +2166,32 @@ kill(pid + 3);</code></pre>
             if (selectedTab) {
                 selectedTab.classList.remove('hidden');
                 selectedTab.classList.add('block');
+            // Update AI Context dynamically (STRICT MODE)
+            let aiMeta = document.querySelector('meta[name="ai-document-summary"]');
+            let activeTabText = "";
+            if (typeof selectedTab !== 'undefined' && selectedTab) {
+                activeTabText = selectedTab.innerText || selectedTab.textContent;
+            } else if (typeof activeTab !== 'undefined' && activeTab) {
+                activeTabText = activeTab.innerText || activeTab.textContent;
+            }
+            if (aiMeta && activeTabText) {
+                if (activeTabText.length > 5000) activeTabText = activeTabText.substring(0, 5000) + "...";
+                // OVERWRITE completely to prevent distraction
+                aiMeta.content = "Current Question Context:\n" + activeTabText;
+            }
+            
+            // Hide inactive tabs from AI screen readers and DOM scrapers
+            document.querySelectorAll('.tab-content').forEach(t => {
+                if (t.classList.contains('hidden')) {
+                    t.setAttribute('aria-hidden', 'true');
+                    t.setAttribute('data-nosnippet', 'true');
+                    t.setAttribute('data-ai-ignore', 'true');
+                } else {
+                    t.removeAttribute('aria-hidden');
+                    t.removeAttribute('data-nosnippet');
+                    t.removeAttribute('data-ai-ignore');
+                }
+            });
             }
             document.querySelectorAll('nav button').forEach(btn => {
                 btn.classList.remove('bg-slate-800', 'text-white');
@@ -2202,6 +2229,9 @@ kill(pid + 3);</code></pre>
             }
         }
     </script>
+    <script src="../../../../ai_widget.js"></script>
 </body>
 
 </html>
+
+

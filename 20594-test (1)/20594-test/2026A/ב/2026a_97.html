@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכות הפעלה - פתרון מבחן מסכם (100% מדויק)</title>
+    <meta name="ai-document-summary" content="מבחן זה מכיל שאלות בנושאים הבאים: חלק א' (30 נק') 1 יתרון OS מרובדת 2 Docker וקונטיינרים 3 מניעה הדדית (SIGNALS) 4 מידע חסר ב-PCB 5 יתרון DMA ב-SSD 6 חישוב גודל קובץ I-Node חלק ב' (55 נק') 7 קטע קריטי (CAS) וסנכרון 8 חישוב כתובת בינארית (RAM) 9 הקצאות רציפות ורשימות ב-SSD חלק ג' (15 נק') 10 TRAP ומספרי קריאות מערכת 11 קונטיינרים ו-kill(pid) 12 פלט קוד: MOUNT_NS באב/בן">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -1952,6 +1953,32 @@
             if (selectedTab) {
                 selectedTab.classList.remove('hidden');
                 selectedTab.classList.add('block');
+            // Update AI Context dynamically (STRICT MODE)
+            let aiMeta = document.querySelector('meta[name="ai-document-summary"]');
+            let activeTabText = "";
+            if (typeof selectedTab !== 'undefined' && selectedTab) {
+                activeTabText = selectedTab.innerText || selectedTab.textContent;
+            } else if (typeof activeTab !== 'undefined' && activeTab) {
+                activeTabText = activeTab.innerText || activeTab.textContent;
+            }
+            if (aiMeta && activeTabText) {
+                if (activeTabText.length > 5000) activeTabText = activeTabText.substring(0, 5000) + "...";
+                // OVERWRITE completely to prevent distraction
+                aiMeta.content = "Current Question Context:\n" + activeTabText;
+            }
+            
+            // Hide inactive tabs from AI screen readers and DOM scrapers
+            document.querySelectorAll('.tab-content').forEach(t => {
+                if (t.classList.contains('hidden')) {
+                    t.setAttribute('aria-hidden', 'true');
+                    t.setAttribute('data-nosnippet', 'true');
+                    t.setAttribute('data-ai-ignore', 'true');
+                } else {
+                    t.removeAttribute('aria-hidden');
+                    t.removeAttribute('data-nosnippet');
+                    t.removeAttribute('data-ai-ignore');
+                }
+            });
             }
 
             document.querySelectorAll('aside nav button').forEach(btn => {
@@ -1991,6 +2018,9 @@
             }
         }
     </script>
+    <script src="../../../../ai_widget.js"></script>
 </body>
 
 </html>
+
+
