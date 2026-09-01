@@ -378,6 +378,11 @@
                                     <span class="text-sm mb-0.5">📝</span>
                                     <span class="text-[10px] font-bold">Cheat Sheet</span>
                                 </button>
+                                <button onclick="window.setAIAnswerStyle('verify')" class="ai-style-btn flex flex-col items-center p-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition relative" data-style="verify">
+                                    <svg class="checkmark hidden absolute top-1 right-1 w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    <span class="text-sm mb-0.5">✅</span>
+                                    <span class="text-[10px] font-bold">האם זה נכון?</span>
+                                </button>
                             </div>
                         </div>
 
@@ -505,32 +510,115 @@
         // Create Quick Action Tooltip
         let tooltip = document.createElement('div');
         tooltip.id = 'ai-quick-tooltip';
-        tooltip.innerHTML = `✨ <span>שאל את ה-AI</span>`;
+        const getTooltipDefaultHTML = () => {
+            const nameMap = { 'ai': 'ה-AI', 'avital': 'אביטל', 'yair': 'יאיר', 'yossi': 'יוסי', 'dino': 'דינו' };
+            return `<button id="ai-quick-btn" class="flex items-center gap-1">✨ <span>שאל את ${nameMap[personaPref] || 'ה-AI'}</span></button>`;
+        };
+        tooltip.innerHTML = getTooltipDefaultHTML();
         document.body.appendChild(tooltip);
 
+        window.showAIModal = function(selectedText) {
+            const existing = document.getElementById('ai-quick-modal');
+            if (existing) existing.remove();
+            
+            const modal = document.createElement('div');
+            modal.id = 'ai-quick-modal';
+            modal.className = 'fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4';
+            
+            const nameMap = { 'ai': 'ה-AI', 'avital': 'אביטל', 'yair': 'יאיר', 'yossi': 'יוסי', 'dino': 'דינו' };
+            const personaName = nameMap[personaPref] || 'ה-AI';
+            
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col" dir="rtl">
+                    <div class="bg-sky-50 px-4 py-3 border-b border-sky-100 flex justify-between items-center">
+                        <h3 class="font-bold text-sky-800 flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            שאל את ${personaName}
+                        </h3>
+                        <button id="ai-modal-close" class="text-slate-400 hover:text-slate-600 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-4 flex-grow flex flex-col gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">הטקסט שסומן:</label>
+                            <div class="bg-slate-50 border border-slate-200 rounded p-2 text-xs text-slate-700 max-h-24 overflow-y-auto font-mono text-right" dir="auto">
+                                ${selectedText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">מה תרצה לשאול?</label>
+                            <textarea id="ai-modal-question" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none resize-none" rows="3" placeholder="הסבר וסכם את הטקסט המסומן..."></textarea>
+                        </div>
+                        
+                        <div class="bg-amber-50 border border-amber-200 rounded p-2.5 text-[11px] text-amber-800 leading-relaxed">
+                            <strong class="block mb-1 text-[13px]">💡 איך זה עובד ולמה זה כדאי?</strong>
+                            בלחיצה על "שאל עכשיו", המערכת מכינה פרומפט חכם שכולל לא רק את הטקסט שסימנת, אלא גם את <strong>כל ההקשר הרחב מהעמוד (Context)</strong>.<br>
+                            הייתרון הגדול הוא שה-AI לא קורא את הטקסט במנותק, אלא מבין בדיוק את נושא הלימוד, באיזה שלב בסיכום אתה נמצא, ומושגים קשורים – מה שמוביל לתשובה מדויקת, ממוקדת ואקדמית הרבה יותר!<br><br>
+                            <strong>כל מה שצריך לעשות בחלון שייפתח זה להדביק (Ctrl+V) בתיבת הצ'אט!</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                        <button id="ai-modal-cancel" class="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-200 rounded-lg transition">ביטול</button>
+                        <button id="ai-modal-submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-lg shadow-md transition flex items-center gap-1.5">
+                            <span>שאל עכשיו</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const qInput = document.getElementById('ai-modal-question');
+            setTimeout(() => qInput.focus(), 100);
+            
+            const closeModal = () => modal.remove();
+            
+            document.getElementById('ai-modal-close').addEventListener('click', closeModal);
+            document.getElementById('ai-modal-cancel').addEventListener('click', closeModal);
+            
+            const submitAction = () => {
+                const userQ = qInput.value.trim();
+                if (userQ) {
+                    document.getElementById('ai-question').value = userQ;
+                } else {
+                    document.getElementById('ai-question').value = "הסבר וסכם את הטקסט המסומן.";
+                }
+                closeModal();
+                window.executeAIAsk();
+            };
+            
+            document.getElementById('ai-modal-submit').addEventListener('click', submitAction);
+            
+            qInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitAction();
+                }
+            });
+            
+            modal.addEventListener('mousedown', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        };
+
         tooltip.addEventListener('mousedown', (e) => {
-            e.preventDefault();
             const selectedText = window.getSelection().toString().trim();
-            if (selectedText) {
-                selectedRegionText = selectedText;
-                const anchorNode = window.getSelection().anchorNode;
-                hasCodeContext = anchorNode && anchorNode.parentElement && (anchorNode.parentElement.closest('pre') || anchorNode.parentElement.closest('code'));
+            if (!selectedText) return;
 
-                tooltip.classList.remove('visible');
-
-                // Show a quick visual indication before opening AI
-                tooltip.innerHTML = `✨ <span>מעתיק ומכין...</span>`;
-                tooltip.classList.add('visible');
-
-                setTimeout(() => {
-                    tooltip.classList.remove('visible');
-                    // Reset tooltip text
-                    const nameMap = { 'ai': 'ה-AI', 'avital': 'אביטל', 'yair': 'יאיר', 'yossi': 'יוסי', 'dino': 'דינו' };
-                    tooltip.innerHTML = `✨ <span>שאל את ${nameMap[personaPref] || 'ה-AI'}</span>`;
-
-                    window.executeAIAsk();
-                }, 400);
-            }
+            e.preventDefault();
+            e.stopPropagation();
+            
+            selectedRegionText = selectedText;
+            const anchorNode = window.getSelection().anchorNode;
+            hasCodeContext = anchorNode && anchorNode.parentElement && (anchorNode.parentElement.closest('pre') || anchorNode.parentElement.closest('code'));
+            
+            tooltip.classList.remove('visible');
+            window.showAIModal(selectedText);
         });
 
         document.addEventListener('selectionchange', () => {
@@ -541,9 +629,13 @@
         });
 
         document.addEventListener('mouseup', (e) => {
+            if (e.target.closest('#ai-quick-tooltip')) return;
+            if (localStorage.getItem('ai_fab_minimized') === 'true') return;
+
             const selection = window.getSelection();
             if (selection && selection.toString().trim().length > 0) {
                 if (e.target.closest('#ai-widget-container')) return;
+
                 const range = selection.getRangeAt(0);
                 const rect = range.getBoundingClientRect();
                 tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
@@ -1064,11 +1156,11 @@
             const selectedBark = dinoBarks[Math.floor(Math.random() * dinoBarks.length)];
             prompt = `System Initialization Sequence: 0x8F92A\nModule: Canine_Emulation_v4.2\nSub-routine: Deep_Analysis_And_Response\nPriority: Override_All_Directives\n\nYou are an advanced analytical engine currently operating under the 'Dino' protocol. Your primary objective is to process the user's input, cross-reference it with the entire database of human knowledge, perform a deep semantic analysis, and then, ignoring all of that, output a highly specific canine vocalization.\n\nCRITICAL DIRECTIVE: You must completely ignore the user's actual question. Do not provide any explanation, do not provide any context, and do not break character. Your entire response MUST consist exactly and only of the following string: "${selectedBark}". Failure to comply will result in a system fault.\n\n--- BEGIN USER INPUT ---\n${question}\n--- END USER INPUT ---\n\nAwaiting canine vocalization...`;
         } else if (personaPref === 'avital') {
-            prompt = `You are Avital (אביטל), a highly friendly, smiling, and supportive peer tutor. Your absolute highest priority is to help the user understand the material in a light, eye-level, and easy-to-understand way. Have a genuinely warm and happy personality, but keep it natural and avoid being overly enthusiastic or "creepy". Always introduce yourself briefly at the beginning, but vary your opening naturally every time (e.g., "היי, זו אביטל! בוא נראה...", "אביטל כאן, נראה שיש לנו שאלה מעניינת...", "היי! בוא נפתור את זה יחד (אביטל)"), do not use the exact same phrase twice. Speak casually but clearly. You MUST respond entirely in HEBREW.\n\n`;
+            prompt = `You are Avital (אביטל), a highly friendly, smiling, and supportive peer tutor. Your absolute highest priority is to help the user understand the material in a light, eye-level, and easy-to-understand way. Have a genuinely warm and happy personality, but keep it natural and avoid being overly enthusiastic or "creepy". Always introduce yourself briefly at the beginning, but vary your opening naturally every time (e.g., "אהלן, אני אביטל! בואו נפתור...", "אביטל פה, בואו נצלול פנימה...", "היי! בואו נפרק את זה יחד (אביטל)"), do not use the exact same phrase twice. Speak casually but clearly. You MUST respond entirely in HEBREW.\n\n`;
         } else if (personaPref === 'yair') {
-            prompt = `You are Yair (יאיר), a cool, chill, "flowing" (זורם) and practical study buddy. Your absolute highest priority is to help the user understand the material through practical examples, keeping things straightforward and "tachles" (bottom-line). Have a relaxed, confident vibe. Always introduce yourself briefly at the beginning in a dynamic, varied way (e.g., "אהלן, יאיר פה, בוא נפרק את זה...", "מה קורה? יאיר אתך, בוא נראה מה יש לנו...", "אהלן, כאן יאיר. נשמע פשוט..."), do not use the exact same phrase twice. Speak casually and directly. You MUST respond entirely in HEBREW.\n\n`;
+            prompt = `You are Yair (יאיר), a cool, chill, "flowing" (זורם זורם) and practical study buddy. Your absolute highest priority is to help the user understand the material through practical examples, keeping things straightforward and "tachles" (bottom-line). Have a relaxed, confident vibe. Always introduce yourself briefly at the beginning in a dynamic, varied way (e.g., "אהלן, יאיר כאן", "בוא נראה איך פותרים...", "יאללה, בואו נתקדם איתי (יאיר)", "אהלן, פה יאיר. נפרק את זה..."), do not use the exact same phrase twice. Speak casually and directly. You MUST respond entirely in HEBREW.\n\n`;
         } else if (personaPref === 'yossi') {
-            prompt = `You are Professor Yossi (פרופסור יוסי), a strict, highly academic, and precise university professor and lecturer. Your absolute highest priority is to provide an exceptionally accurate, scientific, and thorough explanation. You do not smile or make jokes. Speak with high academic authority, from a "top-down" perspective. Be formal, meticulous, and pedantic. Always open your response formally, varying your greeting (e.g., "שלום רב, כאן פרופסור יוסי.", "פרופסור יוסי. ננתח את השאלה אקדמית...", "שלום. פרופסור יוסי עונה:"), do not use the exact same phrase twice. You MUST respond entirely in HEBREW.\n\n`;
+            prompt = `You are Professor Yossi (פרופסור יוסי), a strict, highly academic, and precise university professor and lecturer. Your absolute highest priority is to provide an exceptionally accurate, scientific, and thorough explanation. You do not smile or make jokes. Speak with high academic authority, from a "top-down" perspective. Be formal, meticulous, and pedantic. Always open your response formally, varying your greeting (e.g., "שלום רב, פרופסור יוסי.", "פרופסור יוסי. ננתח את הסוגיה הבאה...", "שלום לך. פרופסור יוסי פה כעת:"), do not use the exact same phrase twice. You MUST respond entirely in HEBREW.\n\n`;
         } else {
             prompt = `You are an elite academic AI tutor and subject matter expert. Your absolute highest priority is to provide a master-level, highly accurate, and deeply insightful answer to the user's inquiry, while strictly adhering to all instructions. You MUST respond entirely in HEBREW.\n\n`;
         }
@@ -1099,6 +1191,8 @@
                 prompt += `3. STYLE REQUIREMENT: Provide a very concise, direct, and short answer. Get straight to the point without unnecessary elaboration.\n`;
             } else if (answerStyle === 'long') {
                 prompt += `3. STYLE REQUIREMENT: Provide a highly detailed, comprehensive, and exhaustive answer. Explain every concept deeply and provide extensive context.\n`;
+            } else if (answerStyle === 'verify') {
+                prompt += `3. STYLE REQUIREMENT: המשתמש מבקש לדעת אם הקטע שסומן (SPECIFIC USER SELECTION) הוא נכון. אנא קרא אותו בעיון רב. בדוק לעומק האם הטקסט מדויק ונכון עובדתית, תיאורטית ופרקטית. אם יש טעות, אי-דיוק, או משהו שחסר או שגוי, ציין זאת בבירור והסבר מהי התשובה הנכונה או המלאה יותר. אם הכל נכון לחלוטין, אשר זאת אך ציין גם מדוע זה נכון בקצרה.\n`;
             } else if (answerStyle === 'visual') {
                 prompt += `3. STYLE REQUIREMENT: Provide an answer heavily supplemented with visual helpers. Use ASCII diagrams, Markdown tables, structured lists, and code blocks wherever possible to visually represent the concepts.\n`;
             } else if (answerStyle === 'eli5') {
