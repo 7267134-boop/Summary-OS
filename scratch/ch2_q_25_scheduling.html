@@ -1,0 +1,354 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 2.5: scheduling (תזמון מעבד)                              -->
+        <!-- ===================================================================== -->
+        <div id="questions-scheduling" data-title="שאלות מנחות ותרגול - ⏱️ 2.5 תזמון מעבד (CPU Scheduling)">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 2.5.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.5.1: מהן שלוש רמות התזמון במערכת הפעלה (לטווח קצר, בינוני וארוך), וכיצד נבדלים יעדי התזמון של מערכות אצווה (Batch), מערכות אינטראקטיביות (Interactive) ומערכות זמן אמת (Real-Time)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>שלוש רמות התזמון במערכת:</strong>
+                            <br>1. <strong>תזמון לטווח קצר (Short-Term / CPU Scheduler):</strong> התדיר והמהיר ביותר (פועל בכל כמה מילי-שניות או בכל פסיקה). תפקידו לבחור מתוך תור התהליכים המוכנים (Ready Queue) בזיכרון הראשי את התהליך הבא שייכנס למצב ריצה (Running) על המעבד, ולבצע את החלפת ההקשר (Context Switch).
+                            <br>2. <strong>תזמון לטווח בינוני (Medium-Term / Swapper):</strong> מנהל את עומס הזיכרון (Degree of Multiprogramming) במטרה למנוע Thrashing. מחליט אילו תהליכים "ייזרקו" מה-RAM אל שטח ההחלפה בדיסק (Swap Out) כאשר הזיכרון עמוס מדי, ומתי להחזירם (Swap In).
+                            <br>3. <strong>תזמון לטווח ארוך (Long-Term / Admission Scheduler):</strong> פועל בקצב איטי (שניות עד דקות). שולט בכמות המשימות המורשות להיכנס למערכת מתוך מאגר עבודות הדיסק (Batch Pool) אל תוך ה-RAM כדי לשמור על תמהיל מאוזן בין משימות עתירות חישוב (CPU-Bound) למשימות עתירות קלט/פלט (I/O-Bound).<br>
+                            <strong>הבדלי היעדים לפי סוג המערכת:</strong>
+                            <br>• <strong>מערכות אצווה:</strong> מקסום <strong>תפוקה (Throughput)</strong> – מספר עבודות ליחידת זמן, מזעור <strong>זמן מחזור כולל (Turnaround Time)</strong> מרגע ההגשה ועד הסיום, ומקסום <strong>ניצולת המעבד (CPU Utilization)</strong>.
+                            <br>• <strong>מערכות אינטראקטיביות (Timesharing):</strong> מזעור <strong>זמן תגובה (Response Time)</strong> – הזמן מקליטת קלט ממשתמש ועד לתגובה ראשונית על המסך, והבטחת <strong>מידתיות (Proportionality)</strong> והוגנות.
+                            <br>• <strong>מערכות זמן אמת:</strong> <strong>עמידה ביעדי זמן (Deadlines)</strong> קשיחים ללא פשרות, ו<strong>יכולת חיזוי מוחלטת (Predictability)</strong> של התנהגות המערכת בכל תרחיש.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תארו לעצמכם נמל תעופה בינלאומי: התזמון לטווח ארוך הוא מנהל לוח הטיסות שקובע כמה מטוסים רשאים לנחות היום בכל שעה. התזמון לטווח בינוני הוא פקח החניות שמחליט אילו מטוסים יישארו על מסלול הטרמינל ואילו ייגררו למגרש חניה מרוחק כדי לפנות מקום. התזמון לטווח קצר הוא מגדל הפיקוח שמחליט בשניות אלו מי המטוס הבא שיקבל אישור המראה על מסלול יחיד. מובן שלמטוס קרב במצוקת דלק (זמן אמת) יש דרישות שונות לחלוטין ממטוס תובלה המביא מכולות (אצווה) או מטיסת נוסעים שמצפה לעלייה מהירה למטוס (אינטראקטיבי).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הקונפליקט בין המדדים השונים הוא בלתי נמנע ומחייב פשרות הנדסיות:
+                            <br>• תפוקה מרבית מושגת כאשר מבצעים כמה שפחות החלפות הקשר (משימות ארוכות ללא הפסקה), אך הדבר פוגע אנושות בזמן התגובה של משתמשי קצה.
+                            <br>• זמן תגובה מיידי מחייב חלוקת זמן מהירה במיוחד עם קוואנטות קצרות, מה שמגדיל דרמטית את תקורת החלפות ההקשר ופוגע בתפוקה הכוללת.
+                            <br>• בזמן אמת, אלגוריתם שמעניק עדיפות עיוורת להוגנות עלול להביא להתרסקות מערכת אם משימה קריטית תאחר את ה-Deadline שלה בשבריר שניה. לכן תזמון זמן אמת מבוסס על אלגוריתמים דטרמיניסטיים ייעודיים כגון Rate Monotonic Scheduling (RMS) או Earliest Deadline First (EDF).
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות נפוצה היא לבלבל בין <strong>זמן תגובה (Response Time)</strong> לבין <strong>זמן מחזור (Turnaround Time)</strong>. זמן תגובה הוא משך הזמן מרגע שלחצתם על מקש או עכבר ועד שהמחשב הגיב על המסך (חיוני ב-GUI). זמן מחזור הוא הזמן הכולל מרגע שליחת המשימה ועד לסיומה המוחלט (חיוני בקומפילציה של פרויקט ענק). במערכת אינטראקטיבית, זמן תגובה מהיר מוערך בהרבה מזמן מחזור קצר.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: התזמון פועל בשלושה טווחים (קצר למעבד, בינוני לזיכרון/דיסק, ארוך לכניסת משימות); אצווה ממקסמת תפוקה, מערכות אינטראקטיביות ממזערות זמן תגובה, וזמן אמת מקדש עמידה ב-Deadlines.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.5.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.5.2: מהו ההבדל המהותי בין תזמון מנשל (Preemptive) לתזמון בלתי מנשל (Non-preemptive), וכיצד אלגוריתמי SJF ו-SRTN מוכיחים עליונות בזמן המתנה ממוצע לעומת תופעת "אפקט השיירה" (Convoy Effect) ב-FCFS?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>תזמון בלתי מנשל (Non-preemptive):</strong> ברגע שתהליך מקבל את המעבד, הוא שומר עליו עד שהוא מוותר עליו <strong>מרצונו</strong> – ע"י סיום (<code>exit</code>) או ע"י ביצוע קריאת מערכת חוסמת לקלט/פלט (<code>read/sleep</code>). פסיקות שעון אינן מפקיעות ממנו את המעבד.<br>
+                            <strong>תזמון מנשל (Preemptive):</strong> מערכת ההפעלה רשאית להפקיע את המעבד מתהליך רץ <strong>בכפייה</strong> בכל רגע, לרוב בעקבות פסיקת שעון (Timer Interrupt) שבה פקעה מנת הזמן (Quantum), או כאשר מגיע לתור ה-Ready תהליך בעל עדיפות גבוהה יותר. התהליך המנושל מוחזר לתור המוכנים.<br>
+                            <strong>FCFS ואפקט השיירה (Convoy Effect):</strong> ב-FCFS (First-Come, First-Served - בלתי מנשל), תהליך ארוך עתיר חישוב (CPU-Bound) שנכנס ראשון מעסיק את המעבד לדקות ארוכות. מאחוריו בתור ממתינים עשרות תהליכי I/O קצרים שזקוקים למילי-שנייה בודדת של חישוב לפני שליחת פקודה לדיסק או למסך. התוצאה: התקני ה-I/O מושבתים ללא עבודה, תור ה-Ready מתארך, וזמן ההמתנה הממוצע מזנק לשמיים.<br>
+                            <strong>עליונות SJF ו-SRTN:</strong> <strong>SJF (Shortest Job First - בלתי מנשל)</strong> בוחר תמיד את המשימה בעלת זמן הריצה הכולל הקצר ביותר. הוכח מתמטית ש-SJF מביא ל<strong>זמן ההמתנה הממוצע המינימלי האפשרי</strong> עבור קבוצת משימות נתונה. <strong>SRTN (Shortest Remaining Time Next - מנשל)</strong> משכלל זאת: כאשר מגיעה משימה חדשה שזמן הריצה הנותר שלה קצר מהזמן שנותר לתהליך הרץ כעת, המעבד מופקע מיד מהתהליך הרץ ומוענק למשימה החדשה, מה שמשפר עוד יותר את זמני התגובה וההמתנה.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            אנלוגיית התור לסופרמרקט: FCFS מקביל לתור שבו אדם עם 3 עגלות מלאות מגיע ראשון לקופה, ואחריו ממתינים 10 אנשים שכל אחד מהם מחזיק רק מסטיק או בקבוק מים. כולם עומדים שעה שלמה (אפקט השיירה). SJF אומר: "כל בעלי המסטיק יעקפו את העגלות המלאות וישלמו ראשונים תוך שניות". כל 10 האנשים מסיימים והולכים הביתה תוך דקה אחת, זמן ההמתנה הממוצע צונח דרמטית, ובעל העגלות יתעכב בסך הכל עוד דקה אחת. SRTN מוסיף: גם אם הקופאית כבר החלה להעביר את העגלה הגדולה, ברגע שמישהו מגיע עם מסטיק היא עוצרת, משרתת אותו מיד, וחוזרת לעגלה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הוכחת האופטימליות של SJF (חישוב אקדמי): נניח 4 משימות $A, B, C, D$ עם זמני ריצה $a, b, c, d$ כך ש-$a \le b \le c \le d$, וכולן מגיעות בזמן 0.
+                            <br>בסדר זה: $A$ ממתין 0, $B$ ממתין $a$, $C$ ממתין $a + b$, $D$ ממתין $a + b + c$.
+                            <br>סך כל זמני ההמתנה הוא: $3a + 2b + c$.
+                            <br>מכיוון ש-$a$ מוכפל במקדם הגדול ביותר (3), $b$ ב-2 ו-$c$ ב-1, כל החלפה בסדר המשימות שתציב משימה ארוכה יותר במקום קצרה יותר תגדיל בהכרח את סכום ההמתנה. מכאן ש-SJF הוא אופטימלי מתמטית.<br>
+                            <strong>החיסרון הקטלני של SJF:</strong> האלגוריתם דורש לדעת את זמני הריצה <em>מראש</em>. במחשב מרכזי (Mainframe) משתמשי אצווה חויבו להצהיר על זמן המקסימום המבוקש לעבודה, אך במערכות אינטראקטיביות רגילות זמן הריצה אינו ידוע כלל.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            סכנת <strong>הרעבה (Starvation) ב-SRTN</strong>: אם למערכת ממשיכות להגיע באופן רציף משימות קצרות חדשות, תהליך ארוך עתיר חישוב ינושל שוב ושוב ולעולם לא יגיע לסיום ריצתו. כדי למנוע זאת, מערכות מעשיות נדרשות להפעיל מנגנוני הזדקנות (Aging) שמגדילים בהדרגה את עדיפות המשימות הממתינות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: תזמון מנשל מאפשר הפקעת מעבד בכפייה; FCFS יוצר "אפקט שיירה" הפוגע בביצועים, בעוד ש-SJF ו-SRTN משיגים זמן המתנה ממוצע אופטימלי מתמטית אך חשופים להרעבת משימות ארוכות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.5.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.5.3: מהו הטרייד-אוף המרכזי בקביעת גודל הקוואנטה (Time Quantum) באלגוריתם Round Robin, וכיצד מנגנון תורים מרובי רמות עם משוב (Multilevel Feedback Queues - MFQ) מייעל את הטיפול המשולב בתהליכי קלט/פלט וחישוב?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הטרייד-אוף בקביעת הקוואנטה (Quantum) ב-Round Robin (RR):</strong>
+                            <br>• <strong>קוואנטה קצר מדי (למשל 1-2ms):</strong> משפר מעט את זמן התגובה המדומה, אך גורם ל<strong>בזבוז קטסטרופלי של זמן מעבד</strong>. אם החלפת הקשר (Context Switch) לוקחת 1ms, והקוואנטה היא 1ms, המעבד מבלה 50% מזמנו בבירוקרטיה פנימית של הקרנל במקום בריצת קוד משתמש.
+                            <br>• <strong>קוואנטה ארוך מדי (למשל 100-500ms):</strong> מקסם את ניצולת המעבד (פחות מ-1% תקורה), אך גורם ל<strong>זמני תגובה גרועים במיוחד</strong> – המערכת הופכת דה-פקטו ל-FCFS, הממשק האינטראקטיבי חווה "קפיאות" (Lags) ומשתמשים מקלידים לתוך מסך קפוא.
+                            <br><em>הפשרה המקובלת במערכות מודרניות:</em> 20 עד 50 מילי-שניות (כך שתקורת החלפת הקשר של ~1ms מהווה 2-5% בלבד מזמן המעבד).<br>
+                            <strong>פתרון תורים מרובי רמות עם משוב (MFQ / CTSS של קורבטו):</strong>
+                            במקום קוואנטה אחידה לכלל המערכת, MFQ מחזיק סדרת תורים בעדיפויות יורדות ($Q_0, Q_1, Q_2, \dots$), כאשר גודל הקוואנטה <strong>מוכפל בכל רמה</strong> (למשל: תור עליון $q=10\text{ms}$, תור שני $q=20\text{ms}$, תור שלישי $q=40\text{ms}$ וכו').<br>
+                            • כל תהליך חדש מתחיל בתור העליון ($Q_0$).
+                            <br>• <strong>תהליכי I/O ואינטראקטיביים:</strong> זקוקים לחישוב קצר בלבד ומשחררים את המעבד לפני סיום הקוואנטה. הם <strong>נשארים בתורים העליונים</strong> וזוכים לקדימות מרבית ולזמן תגובה מיידי.
+                            <br>• <strong>תהליכי חישוב כבדים (CPU-Bound):</strong> מנצלים את מלוא הקוואנטה עד תומה. המערכת מזהה זאת ו<strong>מורידה אותם דרגה לתור נמוך יותר</strong>. שם הם מחכים זמן רב יותר, אך כשהם מקבלים את המעבד הם זוכים לפרוסת זמן ארוכה פי כמה (40ms, 80ms), מה שמונע החלפות הקשר תכופות וממקסם את יעילות החישוב.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על מנהל שמקבל פניות מעובדים: פונים שמבקשים רק חתימה קצרה על טופס (תהליכי I/O) מתקבלים מיד ליד הדלת (עדיפות עליונה, קוואנטה קצר). עובד שמגיע עם מצגת של שעתיים (חישוב כבד) מתבקש לעבור לחדר הישיבות (ירידה לתור נמוך). שם הוא ימתין עד שהמנהל יתפנה מהחתימות הקצרות, אך כשהמנהל ייכנס לחדר הישיבות, הוא יישב איתו שעה שלמה ברצף מבלי לקטוע את הדיון כל 2 דקות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            נוסחת היעילות של המעבד תחת Round Robin: בהינתן קוואנטה $Q$ וזמן החלפת הקשר $S$:
+                            $$\text{CPU Efficiency} = \frac{Q}{Q + S}$$
+                            אם $Q = 4\text{ms}$ ו-$S = 1\text{ms}$, היעילות היא $4/5 = 80\%$ (20% אובדן!).
+                            אם $Q = 99\text{ms}$ ו-$S = 1\text{ms}$, היעילות היא $99/100 = 99\%$, אך זמן ההמתנה של תהליך שרק הצטרף עלול להגיע ל-$n \times 100\text{ms}$.<br>
+                            <strong>אלגוריתם ה-SPN באמצעות החלקה מעריכית (Exponential Smoothing):</strong>
+                            כדי לחזות את משך החישוב הבא של תהליך במערכות אינטראקטיביות, טננבאום מציג את נוסחת ה-Aging ההיסטורית:
+                            $$E_{i+1} = \alpha \cdot E_i + (1 - \alpha) \cdot T_i$$
+                            כאשר $T_i$ הוא זמן הריצה שנמדד בפועל במופע האחרון, $E_i$ הוא האומדן הקודם, ו-$\alpha$ ($0 \le \alpha \le 1$) הוא מקדם השכחה המשקלל כמה חשיבות ניתנת לעבר לעומת המדידה האחרונה.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            ב-MFQ, תהליך חישובי עלול "לרמות" את המתזמן: הוא יכול לבצע חישוב של 9.9ms (מתוך קוואנטה של 10ms), ואז לבצע קריאת I/O פיקטיבית כדי לא לנצל את מלוא הקוואנטה. בכך הוא נשאר בתור העליון וגוזל את המעבד מתהליכים אינטראקטיביים אמיתיים. מערכות הפעלה מודרניות מונעות זאת ע"י שמירת משתנה מצטבר של סך זמן המעבד שהתהליך צרך ברמה הנוכחית.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: קוואנטה ב-RR דורש איזון בין תקורת החלפות הקשר למהירות תגובה; MFQ מיישם פשרה אופטימלית ע"י תורים מדורגים – קוואנטה קצרה לתהליכי I/O בעדיפות גבוהה, וקוואנטה ארוכה לתהליכי חישוב בעדיפות נמוכה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.5.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.5.4: כיצד מוגדר תנאי היכולת לתזמון (Schedulability) של אירועים מחזוריים במערכות זמן אמת ($\sum \frac{C_i}{P_i} \le 1$), ומה ההבדל בין מערכות זמן אמת קשיח (Hard Real-Time) לזמן אמת רך (Soft Real-Time)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>ההבדל בין זמן אמת קשיח לרך:</strong>
+                            <br>• <strong>זמן אמת קשיח (Hard Real-Time):</strong> עמידה ביעד הזמן (Deadline) היא תנאי מוחלט לקיום המערכת. <strong>איחור של אפילו מילי-שנייה אחת שקול לכישלון מוחלט ולאסון קטסטרופלי</strong> הכרוך באובדן חיי אדם או נזק כספי בלתי הפיך (מערכות נשק, בקרת טיסה במטוסים, כריות אוויר ברכב, קוצבי לב). כל זמני התגובה מובטחים מתמטית מראש, ואין מקום לאיחורים אקראיים.
+                            <br>• <strong>זמן אמת רך (Soft Real-Time):</strong> עמידה ביעדי זמן רצויה ביותר, אך איחור מזדמן אינו גורם לקריסת המערכת אלא רק ל<strong>ירידה זמנית באיכות השירות (QoS)</strong>, כגון קפיצה של פריים בשידור וידאו מקוון (YouTube), גמגום קצר בשיחת שמע (VoIP) או השהיה במשחק מחשב.<br>
+                            <strong>תנאי היכולת לתזמון (Schedulability Condition):</strong>
+                            עבור מערכת שבה מתרחשים $m$ אירועים מחזוריים בלתי תלויים, כאשר אירוע $i$ מתרחש במחזוריות של $P_i$ (Period) וזמן עיבודו במעבד אורך $C_i$ (Computation Time), המערכת <strong>ניתנת לתזמון (Schedulable)</strong> אם ורק אם סך כל ניצולת המעבד הנדרשת אינה חורגת מ-100%:
+                            $$\sum_{i=1}^{m} \frac{C_i}{P_i} \le 1$$
+                            אם הסכום גדול מ-1, המעבד מוצף מתמטית ואין שום אלגוריתם תזמון בעולם שיוכל להבטיח עמידה בכל היעדים.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            נניח שיש לכם 3 מטלות שבועיות: להשקות עציצים פעם ב-2 ימים במשך חצי יום ($0.5/2 = 0.25$), לנקות את הבית פעם ב-4 ימים במשך יום שלם ($1/4 = 0.25$), ולעבוד פעם ביום במשך חצי יום ($0.5/1 = 0.5$). סך כל העומס: $0.25 + 0.25 + 0.5 = 1.0$. אתם מנצלים בדיוק 100% מזמנכם. אם המעסיק ידרוש עוד שעה ביום, סך העומס יעבור את ה-1.0 – לא משנה באיזה יומן תשתמשו ואיך תתזמנו, פיזית המשימות לא יתבצעו בזמן.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            דוגמה חישובית אקדמית לפי טננבאום:
+                            מערכת זמן אמת כוללת 3 אירועים תקופתיים:
+                            <br>• אירוע 1: $P_1 = 100\text{ms}, C_1 = 50\text{ms} \implies \frac{50}{100} = 0.5$
+                            <br>• אירוע 2: $P_2 = 200\text{ms}, C_2 = 30\text{ms} \implies \frac{30}{200} = 0.15$
+                            <br>• אירוע 3: $P_3 = 500\text{ms}, C_3 = 100\text{ms} \implies \frac{100}{500} = 0.2$
+                            <br>בדיקת תנאי הסכום:
+                            $$\sum \frac{C_i}{P_i} = 0.5 + 0.15 + 0.2 = 0.85 \le 1$$
+                            המערכת צורכת 85% מכוח המעבד, ולכן היא ניתנת לתזמון!
+                            אם נרצה להוסיף אירוע רביעי עם מחזור $P_4 = 1000\text{ms}$, משך הריצה המקסימלי $C_4$ שנוכל לאפשר לו מבלי להפר את התנאי הוא:
+                            $$0.85 + \frac{C_4}{1000} \le 1 \implies \frac{C_4}{1000} \le 0.15 \implies C_4 \le 150\text{ms}$$
+                            <strong>אלגוריתמי תזמון קלאסיים בזמן אמת:</strong>
+                            1. <strong>RMS (Rate Monotonic Scheduling):</strong> אלגוריתם סטטי מנשל – תהליך בעל מחזור קצר יותר מקבל עדיפות גבוהה יותר באופן קבוע.
+                            2. <strong>EDF (Earliest Deadline First):</strong> אלגוריתם דינמי מנשל – התהליך שה-Deadline שלו הוא הקרוב ביותר ברגע זה מקבל את המעבד ראשון. הוכח ש-EDF מסוגל להגיע ל-100% ניצולת מעבד בעוד ש-RMS מוגבל תיאורטית לכ-$m(2^{1/m}-1) \approx 69\%$.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת נפוצה היא להניח שתנאי $\sum \frac{C_i}{P_i} \le 1$ מתחשב בתקורת החלפת הקשר. במציאות, כל החלפת תהליך עולה זמן מסוים ($S$). במערכות זמן אמת תדירות במיוחד, עלות ה-Context Switch חייבת להתווסף ל-$C_i$, אחרת המערכת תיראה ניתנת לתזמון "על הנייר" אך תיכשל לחלוטין בפועל.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: איחור בזמן אמת קשיח הוא אסון טוטאלי בעוד שבזמן אמת רך הוא פגיעה באיכות בלבד; מערכת אירועים מחזוריים ניתנת לתזמון אך ורק אם עומס המעבד המצטבר $\sum \frac{C_i}{P_i} \le 1$.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.5.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.5.5: מהו עקרון ההפרדה בין מנגנון (Mechanism) למדיניות (Policy) בתזמון, וכיצד תזמון תהליכונים במרחב המשתמש (User-Level Threads) נבדל מהותית מתזמון תהליכונים במרחב הגרעין (Kernel-Level Threads)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הפרדה בין מנגנון (Mechanism) למדיניות (Policy):</strong>
+                            עיקרון הנדסי מכונן במערכות הפעלה הקובע כי יש להפריד בין "איך מבצעים משהו טכנית" לבין "אילו החלטות מקבלים".
+                            <br>• <strong>המנגנון (Mechanism):</strong> הפעולות הטכניות ברמת החומרה והקרנל – שמירת אוגרים ל-PCB/TCB, עדכון מונה הפקודות, החלפת טבלאות דפים ב-MMU, וקביעת פסיקות טיימר. המנגנון שוכן <strong>תמיד עמוק בתוך הגרעין</strong> כדי להבטיח יציבות ואבטחה.
+                            <br>• <strong>המדיניות (Policy):</strong> ההחלטה הלוגית <strong>איזה</strong> תהליך ייבחר לריצה מתוך התור ולכמה זמן (אלגוריתם התזמון, סדרי עדיפויות, הקצאת קוואנטות).
+                            <br><em>היתרון בארכיטקטורה זו:</em> המדיניות יכולה להיקבע או להשתנות ע"י תהליך מנהל במרחב המשתמש (למשל, תהליך אב הקובע את עדיפויות בניו) באמצעות קריאות מערכת פשוטות, מבלי לגעת בקוד הקרנל ומבלי לפגוע במנגנון החלפת ההקשר הבטוח.<br>
+                            <strong>ההבדל בין תזמון תהליכוני משתמש לתהליכוני גרעין:</strong>
+                            <br>• <strong>בתהליכונים במרחב המשתמש (User-Level Threads):</strong> הקרנל אינו מודע לקיומם. הוא מקצה קוואנטה של זמן (למשל 50ms) ל<strong>תהליך הכולל</strong>. ספריית זמן הריצה (Runtime) בתוך התהליך מיישמת אלגוריתם תזמון פנימי פרטי משלה לחלוקת ה-50ms בין חוטי הביצוע. היתרון: תזמון מותאם אישית מהיר ללא Trap; החיסרון: אם תהליכון אחד חוסם, כל התהליך מושבת.
+                            <br>• <strong>בתהליכונים במרחב הגרעין (Kernel-Level Threads):</strong> הקרנל מתזמן ישירות כל תהליכון עצמאי בטבלת התהליכונים הגלובלית. התזמון יכול לפזר תהליכונים שונים על פני ליבות מעבד שונות במקביל, ותהליכון חסום אינו משפיע על שאר התהליכונים. מנגד, החלפת הקשר כבדה פי כמה כי היא דורשת מעבר מלא לגרעין.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ההבדל בין מנגנון למדיניות דומה לרכב: המנוע, תיבת ההילוכים והבלמים הם <strong>המנגנון</strong> (איך האוטו נוסע ועוצר טכנית). הנהג שאוחז בהגה ומחליט לאן לנסוע, באיזו מהירות ומתי לעצור הוא <strong>המדיניות</strong>. אותו מנגנון רכב יכול לשרת נהג שודים שנוסע בפרעות או נהג זהיר שמסיע תינוק (מדיניות שונה על אותו מנגנון). בנפרד, תהליכוני משתמש דומים לקבוצת ילדים באוטו שמשחקים ביניהם מי יחזיק את הצעצוע בכל 5 דקות, בעוד תהליכוני גרעין הם שוטר תנועה חיצוני שמסדר כל ילד במושב נפרד ומנהל אותם ישירות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            השוואת ערוצי התזמון:
+                            <br>• <strong>חלוקת זמן בתהליכוני משתמש:</strong> התהליך מקבל מנת זמן אחת של 50ms. בתוכה, ספריית ה-Runtime יכולה להריץ את תהליכון 1 ל-10ms, תהליכון 2 ל-20ms, ותהליכון 3 ל-20ms. אם תהליך אחר במערכת מקבל את המעבד, כל התהליך ממתין. הבעיה: אין פסיקות שעון פנימיות בתוך התהליך – אם תהליכון 1 נכנס ללולאת <code>while(1)</code>, שום תהליכון אחר באותו תהליך לא ירוץ לעולם, אלא אם תהליכון 1 יוותר מרצונו (<code>thread_yield</code>).
+                            <br>• <strong>חלוקת זמן בתהליכוני גרעין:</strong> הקרנל רואה 100 תהליכונים במערכת (נניח 10 תהליכים בעלי 10 תהליכונים כל אחד). אם הקרנל משתמש ב-Round Robin פשוט, כל תהליכון מקבל 1/100 מזמן המעבד. דבר זה עלול ליצור עיוות: תהליך שיפתח 90 תהליכונים יקבל 90% מזמן המעבד! כדי למנוע זאת, נדרש שילוב של <strong>Fair-Share Scheduling</strong> ברמת הקרנל.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת ביצועים: מעבר תכוף מדי בין תהליכונים השייכים לתהליכים <em>שונים</em> במרחב הגרעין גורם לתקורה כבדה עקב החלפת מרחב כתובות זיכרון וריקון ה-TLB. לעומת זאת, החלפה בין שני תהליכונים השייכים ל<strong>אותו תהליך</strong> אינה דורשת החלפת טבלת דפים (CR3 נשאר ללא שינוי), ולכן היא זולה משמעותית מהחלפת תהליכים מלאה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: הפרדת מנגנון (ביצוע בקרנל) ממדיניות (קבלת החלטות) מספקת גמישות מרבית; תהליכוני משתמש מתחלקים בקוואנטה יחידה של התהליך בעלות זעומה, בעוד שתהליכוני גרעין מתחרים עצמאית על המעבד בליווי תקורת קרנל מלאה.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה (מבחן עצמי):</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 2.5.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="scheduling" data-qid="2.5.1" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.5.1:</span>
+                        אלגוריתם תזמון SJF (Shortest Job First) מוכח מתמטית כאלגוריתם המניב את זמן ההמתנה הממוצע הקצר ביותר. מהו החיסרון המעשי המרכזי המונע את יישומו הישיר במערכות הפעלה אינטראקטיביות מודרניות?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 1, 0)">
+                            א. הוא גורם לכמות עצומה של החלפות הקשר שמעמיסה על המעבד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 1, 1)">
+                            ב. הוא אינו תומך במעבדים מרובי ליבות ומחייב מעבד יחיד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 1, 2)">
+                            ג. לא ניתן לדעת מראש מה יהיה משך זמן הריצה המדויק של תהליך לפני שהוא רץ.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 1, 3)">
+                            ד. הוא מפר את עקרונות הזיכרון הווירטואלי ומוביל ל-Page Faults רבים.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה: כדי להפעיל את SJF, המתזמן חייב לדעת בדיוק מראש כמה זמן חישוב כל תהליך דורש. במערכות אינטראקטיביות, תהליכים מופעלים ע"י משתמשים ואירועי רשת בלתי צפויים, ואין שום דרך לחזות מראש את זמן הריצה. במערכות אינטראקטיביות משתמשים לכל היותר בחיזוי היוריסטי מעריכי (SPN / Aging).<br>• א' שגויה: SJF הוא אלגוריתם בלתי מנשל ולכן כמות החלפות ההקשר בו היא המינימלית ביותר.<br>• ב' ו-ד' שגויות: אין לו קשר למספר ליבות או למנגנון הזיכרון הווירטואלי.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.5.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="scheduling" data-qid="2.5.2" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.5.2:</span>
+                        במערכת הפעלה מופעל אלגוריתם תזמון Round Robin עם קוואנטה של $10\text{ms}$. משך הזמן הנדרש למערכת ההפעלה לבצע החלפת הקשר (Context Switch) הוא $1\text{ms}$. איזה אחוז מזמן המעבד מבוזבז על תקורת החלפות ההקשר (Overhead) בהנחה שכל התהליכים מנצלים את מלוא הקוואנטה שלהם?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 2, 0)">
+                            א. כ-9.09%
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 2, 1)">
+                            ב. 10.00%
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 2, 2)">
+                            ג. 1.00%
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 2, 3)">
+                            ד. 50.00%
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה: כל מחזור ביצוע של תהליך מורכב מ-$10\text{ms}$ של עבודה מועילה בתוספת $1\text{ms}$ של החלפת הקשר, כלומר סך כל מחזור הזמן הוא $10 + 1 = 11\text{ms}$. אחוז הזמן המבוזבז על תקורה הוא: $\text{Overhead} = \frac{1\text{ms}}{10\text{ms} + 1\text{ms}} = \frac{1}{11} \approx 0.0909 = 9.09\%$ (ניצולת המעבד המועילה היא $10/11 \approx 90.91\%$).<br>• ב' שגויה: חלוקה של 1 ב-10 מתעלמת מכך שזמן המחזור הכולל הוא 11ms.<br>• ג' ו-ד' שגויות: אינן תואמות את היחס החישובי.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.5.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="scheduling" data-qid="2.5.3" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.5.3:</span>
+                        מהי מטרתו של מנגנון ה"הזדקנות" (Aging) באלגוריתם תזמון מבוסס עדיפויות (Priority Scheduling)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 3, 0)">
+                            א. להפסיק ולהשמיד תהליכים שרצים זמן רב מדי ללא סיום.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 3, 1)">
+                            ב. להעלות בהדרגה את עדיפותו של תהליך ככל שהוא ממתין זמן רב יותר בתור, על מנת למנוע הרעבה (Starvation).
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 3, 2)">
+                            ג. לנקות את הזיכרון המטמון (Cache) של המעבד כאשר תהליך ישן מתחלף.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 3, 3)">
+                            ד. להמיר תהליכים ישנים לתהליכונים קלים במרחב המשתמש.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה: בתזמון עדיפויות קשיח, תהליך בעדיפות נמוכה עלול לסבול מהרעבה (Starvation) ולעולם לא לקבל את המעבד אם מגיעים ברצף תהליכים בעלי עדיפות גבוהה יותר. מנגנון ההזדקנות (Aging) מגדיל דינמית את ערך העדיפות של תהליך ככל שהוא צובר זמן המתנה בתור ה-Ready, עד שבסופו של דבר עדיפותו עוקפת את התהליכים האחרים והוא מקבל את המעבד.<br>• א' שגויה: השמדת תהליכים מתבצעת ע"י Watchdog או הגבלת משאבים.<br>• ג' ו-ד' שגויות: אינן קשורות כלל למנגנון התזמון.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.5.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="scheduling" data-qid="2.5.4" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.5.4:</span>
+                        במערכת זמן אמת בזמן ריצה ישנם שני אירועים מחזוריים: אירוע 1 מתרחש כל $50\text{ms}$ ודורש $10\text{ms}$ זמן מעבד; אירוע 2 מתרחש כל $100\text{ms}$ ודורש $30\text{ms}$ זמן מעבד. מהו זמן הריצה המקסימלי $C_3$ שנוכל להקצות לאירוע שלישי המתפתח במחזוריות של $200\text{ms}$ כך שהמערכת עדיין תהיה ניתנת לתזמון (Schedulable)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 4, 0)">
+                            א. 20ms
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 4, 1)">
+                            ב. 50ms
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 4, 2)">
+                            ג. 80ms
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 4, 3)">
+                            ד. 100ms
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה: לפי תנאי היכולת לתזמון של אירועים מחזוריים: $\sum_{i=1}^{m} \frac{C_i}{P_i} \le 1$. נחשב את עומס שני האירועים הראשונים: $\frac{C_1}{P_1} = \frac{10}{50} = 0.2, \quad \frac{C_2}{P_2} = \frac{30}{100} = 0.3$. סך העומס הקיים: $0.2 + 0.3 = 0.5$. כעת נדרוש עבור האירוע השלישי ($P_3 = 200\text{ms}$): $0.5 + \frac{C_3}{200} \le 1 \implies \frac{C_3}{200} \le 0.5 \implies C_3 \le 0.5 \times 200 = 100\text{ms}$. לפיכך, זמן הריצה המקסימלי הוא $100\text{ms}$.<br>• א', ב' ו-ג' מייצגות זמנים קצרים יותר שאינם המקסימום המותר.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.5.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="scheduling" data-qid="2.5.5" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.5.5:</span>
+                        באלגוריתם תורים מרובי רמות עם משוב (Multilevel Feedback Queues - MFQ), כיצד המערכת מסווגת ומטפלת בתהליך עתיר חישוב (CPU-Bound)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 5, 0)">
+                            א. הוא מושמד מיד כדי שלא לפגוע בזמן התגובה של שאר המשתמשים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 5, 1)">
+                            ב. הוא נשאר תמיד בתור העליון ומקבל קוואנטות קצרות במיוחד ללא הרף.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 5, 2)">
+                            ג. הוא מנצל את מלוא מנת הזמן שלו ולכן מורד לתור בעדיפות נמוכה יותר, אך שם הוא זוכה לקוואנטת זמן ארוכה פי כמה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.5, 5, 3)">
+                            ד. הוא מועבר ישירות למערכת ההפעלה כהתקן חומרה עצמאי.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה: הרעיון המרכזי ב-MFQ הוא להבחין אוטומטית בין תהליכי I/O לתהליכי חישוב ללא ידע מוקדם. תהליך חישובי מנצל את כל הקוואנטה שלו ונחתך ע"י פסיקת שעון, ולכן המערכת מזהה שאינו אינטראקטיבי ומורידה אותו לתור נמוך יותר. בתור הנמוך הוא מקבל קוואנטה גדולה בהרבה (פי 2 או 4), מה שמפחית את מספר החלפות ההקשר ומאפשר לו לחשב ביעילות.<br>• א' שגויה: התהליך אינו מושמד אלא מתקדם לחישוב.<br>• ב' שגויה: התור העליון שמור לתהליכים שמשחררים מעבד מהר (I/O).<br>• ד' שגויה: תהליך חישובי נשאר תהליך תוכנה רגיל.
+                    </div>
+                </div>
+
+            </div>
+        </div>

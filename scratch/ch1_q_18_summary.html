@@ -1,0 +1,435 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 1.8: os-glossary-concepts (מילון מושגים, סיכום ושאלות מדריך)-->
+        <!-- ===================================================================== -->
+        <div id="questions-os-glossary-concepts" data-title="שאלות מנחות ותרגול - 📚 1.8 סיכום הפרק, מושגי יסוד ושאלות המדריך">
+            
+            <!-- 1. שאלות פתוחות אינטגרטיביות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות אינטגרטיביות להעמקה:</strong> שאלות סיכום המחברות בין כלל חלקי פרק 1. לחצו על כל שאלה כדי לחשוף את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה.
+                </div>
+
+                <!-- שאלה 1.8.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.8.1: כיצד משתלבים יחד שלושת מנגנוני היסוד – ריבוי תוכניות (Multiprogramming), שיתוף זמן (Time-Sharing) ומעבר מצב מבוקר (Trap) – כדי לייצר אשליה של מחשב אישי ייעודי לכל משתמש?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>ריבוי תוכניות (Multiprogramming):</strong> שומר מספר תהליכים בו-זמנית בזיכרון הראשי (RAM). כאשר תהליך אחד ממתין לפעולת קלט/פלט אטית, המעבד אינו מתבטל אלא עובר להריץ תהליך אחר, ובכך ממקסם את ניצולת החומרה.
+                            <br>2. <strong>שיתוף זמן (Time-Sharing):</strong> מקצה לכל תהליך מנת זמן קצובה (Quantum של עשרות מילי-שניות) בעזרת פסיקת שעון מחזורית (Timer Interrupt). המעבר המהיר והתכוף בין התהליכים יוצר עבור כל משתמש אשליה שמעבד המחשב מוקדש אך ורק לו ומגיב לפעולותיו בזמן אמת.
+                            <br>3. <strong>מעבר מצב מבוקר (Trap &amp; Dual-Mode):</strong> מבטיח בידוד והגנה הרמטית. תוכניות המשתמש רצות ב-User Mode ונמנעת מהן גישה ישירה לחומרה או לזיכרון של תוכניות אחרות. כל פנייה למשאב משותף מחייבת פקודת <code>TRAP</code> המעבירה שליטה לגרעין (Kernel Mode), שמאמת הרשאות ומבצע את הבקשה בצורה שוויונית ומאובטחת.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            שילוב זה דומה למאמן שחמט מקצועי שמשחק בו-זמנית מול 30 שחקנים (שיתוף זמן). הוא עובר מלוח ללוח, מבצע מסע בכל לוח תוך שניות בודדות, ועד שהוא מקיף את האולם וחוזר לשחקן הראשון – השחקן בקושי הספיק לחשוב (תגובה מיידית). חוקי השחמט והשופט הנוכח (הקרנל וה-TRAP) מבטיחים שאף שחקן לא יזיז כלים בלוח של שכנו או יפיל את השולחן.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>סינרגיה הנדסית:</strong> ללא טיימר חומרה, שיתוף זמן אינו אפשרי (תהליך בלולאה אינסופית היה תוקע את המערכת). ללא Dual-Mode, תהליך היה יכול לבטל את הטיימר. ללא ריבוי תוכניות, ניצולת המעבד הייתה צונחת לאחוזים בודדים.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            שיתוף זמן הוא הרחבה של ריבוי תוכניות המיועדת לאינטראקטיביות של משתמשים (User Response Time), בעוד שריבוי תוכניות קלאסי במערכות אצווה (Batch) התמקד רק בניצולת מקסימלית של המעבד (CPU Utilization).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ריבוי תוכניות מנצל את זמני ההמתנה; שיתוף זמן מספק אינטראקטיביות במנות זמן קצובות; ומנגנון ה-TRAP שומר על הגנה וסדר ממלכתי.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.8.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.8.2: מדוע עקרון ה-Dual Mode (User/Kernel Mode) הנתמך בחומרה הוא תנאי הכרחי בלעדיו לא ניתן לממש זיכרון וירטואלי, הגנת קבצים או בידוד תהליכים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>הכרח בתמיכת חומרה (Mode Bit):</strong> כל תוכנת מערכת הפעלה, מתוחכמת ככל שתהיה, היא בסופו של דבר רצף של פקודות מכונה בזיכרון. ללא מנגנון חומרה במעבד (סיבית <code>Mode Bit</code>) שמבדיל פיזית בין מצב משתמש (1) למצב גרעין (0), לא קיימת שום דרך לחסום תוכנית משתמש מלהריץ כל פקודה שהיא.
+                            <br>2. <strong>קריסת מנגנוני ההגנה בהיעדר Dual Mode:</strong>
+                            <br>• <em>זיכרון וירטואלי:</em> נשען על טבלאות דפים ורגיסטרים של ה-MMU (כמו CR3 ב-x86). ללא Dual Mode, תהליך משתמש יכול לטעון לרגיסטר ה-MMU כתובת המצביעה לכל מקום פיזי בזיכרון ולקרוא סיסמאות של תהליכים אחרים.
+                            <br>• <em>הגנת קבצים:</em> נאכפת על ידי כך שפקודות קריאה וכתיבה לבקר הדיסק (הוראות קלט/פלט) הן מיוחסות. ללא Dual Mode, כל תהליך יכול לשלוח פקודה ישירה לראש הקריאה של הדיסק ולדרוס את כל הקבצים.
+                            <br>• <em>בידוד תהליכים:</em> מחייב שרק מערכת ההפעלה תוכל לשנות את ה-Timer Interrupt. ללא Dual Mode, תוכנית יכולה לכבות את הפסיקות (פקודת <code>CLI</code>) ולתפוס את המחשב לעד.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על חוק מדינה האוסר לגנוב, אך במדינה אין שוטרים, אין מנעולים ואין דלתות (חומרה ללא מצב מיוחס). כל אדם יכול להיכנס לכל בית. ה-Dual Mode הוא המנעול הפיזי של הדלת: במצב משתמש הידית נעולה הרמטית; רק כשנכנסים דרך השער הראשי עם המפתח של השוטר (Kernel Mode) הדלת נפתחת.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הוראות מיוחסות (Privileged Instructions):</strong> הוראות שביצוען מותר רק כאשר <code>Mode Bit = 0</code>. ניסיון לבצען ב-User Mode מייצר חריגת הגנה חומרתית מיידית (General Protection Fault).</li>
+                                <li><strong>עדות היסטורית:</strong> מערכות הפעלה ישנות כמו MS-DOS רצו על מעבדי Intel 8086 שחסרו תמיכה ב-Dual Mode; כתוצאה מכך כל תוכנית יכלה לדרוס את מערכת ההפעלה בקלות והגנה הייתה בלתי אפשרית.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            לא ניתן לממש הגנה הרמטית בתוכנה בלבד (Pure Software Protection) ללא תמיכת חומרה של מעבד התומך בשני מצבים לפחות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ללא אכיפה חומרתית של Mode Bit, תוכניות משתמש יכולות לעקוף כל הגנת תוכנה, לשנות את ה-MMU, לקרוא ישירות מהדיסק ולבטל את בידוד התהליכים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.8.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.8.3: כיצד נבדלים חמשת המבנים של מערכת הפעלה (מונוליתית, מרובדת, מיקרו-קרנל, מכונות מדומות, אקסו-קרנל) מבחינת מיקום מנהלי ההתקנים, תקורת ביצועים ושרידות בפני קריסות?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            השוואה מערכתית בחמישה פרמטרים מרכזיים:
+                            <br>1. <strong>מונוליתית (Linux / Windows Kernel):</strong> הדרייברים רצים ב-Kernel Mode (Ring 0). תקורת תקשורת מינימלית (קריאות פונקציה מהירות בזיכרון, ביצועים מקסימליים). שרידות קריסות נמוכה מאוד (באג בדרייבר מפיל את המחשב כולו).
+                            <br>2. <strong>מרובדת (THE / Multics):</strong> דרייברים ממוקמים בשכבות ייעודיות בתוך הגרעין. תקורת ביצועים בינונית עקב מעבר שרשרת שכבות. שרידות בינונית (הקוד מאורגן יותר אך עדיין רץ במרחב הליבה).
+                            <br>3. <strong>מיקרו-קרנל (MINIX 3 / QNX):</strong> דרייברים רצים כתהליכי שרת נפרדים במרחב משתמש (Ring 3). תקורת תקשורת גבוהה ביותר עקב ריבוי מעברי <code>TRAP</code>, החלפות הקשר ו-IPC. שרידות פנומנלית (Fault Tolerance מושלם – דרייבר שקורס מאותחל מחדש תוך מילי-שניות).
+                            <br>4. <strong>מכונות מדומות (VM/370 / VMware Hypervisor):</strong> דרייברים של מערכת האורח רצים בתוך ה-Guest OS ומתווכים על ידי ה-Hypervisor לחומרה. תקורת הדמיה בינונית. בידוד ושרידות מעולים בין מערכות אורחות שונות.
+                            <br>5. <strong>אקסו-קרנל (Exokernel / Nemesis):</strong> אין דרייברים מסורתיים בגרעין; האקסו-קרנל רק מקצה משאבי חומרה גולמיים ומגן עליהם, וכל הניהול מבוצע ב-<strong>Library OS</strong> של היישום במרחב משתמש. תקורת ביצועים אפסית (קרוב לביצועי חומרה ישירים). שרידות טובה עקב בידוד משאבים.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            מדובר בספקטרום הנדסי קלאסי: בצד אחד מהירות שיא תמורת סיכון (מונולית), באמצע בידוד ובטיחות תמורת תקורת תיווך (מיקרו-קרנל), ובצד השני גמישות מותאמת אישית של חומרה גולמית (אקסו-קרנל).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>פרדוקס המערכות המודרניות:</strong> למרות היתרונות הברורים של מיקרו-קרנל בשרידות, רוב השרתים והמחשבים האישיים בעולם רצים על גרעינים מונוליתיים (Linux) בגלל הדרישה הבלתי מתפשרת לביצועי I/O ורשת מקסימליים.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מערכות זמן-אמת קריטיות (כמו רכבים אוטונומיים, מכשור רפואי ומערכות תעופה) בוחרות כמעט תמיד במיקרו-קרנל (כגון QNX או seL4) משום ששם בטיחות חיי אדם עולה על שיקולי ביצועים טהורים.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מונוליתי מציג ביצועים מקסימליים ושרידות נמוכה; מיקרו-קרנל מציג שרידות מקסימלית ותקורה גבוהה; אקסו-קרנל מציע חומרה גולמית ב-Library OS.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.8.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.8.4: מהם תפקידיו העיקריים של בלוק בקרת התהליך (PCB), ומהו המידע המינימלי שחייב להישמר בו בעת החלפת הקשר (Context Switch)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>תפקיד ה-PCB (Process Control Block):</strong> מבנה הנתונים המרכזי בליבת מערכת ההפעלה המייצג תהליך חי. ה-PCB משמש כ"תעודת הזהות" ודוח המצב המלא של התהליך עבור מערכת ההפעלה.
+                            <br>2. <strong>מידע חיוני הנשמר ב-PCB:</strong>
+                            <br>• <em>מצב המעבד של התהליך (CPU State):</em> תכולת כל אוגרי המעבד הכלליים, מונה הפקודות (PC - Program Counter), מצביע המחסנית (SP - Stack Pointer), ואוגר הדגלים (Flags / PSW).
+                            <br>• <em>מצב התהליך (Process State):</em> האם התהליך מוכן לריצה (Ready), רץ (Running), או ממתין לחומרה (Blocked).
+                            <br>• <em>מידע ניהול זיכרון:</em> מצביעים לטבלאות הדפים (Page Tables) או אוגרי בסיס וגבול (Base and Limit Registers).
+                            <br>• <em>מידע תזמון והרשאות:</em> עדיפות התהליך (Priority), זמן מעבד שנצרך, ומזהה התהליך (PID).
+                            <br>• <em>משאבים וניהול קלט/פלט:</em> טבלת מתארי הקבצים הפתוחים (File Descriptors), מדריכים נוכחיים והתקני I/O מוקצים.
+                            <br>3. <strong>המידע המינימלי הנשמר בעת החלפת הקשר:</strong> תכולת כל אוגרי המעבד (כולל PC, SP ודגלים) ומצב התהליך. שמירה זו הכרחית כדי שכאשר התהליך יקבל שוב את המעבד בעתיד, הוא יוכל להמשיך בריצתו בדיוק מהנקודה שבה הופסק, מבלי שיבחין כלל בהפסקה.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ה-PCB הוא כמו סימניה חכמה בספר עב-כרס שבה רשום לא רק באיזה עמוד ושורה עצרתם (PC), אלא גם מה החזקתם ביד (אוגרים), על איזה כיסא ישבתם (זיכרון), ואיזה כוס קפה פתוחה על השולחן שלכם (קבצים פתוחים).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>מיקום ה-PCB:</strong> ה-PCB מאוחסן כולו בזיכרון המוגן של הגרעין (Kernel Memory). תוכניות משתמש אינן יכולות לקרוא או לשנות אותו ישירות.</li>
+                                <li><strong>טבלת התהליכים (Process Table):</strong> מערכת ההפעלה מחזיקה מערך או רשימה מקושרת של כל ה-PCBs של כל התהליכים במערכת.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            החלפת הקשר אינה מבצעת שום עבודה מועילה עבור תוכניות המשתמש (Pure Overhead). ככל שה-PCB והקשר התהליך מורכבים יותר, כך זמן הבזבוז על מיתוג מעבד גדל.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ה-PCB הוא ייצוג התהליך בליבה; שמירת אוגרי המעבד, ה-PC והמחסנית בתוכו מאפשרת חידוש ריצה שקוף בהחלפת הקשר.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.8.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.8.5: מהו ההבדל המהותי בין חריגה (Trap / Exception) הנובעת מתוכנה לבין פסיקת חומרה (Hardware Interrupt) הנובעת מבקר חיצוני, וכיצד מערכת ההפעלה מטפלת בכל אחת מהן?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>חריגה / מלכודת תוכנה (Trap / Software Interrupt / Exception):</strong>
+                            <br>• <em>סוג האירוע וסנכרון:</em> אירוע <strong>סינכרוני (Synchronous)</strong> הנובע ישירות מביצוע פקודת מכונה על ידי המעבד.
+                            <br>• <em>גורמים:</em> בקשה רצונית של התוכנית לשירות מערכת (קריאת <code>TRAP / SYSCALL</code>), או שגיאת ביצוע חמורה של התוכנית (חילוק באפס, גישה לכתובת לא חוקית בזיכרון, פקודה בלתי חוקית).
+                            <br>• <em>שחזור ודטרמיניזם:</em> אם נריץ את אותה התוכנית עם אותם נתונים בדיוק, החריגה תתרחש תמיד באותו מיקום ובאותה הוראת מכונה בדיוק.
+                            <br>2. <strong>פסיקת חומרה (Hardware Interrupt):</strong>
+                            <br>• <em>סוג האירוע וסנכרון:</em> אירוע <strong>אסינכרוני (Asynchronous)</strong> הנוצר על ידי רכיב חומרה פיזי חיצוני למעבד (כגון מקלדת, כרטיס רשת, בקר דיסק או טיימר).
+                            <br>• <em>גורמים:</em> סיום קריאת סקטור מהדיסק, הגעת חבילת מידע ברשת, לחיצה על מקש, או פקיעת זמן של טיימר המערכת.
+                            <br>• <em>אי-תלות בתוכנית:</em> הפסיקה יכולה להתרחש בכל רגע שרירותי, בלי שום קשר לפקודה שהמעבד מבצע באותו שבריר שנייה.
+                            <br>3. <strong>אופן הטיפול בליבה:</strong>
+                            <br>בשני המקרים המעבד שומר את מצב הריצה וקופץ לשגרה ייעודית דרך טבלת וקטורי הפסיקות (IVT). אך בעוד שטיפול ב-TRAP מחזיר תוצאה או קוד שגיאה לתהליך הנוכחי שיזם אותה, פסיקת חומרה משרתת את ההתקן החיצוני, מעירה לעתים תהליך חסום (למשל תהליך שחיכה לדיסק), ויכולה לגרום למתזמן להחליף תהליך מיד בסיומה.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חריגת תוכנה (Trap) היא כמו נהג ברכב שלוחץ בעצמו על דוושת הבלם (קריאת מערכת) או נתקל במחסום בטון כי לא פנה בעיקול (חילוק באפס) – הפעולה נובעת ישירות מנהיגתו. פסיקת חומרה היא כמו ברק שפוגע בעץ לצד הכביש או שיחת טלפון שנכנסת לנייד – אירוע חיצוני לחלוטין שמתרחש בלי קשר לפעולה הספציפית שהנהג עשה באותה שנייה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>חסימת פסיקות (Interrupt Masking):</strong> המעבד יכול לחסום פסיקות חומרה חיצוניות (פקודת <code>CLI</code>) בעת ביצוע קטעים קריטיים בגרעין. לעומת זאת, חריגות תוכנה (כמו Page Fault או חילוק באפס) אינן ניתנות לחסימה ומחייבות טיפול מיידי.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            רבים טועים לחשוב ש-Trap היא פסיקת חומרה כי היא משתמשת בטבלת ה-IVT. זכרו: Trap היא אירוע פנימי סינכרוני מתוך המעבד; Interrupt היא אות חשמלי מקו חיצוני.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: Trap הוא סינכרוני הנובע מפקודת המעבד עצמה; פסיקת חומרה היא אסינכרונית ומגיעה מבקר חיצוני בכל רגע נתון.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה מסכמות:</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 1.8.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-glossary-concepts" data-qid="1.8.1" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.8.1:</span>
+                        מהו ההבדל המרכזי בין פסיקת חומרה (Hardware Interrupt) לבין חריגת תוכנה (Trap / Software Exception)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 1, 0)">
+                            א. פסיקת חומרה מבוצעת ב-User Mode, בעוד ש-Trap מבוצעת ב-Kernel Mode.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 1, 1)">
+                            ב. פסיקת חומרה היא אירוע אסינכרוני שנוצר על ידי התקן חיצוני בזמן שרירותי, בעוד ש-Trap הוא אירוע סינכרוני הנגרם ישירות מביצוע פקודת מכונה בתוכנית הנוכחית.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 1, 2)">
+                            ג. פסיקת חומרה אינה שומרת את מונה הפקודות (PC), בעוד ש-Trap שומרת אותו ב-RAM.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 1, 3)">
+                            ד. אין שום הבדל; שני המונחים מגדירים בדיוק את אותה פקודת מעבד.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה. פסיקת חומרה מגיעה מבקרים פיזיים (כרטיס רשת, מקלדת, טיימר) ללא תלות בפקודה שהמעבד מבצע באותו רגע (אסינכרונית). לעומת זאת, Trap (או Exception) נגרמת ישירות כתוצאה מביצוע פקודה בתוכנית (קריאת מערכת, חילוק באפס, גישה לזיכרון בלתי חוקי) ולכן היא סינכרונית ודטרמיניסטית.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 1.8.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-glossary-concepts" data-qid="1.8.2" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.8.2:</span>
+                        מהו רכיב החומרה ההכרחי המאפשר למערכת הפעלה לממש שיתוף זמן (Time-Sharing) ולמנוע מתהליך בודד לתפוס את המעבד לצמיתות בלולאה אינסופית?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 2, 0)">
+                            א. בקר זיכרון RAM מסוג DDR5 בעל מהירות גבוהה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 2, 1)">
+                            ב. כונן דיסק קשיח בעל תמיכה ב-DMA.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 2, 2)">
+                            ג. קוצב זמן חומרתי (Timer) המייצר פסיקות שעון מחזוריות שאינן ניתנות לביטול על ידי תוכניות במצב משתמש.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 2, 3)">
+                            ד. אוגר מונה הפקודות (Program Counter).
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה. ללא קוצב זמן חומרתי (Timer) שיוצר פסיקה תקופתית המעבירה שליטה חזרה לגרעין, תהליך שנכנס ללולאה אינסופית לעולם לא היה משחרר את המעבד מרצונו. פסיקת השעון מבטיחה שמערכת ההפעלה תוכל להפקיע את המעבד (Preemption) ולהעבירו לתהליך הבא.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 1.8.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-glossary-concepts" data-qid="1.8.3" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.8.3:</span>
+                        איזה מבנה ארכיטקטוני של מערכת הפעלה מספק את שרידות התקלות (Fault Tolerance) המרבית בעת קריסת מנהל התקן, במחיר של תקורת ביצועים עקב מעברי הקשר ו-IPC?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 3, 0)">
+                            א. מערכת מיקרו-קרנל / לקוח-שרת (Microkernel).
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 3, 1)">
+                            ב. מערכת מונוליתית (Monolithic Kernel).
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 3, 2)">
+                            ג. מערכת מרובדת פשוטה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 3, 3)">
+                            ד. מערכת עיבוד באצווה (Batch Processing).
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה. במיקרו-קרנל, מנהלי ההתקנים (דרייברים) רצים כתהליכי משתמש מבודדים ב-Ring 3. קריסת דרייבר אינה מפילה את הגרעין וניתן לאתחלו מחדש מיידית. החיסרון הוא פגיעה בביצועים עקב תקורת החלפות הקשר והעברת הודעות IPC.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 1.8.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-glossary-concepts" data-qid="1.8.4" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.8.4:</span>
+                        איזה מהמאפיינים הבאים נכון ביחס למבנה מרחב הכתובות של תהליך בזיכרון הראשי?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 4, 0)">
+                            א. המחסנית (Stack) והערימה (Heap) חולקות את אותו מרחב ושתיהן גדלות תמיד כלפי מעלה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 4, 1)">
+                            ב. מקטע הטקסט (קוד התוכנית) מיועד לכתיבה חופשית בזמן ריצה כדי לאפשר שינוי קוד דינמי.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 4, 2)">
+                            ג. משתנים גלובליים מאותחלים נשמרים במחסנית לצד המשתנים המקומיים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 4, 3)">
+                            ד. מקטע הטקסט מוגן כקריאה-בלבד (Read-Only) וניתן לשיתוף, הערימה גדלה כלפי מעלה בהקצאות דינמיות, והמחסנית גדלה בדרך כלל כלפי מטה בקריאות לפונקציות.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה. מרחב הכתובות מאורגן כך שמקטע הקוד (Text) מוגן מפני כתיבה (Read-Only) כדי למנוע השחתת קוד ומאפשר שיתוף בין מופעים שונים של אותה תוכנית. הערימה (Heap) משמשת להקצאות דינמיות כמו `malloc` וגדלה כלפי מעלה, בעוד שהמחסנית (Stack) מכילה מסגרות פונקציות ומשתנים מקומיים וגדלה כלפי מטה.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 1.8.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-glossary-concepts" data-qid="1.8.5" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.8.5:</span>
+                        מתכנת טוען כי פונקציית ספריית ה-C הסטנדרטית <code>strlen()</code> פועלת במצב Kernel Mode (מצב גרעין) כיוון שהיא בודקת תווים בזיכרון ה-RAM הפיזי. האם הטענה נכונה ומדוע?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 5, 0)">
+                            א. הטענה נכונה, כיוון שכל פונקציה הניגשת לזיכרון מחייבת שימוש בפקודת TRAP.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 5, 1)">
+                            ב. הטענה מופרכת: <code>strlen()</code> רצה במלואה ב-User Mode, כיוון שהיא ניגשת אך ורק למרחב הכתובות של התהליך עצמו ואינה מבצעת שום פעולה מיוחסת הדורשת פנייה לגרעין.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 5, 2)">
+                            ג. הטענה נכונה רק אם המחרוזת הנבדקת ארוכה מ-4096 בתים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.8, 5, 3)">
+                            ד. הטענה מופרכת, כיוון ש-<code>strlen()</code> מבוצעת על ידי בקר ה-DMA ללא מעורבות המעבד.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה. תוכנית במצב User Mode יכולה לגשת באופן חופשי לכל כתובת במרחב הכתובות הוירטואלי המוקצה לה. פונקציית הספרייה <code>strlen()</code> בסך הכל רצה בלולאה וסופרת תווים במערך השייך לתהליך. אין בה שום פקודה מיוחסת, אין צורך ב-TRAP, והיא רצה ב-User Mode במהירות ננו-שניות.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. שאלות מתוך מדריך הלמידה (4 שאלות רשמיות מעמ' 22) -->
+            <div class="guide-questions-list mt-8 space-y-4">
+                <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl mb-4 text-xs md:text-sm text-purple-900 leading-relaxed">
+                    <strong>📖 שאלות חזרה וסיכום מתוך מדריך הלמידה (עמ' 22):</strong> שאלות רשמיות המופיעות בסיום פרק 1, בליווי תשובות ישירות, אסטרטגיות פתרון ודגשים אקדמיים.
+                </div>
+
+                <!-- מדריך שאלה 1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1 (מדריך): האם תפקידה של מערכת ההפעלה כמכונה מורחבת מקבל ביטוי במערכת VM/370?</span>
+                        <span class="text-purple-600 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>כן, אך באופן עקיף דרך המערכות האורחות ולא על ידי שכבת ה-CP עצמה.</strong>
+                            <br>1. <strong>שכבת ה-CP (Control Program / Hypervisor):</strong> <strong>אינה</strong> מספקת בעצמה את הפונקציות של "מכונה מורחבת". היא אינה מספקת אבסטרקציות נוחות למתכנת (כגון מערכת קבצים או שירותי הדפסה מופשטים), אלא משחזרת העתק מדויק ועירום של חומרת ה-System/370 הגולמית עבור כל מכונה מדומה.
+                            <br>2. <strong>מערכת ההפעלה האורחת (כגון CMS):</strong> המכונה המדומה שנוצרה על ידי ה-CP מאפשרת להריץ בתוכה מערכת הפעלה אורחת חד-משתמשית כמו <strong>CMS (Conversational Monitor System)</strong>. מערכת האורח CMS היא זו שמספקת למשתמש ולמתכנת בפועל את אבסטרקציות ה"מכונה המורחבת" – קריאות מערכת, ניהול קבצים נוח וממשק פקודות מופשט.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            שכבת ה-CP בונה עמדת מחשב חומרתית שלמה וריקה (כולל לוח אם, כוננים וספק כוח וירטואליים). רק לאחר שמתקינים בתוך המחשב הריק הזה את מערכת ההפעלה CMS, מקבלים שולחן עבודה ומערכת קבצים ידידותית (מכונה מורחבת).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-purple-100/60 text-purple-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: שכבת הווירטואליזציה (CP) משכפלת חומרה גולמית בלבד; המכונה המורחבת מסופקת על ידי מערכת ההפעלה האורחת (CMS) הרצה מעליה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- מדריך שאלה 2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2 (מדריך): האם ניתן להשיג הגנה על משאבי מערכת ההפעלה ללא תמיכה של מעבד בשני מצבים לפחות?</span>
+                        <span class="text-purple-600 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>לא, לא ניתן להשיג הגנה הרמטית ללא תמיכת חומרה בשני מצבים לפחות.</strong>
+                            <br>כדי להגן על משאבי המחשב (הזיכרון הראשי, התקני הקלט/פלט, טבלאות הפסיקות והשעון), תוכניות משתמש רגילות חייבות להיות חסומות מביצוע <em>הוראות מיוחסות (Privileged Instructions)</em>. חסימה זו מחייבת תמיכה פיזית של חומרת המעבד:
+                            <br>1. מעבד בעל סיבית מצב (Mode Bit) המבדילה בין מצב משתמש (User Mode) למצב גרעין (Kernel Mode).
+                            <br>2. אכיפה חומרתית מוחלטת: כאשר תוכנית במצב משתמש מנסה להריץ הוראה מיוחסת (כגון גישה לבקר דיסק, שינוי טבלאות דפים ב-MMU או כיבוי פסיקות), המעבד מסרב לבצעה ומייצר מיד פסיקת חריגה (Trap / Exception) המעבירה שליטה למערכת ההפעלה.
+                            <br>ללא תמיכה כזו בחומרה, כל תוכנית יכולה לשכתב את מערכת ההפעלה, לגשת לזיכרון של תוכניות אחרות, ולבטל כל מנגנון הגנה תוכנתי.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            בדיוק כפי שלא ניתן לבנות כספת מאובטחת אם הדלת עשויה מנייר: אם אין מנעול חומרה שמונע פתיחה, כל שודד יכול לעבור דרך הדלת ללא קשר לשלטים המזהירים מפני גניבה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-purple-100/60 text-purple-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: הגנה מחייבת אכיפה פיזית בחומרה; ללא תמיכת המעבד במצב מיוחס ובלימת פקודות מיוחסות, לא ניתן למנוע השתלטות של תוכניות משתמש.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- מדריך שאלה 3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3 (מדריך): אמתו או הפריכו: קריאות מערכת אינן גורמות למעבר למצב מיוחס (Kernel Mode)?</span>
+                        <span class="text-purple-600 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הטענה מופרכת לחלוטין (לא נכונה).</strong>
+                            <br>קריאות מערכת (System Calls) הן המנגנון הרשמי, התקני והיחיד שבאמצעותו תוכנית משתמש רגילה (הרצה ב-User Mode) מבקשת שירותים ממערכת ההפעלה.
+                            <br>ביצוע הקריאה מתבצע על ידי פקודת מכונה מיוחדת בחומרה הנקראת <strong>TRAP</strong> (או <code>SYSCALL</code> / <code>INT 0x80</code>). פקודה זו <strong>גורמת באופן ישיר ומכוון למעבר של המעבד למצב מיוחס (Kernel Mode, Mode Bit = 0)</strong>, ומעבירה את מונה הפקודות (PC) לכתובת קבועה בתוך גרעין מערכת ההפעלה (Syscall Handler), כדי שהליבה תבצע את הפעולה המבוקשת בהרשאות מלאות ובצורה מוגנת.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            כל מטרתה של קריאת המערכת היא לעבור מחדר ההמתנה של הלקוחות (User Mode) אל מאחורי הדלפק המוגן (Kernel Mode) לצורך קבלת השירות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-purple-100/60 text-purple-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: הטענה שגויה; קריאת מערכת גורמת תמיד למעבר חומרתי למצב מיוחס (Kernel Mode) באמצעות פקודת TRAP.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- מדריך שאלה 4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4 (מדריך): אמתו או הפריכו: פונקציות של שפת תכנות עילית מבוצעות תמיד במצב מיוחס?</span>
+                        <span class="text-purple-600 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הטענה מופרכת לחלוטין (לא נכונה).</strong>
+                            <br>1. <strong>ריצה ברירת-מחדל במצב משתמש (User Mode):</strong> הרוב המכריע של הפונקציות בשפות תכנות עיליות (כגון פונקציות חישוב מתמטי, מניפולציה של מחרוזות כמו <code>strlen</code>, לולאות, מיונים והגדרת מחלקות) מבוצעות <strong>במלואן במצב משתמש (User Mode, Mode Bit = 1)</strong>. אין להן שום צורך ושום הרשאה לרוץ במצב מיוחס.
+                            <br>2. <strong>פונקציות הדורשות שירותי מערכת:</strong> רק כאשר פונקציית ספרייה זקוקה לשירותי חומרה או משאבים מוגנים (כמו פונקציית <code>printf</code> הדורשת כתיבה למסך, או <code>malloc</code> המבקשת הקצאת זיכרון נוסף), פונקציית הספרייה תפעיל בסופו של דבר קריאת מערכת (כגון <code>write</code> או <code>brk/sbrk</code>).
+                            <br>3. <strong>משך המעבר:</strong> גם במקרה זה, המעבר למצב מיוחס מתבצע <strong>אך ורק לזמן הטיפול בקריאת המערכת בתוך הגרעין</strong>, ומיד עם סיום הפעולה וביצוע <code>IRET</code> המעבד חוזר ל-User Mode.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            אילו כל פונקציה פשוטה של חיבור מספרים הייתה רצה במצב מיוחס, המחשב היה קורס מאיטיות ומאבד כל אבטחה. המצב המיוחס שמור בבלעדיות לשברירי השנייה שבהם פונים לגרעין.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-purple-100/60 text-purple-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: הטענה שגויה; פונקציות שפה עילית רצות כברירת מחדל ב-User Mode, ורק קריאות מערכת ספציפיות עוברות למצב מיוחס למשך הטיפול בלבד.
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>

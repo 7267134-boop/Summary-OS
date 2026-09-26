@@ -1,0 +1,385 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 4.4: management (ניהול דיסק, אמינות וביצועים)              -->
+        <!-- ===================================================================== -->
+        <div id="questions-management" data-title="שאלות מנחות ותרגול - 🛡️ 4.4 ניהול דיסק, אמינות וביצועים">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 4.4.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.4.1: מהו הטרייד-אוף (Trade-off) המרכזי בבחירת גודל בלוק הדיסק (Block Size), כיצד בלוק גדול משפיע על קצב העברת הנתונים ועל הקיטוע הפנימי, ומהו הגודל המקובל כיום?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הטרייד-אוף המרכזי: יעילות העברת נתונים (Throughput) מול בזבוז שטח אחסון (Internal Fragmentation):</strong>
+                            <br>1. <strong>ההשפעה של בלוק גדול (למשל 32KB או 64KB):</strong>
+                            <br>• <em>יתרונות ביצועים:</em> קצב העברת נתונים גבוה בהרבה (High Throughput). בדיסק קשיח מגנטי (HDD), רוב הזמן מושקע בהמתנה מכנית (Seek Time ו-Rotational Latency, כ-5-10ms). ככל שהבלוק גדול יותר, ביצוע פעולת קריאה בודדת מעביר נתונים רבים יותר ביחס לאותו זמן המתנה מכני.
+                            <br>• <em>חסרונות בזבוז:</em> <strong>קיטוע פנימי חמור (Internal Fragmentation)</strong>. הבלוק האחרון של כל קובץ אינו מלא. בממוצע, חצי בלוק מבוזבז לכל קובץ. מכיוון שרוב הקבצים במערכות הפעלה קטנים מאוד (מתחת ל-4KB), בלוק ענק יגרום לבזבוז של 50%-80% משטח הדיסק כולו!
+                            <br>2. <strong>ההשפעה של בלוק קטן (למשל 512B או 1KB):</strong>
+                            <br>• <em>יתרונות:</em> ניצול שטח דיסק מעולה ואפס בזבוז עבור קבצים קטנים.
+                            <br>• <em>חסרונות:</em> קצב העברה איטי להחריד (קריאת קובץ גדול דורשת המון פעולות I/O נפרדות ותנועות ראש רבות בדיסק), בנוסף לתקורה גדולה של מטא-דאטה (יותר מצביעים ב-Inode או ב-FAT).<br>
+                            <strong>גודל הבלוק המקובל כיום:</strong>
+                            <br>ברוב מערכות הקבצים המודרניות (ext4, NTFS, APFS), ערך ברירת המחדל האופטימלי שנבחר הוא <strong>4KB (4096 בתים)</strong>. גודל זה מאזן מצוין בין קיטוע פנימי סביר לביצועים גבוהים, ותואם בדיוק את גודל דף הזיכרון (Page Size) של מעבדי x86/ARM, מה שמאפשר אינטגרציה מושלמת בין זיכרון וירטואלי (Page Cache) למערכת הקבצים.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תחשבו על הובלת חבילות במשאיות: אם תשתמשו במשאית ענק (בלוק גדול) כדי להוביל מעטפת מכתב אחת – תבזבזו 99.9% משטח המשאית. אם תשתמשו בקורקינטים (בלוק קטנטן) להוביל 1,000 טון ברזל – תצטרכו מיליון נסיעות אינסופיות. משאית בינונית של 4 טון (4KB) היא הפשרה המושלמת.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            ניתוח גרפי של ביצועים מול ניצולת שטח (Data Transfer vs. Space Utilization):
+                            <br>כאשר גודל הבלוק גדל, ניצולת השטח יורדת באופן דרמטי (גרף דועך), בעוד שקצב העברת הנתונים עולה באופן לוגריתמי עד לרוויה. נקודת המפגש האמפירית היעילה ביותר שנמדדה על פני מיליוני קבצים אמיתיים היא בטווח של 2KB עד 8KB.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            עבור שרתי מסדי נתונים ענקיים (Data Warehouses) או שרתי הזרמת וידאו (Streaming) שבהם כל הקבצים הם בנפח של עשרות גיגה-בייטים, מגדירים מראש במכוון בלוקים ענקיים (למשל 1MB או 2MB) כדי למקסם תפוקת קריאה רציפה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: גודל בלוק הוא פשרה בין ביצועי קריאה/כתיבה לקיטוע פנימי; 4KB הוא הסטנדרט המודרני כיוון שהוא תואם לגודל דף הזיכרון.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.4.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.4.2: אילו שתי שיטות עיקריות קיימות למעקב אחר בלוקים פנויים בדיסק (רשימה מקושרת מול מפת סיביות - Bitmap), מהם היתרונות והחסרונות של כל שיטה, וכיצד מחושב שטח הזיכרון הנדרש להן?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>שתי השיטות למעקב אחר בלוקים פנויים:</strong>
+                            <br>1. <strong>רשימה מקושרת של בלוקים פנויים (Linked List of Free Blocks):</strong>
+                            <br>בלוקים פנויים עצמם משמשים לאחסון מספרי הבלוקים הפנויים האחרים. בכל בלוק פנוי כותבים רשימה של מספרי בלוקים פנויים (למשל, בלוק של 1KB עם כתובות של 4 בתים מכיל 255 מספרי בלוקים פנויים ומצביע לבלוק הפנוי הבא).
+                            <br>• <em>יתרונות:</em> אינה גוזלת שטח אחסון מתוך הקיבולת הפנויה לקבצים, כי המטא-דאטה נשמר בתוך בלוקים שגם כך פנויים! ב-RAM צריך להחזיק רק בלוק אחד בלבד (את ראש הרשימה).
+                            <br>• <em>חסרונות:</em> קושי עצום באיתור בלוקים עוקבים ברצף (הקצאה רציפה למניעת קיטוע), ובזבוז פעולות I/O בדיסק כאשר בלוק של מספרי בלוקים מתרוקן או מתמלא.
+                            <br>2. <strong>מפת סיביות (Bitmap / Bit Vector):</strong>
+                            <br>מערך של ביטים בדיסק ובזיכרון, שבו כל ביט מתאים לבלוק פיזי אחד בדיסק: $0$ מסמל בלוק פנוי, ו-$1$ מסמל בלוק תפוס (או להפך).
+                            <br>• <em>יתרונות:</em> <strong>יעילות אדירה במציאת בלוקים רצופים</strong>: המעבד יכול להשתמש בפקודות חומרה מהירות (כגון <code>find first zero</code> או בדיקת מילים של 64 ביט שערכן אינו $2^{64}-1$) כדי לאתר מיד רצף בלוקים פנוי להקצאה רציפה.
+                            <br>• <em>חסרונות:</em> דורשת שטח ייעודי קבוע מראש בדיסק וב-RAM.<br>
+                            <strong>חישוב שטח זיכרון (דוגמה מספרית):</strong>
+                            <br>נניח דיסק בנפח של 1TB ($2^{40}$ בתים) עם גודל בלוק של 4KB ($2^{12}$ בתים).
+                            <br>מספר הבלוקים הכולל בדיסק הוא: $2^{40} / 2^{12} = 2^{28}$ בלוקים (כ-268 מיליון בלוקים).
+                            <br>• <strong>עבור Bitmap:</strong> נדרש ביט אחד לבלוק: $2^{28}\text{ bits} = 2^{25}\text{ Bytes} = 32\text{ MB}$.
+                            <br>32 מגה-בייט בלבד מספיקים למפות דיסק עצום של 1TB! שטח זה נכנס בקלות לזיכרון ה-RAM של כל שרת או מחשב אישי מודרני.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            מפת סיביות זה לוח נוריות לד בחניון: נורית אדומה = חניה תפוסה, נורית ירוקה = חניה פנויה. במבט חטוף אחד על הלוח אפשר לראות בדיוק איפה יש שורה של 5 חניות פנויות צמודות.
+                            רשימה מקושרת זה שומר שרושם על דף: "לך לחניה 17, שם תמצא פתק עם מספר החניה הפנויה הבאה".
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מתי רשימה מקושרת עדיפה על Bitmap ומתי להפך?
+                            <br>כאשר הדיסק כמעט מלא לחלוטין (Free space $\to 0$), הרשימה המקושרת תופסת כמעט אפס בלוקים. לעומת זאת, ה-Bitmap תופס תמיד את אותו שטח קבוע בדיוק, בין אם הדיסק ריק לגמרי ובין אם הוא מלא. אך בגלל היכולת למנוע קיטוע (Fragmentation), מערכות מודרניות כגון Linux ext4 ו-NTFS משתמשות אך ורק ב-Bitmaps.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            אם מערכת הפעלה קורסת לפני שה-Bitmap המעודכן ב-RAM נכתב בחזרה לדיסק, בלוקים שהוקצו לקבצים חדשים עלולים להופיע ב-Bitmap כדיסק כ"פנויים", מה שיוביל להקצאה כפולה ולהשחתת מידע!
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מפת סיביות (Bitmap) דורשת שטח זיכרון מזערי (ביט אחד לבלוק) ומאפשרת איתור מיידי של בלוקים רציפים, ולכן היא השיטה המובילה במערכות קבצים מודרניות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.4.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.4.3: כיצד פועלת תוכנית לבדיקת עקביות מערכת קבצים (כגון <code>fsck</code> ב-UNIX או <code>chkdsk</code> ב-Windows), אילו שני סוגי בדיקות עיקריים היא מבצעת, ואילו מצבי אי-עקביות (כמו בלוק יתום או הקצאה כפולה) היא מתקנת?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>אופן פעולת בודק העקביות (File System Consistency Checker):</strong>
+                            <br>כאשר המחשב קורס או מכובה בפתאומיות בזמן פעולות כתיבה, המטא-דאטה בדיסק עלול להישאר במצב קרוע וסותר. בעליית המערכת, <code>fsck</code> סורק את הדיסק ומבצע שני סוגי בדיקות יסודיות:<br>
+                            <strong>1. בדיקת עקביות בלוקים (Block Consistency Check):</strong>
+                            <br>התוכנית בונה ב-RAM שתי טבלאות מונים: טבלה אחת לספירת כמה פעמים כל בלוק מופיע בקבצים קיימים (דרך סריקת כל ה-Inodes), וטבלה שנייה לזיהוי הבלוקים ברשימת הפנויים (Free list/Bitmap).
+                            <br>במצב תקין, סכום שני המונים עבור כל בלוק חייב להיות בדיוק 1.
+                            <br>• <strong>בלוק חסר/יתום (Missing Block):</strong> אינו מופיע באף קובץ וגם אינו מופיע ברשימת הפנויים (סכום 0). <em>תיקון:</em> הוספת הבלוק חזרה לרשימת הבלוקים הפנויים (שחרור שטח אבוד).
+                            <br>• <strong>בלוק ברשימת הפנויים פעמיים:</strong> מופיע פעמיים ב-Free list. <em>תיקון:</em> בנייה מחדש של רשימת הפנויים.
+                            <br>• <strong>הקצאה כפולה (Duplicate Data Block):</strong> בלוק מופיע בשני קבצים שונים (סכום 2). מצב מסוכן ביותר שבו כתיבה לקובץ אחד תשחית את השני! <em>תיקון:</em> הקצאת בלוק חדש פנוי, שכפול הנתונים אליו, ועדכון אחד ה-Inodes.<br>
+                            <strong>2. בדיקת עקביות מדריכים ו-Inodes (Directory & Inode Check):</strong>
+                            <br>סורקת את כל עץ המדריכים וסופרת כמה כניסות מדריך מצביעות לכל Inode, ומשווה זאת לערך של <strong>Link Count</strong> השמור בתוך ה-Inode עצמו.
+                            <br>• <em>מונה קישורים גבוה מדי ב-Inode:</em> אם קבצים יימחקו, המונה לא יגיע לעולם ל-0 והקובץ לא ישוחרר. <em>תיקון:</em> עדכון המונה לערך האמיתי שנמצא בסריקה.
+                            <br>• <em>קובץ יתום (Unreferenced Inode / Lost File):</em> קובץ קיים עם בלוקים, אך אין שום מדריך במערכת שמצביע עליו (מונה קישורים 0 או גדול מ-0 ללא נתיב). <em>תיקון:</em> חיבור ה-Inode לתוך ספרייה ייעודית בשם <code>/lost+found</code> כדי לאפשר למשתמש לבדוק את תוכנו ולשחזרו.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו רואה חשבון שעושה ביקורת ספרים פתאומית: הוא עובר על כל החשבוניות (רשומות מדריך), סופר כמה כסף הוקצה לכל פרויקט, משווה עם דפי החשבון בבנק (רשימת הפנויים), ואם יש כסף שנעלם באוויר או כסף שנרשם פעמיים לשני עובדים שונים – הוא מאזן את הספרים.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מדוע <code>fsck</code> המסורתי הפך לצוואר בקבוק בלתי נסבל בדיסקים מודרניים?
+                            <br>מכיוון ש-<code>fsck</code> חייב לבצע <strong>סריקה מלאה של כל הדיסק כולו</strong> ($O(\text{Disk Size})$), בדיקת דיסק של כמה טרה-בייט עשויה לקחת שעות רבות עד ימים שלמים! בזמן זה השרת מושבת לחלוטין. צוואר בקבוק חמור זה הוא הסיבה הישירה להמצאת מערכות קבצים עם יומן (Journaling).
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            אסור בשום אופן להריץ <code>fsck</code> על מערכת קבצים המעוגנת במצב קריאה-כתיבה (Read-Write)! פעולות כתיבה של תהליכים במקביל לסריקה יגרמו ל-<code>fsck</code> לראות חוסר עקביות מדומה ולהשחית נתונים תקינים.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: <code>fsck</code> בודק התאמה בין רשימת הפנויים לשימוש בפועל, מאתר בלוקים יתומים והקצאות כפולות, ומאזן את מוני הקישורים של ה-Inodes.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.4.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.4.4: מהו עקרון הפעולה של מערכת קבצים עם יומן עסקאות (Journaling File System), כיצד פרוטוקול Write-Ahead Logging מונע את הצורך בסריקת <code>fsck</code> ממושכת, ומה ההבדל בין Journaling מלא ליומן Metadata בלבד?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>עקרון הפעולה של Journaling (רישום יומן עסקאות):</strong>
+                            <br>במקום לכתוב שינויים במטא-דאטה ישירות למיקומיהם המקוריים בדיסק (מה שעלול להשאיר מצב חצוי במקרה של קריסה באמצע), מערכת הקבצים מקצה שטח מיוחד בדיסק הנקרא <strong>יומן (Journal / Log)</strong> בצורת חוצץ מעגלי.<br>
+                            <strong>פרוטוקול Write-Ahead Logging (WAL):</strong>
+                            <br>1. <strong>רישום כוונה (Write to Journal):</strong> לפני ביצוע כל שינוי, מערכת ההפעלה כותבת ליומן רשומת עסקה (Transaction) המתארת את כל שלבי הפעולה העתידית.
+                            <br>2. <strong>אישור סיום (Commit):</strong> בסיום כתיבת הרשומה, נכתב ליומן בלוק מיוחד המכריז על ביצוע מוצלח (Commit Block).
+                            <br>3. <strong>יישום בדיסק (Checkpointing):</strong> רק לאחר שהעסקה נשמרה בצורה אטומית ביומן, השינויים מועתקים למבני הנתונים הראשיים בדיסק (Inodes, Bitmaps, מדריכים).
+                            <br>4. <strong>מחיקה מהיומן (Reclaim):</strong> לאחר שההעתקה הסתיימה, העסקה נמחקת מהיומן.<br>
+                            <strong>מדוע זה מבטל את הצורך בסריקת <code>fsck</code> ארוכה:</strong>
+                            <br>לאחר קריסה פתאומית, מערכת ההפעלה אינה צריכה לסרוק את כל הטרה-בייטים של הדיסק! היא פשוט קוראת את היומן הקצר (כמה עשרות מגה-בייט בלבד, פעולה של שבריר שנייה):
+                            <br>• עסקאות שלא נרשם להן Commit – מבוטלות ונמחקות (Rollback / Discard).
+                            <br>• עסקאות עם Commit שנרשם אך לא הספיקו להיכתב לדיסק – מבוצעות מחדש (Replay / Redo). תוך שניות בודדות מערכת הקבצים חוזרת למצב עקבי לחלוטין!<br>
+                            <strong>שני מצבי יומן מרכזיים (לדוגמה ב-ext3/ext4):</strong>
+                            <br>1. <strong>Journaling מלא (Full Data Journaling):</strong> גם נתוני הקובץ עצמם וגם המטא-דאטה נכתבים ליומן. בטוח במאה אחוז, אך פוגע קשות בביצועים כי כל בייט נכתב לדיסק פעמיים.
+                            <br>2. <strong>יומן Metadata בלבד (Ordered Mode - ברירת מחדל):</strong> רק פעולות המטא-דאטה נרשמות ביומן. כדי למנוע השחתת נתונים, הקרנל מבטיח חוק נוקשה: <strong>בלוקי הנתונים של הקובץ נכתבים לדיסק לפני שה-Commit של המטא-דאטה נכתב ליומן</strong>. מבטיח עקביות מושלמת וביצועים מעולים.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו כתיבה ביומן פרויקטים: לפני שאתם מתחילים להרוס קיר בבית, אתם רושמים בפנקס: "היום מפרקים את קיר ב' ובונים עמוד תמך". אם הייתה הפסקת חשמל באמצע, כשאתם חוזרים אתם לא צריכים לבדוק את כל הבניין מחדש – אתם פשוט מסתכלים בדף האחרון בפנקס ויודעים בדיוק באיזה שלב הייתם ומה צריך להשלים.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מערכות קבצים מתקדמות יותר מבוססות Copy-On-Write (COW):
+                            <br>מערכות קבצים חדישות (כמו ZFS ו-Btrfs) אינן משתמשות עוד ביומן נפרד, אלא בטכנולוגיית <strong>Copy-On-Write</strong>: בלוקים קיימים לעולם אינם נדרסים במקומם! כל עדכון נכתב תמיד לבלוק פנוי חדש לגמרי, ורק בסיום מתעדכן מצביע השורש בצורה אטומית. הדבר מעניק עמידות מוחלטת לקריסות יחד עם יכולת יצירת Snapshots מיידיים ללא עלות.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            במצב Metadata Journaling, אם המחשב קרס, תוכן הקובץ שנכתב בדיוק באותו שבריר שנייה עלול להכיל מידע קטוע, אך מבנה מערכת הקבצים עצמו (העץ, ה-Inodes, המדריכים) מובטח שיישאר שלם וללא השחתה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: Journaling מתעד פעולות ביומן לפני ביצוען, ומאפשר שחזור עקביות תוך שניות בודדות ללא סריקת הדיסק כולו.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.4.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.4.5: אילו מנגנוני אופטימיזציה מיושמים במערכות הפעלה לשיפור ביצועי מערכת הקבצים (Buffer Cache / Page Cache, קריאה מראש - Read-Ahead, כתיבה מושהית - Write-Behind, וקיבוץ בלוקים בצילינדרים - Block Groups)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>ארבעת מנגנוני האופטימיזציה המרכזיים:</strong>
+                            <br>1. <strong>מטמון חוצצים ומטמון דפים (Buffer Cache / Unified Page Cache):</strong>
+                            <br>מערכת ההפעלה שומרת ב-RAM עותק של בלוקי דיסק שנקראו או נכתבו לאחרונה. כל קריאה נוספת לאותו בלוק נענית במהירות הבזק מתוך ה-RAM (זמן גישה של ננו-שניות במקום מילי-שניות). במערכות מודרניות כמו לינוקס, קיים Unified Page Cache שבו כל הזיכרון הפנוי של המחשב מנוצל אוטומטית כמטמון קבצים.
+                            <br>2. <strong>קריאה מראש (Read-Ahead):</strong>
+                            <br>רוב הקבצים נקראים באופן סדרתי מתחילתם ועד סופם. כאשר מערכת ההפעלה מזהה שתהליך קורא את בלוקים 0, 1 ו-2 בזה אחר זה, היא טוענת מראש ל-Cache באופן ספקולטיבי את בלוקים 3, 4 ו-5 עוד לפני שהתהליך ביקש אותם! כאשר התהליך מבקש אותם, הם כבר ממתינים ב-RAM ללא שום השהיה.
+                            <br>3. <strong>כתיבה מושהית (Write-Behind / Delayed Write):</strong>
+                            <br>כאשר תהליך מבצע <code>write()</code>, הנתונים נכתבים אך ורק ל-Page Cache ב-RAM, והקריאה מחזירה הצלחה מיידית! בלוקים "מלוכלכים" (Dirty Blocks) אלו מרוכזים ונכתבים לדיסק במקבץ (Batch) על ידי תהליך רקע של הקרנל (כמו <code>pdflush</code> / <code>kworker</code>) כל 30 שניות, או בקריאה מפורשת ל-<code>sync()</code> / <code>fsync()</code>. הדבר מאפשר למזג עדכונים מרובים ולסדר את הכתיבות לפי מסלול ראש הדיסק.
+                            <br>4. <strong>הפחתת תנועת ראש הדיסק - קבוצות בלוקים וצילינדרים (Block Groups / Cylinder Groups):</strong>
+                            <br>במקום לרכז את כל ה-Inodes בתחילת הדיסק ואת כל בלוקי הנתונים בסופו (מה שדורש מראש הדיסק לרוץ הלוך ושוב מרחקים עצומים), מערכת הקבצים (כגון FFS או ext2/3/4) מחלקת את הדיסק לעשרות קבוצות בלוקים (Block Groups). בכל קבוצה יש עותק של Superblock, Inodes ובלוקי נתונים צמודים, והקרנל מקפיד להקצות את קובצי המדריך וקובצי הנתונים בתוך אותה קבוצה פיזית.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            Read-Ahead: שף במסעדה שרואה שנכנסו 10 הזמנות לפיצה, ומתחיל לחמם את התנור ולרדד עוד בצקים לפני שהמלצר בכלל צעק את ההזמנות הבאות.
+                            Write-Behind: פקיד שאינו רץ לדואר עם כל מכתב בודד, אלא מרכז את כל המכתבים בסלסלה ויוצא לדואר פעם אחת בשעה עם שק שלם.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הסכנה בכתיבה מושהית (The Cache-Flush Dilemma):
+                            <br>אם המחשב נכבה פתאומית ב-30 השניות שבין כתיבת הנתונים ל-Page Cache לבין כתיבתם הפיזית לדיסק (Flush), נתונים אלו יאבדו לתמיד! לכן יישומים קריטיים שאינם יכולים לסבול אובדן שבריר מידע (כמו שרתי בסיסי נתונים של בנקים) משתמשים בדגל <code>O_SYNC</code> או קוראים ל-<code>fsync(fd)</code> שמאלץ כתיבה פיזית מיידית לדיסק לפני שהפונקציה חוזרת.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            שליפת זיכרון החוצה (Ejecting USB without Unmount): אם מוציאים כונן USB מהמחשב מבלי לבצע "הוצאה בטוחה" (Safe Eject), בלוקים שנשמרו ב-Write-Behind ב-RAM עדיין לא הספיקו להיכתב ל-USB, מה שגורם להשחתת הקובץ בכונן!
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: זיכרון מטמון, קריאה ספקולטיבית מראש, כתיבה מושהית וקיבוץ Inodes לצד בלוקי נתונים מזניקים את ביצועי מערכת הקבצים במאות אחוזים.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות (5 שאלות בפורמט B) -->
+            <div class="multiple-choice-list space-y-6 mt-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות אמריקאיות להערכה עצמית:</strong> בחרו את התשובה הנכונה ביותר. לחיצה על האפשרות תחשוף מיד האם צדקתם בליווי נימוק אקדמי מלא.
+                </div>
+
+                <!-- שאלה 4.4.6 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.4.6: מהי הבעיה המרכזית העלולה להתרחש בבחירת גודל בלוק קטן מאוד (למשל 512 בתים) בדיסק קשיח מגנטי (HDD)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. בזבוז שטח אחסון אדיר עקב קיטוע פנימי חמור (Internal Fragmentation).</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-4-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. קצב העברת נתונים נמוך ביותר, כיוון שקריאת קבצים גדולים תדרוש פעולות I/O רבות ותנועות ראש מרובות בדיסק, לצד תקורה גבוהה של מטא-דאטה.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. מערכת ההפעלה לא תוכל לתמוך ביותר מ-100 קבצים בדיסק כולו.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. לא ניתן יהיה ליצור קישורים סימבוליים כלל.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-4-6" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> בדיסק קשיח, זמן הגישה המכני (Seek + Rotational delay) דומיננטי מאוד (5-10ms). אם הבלוק קטן, על כל 512 בתים בלבד משלמים השהיה מכנית מלאה, וקריאת קובץ גדול דורשת קריאת אלפי בלוקים נפרדים שמפוזרים בדיסק ומספר עצום של מצביעים ב-Inode.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.4.7 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.4.7: בדיסק בנפח 512GB עם גודל בלוק של 4KB ($4096\text{ Bytes}$), כמה זיכרון בדיוק נדרש כדי להחזיק את מפת הסיביות (Bitmap) של הבלוקים הפנויים כולה ב-RAM?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. 128 קילובייט ($128\text{ KB}$).</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-4-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. 16 מגה-בייט ($16\text{ MB}$).</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. 512 מגה-בייט ($512\text{ MB}$).</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. 1 גיגה-בייט ($1\text{ GB}$).</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-4-7" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong><br>
+                            נפח הדיסק בבתים: $512\text{ GB} = 2^{39}\text{ Bytes}$.<br>
+                            גודל בלוק: $4\text{ KB} = 2^{12}\text{ Bytes}$.<br>
+                            מספר הבלוקים: $2^{39} / 2^{12} = 2^{27}$ בלוקים.<br>
+                            ב-Bitmap כל בלוק מיוצג ע"י סיבית אחת: נדרשות $2^{27}\text{ bits}$.<br>
+                            בבתים: $2^{27} / 8 = 2^{27} / 2^3 = 2^{24}\text{ Bytes} = 16\text{ MB}$.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.4.8 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.4.8: תוכנית <code>fsck</code> מזהה במהלך סריקת הדיסק כי בלוק מסוים מספר 5040 מופיע פעמיים: פעם אחת ב-Inode של קובץ A ופעם שנייה ב-Inode של קובץ B. מהו התיקון הראוי שהתוכנית תבצע?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. היא תמחק מיד את שני הקבצים ותאפס את הבלוק בדיסק.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-4-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. היא תקצה בלוק פנוי חדש בדיסק, תעתיק אליו את תוכנו של בלוק 5040, ותעדכן את ה-Inode של אחד הקבצים להצביע לבלוק החדש, כדי למנוע השחתת נתונים הדדית.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. היא תתעלם מכך, מכיוון שזהו המנגנון התקין של Hard Links.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. היא תסמן את הבלוק ברשימת הבלוקים הפגומים (Bad Blocks) לעד.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-4-8" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> ב-Hard Link שני שמות שונים מצביעים לאותו <strong>Inode</strong>. אם שני Inodes <strong>שונים</strong> מצביעים לאותו בלוק נתונים, זוהי תקלה חמורה הנובעת מקריסת מערכת באמצע הקצאה! אם נשאיר זאת כך, שינוי בקובץ אחד ישחית מיד את תוכן הקובץ השני. הפתרון של <code>fsck</code> הוא להקצות בלוק חדש, לשכפל את הנתונים, ולהפריד בין הקבצים.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.4.9 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.4.9: מדוע במערכת קבצים עם יומן (Journaling File System) הפועלת במצב ברירת המחדל (Ordered / Metadata-only mode) הקרנל מקפיד לכתוב את בלוקי הנתונים של הקובץ לדיסק <strong>לפני</strong> כתיבת רשומת ה-Commit ליומן?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-4-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. כדי למנוע מצב שבו המטא-דאטה מעודכן להצביע לבלוקים שעדיין מכילים מידע ישן או זבל, אם המחשב יקרוס מיד לאחר ה-Commit.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. מכיוון שהיומן אינו מסוגל לתמוך בפעולות I/O מקביליות.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. משום שהיומן נשמר תמיד בתוך זיכרון ה-ROM הבלתי מחיק של לוח האם.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. כדי לאפשר ל-<code>fsck</code> לרוץ ברקע בכל שעה עגולה.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-4-9" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: א!</strong><br>
+                            <strong>נימוק מפורט:</strong> אם היינו מאשרים (Commit) את המטא-דאטה ביומן לפני שנתוני הקובץ נכתבו פיזית לדיסק, קריסה ברגע זה הייתה גורמת לשחזור ה-Inode עם הגודל והמצביעים החדשים, אך הבלוקים בדיסק היו מכילים נתוני זבל ישנים של קבצים שנמחקו בעבר (פרצת אבטחה והשחתת מידע). סדר הפעולות (Ordered Mode) מבטיח שהנתונים בטוחים בדיסק לפני שהמטא-דאטה מאושר סופית.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.4.10 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.4.10: מהי המטרה של ארגון הדיסק ב"קבוצות בלוקים" (Block Groups ב-Linux ext2/3/4) במקום פריסה של אזור Inodes בודד בתחילת הדיסק ואזור נתונים בסופו?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. לאפשר חיבור של מספר דיסקים פיזיים שונים למערכת קבצים יחידה.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-4-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. למקם את ה-Inodes ובלוקי הנתונים של אותם קבצים בסמיכות גיאוגרפית בדיסק, כדי לצמצם באופן משמעותי את מרחק תנועת ראש הקריאה/כתיבה (Seek Time).</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. לבטל את הצורך ב-Superblock במערכת הקבצים.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-4-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. להבטיח שכל קובץ יחולק באופן שווה בין כל הקבוצות בדיסק.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-4-10" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> ב-UNIX הישן, כל ה-Inodes היו בתחילת הדיסק. בכל גישה לקובץ, הראש היה חייב לקפוץ לתחילת הדיסק לקרוא את ה-Inode, ואז לקפוץ לקצה הדיסק לקרוא את הנתונים, מה שגרם ל"ריקוד ראש" אינסופי ולהאטה קשה. חלוקה ל-Block Groups מבטיחה קרבה פיזית בין ה-Inodes, ה-Bitmap ובלוקי הנתונים של קבצים באותו מדריך, ומקטינה דרסטית את זמני ה-Seek.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>

@@ -1,0 +1,618 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 4.6: glossary (מילון מושגים, שאלות אינטגרטיביות ושאלות מדריך) -->
+        <!-- ===================================================================== -->
+        <div id="questions-glossary" data-title="שאלות מנחות ותרגול - 📚 4.6 מילון מושגים, סיכום ושאלות מדריך">
+            
+            <!-- 1. שאלות פתוחות אינטגרטיביות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות אינטגרטיביות להעמקה:</strong> שאלות אלו קושרות יחד מושגים מכל רחבי פרק 4 (ניהול קבצים, מדריכים, Inodes, אמינות, ו-VFS). לחצו על כל שאלה לחשיפת הניתוח המלא.
+                </div>
+
+                <!-- שאלה 4.6.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.6.1: מהי שכבת "מערכת הקבצים הווירטואלית" (VFS - Virtual File System), כיצד היא מאפשרת למערכת הפעלה אחת לתמוך במקביל בעשרות מערכות קבצים שונות (ext4, NTFS, FAT32, NFS), ואילו ארבעה מבני נתונים מרכזיים היא מגדירה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מהות ה-VFS:</strong>
+                            <br>שכבת הפשטה (Abstraction Layer) בתוך ליבת מערכת ההפעלה (פותחה במקור ע"י Sun Microsystems עבור SunOS). ה-VFS מספקת <strong>ממשק קריאות מערכת אחיד וסטנדרטי</strong> (כמו <code>open</code>, <code>read</code>, <code>write</code>, <code>stat</code>) עבור כל התוכניות במרחב המשתמש, ומנתקת אותן לחלוטין מפרטי היישום הספציפיים של כל מערכת קבצים פיזית.<br>
+                            <strong>כיצד מתאפשרת תמיכה מקבילית:</strong>
+                            <br>ה-VFS מגדירה ממשק מונחה-עצמים (Object-Oriented Interface ב-C) המבוסס על טבלאות מצביעים לפונקציות (Function Pointer Tables / Vtables).
+                            <br>כאשר יישום קורא ל-<code>read(fd, buf, count)</code>, ה-VFS מקבלת את הבקשה, בודקת מאיזה סוג מערכת קבצים מגיע הקובץ (ext4 מקומי, FAT בדיסק-און-קי, או NFS דרך רשת האינטרנט), ומפעילה את המימוש הקונקרטי: <code>file->f_op->read(...)</code>.<br>
+                            <strong>ארבעת מבני הנתונים המרכזיים של ה-VFS (בלינוקס):</strong>
+                            <br>1. <strong>Superblock Object:</strong> מייצג מערכת קבצים מעוגנת בשלמותה (מכיל פעולות כמו <code>alloc_inode</code>, <code>write_super</code>).
+                            <br>2. <strong>Inode Object:</strong> מייצג קובץ ספציפי במערכת (מכיל מטא-דאטה וטבלת <code>inode_operations</code> כמו <code>create</code>, <code>lookup</code>, <code>mkdir</code>).
+                            <br>3. <strong>Dentry Object (Directory Entry):</strong> מייצג רכיב בודד בנתיב (שם מדריך או קובץ) לצורך ניווט מהיר בעץ ומטמון שמות (Dcache).
+                            <br>4. <strong>File Object:</strong> מייצג <strong>קובץ פתוח</strong> ע"י תהליך ספציפי (מכיל את מיקום הקריאה/כתיבה הנוכחי <code>f_pos</code>, דגלי גישה וטבלת <code>file_operations</code>).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו מתאם שקעים בינלאומי: כל מכשירי החשמל שלכם משתמשים באותו תקע סטנדרטי (ממשק POSIX של VFS). המתאם יודע להתחבר לשקע בריטי, אמריקאי או אירופאי (ext4, NTFS, NFS) מבלי שהמכשיר צריך להשתנות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            פולימורפיזם טהור בשפת C:
+                            <br>ה-VFS היא הדוגמה המפורסמת ביותר לתכנות מונחה-עצמים ללא C++ בקרנל. השימוש ב-<code>struct file_operations</code> מאפשר להגדיר דרייברים חדשים (ואף התקני חומרה מיוחדים כמו <code>/dev/null</code>) שמתנהגים במדויק כמו קובץ רגיל דרך אותו ממשק.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הבדל בין Inode של VFS ל-Inode של דיסק: ה-Inode של ה-VFS קיים רק ב-RAM בזמן שהקובץ בשימוש, ויכול לייצג גם מערכות קבצים שכלל אין בהן Inodes פיזיים בדיסק (כמו FAT או SMB), כאשר הדרייבר מייצר Inode מדומה בזיכרון.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: שכבת ה-VFS מספקת ממשק אחוד לכל מערכות הקבצים באמצעות טבלאות מצביעים לפונקציות וארבעת מבני העל: Superblock, Inode, Dentry ו-File.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.6.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.6.2: תהליך מבקש ליצור קובץ חדש, לכתוב לתוכו נתונים ולסגור אותו. מהו רצף הפעולות המדויק המתרחש ברמת מבני הנתונים בדיסק (מדריך, Inode, מפת סיביות ובלוקי נתונים), ומה קורה אם מתרחשת הפסקת חשמל בכל אחד מהשלבים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>רצף השלבים המדויק ביצירה וכתיבה לקובץ:</strong>
+                            <br>1. <strong>הקצאת Inode:</strong> הקרנל סורק את ה-Inode Bitmap, מאתר סיבית 0, הופך אותה ל-1, ומאתחל את ה-Inode בדיסק (גודל 0, הרשאות, זמנים, מונה קישורים 1).
+                            <br>2. <strong>עדכון המדריך:</strong> הקרנל מוסיף רשומה חדשה <code>(שם הקובץ, מספר Inode)</code> לבלוק הנתונים של מדריך האב (ומעדכן את גודל המדריך).
+                            <br>3. <strong>הקצאת בלוקי נתונים:</strong> הקרנל סורק את ה-Block Bitmap, מקצה בלוקי נתונים פנויים (הופך סיביות ל-1), ומעדכן את מצביעי הבלוקים ב-Inode.
+                            <br>4. <strong>כתיבת המידע:</strong> נתוני הקובץ מועתקים מה-RAM לבלוקי הנתונים בדיסק, ושדה ה-Size ב-Inode מתעדכן לגודל הסופי.<br>
+                            <strong>השלכות הפסקת חשמל (קריסה) ללא מערכת Journaling:</strong>
+                            <br>• <em>קריסה אחרי שלב 1 (לפני שלב 2):</em> ה-Inode מוקצה ב-Bitmap, אך אין שום מדריך שמצביע עליו. נוצר <strong>קובץ יתום / Inode אבוד</strong> (דליפת שטח בדיסק).
+                            <br>• <em>קריסה אחרי שלב 2 (לפני שלב 3):</em> הקובץ מופיע במדריך עם גודל 0. מצב תקין ועקבי (קובץ ריק).
+                            <br>• <em>קריסה אחרי שלב 3 (נכתב ה-Bitmap אך לא ה-Inode):</em> הבלוק תפוס ב-Bitmap אך אף קובץ לא מצביע עליו (בלוק יתום/אבוד - Missing Block).
+                            <br>• <em>קריסה כאשר עודכן ה-Inode אך ה-Bitmap לא נכתב לדיסק:</em> ה-Inode מצביע לבלוק שעדיין מסומן ב-Bitmap כ"פנוי"! בהקצאה הבאה, הקרנל יקצה את אותו הבלוק לקובץ אחר, מה שיוביל ל<strong>הקצאה כפולה ולהשחתת נתונים קטסטרופלית</strong>.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו חתימה על חוזה דירה: אם רשמתם את הדירה בטאבו (Inode), אבל לא עדכנתם את משרד המכירות (מדריך), הדירה "נעלמת" מהשוק אבל איש לא יודע מי הבעלים. אם משרד המכירות מכר אותה לקונה ב' כי המחשב שלו לא התעדכן (Bitmap לא סונכרן) – שני אנשים יקבלו מפתח לאותה דירה!
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            כיצד מערכת קבצים מסורתית התמודדה עם זה לפני ה-Journaling?
+                            <br>סדר כתיבה סינכרוני קפדני (Careful Ordering): מערכת ההפעלה כפתה ש<strong>בלוק הנתונים וה-Bitmap ייכתבו תמיד לפני ה-Inode, וה-Inode ייכתב לפני רשומת המדריך</strong>. בדרך זו, במקרה הגרוע ביותר של קריסה הייתה נוצרת רק דליפת שטח (אובדן בלוק פנוי ש-<code>fsck</code> יכול לשחרר בקלות), אך לעולם לא הייתה נוצרת השחתת נתונים של קבצים קיימים.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            ביצוע כתיבות סינכרוניות מרובות (Synchronous Ordering) פוגע קשות בביצועים, כי הדיסק נאלץ להמתין להשלמת כל פקודה בנפרד (I/O Bottleneck).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: יצירת קובץ דורשת עדכון מתואם של ארבעה מבנים; חוסר סנכרון ללא יומן גורם לבלוקים יתומים או להקצאה כפולה מסוכנת.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.6.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.6.3: מהו ההבדל המהותי בין "קיטוע פנימי" (Internal Fragmentation) ל"קיטוע חיצוני" (External Fragmentation) בהקשר של מערכות קבצים, כיצד כל אחת משיטות ההקצאה מושפעת מהם, וכיצד מתבצע איחוי דיסק (Defragmentation)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הגדרות ההבדל המהותי:</strong>
+                            <br>• <strong>קיטוע פנימי (Internal Fragmentation):</strong>
+                            <br>שטח אחסון מבוזבז <strong>בתוך</strong> יחידת הקצאה מוקצית (בלוק או אשכול).
+                            <br>מכיוון ששטח מוקצה בכפולות שלמות של גודל הבלוק, הבלוק האחרון של הקובץ כמעט לעולם אינו מלא. השטח הריק שבסוף הבלוק שייך בלעדית לקובץ זה, ואף קובץ אחר אינו רשאי להשתמש בו. בממוצע, מתבזבז חצי בלוק לכל קובץ.
+                            <br>• <strong>קיטוע חיצוני (External Fragmentation):</strong>
+                            <br>שטח אחסון מבוזבז <strong>בין</strong> יחידות הקצאה שונות בדיסק.
+                            <br>קיים שטח פנוי כולל מספיק בדיסק, אך הוא מפוצל לאלפי מקטעים זעירים ולא רציפים ("חורים"), כך שלא ניתן להקצות רצף גדול אחד עבור קובץ חדש (רלוונטי בהקצאה רציפה).<br>
+                            <strong>השפעה על שיטות ההקצאה השונות:</strong>
+                            <br>1. <em>הקצאה רציפה:</em> סובלת משני סוגי הקיטוע, ובמיוחד מקיטוע חיצוני קטלני.
+                            <br>2. <em>הקצאה מקושרת ו-FAT:</em> <strong>אפס קיטוע חיצוני</strong> (כל בלוק פנוי בדיסק ניתן לשימוש מיידי), אך סובלות מקיטוע פנימי בבלוק האחרון. עם זאת, נוצר <strong>קיטוע ביצועים (Performance/File Fragmentation)</strong> כאשר בלוקי אותו קובץ מפוזרים פיזית במקומות מרוחקים בדיסק.
+                            <br>3. <em>הקצאת Inodes:</em> סובלת מקיטוע פנימי בבלוק האחרון בלבד, אך מונעת קיטוע חיצוני לחלוטין.<br>
+                            <strong>איחוי דיסק (Defragmentation):</strong>
+                            <br>תוכנית איחוי קוראת את כל בלוקי הקבצים הקטועים, כותבת אותם מחדש ברצף פיזי אחד מתמשך, ומקבצת את כל השטח הפנוי לסוף הדיסק.
+                            <br><em>הערה קריטית לעולם ה-SSD:</em> בדיסקי SSD <strong>אסור בשום אופן לבצע איחוי (Defrag)!</strong> ב-SSD אין ראשי קריאה מכניים (זמן הגישה אחיד), ואיחוי רק שוחק את תאי הזיכרון (Flash wear-out) ומקצר את חיי הכונן.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            קיטוע פנימי: קניתם בקבוק של 2 ליטר כדי לשתות שלוק של 100 מ"ל. שאר הבקבוק ריק, אבל אף אחד אחר לא יכול להשתמש בו.
+                            קיטוע חיצוני: יש לכם 50 מקומות חניה פנויים בכל רחבי העיר, אבל אין שני מקומות צמודים כדי להחנות אוטובוס ארוך אחד.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מניעת קיטוע מראש (Delayed Allocation):
+                            <br>מערכות קבצים מודרניות כגון Linux ext4 ו-XFS משתמשות בטכניקת <strong>הקצאה מושהית</strong>: כאשר תהליך כותב מידע, הקרנל אינו מקצה בלוקים בדיסק מיד, אלא ממתין עד שהקובץ כולו נצבר ב-Cache ב-RAM. רק אז הקרנל יודע מהו גודלו הסופי של הקובץ ומקצה לו מראש Extent רציף מושלם בדיסק!
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות לחשוב שאיחוי דיסק מגדיל את נפח השטח הפנוי: שטח הדיסק הפנוי נשאר בדיוק אותו דבר, אך הוא מאורגן ברצף אחד גדול המאפשר ביצועי קריאה סדרתית מהירים בהרבה בדיסקים מכניים.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: קיטוע פנימי הוא בזבוז בתוך הבלוק האחרון, קיטוע חיצוני הוא פיצול שטח פנוי; איחוי משפר ביצועי HDD אך מזיק לכונני SSD.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.6.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.6.4: כיצד ממומש מנגנון הרשאות הקבצים ב-UNIX (ביטי rwx, משתמשי Owner/Group/Others, וביטים מיוחדים SUID, SGID, Sticky Bit), וכיצד הוא נבדל משיטת רשימות בקרת גישה (Access Control Lists - ACL)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מודל ההרשאות הקלאסי של UNIX (ביטי Mode ב-Inode):</strong>
+                            <br>שמור בתוך שדה <code>mode</code> (16 ביט) ב-Inode.
+                            <br>• <strong>חלוקה לשלוש קטגוריות משתמשים:</strong>
+                            <br>1. <strong>בעלים (Owner / User - <code>u</code>):</strong> היוצר או הבעלים של הקובץ.
+                            <br>2. <strong>קבוצה (Group - <code>g</code>):</strong> קבוצת המשתמשים המשויכת לקובץ.
+                            <br>3. <strong>אחרים (Others / World - <code>o</code>):</strong> כל שאר המשתמשים במערכת.
+                            <br>• <strong>שלוש הרשאות בסיסיות לכל קטגוריה (9 ביטים סה"כ):</strong>
+                            <br>– <strong>קריאה (Read - <code>r</code>, ערך 4):</strong> לקובץ: צפייה בתוכן. למדריך: סריקת שמות הקבצים שבתוכו (<code>ls</code>).
+                            <br>– <strong>כתיבה (Write - <code>w</code>, ערך 2):</strong> לקובץ: שינוי תוכן. למדריך: יצירה או מחיקה של קבצים בתוכו!
+                            <br>– <strong>ביצוע (Execute - <code>x</code>, ערך 1):</strong> לקובץ: הרצה כתוכנית בינארית או סקריפט. למדריך: <strong>חצייה / מעבר דרך המדריך</strong> (Traverse - היכולת לבצע <code>cd</code> או לגשת לקבצים פנימיים לפי נתיב).<br>
+                            <strong>שלושת הביטים המיוחדים (Special Bits):</strong>
+                            <br>• <strong>SUID (Set User ID - ערך 4000):</strong> בעת הרצת הקובץ, התהליך מקבל את ההרשאות של <strong>בעל הקובץ</strong> ולא של המשתמש שהריץ אותו (למשל הפקודה <code>passwd</code> הרצה כ-root כדי לעדכן את <code>/etc/shadow</code>).
+                            <br>• <strong>SGID (Set Group ID - ערך 2000):</strong> הרצה בהרשאות הקבוצה, או במדריכים: קבצים חדשים שנוצרים במדריך יירשו אוטומטית את הקבוצה של המדריך.
+                            <br>• <strong>Sticky Bit (ערך 1000):</strong> במדריך משותף (כמו <code>/tmp</code>), רק בעל הקובץ או root מורשים למחוק או לשנות שם של קובץ, גם אם למדריך יש הרשאת <code>rwxrwxrwx</code> מלאה!<br>
+                            <strong>ההבדל מול רשימות בקרת גישה (ACLs):</strong>
+                            <br>המודל הקלאסי (Owner/Group/Others) הוא קשיח: לא ניתן לתת הרשאה מותאמת אישית למשתמש ספציפי שלישי.
+                            <br>רשימת <strong>ACL (Access Control List)</strong> מאפשרת להגדיר רשימה מפורטת ושרירותית: למשל, "למשתמש דנה יש הרשאת קריאה, למשתמש יואב הרשאת כתיבה, ולקבוצת QA הרשאת ביצוע".
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            המודל הקלאסי: מועדון חברים שבו יש רק 3 סוגי כרטיסים: כרטיס VIP אישי, כרטיס לחברי המועדון, וכרטיס לקהל הרחב.
+                            מודל ACL: רשימת מוזמנים אישית בכניסה, שבה ליד שמו של כל אדם כתוב בדיוק לאיזה חדרים מותר לו להיכנס.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מדוע הרשאת <code>x</code> על מדריך קריטית לחלוטין?
+                            <br>אם למשתמש יש הרשאת <code>r</code> על מדריך אך אין לו <code>x</code>, הוא יכול להריץ <code>ls</code> ולראות את רשימת שמות הקבצים, אך <strong>לא יוכל לקרוא את תוכנם של הקבצים, לא יוכל לראות את גודלם (כי לא ניתן לפנות ל-Inodes שלהם), ולא יוכל לבצע <code>cd</code> למדריך</strong>!
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות נפוצה: לחשוב שצריך הרשאת כתיבה על קובץ כדי למחוק אותו. ב-UNIX, מחיקת קובץ היא הסרת רשומה מתוך המדריך, ולכן נדרשת הרשאת <code>w</code> <strong>על המדריך</strong> שבו הקובץ נמצא, ללא קשר להרשאות הקובץ עצמו!
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מודל UNIX מבוסס על 9 ביטי rwx עבור Owner/Group/Others ו-3 ביטים מיוחדים (SUID, SGID, Sticky), בעוד ACL מאפשר ניהול הרשאות פרטני לכל משתמש.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.6.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.6.5: כיצד פועלות מערכות קבצים מודרניות מבוססות "העתקה בעת כתיבה" (Copy-on-Write - כדוגמת ZFS ו-Btrfs), מדוע הן מבטלות את הצורך ביומן (Journaling), וכיצד הן מאפשרות יצירת "תמונת מצב" (Snapshot) מיידית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>עקרון הפעולה של Copy-on-Write (COW):</strong>
+                            <br>במערכות קבצים מסורתיות (כמו ext4 או NTFS), כאשר מעדכנים בלוק נתונים קיים, הבלוק בדיסק נדרס ומוחלף במקומו (In-place Overwrite).
+                            <br>במערכות <strong>COW</strong> (כגון ZFS, Btrfs, APFS):
+                            <br><strong>בלוק נתונים או מטא-דאטה שנכתב לדיסק לעולם אינו נדרס במקומו!</strong>
+                            <br>כאשר תהליך משנה נתונים בבלוק קיים:
+                            <br>1. הנתונים החדשים נכתבים ל<strong>בלוק פנוי חדש לחלוטין</strong> במקום אחר בדיסק.
+                            <br>2. המצביע ב-Inode מתעדכן להצביע לבלוק החדש – מה שגורם גם ל-Inode עצמו להיכתב למיקום חדש!
+                            <br>3. השינוי מתפשט במעלה עץ המדריכים בצורת אפקט דומינו עד לשורש מערכת הקבצים (Uberblock / Root Pointer).
+                            <br>4. לבסוף, מתבצעת פעולת כתיבה אטומית בודדת של מצביע השורש הראשי. ברגע זה בדיוק השינוי הופך לפעיל.<br>
+                            <strong>מדוע זה מבטל את הצורך ביומן עסקאות (Journaling):</strong>
+                            <br>אין שום צורך ביומן נפרד, משום שהמערכת תמיד עוברת ממצב עקבי אחד למצב עקבי שני בצורה אטומית! אם המחשב קורס באמצע הפעולה, מצביע השורש הישן עדיין מצביע למבנה השלם והמקורי ללא שום השחתה, והבלוקים החדשים שנכתבו פשוט יוגדרו כפנויים.<br>
+                            <strong>יצירת תמונת מצב (Snapshot) מיידית:</strong>
+                            <br>מאחר שבלוקים ישנים אינם נדרסים לעולם, יצירת Snapshot (צילום מצב של המערכת בנקודת זמן) אורכת שבריר מילי-שנייה ואינה תופסת שום שטח אחסון נוסף!
+                            <br>כל מה שנדרש הוא <strong>לשמור עותק של מצביע השורש הישן</strong> ולהורות למערכת לא לשחרר את הבלוקים שהשורש הישן מצביע עליהם. רק כאשר קבצים ישתנו בעתיד, הבלוקים החדשים שייכתבו יתפסו שטח נוסף.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            במקום לתקן ציור מקורי עם טיפקס (ולדרוס את המקור), אתם מצלמים את הדף במכונת צילום, עושים את התיקון על הדף החדש, ורק כשהציור החדש מושלם אתם מחליפים את התמונה במסגרת שעל הקיר. התמונה הישנה עדיין שלמה לחלוטין בארכיון (Snapshot).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הגנה מפני השחתת נתונים שקטה (Silent Data Corruption):
+                            <br>מערכות COW כדוגמת ZFS מחשבות ושומרות <strong>סיכום ביקורת (Cryptographic Checksum - SHA-256)</strong> של כל בלוק נתונים בתוך מצביע האב שלו בעץ Merkle. בעת קריאה, הנתונים מאומתים מול ה-Checksum. אם הדיסק סבל מ-Bit Rot (היפוך סיבית עקב התיישנות מגנטית), המערכת מזהה זאת מיד ומשחזרת אוטומטית את המידע מעותק יתיר במערך ה-RAID!
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            חיסרון מרכזי של COW: <strong>קיטוע חמור בכתיבות אקראיות</strong> (למשל בסיסי נתונים של מכונות וירטואליות). כתיבות אקראיות גורמות לבלוקים להתפזר ברחבי הדיסק ולאבד את הרציפות הפיזית שלהם.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מערכות COW כותבות תמיד לבלוקים חדשים ללא דריסת המקור, ומאפשרות עמידות מושלמת לקריסות ו-Snapshots מיידיים ללא עלות.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטגרטיביות (5 שאלות בפורמט B) -->
+            <div class="multiple-choice-list space-y-6 mt-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות אמריקאיות אינטגרטיביות להערכה עצמית:</strong> בחרו את התשובה הנכונה ביותר.
+                </div>
+
+                <!-- שאלה 4.6.6 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.6.6: מהו ההבדל המרכזי בין מבנה <code>Inode</code> למבנה <code>File Object</code> בשכבת ה-VFS של מערכת ההפעלה?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. ה-Inode נשמר רק ב-RAM, ואילו ה-File Object נשמר תמיד בדיסק.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-6-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. ה-Inode מייצג את הקובץ הסטטי עצמו על הדיסק (מטא-דאטה ומיקום בלוקים), בעוד שה-File Object מייצג קובץ פתוח בזיכרון ע"י תהליך ומכיל מידע דינמי כמו מיקום הקריאה הנוכחי (Offset) ומצב הגישה.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. אין שום הבדל ביניהם, אלו שני שמות שונים לאותו מבנה נתונים בדיוק.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. ה-File Object נועד רק למדריכים, ואילו ה-Inode נועד לקבצים רגילים בלבד.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-6-6" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> לקובץ נתון יש Inode יחיד המייצג את קיומו בדיסק. לעומת זאת, אם חמישה תהליכים שונים פתחו את אותו הקובץ במקביל, לכל אחד מהם יוקצה <code>File Object</code> נפרד משלו ב-RAM, המכיל מצביע קריאה/כתיבה (Offset) עצמאי, אך כולם יפנו לאותו Inode משותף.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.6.7 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.6.7: מדוע אסור לבצע איחוי דיסק (Defragmentation) על כונני Solid State Drive (SSD)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-6-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. ב-SSD זמן הגישה הוא אחיד ואקראי ללא תנועות ראש מכניות, ואיחוי גורם למחזורי כתיבה מיותרים רבים השוחקים את תאי הפלאש ומקצרים את חיי הכונן.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. כונני SSD אינם תומכים במערכות קבצים בעלות Inodes.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. איחוי ימחק את כל קבצי המשתמש ללא אפשרות שחזור.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. ב-SSD כל הבלוקים הם תמיד בגודל של 1 בייט בלבד.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-6-7" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: א!</strong><br>
+                            <strong>נימוק מפורט:</strong> איחוי נועד לפתור את בעיית תנועת ראש הקריאה (Seek Time) בדיסקים מגנטיים מסתובבים (HDD). ב-SSD אין חלקים נעים וקריאה אקראית מהירה באותה מידה כמו קריאה רציפה. יתר על כן, תאי Flash סובלים ממספר מוגבל של מחזורי כתיבה/מחיקה (P/E cycles), ולכן איחוי רק מזיק לשרידות הכונן.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.6.8 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.6.8: מה תפקידו של ה-Sticky Bit כאשר הוא מוגדר על מדריך משותף כגון <code>/tmp</code> (הרשאות <code>1777</code>)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. הוא גורם לכל הקבצים במדריך להישאר קבועים בזיכרון ה-RAM ולא להיכתב לדיסק.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-6-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. הוא מונע ממשתמשים רגילים למחוק או לשנות שמות של קבצים השייכים למשתמשים אחרים, גם אם יש להם הרשאת כתיבה מלאה במדריך.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. הוא מצפין את שמות הקבצים במדריך.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. הוא מונע יצירה של קבצים חדשים במדריך.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-6-8" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> במדריך פתוח לכולם עם הרשאת כתיבה (כמו <code>/tmp</code>), כל משתמש היה יכול עקרונית למחוק קבצים של משתמשים אחרים (כי מחיקה היא פעולת כתיבה על המדריך). ה-Sticky Bit מגן על המשתמשים וקובע שרק הבעלים של הקובץ או משתמש ה-root רשאים למחוק או לשנות את שמו של הקובץ.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.6.9 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.6.9: מהו היתרון המרכזי של ארכיטקטורת Copy-on-Write (COW) במערכות קבצים כמו ZFS ביחס למערכות עם יומן מסורתי (ext3/ext4)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. היא מבטלת לחלוטין את הצורך בשימוש בזיכרון RAM.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-6-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. בלוקים קיימים אינם נדרסים לעולם אלא נכתבים תמיד למקומות חדשים, מה שמעניק עמידות מוחלטת לקריסות ומאפשר יצירת Snapshots מיידיים ללא שכפול נתונים.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. היא מבטיחה שכל הקבצים בדיסק יהיו רציפים פיזית לחלוטין.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. היא אינה דורשת שימוש במצביעי Inode כלל.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-6-9" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> ב-COW אין סכנה של השחתת נתונים ישנים במקרה של קריסה באמצע כתיבה, מכיוון שהנתונים הישנים נשארים ללא שינוי עד שהבלוקים החדשים מאושרים אטומית. בנוסף, Snapshots נוצרים באופן מיידי על ידי שמירת מצביע השורש הישן.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.6.10 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.6.10: מהי המשמעות המדויקת של קריאת המערכת <code>sync()</code> ב-UNIX/Linux?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-6-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. היא מאלצת כתיבה מיידית של כל הבלוקים והמטא-דאטה ה"מלוכלכים" (Dirty Blocks) מתוך זיכרון המטמון (Buffer/Page Cache) אל הדיסקים הפיזיים.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. היא מסנכרנת את השעון של מערכת ההפעלה עם שרתי זמן בינלאומיים ברשת (NTP).</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. היא נועלת את כל הקבצים במערכת לקריאה בלבד.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-6-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. היא מאתחלת את ה-Superblock של המחיצה הראשית.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-6-10" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה נכונה: א!</strong><br>
+                            <strong>נימוק מפורט:</strong> בגלל מנגנון ה-Write-Behind (כתיבה מושהית), נתונים שנכתבו ע"י תהליכים נשארים ב-RAM זמן מה. הקריאה <code>sync()</code> שולחת פקודת Flush גורפת לכל החוצצים בקרנל כדי להבטיח שכל המידע והמטא-דאטה נכתבו פיזית למדיה הבלתי-נדיפה לפני כיבוי או פעולה קריטית.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 3. שאלות ממדריך הלמידה של האוניברסיטה הפתוחה (טאב שלישי) -->
+            <div class="guide-questions-list space-y-4 mt-6">
+                <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl mb-4 text-xs md:text-sm text-amber-900 leading-relaxed">
+                    <strong>📖 שאלות ממדריך הלמידה (האוניברסיטה הפתוחה):</strong> מקבץ שאלות ההעמקה והחזרה הרשמיות מתוך מדריך הלמידה של הקורס "מערכות הפעלה" (20594), עם תשובות מלאות וניתוחים מקיפים.
+                </div>
+
+                <!-- שאלה מנחה 4.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.4: מהם היתרונות והחסרונות של שיטת ההקצאה הרציפה (Contiguous Allocation)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 יתרונות וחסרונות:</strong>
+                            <strong>יתרונות:</strong>
+                            <br>1. <em>פשטות במימוש:</em> נדרש לשמור רק את כתובת הבלוק ההתחלתי ואת אורך הקובץ ברשומת המדריך.
+                            <br>2. <em>ביצועים מעולים:</em> גישה סדרתית או אקראית מהירה ביותר מכיוון שכל בלוקי הקובץ נמצאים ברצף פיזי בדיסק, מה שממזער את תנועת ראש הדיסק (Seek Time).
+                            <br><strong>חסרונות:</strong>
+                            <br>1. <em>קיטוע חיצוני (External Fragmentation):</em> מחיקת קבצים ויצירת חדשים גורמת ל"חורים" בגדלים שונים בדיסק שקשה לנצלם ביעילות.
+                            <br>2. <em>חוסר גמישות לגידול:</em> אם קובץ צריך לגדול מעבר לגודלו המקורי, יש להעתיקו למקום חדש פנוי בדיסק שיכול להכיל את הגודל החדש, מה שיוצר תקורה אדירה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.5 ו-4.6 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.5 ו-4.6: ניתוח הקצאה מקושרת - מדוע יעילות קריאה סדרתית גבוהה מקריאה אקראית, ומהם יתרונותיה וחסרונותיה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 ניתוח הקצאה מקושרת:</strong>
+                            <strong>מדוע קריאה סדרתית מהירה בהרבה מקריאה אקראית?</strong>
+                            <br>בקריאה סדרתית, המערכת קוראת את הבלוק הנוכחי המכיל מצביע לבלוק הבא וניגשת אליו ישירות. בקריאה אקראית (למשל לבלוק ה-100), לא ניתן לדלג אליו ישירות כי כתובתו אינה ידועה מראש, והמערכת חייבת לקרוא את כל 99 הבלוקים הקודמים אחד-אחד כדי לעקוב אחר המצביעים, מה שמצריך 100 פניות נפרדות לדיסק (Seek Time אדיר).
+                            <br><strong>יתרונות:</strong> אין קיטוע חיצוני (כל בלוק פנוי בדיסק מנוצל) וקיימת גמישות מרבית לגידול קבצים.
+                            <br><strong>חסרונות:</strong> גישה אקראית אטית ביותר; אובדן שטח (המצביע בבלוק גוזל כמה בתים ומשבש את גודל הנתונים כך שאינו כפולה של 2); ואמינות נמוכה (אם מצביע אחד נפגם, כל המשך הקובץ אובד).
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.7 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.7: מהם היתרונות והחסרונות של טבלה בזיכרון (FAT - File Allocation Table)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 יתרונות וחסרונות FAT:</strong>
+                            <strong>יתרונות:</strong>
+                            <br>1. בלוקי הנתונים מנוצלים במלואם (למשל 512 בתים שלמים לנתונים, ללא מצביעים בתוכם), מה שמקל על יישומים ללא שיבוש גודלי בלוקים.
+                            <br>2. גישה אקראית מהירה בהרבה: החיפוש אחר הבלוק ה-N מתבצע כולו בתוך טבלת ה-FAT המצויה בזיכרון הראשי (RAM) המהיר, ללא פניות פיזיות לדיסק. רק הבלוק הנדרש עצמו נקרא מהדיסק.
+                            <br><strong>חסרונות:</strong>
+                            <br>צריכת זיכרון משמעותית: טבלת ה-FAT חייבת להיות בזיכרון הראשי (RAM) בכל עת. עבור דיסקים גדולים מאוד בנפח טרה-בייטים, הטבלה גדלה לממדי ענק ותופסת נפח יקר בזיכרון ה-RAM.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.8 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.8: חישובי נפח קובץ מרבי ב-i-nodes (נתון: בלוק 4KB, מצביע 4B, 10 ישירים, עקיף יחיד, כפול ומשולש)</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 חישוב נפח קובץ מרבי:</strong>
+                            בכל בלוק מצביעים יש: $4\text{KB} / 4\text{B} = 1024$ מצביעים ($2^{10}$).
+                            <br>• <strong>10 מצביעים ישירים:</strong> $10 \times 4\text{ KB} = 40\text{ KB}$.
+                            <br>• <strong>מצביע עקיף יחיד:</strong> $1024 \times 4\text{ KB} = 4\text{ MB}$.
+                            <br>• <strong>מצביע עקיף כפול:</strong> $1024^2 \times 4\text{ KB} = 1,048,576 \times 4\text{ KB} = 4\text{ GB}$.
+                            <br>• <strong>מצביע עקיף משולש:</strong> $1024^3 \times 4\text{ KB} = 4\text{ TB}$.
+                            <br><strong>גודל קובץ מרבי כולל:</strong> סכום כל הקיבולות שווה בקירוב ל-<strong>4TB</strong>.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.9 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.9: השוואת שיטות לתמיכה בשמות קבצים ארוכים (רשומות באורך משתנה מול מצביע לערימה)</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 השוואת שתי השיטות:</strong>
+                            1. <strong>רשומות באורך משתנה (In-line):</strong>
+                            <br><em>יתרון:</em> השם והמטא-נתונים מאוגדים יחד ברשומה אחת.
+                            <br><em>חיסרון:</em> קיטוע פנימי וחיצוני של המדריך כאשר יש מחיקות, ומורכבות סריקה (אי אפשר לקפוץ ישירות לרשומה ה-N).
+                            <br>2. <strong>רשומות באורך קבוע עם מצביע לערימה (Heap):</strong>
+                            <br><em>יתרון:</em> רשומות המדריך קבועות ונוחות לסריקה, והשמות מרוכזים בערימה בסוף המדריך.
+                            <br><em>חיסרון:</em> תקורה של ניהול ערימה וסכנת קיטוע בערימה עצמה בעת מחיקת שמות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.10 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.10: השוואת קישור קשיח (Hard Link) לעומת קישור סימבולי (Symbolic/Soft Link)</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 השוואת קישורים:</strong>
+                            • <strong>קישור קשיח (Hard Link):</strong>
+                            <br><em>יתרון:</em> מהירות גישה ישירה ל-Inode ללא תקורה נוספת. שרידות של הקובץ גם אם המקור נמחק (מונה הקישורים מונע שחרור עד התאפסות).
+                            <br><em>חיסרון:</em> לא ניתן לקשר בין מחיצות שונות, ואסור לקשר למדריכים.
+                            <br>• <strong>קישור סימבולי (Soft Link):</strong>
+                            <br><em>יתרון:</em> גמישות – ניתן לקשר לקבצים ולמדריכים במחיצות אחרות ואף בשרתים מרוחקים.
+                            <br><em>חיסרון:</em> גישה אטית יותר (קריאת נתיב ופיענוח מחודש), ואם המקור נמחק הקישור נשאר שבור (Broken Link).
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.11 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.11: באיזו משתי השיטות לניהול שטח פנוי קל יותר למצוא מקום פנוי, ומה קורה בכל שיטה כשבלוק פנוי הופך לתפוס?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 מציאת מקום ושינוי מצב:</strong>
+                            • <strong>מציאת מקום פנוי:</strong> קל בהרבה בשיטת <strong>מפת הסיביות (Bitmap)</strong>. ניתן לטעון חלקים מה-Bitmap ל-RAM ולבצע חיפושי מילים מהירים בחומרה. ברשימה מקושרת יש צורך לסרוק בלוקים של מצביעים בדיסק כדי לאתר רצף.
+                            <br>• <strong>הפיכת בלוק פנוי לתפוס:</strong>
+                            <br>– <em>במפת סיביות:</em> פשוט משנים את הסיבית המתאימה מ-0 ל-1.
+                            <br>– <em>ברשימה מקושרת:</em> מוציאים את הבלוק מראש הרשימה. אם בלוק המצביעים בראש הרשימה מתרוקן, משחררים את הבלוק עצמו כבלוק נתונים ומעדכנים את מצביע הראש.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.12 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.12: תארו את אלגוריתם ארבעת השלבים המבצע גיבוי לוגי (Logical Backup).</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 ארבעת שלבי הגיבוי הלוגי:</strong>
+                            1. <strong>שלב 1 (סימון ספריות משתנות):</strong> סריקת עץ המדריכים מלמטה למעלה וסימון כל ספרייה המכילה קובץ שחל בו שינוי מאז הגיבוי האחרון.
+                            <br>2. <strong>שלב 2 (סימון קבצים לגיבוי):</strong> סריקה חוזרת מלמעלה למטה וסימון כל הקבצים ששונו, וכן כל הספריות שסומנו בשלב 1.
+                            <br>3. <strong>שלב 3 (גיבוי ספריות):</strong> כתיבת מבנה המדריכים המסומנים למדיית הגיבוי לבניית השלד ההיררכי.
+                            <br>4. <strong>שלב 4 (גיבוי נתוני הקבצים):</strong> העתקת תוכן כל הקבצים המסומנים אל מדיית הגיבוי.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.13 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.13: כיצד ניתן להתגבר על בעיות גיבוי הקשורות לקישורים ולחורים בקבצים (Sparse Files)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 פתרון בעיות גיבוי:</strong>
+                            • <strong>בעיית קישורים (Links):</strong> תוכנית הגיבוי מחזיקה טבלת מעקב אחר מספרי Inode שכבר גובו. אם Inode מופיע שוב בנתיב אחר, נרשם רק מצביע קישור במקום להעתיק את הנתונים מחדש.
+                            <br>• <strong>בעיית חורים בקבצים (Sparse Files):</strong> תוכנת גיבוי חכמה משווה את הגודל הלוגי למספר הבלוקים הפיזיים המוקצים בפועל, מזהה את החורים, ומשמרת אותם במדיית הגיבוי ע"י פקודות דילוג (seek) ללא כתיבת אפסים מיותרת.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.14 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.14: מהן הפעולות שמחזירות את מערכת הקבצים למצב עקבי (Consistency Check) בבעיות בלוקים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תיקון בעיות בלוקים ע"י בודק העקביות:</strong>
+                            • <strong>בלוק מופיע פעמיים בטבלת הבלוקים המשומשים:</strong> הקצאת בלוק פנוי חדש בדיסק, שכפול תוכן הבלוק המשותף אליו, ועדכון אחד הקבצים להצביע לבלוק החדש כדי להפריד בעלויות.
+                            <br>• <strong>בלוק שאינו מופיע באף טבלה (לא בשימוש ולא בפנויים):</strong> הוספת הבלוק האבוד חזרה לרשימת הבלוקים הפנויים או למפת הסיביות כדי שניתן יהיה להשתמש בו מחדש.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.15 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.15: מהם הסימנים הנוספים שיכולים להצביע על מערכת קבצים בלתי עקבית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 סימנים לאי-עקביות:</strong>
+                            1. מספר הקישורים (Link Count) הרשום ב-Inode אינו תואם למספר הפעמים שהקובץ מופיע בפועל בכל המדריכים במערכת.
+                            <br>2. בלוק מופיע גם בטבלת הבלוקים המשומשים וגם ברשימת הפנויים (בלוק כפול).
+                            <br>3. רשומת מדריך מצביעה על מספר Inode שאינו קיים או שאינו מוקצה.
+                            <br>4. קובץ או ספרייה מופיעים ללא ספריית אב (יתומים).
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.16 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.16: מהם השינויים שיש לבצע באלגוריתם LRU עבור זיכרון מטמון של מערכת קבצים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 התאמות LRU למערכת קבצים:</strong>
+                            1. <strong>עקביות מערכת הקבצים (Consistency):</strong> בלוקים קריטיים של מטא-דאטה (כמו Inodes וספריות) חייבים להיכתב לדיסק ללא השהיה ממושכת (כל 30 שניות ע"י <code>sync</code>), כדי שקריסת מערכת לא תשאיר את הדיסק במצב בלתי עקבי, בניגוד לנתוני משתמש רגילים.
+                            <br>2. <strong>בלוקים של קריאה חד-פעמית:</strong> בלוקים שסביר שלא יידרשו שוב בקרוב מוצאים מהמטמון מהר יותר במקום לתפוס מקום על חשבון בלוקים נדרשים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה מנחה 4.17 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה מנחה 4.17: מהם היתרונות והחסרונות של שיטת הבאת הבלוקים מראש (Read-Ahead), והאם היא מתאימה לדפדוף זיכרון?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 ניתוח Read-Ahead:</strong>
+                            • <strong>יתרונות:</strong> שיפור ביצועים משמעותי בקריאה סדרתית, כיוון שהבלוקים כבר ממתינים ב-RAM והיישום אינו ממתין לדיסק.
+                            <br>• <strong>חסרונות:</strong> בגישה אקראית, הבאת בלוקים מראש גורמת לפעולות I/O מיותרות ולתפיסת מקום במטמון על חשבון בלוקים נחוצים.
+                            <br>• <strong>בזיכרון מדופדף (Paging):</strong> קשה מאוד ולא יעיל (Pre-paging), מכיוון שתהליכים ניגשים לזיכרון בצורה הרבה פחות צפויה וסדרתית מאשר קריאת קבצים, והבאת דפים מראש גורמת לבזבוז זיכרון.
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </div>

@@ -1,0 +1,463 @@
+<div id="questions-intro-terminal" class="hidden" data-title="שאלות מנחות ותרגול - 10.1 מה זה לינוקס וטרמינל">
+
+    <!-- 1. רשימת שאלות פתוחות ומנחות להעמקה -->
+    <div class="open-questions-list space-y-4">
+        <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+            <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף את ניתוח העומק, האנלוגיה האינטואיטיבית והמסקנה המעשית.
+        </div>
+
+        <!-- שאלה 10.1.1 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.1.1: הגרעין (Kernel) לעומת הפצת לינוקס (Distribution) – מדוע לינוקס כשלעצמה אינה מערכת הפעלה שלמה?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    לינוקס כשלעצמה היא <em>גרעין בלבד (Kernel)</em> – הרכיב המרכזי שמנהל משאבי חומרה (מעבד, זיכרון, קלט/פלט) ומתזמן תהליכים. כדי להפוך למערכת הפעלה שלמה ושימושית, נדרשים כלי מעטפת נוספים: ספריות בסיס (כגון glibc), שורת פקודה (Shell/Bash), מנהל חבילות, דרייברים, ממשק משתמש ותוכניות שירות. החבילה הכוללת נקראת <strong>הפצה (Distribution/Distro)</strong> כגון Ubuntu, Debian, או Fedora.
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    הגרעין הוא מנוע של מכונית. מנוע הוא לב הרכב – בלעדיו שום דבר לא זז. אך אי אפשר לנסוע על מנוע בלבד! צריך שילדה, גלגלים, הגה, דוושות, לוח מחוונים ושמשות. ההפצה (כמו אובונטו) היא הרכב המלא שיוצא מפס הייצור, מוכן לנסיעה מיידית.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>תפקידי הגרעין:</strong> פועל ברמת הרשאה עליונה (Kernel Mode / Ring 0), מנהל את טבלאות הדפים של הזיכרון הווירטואלי, מנהל מפסקים וחומרה, ומספק ממשק קריאות מערכת (System Calls) לתוכניות משתמש.</li>
+                        <li><strong>רכיבי ה-User Space בהפצה:</strong> פועלים ברמת Ring 3. כוללים את כלי GNU (פקודות כמו ls, cp, grep), מערכת אתחול (systemd או init), שרת תצוגה (X11 או Wayland), ומנהלי חבילות (APT, RPM, Pacman).</li>
+                        <li><strong>משמעות המונח GNU/Linux:</strong> מונח שטבע ריצ'ארד סטולמן להדגשת העובדה שרוב התוכנות בסביבת המשתמש מקורן בפרויקט GNU, בעוד שלינוקס תרם את הגרעין החסר.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> לחשוב ש-Ubuntu ו-Debian הן מערכות בעלות ליבה שונה לחלוטין. שתיהן מריצות גרעין לינוקס (לעיתים עם פאצ'ים קלים של הפצה), וההבדל העיקרי הוא בגרסאות התוכנה, מנגנוני התצורה, וממשק המשתמש.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: לינוקס = המנוע הפנימי (גרעין). הפצה = המכונית השלמה עם כל האבזור וסביבת המשתמש.
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.1.2 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.1.2: עקרון הקוד הפתוח (Open Source) – כיצד שקיפות הקוד משפיעה על מהימנות, אבטחה וחינוך אקדמי?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    קוד פתוח מעניק לכל אדם את הזכות לבחון, לשנות, לקמפל ולהפיץ את קוד המקור. באבטחה ומהימנות, חל חוק לינוס ("Given enough eyeballs, all bugs are shallow") – אלפי מפתחים וחוקרים סורקים את הקוד ומאתרים פרצות ודליפות זיכרון. בחינוך אקדמי, קוד פתוח מאפשר לסטודנטים לפתוח את "מכסה המנוע" של מערכות כמו לינוקס ו-xv6, לקרוא את המימוש המדויק של מתזמן התהליכים או מנהל הזיכרון, ולבצע התאמות מעשיות.
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    מערכת סגורה (כמו Windows) דומה למתכון הסודי של קוקה-קולה – אף אחד מבחוץ לא יודע בדיוק מה יש בפנים, וצריך לסמוך על היצרן. קוד פתוח הוא ספר בישול עולמי פתוח: השפים הטובים בעולם בודקים כל רכיב, משפרים את הטעם, מזהירים מחומרים מקולקלים, ומלמדים שפים צעירים כיצד לבשל.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>Security through Obscurity לעומת Kerckhoffs's Principle:</strong> תוכנה קניינית מסתמכת לעיתים על כך שאיש אינו רואה את הקוד, אך תוקפים מסוגלים לבצע Reverse Engineering. בקוד פתוח, המערכת נדרשת להיות מאובטחת מעצם תכנונה האלגוריתמי ולא מעצם הסתרתה.</li>
+                        <li><strong>רישיון ה-GPL (General Public License):</strong> מבטיח שכל שינוי או הרחבה של הגרעין מחייבים שחרור של קוד המקור בחזרה לקהילה (Copyleft), מה שמונע מחברות "לחטוף" את הקוד ולסגור אותו.</li>
+                        <li><strong>שימוש אקדמי ב-xv6:</strong> פותחה ב-MIT כגרסה מודרנית ופשוטה של Unix V6 עבור מעבדי x86/RISC-V. בגלל שהקוד פתוח ומתומצת (כ-10,000 שורות קוד לעומת עשרות מיליונים בלינוקס), סטודנטים יכולים להבין כל שורת אסמבלי ו-C.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> ההנחה ש"קוד פתוח" פירושו "ללא תמיכה מסחרית" או "חינמי בלבד". חברות ענק כמו Red Hat ו-Google מרוויחות מיליארדים מתמיכה, שירותי ענן והתאמות מבוססות לינוקס.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: קוד פתוח מאפשר ביקורת עמיתים מתמדת, ביטול תלות בספק יחיד, ויכולת בלתי מוגבלת ללמוד ולפתח.
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.1.3 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.1.3: משפחות ההפצות הנפוצות (Debian, Red Hat, Arch) – מהו הטרייד-אוף ההנדסי בין יציבות לחדשנות?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    ההבדל בין משפחות ההפצות נשען על טרייד-אוף מובהק: <strong>יציבות מקסימלית (Stability)</strong> לעומת <strong>חוד החנית הטכנולוגי (Bleeding Edge)</strong>. הפצות כמו Debian Stable ו-RHEL מקפיאות גרסאות תוכנה למשך שנים ומחילות רק תיקוני אבטחה, מה שמבטיח אפס קריסות בשרתים קריטיים. לעומתן, Arch Linux ו-Fedora מספקות תוכנות וגרסאות גרעין חדישות מייד עם יציאתן, במחיר של סיכון לתקלות תאימות.
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    משפחת דביאן היא כמו גשר בטון מזוין שנבנה לשרוד רעידות אדמה במשך 100 שנה ללא שינוי. Arch Linux היא כמו רכב מרוץ חדשני שכל שבוע מחליפים לו רכיבים ניסיוניים – הוא המהיר והחדש ביותר, אך הנהג חייב לדעת לתקן מנוע אם משהו מתקלקל במסלול.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>משפחת Debian (דביאן, אובונטו, מינט):</strong> משתמשת במנהל החבילות APT (`.deb`). אובונטו מוסיפה מעל דביאן מנהלי התקנים מובנים, מעטפת ידידותית ומחזורי שחרור מסודרים (LTS – Long Term Support כל שנתיים, עם 5 שנות תמיכה).</li>
+                        <li><strong>משפחת Red Hat (RHEL, Fedora, CentOS/Rocky):</strong> משתמשת במנהל החבילות RPM/DNF. פדורה משמשת כשדה הניסויים של טכנולוגיות חדשות, וכאשר הן מתייצבות הן נכנסות ל-RHEL עם תמיכה ארגונית בתשלום.</li>
+                        <li><strong>מודל Rolling Release מול Point Release:</strong> ב-Point Release (כמו אובונטו) עוברים מגרסה לגרסה (20.04 ל-22.04). ב-Rolling Release (כמו Arch) אין גרסאות כלל – המערכת מתעדכנת ברציפות יומיומית לגרסה העדכנית ביותר.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> בלבול בין "תוכנה יציבה" (Stable) במובן של "חפה משינויים שוברי תאימות" לבין "תוכנה חדשנית". ב-Debian המונח Stable פירושו שהממשקים וההתנהגות לא ישתנו, גם אם יש תוכנות בנות שנתיים.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: בחירת הפצה תלויה ביעד: שרתי ייצור דורשים Debian/RHEL, מפתחים ביתיים יעדיפו Ubuntu/Fedora, ומשתמשי קצה מתקדמים יבחרו ב-Arch.
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.1.4 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.1.4: מבנה מערכת הקבצים ההיררכית (FHS) – מהו תפקידן של תיקיות השורש `/proc`, `/sys` ו-`/dev`?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    בלינוקס כל הקבצים מאוגדים תחת שורש יחיד (`/`), כאשר אחד מעקרונות היסוד של יוניקס הוא <em>"Everything is a file"</em>. התיקיות `/proc` ו-`/sys` הן מערכות קבצים וירטואליות פסאודו-דינמיות שאינן תופסות מקום על הדיסק, אלא מהוות צוהר חי לתוך מבני הנתונים של הגרעין בזיכרון RAM. תיקיית `/dev` מכילה קבצי התקן מיוחדים (Special Device Files) המאפשרים תקשורת אחידה מול התקני חומרה באמצעות פקודות קריאה וכתיבה רגילות.
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    דמיינו לוח מחוונים ומחשב רכב. קבצים רגילים ב-`/home` הם כמו מסמכים בתא הכפפות. התיקייה `/proc` היא כמו מד המהירות ומד החום – הצצה חיה בזמן אמת למה שקורה במנוע. והתיקייה `/dev` היא כמו שקע ה-OBD של הרכב, שדרכו מתחברים פיזית לרכיבי החומרה.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>`/proc` (Process Information Pseudo-FS):</strong> מכילה ספריות ממוספרות עבור כל תהליך פעיל במערכת (למשל `/proc/1234/status`, `/proc/1234/maps`). קריאה מקובץ כזה מפעילה קוד בגרעין שמייצר את הטקסט בזמן אמת מתוך ה-PCB של התהליך. קבצים כמו `/proc/cpuinfo` ו-`/proc/meminfo` מציגים מידע חומרה וזיכרון.</li>
+                        <li><strong>`/sys` (sysfs):</strong> היררכיה מובנית המייצגת את מודל ההתקנים של הגרעין (kobjects). מאפשרת לצפות ולהגדיר פרמטרים של דרייברים, אפיקי PCI, ניהול צריכת חשמל ועוד.</li>
+                        <li><strong>`/dev` (Device Nodes):</strong> מכילה התקני בלוק (Block devices כמו `/dev/sda` לדיסקים) והתקני תווים (Character devices כמו מקלדת, עכבר, ו-`/dev/urandom`). התקנים מיוחדים: `/dev/null` (בור שחור שזורק כל מידע שנכתב אליו) ו-`/dev/zero` (מספק רצף אינסופי של אפסים).</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> לנסות להעתיק את תיקיית `/proc` לדיסק גיבוי חיצוני באמצעות `cp -r /proc /backup`. הפעולה תגרום ללולאות אינסופיות או תנסה לקרוא קבצים בגודל מדומה של גיגה-בייטים, כי הקבצים נוצרים בזמן אמת ע"י הגרעין.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: הכל בלינוקס מיוצג כקובץ. מערכות פסאודו-קבצים הופכות נתוני ליבה מורכבים לטקסט קריא ונגיש לכל כלי Shell סטנדרטי.
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.1.5 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.1.5: צינורות (Pipes) והפניות (Redirection) – כיצד המעטפת (Shell) מחברת בין תהליכים ברמת קריאות המערכת?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    הפילוסופיה של יוניקס דוגלת בחיבור כלים קטנים שעושים דבר אחד היטב. המעטפת מממשת צינור (`cmd1 | cmd2`) ע"י יצירת חוצץ בגרעין באמצעות קריאת `pipe()`, שכפול שני תהליכים ע"י `fork()`, וניתוב ה-stdout (מתאר קובץ 1) של התהליך הראשון לקצה הכתיבה של הצינור, וניתוב ה-stdin (מתאר קובץ 0) של התהליך השני לקצה הקריאה של הצינור, באמצעות קריאת המערכת `dup2()`. שני התהליכים רצים במקביל!
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    מפעל ייצור שבו פועל אחד חותך עצים (cmd1) והפועל השני צובע אותם (cmd2). במקום שהפועל הראשון יחתוך את כל העצים, יאחסן אותם במחסן (קובץ זמני על הדיסק), ורק אז השני יתחיל לעבוד – הם מחוברים במסוע ישיר (Pipe): ברגע שחתיכה נחתכת, היא עוברת מיד לפועל השני לצביעה.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>מתארי הקבצים הסטנדרטיים:</strong> כל תהליך מקבל כברירת מחדל 0 (stdin), 1 (stdout), 2 (stderr).</li>
+                        <li><strong>הפניה לקובץ (`>` ו-`>>`):</strong> המעטפת פותחת קובץ באמצעות `open()` עם הדגלים המתאימים (`O_WRONLY | O_CREAT | O_TRUNC` עבור `>`, או `O_APPEND` עבור `>>`), ומפעילה `dup2(fd, 1)` כדי שכל פלט רגיל ייכתב ישירות לקובץ.</li>
+                        <li><strong>סנכרון דרך הצינור:</strong> חוצץ הצינור בגרעין הוא בגודל מוגבל (בדרך כלל 64KB). אם התהליך הכותב מייצר נתונים מהר יותר מהקורא, הגרעין משהה אותו (Blocking) עד שיתפנה מקום. אם הקורא ממתין לנתונים, הוא נחסם עד שיכתב מידע. בסגירת קצה הכתיבה, הקורא מקבל EOF (קריאה מחזירה 0).</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> לחשוב ש-`cmd1 | cmd2` מריץ קודם את cmd1 עד סופו ושומר את התוצאה בדיסק, ורק אז מפעיל את cmd2. שני התהליכים מופעלים מיידית במקביל, מה שמאפשר עיבוד זרמי (Streaming) של כמויות נתונים עצומות בזיכרון מינימלי.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: Pipes ו-Redirection נשענים על מניפולציה של מתארי קבצים באמצעות `dup2` וסנכרון מובנה של הגרעין בין תהליכים מקבילים.
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- 2. רשימת שאלות אמריקאיות אינטראקטיביות (פורמט B) -->
+    <div class="mcq-questions-list space-y-6">
+        <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl mb-4 text-xs md:text-sm text-purple-900 leading-relaxed">
+            <strong>🎯 שאלות אמריקאיות רב-ברירה:</strong> בחרו את התשובה הנכונה. לחיצה תחשוף מיד האם צדקתם עם הסבר מפורט.
+        </div>
+
+        <!-- שאלה 10.1.6 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.1.6">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.1.6: מהי ההגדרה המדויקת ביותר של המונח "לינוקס" במובנו הטכנולוגי המקורי?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.1.6</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_1_6_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. מערכת הפעלה מלאה הכוללת שולחן עבודה, כלי עריכה, שורת פקודה וספריות מערכת.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_1_6_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. גרעין המערכת (Kernel) בלבד, המנהל חומרה, זיכרון ותהליכים.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_6_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. סביבת פיתוח מהודרת (IDE) המשמשת לכתיבת שפת C ומהדר GCC.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_6_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. ממשק שורת פקודה (Terminal Shell) המתרגם פקודות טקסט של המשתמש.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_1_6_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> זוהי ההגדרה של <em>הפצת לינוקס (Distribution)</em> כגון אובונטו, ולא של לינוקס עצמה.
+            </div>
+            <div id="q10_1_6_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> לינוקס שפותחה ע"י לינוס טורבאלדס בשנת 1991 היא הגרעין (Kernel) בלבד. כל שאר הכלים מקורם בפרויקטים נפרדים (בעיקר פרויקט GNU).
+            </div>
+            <div id="q10_1_6_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> לינוקס איננה סביבת פיתוח; GCC ועורכי קוד הם כלי תוכנה נפרדים לחלוטין הרצים מעל מערכת ההפעלה.
+            </div>
+            <div id="q10_1_6_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> הטרמינל והמעטפת (כמו Bash) הם תוכניות משתמש (User Space) שאינן חלק מליבת הגרעין.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.1.6</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> ההבחנה המדויקת בין הגרעין (Kernel) לבין מערכת שלמה היא הבסיס להבנת ארכיטקטורת מערכות הפעלה מודרניות.</p>
+                    <p><strong>שורה תחתונה:</strong> גרעין הלינוקס מנהל את החומרה; ההפצה אורזת אותו יחד עם ספריות וכלי עזר לשימוש המשתמש.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.1.7 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.1.7">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.1.7: מה מייחד את מערכת הקבצים הפסאודו-וירטואלית `/proc` בלינוקס בהשוואה לקבצים רגילים?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.1.7</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_1_7_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. הקבצים ב-`/proc` שמורים בדיסק הקשיח במחיצה מוצפנת ומיוחדת של מנהל המערכת.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_7_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. היא משמשת אך ורק לאחסון קבצי יומן (Logs) והודעות שגיאה של שרתי אינטרנט.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_1_7_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. הקבצים אינם תופסים מקום בדיסק, אלא נוצרים דינמית בזיכרון RAM כצוהר ישיר לנתוני הגרעין.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_7_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. זוהי תיקייה זמנית הנמחקת בכל פעם שהמשתמש סוגר את חלון הטרמינל הנוכחי.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_1_7_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> הקבצים ב-`/proc` אינם תופסים מקום על שום דיסק פיזי; גודלם במערכת הקבצים מוצג בדרך כלל כ-0 בתים.
+            </div>
+            <div id="q10_1_7_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> קבצי יומן (Logs) נשמרים בתיקייה `/var/log` ולא ב-`/proc`.
+            </div>
+            <div id="q10_1_7_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> מערכת `/proc` היא Pseudo Filesystem. כל קריאה מקובץ בתוכה גורמת לקוד בגרעין לתרגם את מבני הנתונים הפנימיים (כמו רשימת התהליכים, מצב הזיכרון, ונתוני המעבד) לטקסט חי.
+            </div>
+            <div id="q10_1_7_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> `/proc` שייכת לכלל המערכת ומנוהלת ע"י הגרעין מרגע עליית המחשב ועד כיבויו, ללא קשר לחלונות טרמינל בודדים.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.1.7</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> פילוסופיית "Everything is a file" מאפשרת לפקודות כמו `cat /proc/meminfo` או `cat /proc/cpuinfo` לקרוא נתוני ליבה ללא צורך בקריאות מערכת ייעודיות לכל נתון.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.1.8 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.1.8">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.1.8: כיצד ממומש צינור (Pipe) בין שתי פקודות (`cmd1 | cmd2`) ברמת הגרעין ומערכת ההפעלה?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.1.8</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_1_8_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. cmd1 כותב קובץ זמני בדיסק הקשיח, מסתיים, ורק אז cmd2 מופעל וקורא את הקובץ מהדיסק.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_8_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. cmd1 מעביר את הנתונים ישירות דרך כרטיס הרשת בלולאת המשוב המקומית (Loopback 127.0.0.1).</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_1_8_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. שני התהליכים רצים במקביל ומתקשרים דרך חוצץ זיכרון בגרעין, תוך שימוש בקריאת `dup2` לחיבור stdout ל-stdin.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_8_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. cmd2 מעתיק ישירות את מרחב הכתובות של cmd1 ללא כל התערבות או חציצה של הגרעין.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_1_8_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> צינור אינו כותב לדיסק הקשיח ואינו ממתין לסיום cmd1; זוהי פעולה אסינכרונית בזיכרון המתרחשת במקביל (Streaming).
+            </div>
+            <div id="q10_1_8_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> צינור אינו משתמש במחסנית הרשת או ב-Loopback Socket; מדובר במנגנון IPC מקומי קל-משקל בגרעין.
+            </div>
+            <div id="q10_1_8_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> המעטפת קוראת ל-`pipe()`, מייצרת שני תהליכים בעזרת `fork()`, ומשתמשת ב-`dup2()` כדי לנתב את מתאר הקובץ 1 של הראשון למתאר 0 של השני. שני התהליכים מעבירים נתונים דרך חוצץ מעגלי בגרעין.
+            </div>
+            <div id="q10_1_8_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> תהליכים מבודדים זה מזה ואינם יכולים לגעת במרחב הכתובות של תהליך אחר ללא הרשאה, והגרעין הוא המתווך הבלעדי.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.1.8</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> אם חוצץ הצינור מתמלא, הגרעין מעביר את cmd1 למצב חסימה (Blocked). כאשר cmd2 קורא מידע, cmd1 משתחרר. זהו מימוש קלאסי של מודל יצרן-צרכן מוגבל-מקום (Bounded-Buffer).</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.1.9 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.1.9">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.1.9: מהו ההבדל המרכזי בין מודל שחרור מסוג Point Release (כמו Ubuntu LTS) לבין Rolling Release (כמו Arch Linux)?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.1.9</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_1_9_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. ב-Point Release הקוד סגור, בעוד שב-Rolling Release הקוד פתוח.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_1_9_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. ב-Point Release המערכת משוחררת בגרסאות קבועות מראש וגרסאות החבילות מוקפאות, בעוד שב-Rolling Release המערכת מתעדכנת ברציפות לגרסה האחרונה.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_9_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. ב-Rolling Release אי אפשר להתקין ספריות תוכנה חיצוניות, אלא רק להשתמש בפקודות מובנות.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_9_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. ב-Point Release הגרעין אינו מאפשר ריבוי תהליכים (Multitasking), בעוד שב-Rolling Release הוא תומך בכך.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_1_9_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> שתי ההפצות הן בקוד פתוח לחלוטין.
+            </div>
+            <div id="q10_1_9_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> Point Release מספקת גרסה מוגדרת היטב (למשל Ubuntu 22.04) שבה גרסאות התוכנה קבועות ומקבלות רק עדכוני אבטחה. Rolling Release פועלת במודל עדכון מתמיד ללא "שחרור גרסה" חדשה.
+            </div>
+            <div id="q10_1_9_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> ב-Rolling Release (כמו ב-Arch עם מאגר ה-AUR) ניתן להתקין מגוון עצום של ספריות ותוכנות חיצוניות.
+            </div>
+            <div id="q10_1_9_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> כל הפצות הלינוקס מבוססות על אותו גרעין התומך בריבוי משימות וריבוי תהליכים מלא.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.1.9</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> ארגונים מעדיפים Point Release עבור שרתים כדי למנוע הפתעות ושינויים פתאומיים בסביבת הייצור (Production Stability).</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.1.10 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.1.10">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.1.10: לאיזו מטרה משמש הקובץ המיוחד `/dev/null` בלינוקס?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.1.10</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_1_10_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. יצירת מצביעים ריקים (Null Pointers) בתוכניות C במהלך הקימפול.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_10_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. כיבוי מיידי של המחשב ללא שמירת קבצים פתוחים.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_1_10_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. "בור שחור" המשמיד כל פלט שנכתב אליו ומחזיר EOF (סוף קובץ) בכל ניסיון קריאה.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_1_10_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. שמירת סיסמאות משתמשים בצורה מוצפנת לפני כתיבתן ל-`/etc/shadow`.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_1_10_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> NULL בשפת C הוא ערך של כתובת 0 ואינו קשור לקובץ ההתקן במערכת הקבצים.
+            </div>
+            <div id="q10_1_10_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> כיבוי מערכת מתבצע באמצעות פקודות כמו `shutdown` או `poweroff`.
+            </div>
+            <div id="q10_1_10_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> `/dev/null` הוא התקן תווים וירטואלי המשמש להשתקת פלט בלתי רצוי (למשל `command > /dev/null 2>&1`), כך שכל נתון שנכתב אליו מושלך מבלי לתפוס זיכרון או שטח דיסק.
+            </div>
+            <div id="q10_1_10_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> סיסמאות מוצפנות נשמרות אך ורק ב-`/etc/shadow`.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.1.10</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> ההפניה `2>&1 > /dev/null` היא שימוש שכיח בסקריפטים של לינוקס כדי להפעיל תוכניות ברקע מבלי לזהם את המסך בהודעות שגיאה או פלט שגרתי.</p>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- 3. שאלות מהמדריך וממ"נים -->
+    <div class="guide-questions-list space-y-4">
+        <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl mb-4 text-xs md:text-sm text-amber-900 leading-relaxed">
+            <strong>📖 שאלות מהמדריך ותרחישי מעבדה:</strong> שאלות יישומיות ותרחישי Shell מעשיים, ערוכים ומבוארים להבנה מיטבית.
+        </div>
+
+        <details class="group border border-amber-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-black">תרחיש Shell מעשי</span>
+                    <span>מדריך הלמידה: ניתוח זרימת נתונים בצינור משולש והפניות קלט/פלט</span>
+                </span>
+                <span class="text-amber-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-amber-100 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs">
+                    <strong>הפקודה הנבחנת:</strong><br>
+                    <code>cat /etc/passwd | grep "/bin/bash" | cut -d: -f1 | sort &gt; users.txt 2&gt; errors.log</code>
+                </div>
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 ניתוח צעד-אחר-צעד:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 mt-1.5">
+                        <li><code>cat /etc/passwd</code>: קורא את קובץ הגדרות המשתמשים ופולט אותו ל-stdout.</li>
+                        <li><code>| grep "/bin/bash"</code>: מסנן שורות ומשאיר רק משתמשים שהמעטפת שלהם היא Bash. הצינור מעביר את הפלט בזיכרון ללא קובץ דיסק.</li>
+                        <li><code>| cut -d: -f1</code>: חותך את השדה הראשון (שם המשתמש) המופרד בנקודתיים.</li>
+                        <li><code>| sort &gt; users.txt</code>: ממיין את שמות המשתמשים בסדר אלפביתי וכותב את התוצאה הסופית לקובץ `users.txt`.</li>
+                        <li><code>2&gt; errors.log</code>: מנתב כל שגיאה (stderr) לקובץ `errors.log` במקום להציגה על המסך.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: 4 תהליכים מופעלים במקביל ומחוברים באמצעות 3 צינורות בזיכרון, כאשר פלט השגיאות מופרד לחלוטין מפלט המידע.
+                </div>
+            </div>
+        </details>
+    </div>
+</div>

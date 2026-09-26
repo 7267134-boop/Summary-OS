@@ -1,0 +1,450 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 8.1.3: synchronization (סנכרון במערכות מרובות מעבדים)       -->
+        <!-- ===================================================================== -->
+        <div id="questions-synchronization" data-title="שאלות מנחות ותרגול - 🔒 8.1.3 סנכרון במערכות מרובות מעבדים">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף את ניתוח העומק, האנלוגיה האינטואיטיבית והמסקנה המעשית.
+                </div>
+
+                <!-- שאלה 8.1.3.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.3.1: מדוע מנעול ספין (Spinlock) לגיטימי במערכת מרובת מעבדים אך אסור במערכת בעלת מעבד יחיד?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            במערכת חד-מעבדתית המתנה פעילה (Busy Waiting) נחשבת לפסולה וחסרת תועלת. מדוע במערכות מרובות מעבדים ספינלוק הוא מנגנון הסנכרון הנפוץ ביותר בליבה, ובאילו תנאים הוא עדיף על פני הרדמת תהליך (Mutex / Sleep)?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            בחד-מעבד, אם אתם עומדים בדלת וממתינים שמישהו יפנה אותה אך אינכם מפנים את החדר כדי שהוא יוכל להיכנס ולעבוד, הוא לעולם לא יפנה את הדלת. במרובה מעבדים, האדם שמחזיק במפתח נמצא כעת פיזית בחדר הסמוך ומבצע פעולה של 2 שניות על מעבד אחר. אם תעמדו ליד הדלת ותמתינו (Spin), תקבלו את המפתח מיד כשיסיים. אם תלכו לישון (Sleep), תבזבזו 10 דקות רק על החלפת בגדים והתארגנות מחדש (החלפת הקשר).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הסבר למרובי מעבדים:</strong> המחזיק במנעול רץ במקביל על מעבד אחר. לכן, אם הקטע הקריטי קצר מאוד, זמן ההמתנה בספינלוק קצר בהרבה מזמן התקורה של הרדמת התהליך והחלפת הקשר (Context Switch).</li>
+                                <li><strong>השוואת עלויות:</strong> החלפת הקשר דורשת שמירת אוגרים, עדכון טבלאות מתזמן, ומחיקת זיכרון מטמון (בסדר גודל של מאות עד אלפי מחזורי שעון). ספינלוק של 10 מחזורי שעון חסכוני פי עשרות מונים.</li>
+                                <li><strong>כלל הברזל:</strong> ספינלוק מותר אך ורק לקטעים קריטיים קצרים ביותר, ואסור בתכלית האיסור לבצע פעולת I/O או להירדם תוך כדי החזקת ספינלוק!</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            ספינלוק על מעבד יחיד: התהליך שממתין שורף את כל פרוסת הזמן שלו בספינלוק, ומונע מהתהליך שמחזיק במנעול לרוץ ולשחרר אותו, מה שמוביל לקיפאון מדומה עד לפסיקת שעון.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: ספינלוק אידיאלי לקטעים קריטיים קצרים במרובי מעבדים מפני שהוא עוקף את התקורה היקרה של החלפת הקשר.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.3.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.3.2: כיצד פקודות חומרה אטומיות (כגון TSL ו-XCHG) מבטיחות סנכרון בלעדי ברמת האפיק?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            מדוע שתי פקודות קריאה וכתיבה עוקבות בשפת אסמבלי אינן מסוגלות לממש מנעול בצורה בטוחה בין מעבדים, וכיצד פקודת TSL (Test-and-Set Lock) נועלת את אפיק הזיכרון הפיזי בזמן הביצוע?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו כספומט. אם בדיקת היתרה ומשיכת הכסף היו שתי פעולות נפרדות, שני אנשים יכלו לבדוק יתרה בו-זמנית משני כרטיסים, לראות שיש 100 ש"ח, ושניהם ימשכו 100 ש"ח יחד (משיכת יתר). פקודת TSL פועלת כפעולה יחידה שבה תופסים את הידית, פותחים ובודקים ברגע אחד בלתי ניתן לחלוקה (אטומי), תוך נעילת הכספת מפני כל שאר הלקוחות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הכשל בפקודות נפרדות:</strong> אם ליבה א' קוראת `flag == 0`, אך לפני שהיא כותבת `flag = 1` ליבה ב' קוראת גם היא `flag == 0`, שתיהן יחשבו שזכו במנעול וייכנסו לקטע הקריטי יחד (הפרת הדדיות).</li>
+                                <li><strong>נעילת אפיק פיזית (Bus Lock):</strong> בעת ביצוע פקודת `TSL Rx, LOCK`, המעבד מפעיל אות חשמלי מיוחד על אפיק הזיכרון (כגון אות `LOCK#` ב-x86). אות זה מונע מכל מעבד אחר לקרוא או לכתוב לזיכרון הראשי במהלך מחזור הקריאה-שינוי-כתיבה (Read-Modify-Write).</li>
+                                <li><strong>אטומיות מושלמת:</strong> הערך הישן של `LOCK` נקרא לאוגר `Rx`, ובאותו שבריר מחזור נכתב ערך '1' (נעול) לזיכרון. אף מעבד לא יכול להשתחל באמצע.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            נעילת האפיק משפיעה על כל המעבדים במערכת ומשהה גישות לכל מודולי הזיכרון. לכן שימוש בלתי מבוקר ב-TSL עלול לפגוע בביצועי מערכות גדולות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: פקודות אטומיות מבטיחות הדדיות מושלמת באמצעות חסימת אפיק הזיכרון ברמת החומרה בזמן הפעולה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.3.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.3.3: מדוע ספינלוק המבצע TSL בלולאה גורם להצפת אפיק הזיכרון, וכיצד פותרים זאת?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            כאשר מספר מעבדים ממתינים לספינלוק הממומש על ידי הרצת פקודת TSL בלולאה אינסופית, מדוע הביצועים של כלל המעבדים במערכת (כולל זה שמחזיק במנעול!) צונחים, וכיצד בדיקת קריאה (Test-and-Test-and-Set) פותרת את הבעיה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו תור לשירותים שבו כל הממתינים מנסים לסובב בכוח את הידית של הדלת 1,000 פעמים בשנייה. הרעש והרעידות בידית מפריעים לאדם שבפנים לסיים את ענייניו, ואף אחד במסדרון לא יכול לעבור. במקום זאת, מתקינים מנורה ירוקה קטנה מעל הדלת. כולם עומדים בשקט ורק מסתכלים על המנורה (קריאה מהמטמון הפרטי ללא מגע בידית). רק כשהמנורה נדלקת בירוק, הם ניגשים לגעת בידית.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הבעיה ב-TSL גולמי:</strong> פקודת TSL היא פקודת כתיבה. בכל איטרציה של לולאת ההמתנה, המעבד מנסה לכתוב '1' לזיכרון. כתיבה זו דורשת בלעדיות על האפיק, פוסלת (Invalidates) את שורת המטמון אצל כל שאר הליבות, ומציפה את האפיק במיליוני טרנזקציות סרק.</li>
+                                <li><strong>הפתרון - בדיקת קריאה (Spin on Read / TTAS):</strong>
+                                    <br>1. המעבד קורא תחילה את המנעול בקריאה רגילה: `while (lock == 1);`
+                                    <br>2. כל עוד המנעול תפוס (ערכו 1), המעבד קורא אותו מזיכרון המטמון הפרטי שלו (במצב Shared) באפס תעבורת אפיק!
+                                    <br>3. רק כאשר המחזיק משחרר את המנעול וכותב '0', שורת המטמון נפסלת, והמעבדים קוראים '0' ומנסים לבצע TSL אטומי.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            תופעת ההסתערות (Thundering Herd): ברגע שהמנעול משתחרר, כל המעבדים הממתינים קוראים '0' בו-זמנית ומזנקים יחד לבצע TSL, מה שמייצר עומס רגעי קצר על האפיק עד שאחד מהם זוכה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: אין לבצע TSL בלולאה סגורה; ספינלוק מודרני מסתובב בקריאה מקומית מה-Cache ופונה לאפיק רק בעת זיהוי שחרור המנעול.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.3.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.3.4: כיצד פקודת XCHG מממשת ספינלוק, ומה ההבדל הלוגי בינה לבין TSL?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            בארכיטקטורות מעבדים רבות (כגון מעבדי Intel x86) אין פקודת TSL ייעודית, אלא נעשה שימוש בפקודת XCHG (Exchange). כיצד ממומש מנעול בעזרת החלפה אטומית, וכיצד מזהה המעבד האם זכה במנעול?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תארו לעצמכם שאתם מחזיקים בידכם פתק שעליו כתוב "1" (נעול). על השולחן מונח פתק המנעול. אתם ניגשים ובעצימת עיניים מחליפים באבחה אחת את הפתק שבידכם עם הפתק שעל השולחן. כעת אתם מסתכלים על הפתק שקיבלתם: אם היה כתוב עליו "0", סימן שהשולחן היה פנוי ואתם נעלתם אותו (שמתם "1" על השולחן); אם קיבלתם "1", סימן שהמנעול כבר היה תפוס, ועליכם להמשיך להמתין.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>מנגנון ה-XCHG:</strong> פקודת `XCHG reg, [lock]` מחליפה באופן אטומי את תוכן האוגר הפנימי עם תוכן כתובת הזיכרון.</li>
+                                <li><strong>פרוטוקול הנעילה:</strong>
+                                    <pre class="bg-slate-800 text-slate-100 p-2.5 rounded-lg font-mono text-xs mt-1">
+enter_region:
+    mov register, 1       ; מכינים ערך 1 באוגר
+    xchg register, [lock] ; החלפה אטומית עם הזיכרון
+    cmp register, 0       ; האם המנעול היה פנוי (0)?
+    jne enter_region      ; אם לא, המנעול תפוס - ממשיכים בספין
+    ret                   ; זכינו במנעול!
+                                    </pre>
+                                </li>
+                                <li><strong>פרוטוקול השחרור:</strong> פשוט ביותר - כותבים '0' לכתובת המנעול: `mov [lock], 0`.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            במעבדי x86, פקודת `XCHG` על כתובת זיכרון מפעילה אוטומטית נעילת אפיק (Implicit Bus Lock), גם ללא קידומת `LOCK`, ולכן ספין ישיר עליה יוצר עומס זהה ל-TSL.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: פקודת XCHG שקולה פונקציונלית ל-TSL ומאפשרת מימוש ספינלוק אטומי על ידי החלפת ערך אוגר עם מילת זיכרון.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.3.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.3.5: מהם הסיכונים בהחזקת מנעול ספין (Spinlock) כאשר מתרחשת פסיקה או חריגה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            תהליך או חוט ליבה נועל ספינלוק. בדיוק ברגע זה מתרחשת פסיקת חומרה על אותו מעבד, ושגרת הטיפול בפסיקה (ISR) מנסה לנעול את אותו ספינלוק עצמו. מה יקרה למערכת, וכיצד מערכת ההפעלה מגנה על עצמה מפני אסון זה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            שף מחזיק במפתח למקרר הבשר. בדיוק כשהוא פותח את המקרר, מנהל המטבח תופס אותו בחולצה ואומר לו "עזוב הכל, יש שריפה במחבת, טפל בזה מיד!" (פסיקה דחופה). שגרת הטיפול בשריפה דורשת חומר שנמצא בתוך מקרר הבשר. השף מנסה לפתוח את מקרר הבשר, אך המפתח נמצא אצל... השף עצמו, שנמצא כרגע בהקפאה ומחכה לסיים את הטיפול בשריפה! נוצר קיפאון מוחלט (Deadlock של מעבד יחיד).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>קיפאון עצמי (Self-Deadlock):</strong> שגרת הטיפול בפסיקה (ISR) רצה בהקשר של אותו המעבד ונכנסת לספינלוק הממתין למנעול. אולם התהליך המקורי שמחזיק במנעול לא יוכל לרוץ לעולם עד שה-ISR תסתיים – קיפאון נצחי של המעבד!</li>
+                                <li><strong>פתרון חובה - השבתת פסיקות מקומית (Disabling Local Interrupts):</strong> בכל פעם שחוט ליבה נועל ספינלוק המשמש גם שגרות פסיקה (Interrupt-safe Spinlock), חובה להשבית תחילה את הפסיקות המקומיות באותו המעבד (`cli`).</li>
+                                <li><strong>שחרור המנעול:</strong> שחרור הספינלוק מלווה בהחזרת מצב הפסיקות הקודם (`sti`).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            השבתת פסיקות גלובלית בכל המעבדים: אין צורך ואין הצדקה להשבית פסיקות במעבדים אחרים, אלא אך ורק במעבד המקומי שמבצע את הנעילה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: נעילת ספינלוק בליבה חייבת להיות מלווה בהשבתת פסיקות מקומיות כדי למנוע קיפאון קטלני בין תהליך לשגרת פסיקה.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטראקטיביות (פורמט B) -->
+            <div class="mcq-questions-list space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>🎯 תרגול שאלות אמריקאיות:</strong> בחנו את הבנתכם. לחיצה על אפשרות תציג משוב מיידי וכרטיסיית הסבר מפורטת.
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.3.1 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.3.1">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 1 (8.1.3.1): מתי מומלץ להשתמש במנעול ספין (Spinlock) במקום במנעול הרדמה (Mutex / Sleep Lock) במערכת מרובת מעבדים?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.3.1</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_1_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. כאשר הקטע הקריטי כולל כתיבה לקובץ בדיסק ופעולות קלט/פלט ארוכות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_3_1_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. כאשר הקטע הקריטי קצר ביותר (מחזורי שעון בודדים), כך שזמן ההמתנה הממוצע קטן בהרבה מתקורת החלפת ההקשר.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_1_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. כאשר במערכת יש מעבד בודד בלבד.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_1_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. כאשר המנעול אמור להישאר נעול למשך מספר שעות רצופות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_3_1_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> לקטעים קריטיים ארוכים הכוללים I/O חובה להשתמש ב-Mutex כדי להרדים את התהליך ולפנות את המעבד.
+                    </div>
+                    <div id="q8_1_3_1_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> ספינלוק משתלם רק כאשר זמן ההמתנה בספין קצר מעלות החלפת הקשר כפולה (הרדמה והתעוררות).
+                    </div>
+                    <div id="q8_1_3_1_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> במעבד בודד ספינלוק הוא שגיאה חמורה כי הוא מבזבז מחזורי שעון ומונע מהמחזיק במנעול לרוץ.
+                    </div>
+                    <div id="q8_1_3_1_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> החזקת ספינלוק לשעות תשרוף 100% מעבד ברציפות ללא תועלת.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.3.1</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> פשרה כלכלית בין בזבוז מחזורי שעון בספין קצר לבין תקורת Context Switch כבדה.</p>
+                            <p><strong>שורה תחתונה:</strong> ספינלוק = קטעים קריטיים קצרים מאוד במרובי מעבדים בלבד.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.3.2 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.3.2">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 2 (8.1.3.2): כיצד פקודת TSL מבטיחה שאף מעבד אחר לא ישנה את משתנה המנעול באמצע פעולתה?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.3.2</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_2_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. היא שולחת הודעת דואר אלקטרוני למנהל הרשת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_3_2_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. המעבד נועל את אפיק הזיכרון (Bus Lock) בחומרה למשך מחזור הקריאה והכתיבה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_2_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. היא מכבה את כל שאר המעבדים במחשב עד להודעה חדשה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_2_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. היא פועלת רק על זיכרון וירטואלי שאינו קיים פיזית.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_3_2_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זוהי פעולת חומרה ברמת מחזורי שעון בסיסיים.
+                    </div>
+                    <div id="q8_1_3_2_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> TSL מפעילה אות חומרה ייעודי הנועל את אפיק הזיכרון ומבטיח פעולה אטומית בלתי ניתנת להפרעה.
+                    </div>
+                    <div id="q8_1_3_2_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המעבדים האחרים ממשיכים לפעול מהמטמון הפרטי שלהם, רק הגישה לאפיק ה-RAM מושהית רגעית.
+                    </div>
+                    <div id="q8_1_3_2_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מנעולים ממוקמים בזיכרון פיזי משותף.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.3.2</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> אטומיות ברמת החומרה. פעולת Read-Modify-Write חייבת למנוע מכל ליבה אחרת לגשת לזיכרון באמצע.</p>
+                            <p><strong>שורה תחתונה:</strong> נעילת אפיק הזיכרון בחומרה היא המפתח לאטומיות של TSL ו-XCHG.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.3.3 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.3.3">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 3 (8.1.3.3): כיצד אלגוריתם Test and Test-and-Set (בדיקה ב-Cache) פותר את בעיית עומס האפיק של TSL?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.3.3</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q8_1_3_3_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. המעבד מסתובב בלולאת קריאה פשוטה מה-Cache המקומי מבלי לפנות לאפיק, ורק כשהערך הופך ל-0 הוא מנסה לבצע TSL אטומי.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_3_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. הוא שומר את כל המנעולים בדיסק הקשיח.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_3_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. הוא מבטל לחלוטין את מנגנון עקביות זיכרון המטמון.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_3_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. הוא מריץ את לולאת ההמתנה רק פעם אחת ביום.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_3_3_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> בדיקה בקריאה רגילה מתבצעת בתוך זיכרון המטמון המקומי ללא שום תעבורת אפיק, ופנייה לאפיק מתבצעת רק כשהמנעול משתחרר.
+                    </div>
+                    <div id="q8_1_3_3_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> גישה לדיסק איטית פי מיליון ואינה קשורה לספינלוק.
+                    </div>
+                    <div id="q8_1_3_3_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ביטול עקביות יוביל לקריאת נתונים שגויים וקריסת מערכת.
+                    </div>
+                    <div id="q8_1_3_3_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ספינלוק רץ בקצב של מיליוני איטרציות בשנייה.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.3.3</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> קריאה מהמטמון אינה צורכת רוחב פס של האפיק; רק כתיבה (כמו TSL) מייצרת עומס. לכן ספין על קריאה חוסך 99% מהעומס.</p>
+                            <p><strong>שורה תחתונה:</strong> Spin on Read שומר על אפיק הזיכרון פנוי למעבדים פעילים.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.3.4 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.3.4">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 4 (8.1.3.4): כיצד משחררים ספינלוק שננעל באמצעות פקודת TSL או XCHG?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.3.4</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q8_1_3_4_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. על ידי כתיבת פשוטה של הערך '0' לכתובת המנעול בזיכרון (למשל `mov lock, 0`).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_4_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. על ידי הפעלת פקודת TSL נוספת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_4_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. על ידי אתחול מחדש של מערכת ההפעלה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_4_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. שחרור מנעול אינו אפשרי, יש להמתין לסיום כל התוכניות במחשב.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_3_4_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> שחרור המנעול אינו דורש פקודה אטומית מיוחדת: כתיבת '0' רגילה משחררת את הנעילה ומפעילה את פרוטוקול עקביות המטמון.
+                    </div>
+                    <div id="q8_1_3_4_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> פקודת TSL כותבת '1' (נעול), ולכן אינה יכולה לשחרר מנעול.
+                    </div>
+                    <div id="q8_1_3_4_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אתחול מחדש של המחשב הוא פתרון שגוי ובלתי סביר לשחרור מנעול שגרתי.
+                    </div>
+                    <div id="q8_1_3_4_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מנעולים משתחררים אלפי פעמים בשנייה ברציפות.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.3.4</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> כתיבה של 0 היא פשוטה ומהירה, וכתיבה זו נתפסת על ידי ה-Snooping של כל שאר המעבדים ומאפשרת להם לדעת שהמנעול פנוי.</p>
+                            <p><strong>שורה תחתונה:</strong> שחרור ספינלוק = כתיבת 0 לזיכרון.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.3.5 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.3.5">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 5 (8.1.3.5): מדוע חובה להשבית פסיקות מקומיות כאשר נועלים ספינלוק שמשמש גם שגרת טיפול בפסיקה (ISR)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.3.5</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_5_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. כדי למנוע מרעש המאוורר של המחשב להפריע לתהליך.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_3_5_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. כדי למנוע קיפאון עצמי (Self-Deadlock) שבו פסיקה באותו מעבד תנסה לנעול את המנעול שמוחזק על ידי הקוד שהופסק.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_5_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מכיוון שמעבדים מרובים אינם תומכים בפסיקות כלל.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_3_5_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. כדי למחוק את תוכן ה-RAM באופן יזום.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_3_5_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> פסיקות הן מנגנון אלקטרוני ואינן קשורות לרעש מאווררים.
+                    </div>
+                    <div id="q8_1_3_5_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> אם ה-ISR נכנסת לספינלוק באותו המעבד, היא תמתין לנצח לקוד שהיא עצמה קטעה, והמעבד ייקפא לחלוטין.
+                    </div>
+                    <div id="q8_1_3_5_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מעבדים מרובים תומכים בפסיקות רגילות ובפסיקות בין-מעבדיות (IPI).
+                    </div>
+                    <div id="q8_1_3_5_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אין קשר למחיקת RAM.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.3.5</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> פסיקה על אותו מעבד מקפיאה את הקוד הקודם. לכן, כל ספינלוק שמשמש גם פסיקה מחייב השבתת פסיקות מקומית.</p>
+                            <p><strong>שורה תחתונה:</strong> השבתת פסיקות מקומית מונעת קיפאון עצמי קטלני בין תהליך ל-ISR.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>

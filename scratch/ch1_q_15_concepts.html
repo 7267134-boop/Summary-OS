@@ -1,0 +1,458 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 1.5: os-concepts (מושגים בסיסיים במערכות הפעלה)            -->
+        <!-- ===================================================================== -->
+        <div id="questions-os-concepts" data-title="שאלות מנחות ותרגול - 🌍 1.5 מושגים בסיסיים במערכות הפעלה">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 1.5.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.5.1: מהו ההבדל המושגי בין "תוכנית" (Program) לבין "תהליך" (Process), ואילו רכיבים כולל מרחב הכתובות של תהליך?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>תוכנית (Program):</strong> ישות <em>פסיבית (Passive Entity)</em>. קובץ סטטי המאוחסן על הדיסק הקשיח (קובץ הרצה בינארי, כגון `a.out` או `app.exe`), המכיל רצף פקודות מכונה ונתונים התחלתיים.
+                            2. <strong>תהליך (Process):</strong> ישות <em>אקטיבית (Active Entity)</em>. תוכנית הנמצאת <strong>בזמן ריצה (Program in Execution)</strong>. התהליך כולל את מרחב הכתובות ב-RAM, מונה הפקודות (PC), מצביע המחסנית (SP), תכולת כל אוגרי המעבד, קבצים פתוחים ומצב ביצוע נוכחי (Running, Ready, Blocked).
+                            3. <strong>מבנה מרחב הכתובות (Address Space) של תהליך בזיכרון:</strong>
+                            א. <strong>מקטע טקסט/קוד (Text Segment):</strong> הוראות המכונה לקריאה בלבד (Read-Only) הניתנות לשיתוף בין מספר תהליכים המריצים את אותה תוכנית.
+                            ב. <strong>מקטע נתונים (Data &amp; BSS Segment):</strong> משתנים גלובליים וסטטיים מאותחלים (Data) ולא-מאותחלים (BSS).
+                            ג. <strong>ערימה (Heap):</strong> זיכרון להקצאות דינמיות בזמן ריצה (כמו `malloc()` ב-C או `new` ב-Java/C++), הגדל כלפי מעלה לכיוון הכתובות הגבוהות.
+                            ד. <strong>מחסנית (Stack):</strong> משמשת לאחסון מסגרות קריאה של פונקציות, משתנים מקומיים, פרמטרים וכתובות חזרה. גדלה בדרך כלל כלפי מטה לכיוון הכתובות הנמוכות.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            התוכנית היא מתכון בספר בישול של עוגת שוקולד המונח על המדף במטבח (פסיבי לחלוטין). התהליך הוא השף שעומד ליד השיש, קורא את השלב הנוכחי במתכון (PC), מקציף ביצים בקערה (ערימה), זוכר את כמות הסוכר שהוסיף (מחסנית), ומשתמש בתנור האפייה (המעבד). עשרה שפים שונים יכולים לאפות את אותה עוגה במקביל לפי אותו מתכון יחיד – תוכנית אחת יוצרת עשרה תהליכים נפרדים.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>בידוד מרחב כתובות:</strong> לכל תהליך יש מרחב כתובות וירטואלי משלו, כך שכתובת `0x1000` בתהליך A מצביעה על מיקום פיזי שונה לחלוטין מכתובת `0x1000` בתהליך B.</li>
+                                <li><strong>בלוק בקרת תהליך (PCB):</strong> מערכת ההפעלה שומרת את מצב התהליך במבנה נתונים פנימי בליבה הנקרא PCB (Process Control Block).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            גלישת מחסנית (Stack Overflow): כאשר רקורסיה עמוקה מדי גורמת למחסנית לגדול כלפי מטה עד שהיא מתנגשת בערימה הגדלה כלפי מעלה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: תוכנית היא קובץ פסיבי על הדיסק; תהליך הוא מופע חי בזיכרון הכולל קוד, נתונים, ערימה ומחסנית יחד עם מצב אוגרי המעבד.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.5.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.5.2: כיצד ממומשת היררכיית התהליכים ב-UNIX, ומהו תפקידו של תהליך ה-init (PID=1)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>עץ יוחסין קשיח (Process Tree):</strong> ב-UNIX, כל תהליך במערכת (למעט הראשון) נוצר על ידי תהליך אחר באמצעות קריאת המערכת `fork()`. התהליך היוצר נקרא <strong>תהליך-אב (Parent)</strong> והתהליך שנוצר נקרא <strong>תהליך-בן (Child)</strong>. הבן יכול בתורו ליצור בנים נוספים, וכך נוצר עץ היררכי מושלם עם שורש יחיד.
+                            2. <strong>תהליך ה-init (PID = 1):</strong>
+                            זהו התהליך הראשון שנוצר על ידי גרעין מערכת ההפעלה בעת עליית המחשב (Boot). 
+                            <strong>תפקידיו המרכזיים:</strong>
+                            א. <em>אתחול המערכת ושירותיה:</em> מעלה את שירותי הרשת, שרתי ההתחברות (login daemons), ממשקי המשתמש וה-Shell.
+                            ב. <em>"האב המאמץ" של תהליכים יתומים (Orphan Adoption):</em> כאשר תהליך-אב מסתיים לפני שתהליכי-הבן שלו סיימו לרוץ, הבנים הופכים ליתומים. תהליך ה-`init` מאמץ אותם אוטומטית כבניו.
+                            ג. <em>מניעת תהליכי זומבי (Zombie Elimination):</em> ה-`init` קורא ל-`wait()` באופן קבוע כדי לאסוף את קודי היציאה של התהליכים שאומצו על ידו, ובכך מנקה אותם מטבלת התהליכים של הקרנל ומונע בזבוז משאבי מערכת.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על אדם הראשון בעץ שושלת משפחתית: `init` הוא הסבא-רבא הקדמון של כל התהליכים במחשב. אם אב נפטר במפתיע ומשאיר ילדים קטנים ברחוב (יתומים), בית היתומים המרכזי של המדינה (`init`) מאמץ אותם מיד, דואג להם עד שיסיימו את משימתם ורושם את פטירתם בספר הפטירות הלאומי כדי שלא יישארו רשומים כאזרחים חיים לנצח (זומבים).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>ההבדל מ-Windows:</strong> ב-Windows אין עץ יוחסין קשיח; יצירת תהליך מחזירה Handle, אך התהליך שנוצר עצמאי לחלוטין ואינו קשור ביחסי אב-בן קשיחים עם יוצרו.</li>
+                                <li><strong>מערכות מודרניות:</strong> בלינוקס מודרני תפקיד ה-init מבוצע ברובו על ידי `systemd`, אך מזהה התהליך שלו נותר `PID = 1`.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            תהליך זומבי (Zombie Process): תהליך שסיים את ריצתו (קרא ל-`exit()`), אך תהליך האב שלו טרם קרא ל-`wait()`. הוא נשאר בטבלת התהליכים עד שהאב יקרא את קוד היציאה שלו.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ב-UNIX כל התהליכים הם ענפים תחת תהליך האב הקדמון init (PID=1), המאמץ יתומים ומנקה תהליכי זומבי.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.5.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.5.3: מהו קובץ מנקודת המבט של מערכת ההפעלה, ומה ההבדל בין נתיב מוחלט (Absolute Path) לנתיב יחסי (Relative Path)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>הגדרת קובץ (File):</strong> קובץ הוא <em>אבסטרקציה (הפשטה)</em> של מערכת ההפעלה המייצגת <strong>רצף ליניארי של בתים (Stream of Bytes)</strong> המאוחסן על גבי התקן זיכרון לא-נדיף (כגון SSD או דיסק). מערכת ההפעלה מסתירה את מבנה הסקטורים הפיזי, ומצמידה לקובץ שם, מאפיינים (Attributes - גודל, זמן שינוי) והרשאות הגנה (rwx).
+                            2. <strong>נתיב מוחלט (Absolute Path Name):</strong>
+                            מתאר את מיקום הקובץ <em>החל מתיקיית השורש (Root Directory) של מערכת הקבצים</em>. 
+                            הוא מתחיל תמיד בתו השורש (`/` ב-UNIX, או אות כונן ושורש `C:\` ב-Windows), למשל: `/home/student/os/lab1.c`. נתיב זה הוא חד-ערכי וזהה ללא תלות בספרייה שבה נמצא כרגע התהליך.
+                            3. <strong>נתיב יחסי (Relative Path Name):</strong>
+                            מתאר את מיקום הקובץ <em>ביחס לספריית העבודה הנוכחית (Current Working Directory)</em> שבה רץ התהליך.
+                            הוא אינו מתחיל ב-`/`, אלא בשם תיקייה פנימית, ב-`./` (הספרייה הנוכחית) או ב-`../` (ספריית האב מעל), למשל: `os/lab1.c` או `../notes.txt`.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            נתיב מוחלט הוא כמו כתובת דואר גלובלית מלאה: "מדינת ישראל, תל אביב, רחוב דיזנגוף 50, דירה 4". לא משנה איפה אתה נמצא בעולם, המכתב יגיע לאותו המקום בדיוק. נתיב יחסי הוא הוראת ניווט מקומית: "פנה שמאלה בצומת הבא ועלה קומה אחת". הוראה זו תביא אותך למקום הנכון רק אם אתה כבר נמצא בצומת המסוים.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>ספרייה כקובץ מיוחד:</strong> ב-UNIX ספרייה (Directory) היא בעצמה קובץ המכיל טבלה של זוגות: `(File Name, i-node Number)`.</li>
+                                <li><strong>עגינת מערכות קבצים (Mounting):</strong> UNIX מאחדת דיסקים ומחיצות שונים לעץ היררכי יחיד באמצעות פקודת `mount`, כך שאין "אותיות כוננים" נפרדות כמו ב-Windows.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            בלבול בין `.` (ספרייה נוכחית) לבין `..` (ספריית האב שמעליה). קריאה ל-`cd ..` בתוך ספריית השורש (`/`) משאירה את התהליך בתוך השורש ללא שגיאה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: קובץ הוא רצף בתים מופשט; נתיב מוחלט מתחיל תמיד מהשורש (/), בעוד נתיב יחסי מתחיל מהספרייה הנוכחית של התהליך.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.5.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.5.4: כיצד מייצגת מערכת ההפעלה UNIX התקני חומרה כקבצים מיוחדים (Special Files), ומה ההבדל בין התקן תו להתקן בלוק?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            אחד מעקרונות התכנון המבריקים ביותר של UNIX הוא <strong>"הכל הוא קובץ" (Everything is a File)</strong>. כל התקן חומרה פיזי במחשב מיוצג במערכת הקבצים כ<strong>קובץ מיוחד (Special File)</strong>, הממוקם בדרך כלל תחת ספריית `/dev`. תוכניות משתמש פונות להתקני חומרה באמצעות אותן קריאות מערכת רגילות המשמשות לקבצים (`read`, `write`, `open`, `close`), ומערכת ההפעלה מנתבת את הקריאה למנהל ההתקן המתאים.
+                            <strong>ההבדל בין שני סוגי ההתקנים:</strong>
+                            1. <strong>קבצים מיוחדים להתקני תו (Character Special Files):</strong>
+                            מייצגים התקנים שמעבירים או מקבלים <em>זרם בתים סדרתי בודד (Character Stream)</em> ללא מבנה בלוקים וללא יכולת פנייה אקראית לכתובת ספציפית (Random Access).
+                            דוגמאות: מקלדת, עכבר, יציאות טוריות (Serial Ports / Modems), כרטיסי קול. לא ניתן לבצע בהם פעולת `lseek()`.
+                            2. <strong>קבצים מיוחדים להתקני בלוק (Block Special Files):</strong>
+                            מייצגים התקנים שבהם הנתונים מאורגנים ב<em>בלוקים בעלי גודל קבוע (כגון 512B או 4KB)</em>, כאשר לכל בלוק יש כתובת פיזית ייחודית וניתן לקרוא או לכתוב אליו באופן אקראי ישיר לחלוטין ללא תלות בסדר.
+                            דוגמאות: דיסקים קשיחים (HDDs), כונני SSD, החסני USB וכרטיסי זיכרון.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            התקן תו הוא כמו מים הזורמים מצינור גינה: טיפות המים (הבתים) זורמות בזו אחר זו ברצף; אי אפשר להגיד לצינור "תביא לי עכשיו את טיפה מספר 500 בלי להוציא את הראשונות". התקן בלוק הוא כמו כוורת של תיבות דואר בסניף: לכל תא יש מספר כתובת מוגדר (בלוק 45), ואתה יכול לגשת ישירות לתא 45, לפתוח אותו ולקרוא את המכתב בלי לגעת בתאים 1 עד 44.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>מספרי התקן (Major &amp; Minor Numbers):</strong> לכל קובץ מיוחד ב-`/dev` מוצמדים שני מספרים: Major Number המזהה איזה מנהל התקן בליבה אחראי עליו, ו-Minor Number המזהה את יחידת החומרה הספציפית (למשל מחיצה 2 בדיסק הראשון).</li>
+                                <li><strong>חוצץ מערכת (Buffer Cache):</strong> פניות להתקני בלוק עוברות בדרך כלל דרך שכבת זיכרון מטמון בליבה (Buffer Cache) כדי לייעל ביצועים, בעוד התקני תו מועברים ישירות.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            קבצים מיוחדים ב-`/dev` אינם תופסים מקום של נתונים בדיסק! הם שוקלים 0 בתים בדיסק ומשמשים רק כ"שער כניסה" (Pointer) לדרייבר בקרנל.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: התקן תו מזרים בתים בודדים ברצף ללא פנייה אקראית; התקן בלוק מנהל בלוקים ממוספרים המאפשרים קריאה וכתיבה אקראית ישירה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.5.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.5.5: מהו מעטפת הפקודה (Shell), ומדוע היא איננה חלק מגרעין מערכת ההפעלה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>מהות ה-Shell:</strong> ה-Shell (כגון bash, sh, zsh ב-UNIX, או Command Prompt ו-PowerShell ב-Windows) הוא <strong>מפענח הפקודות וממשק המשתמש הטקסטואלי (CLI)</strong> של מערכת ההפעלה. תפקידו להדפיס הנחיה למשתמש (Prompt), לקרוא את מחרוזת הפקודה שהוקלדה, לפענח ארגומנטים, צינורות (Pipes) והפניות קלט/פלט, ולהפעיל את התוכנית המבוקשת באמצעות קריאות מערכת כגון `fork()` ו-`execve()`.
+                            2. <strong>מדוע ה-Shell אינו חלק מהקרנל:</strong>
+                            א. <em>הוא אינו זקוק להרשאות מיוחסות:</em> כל פעולות ה-Shell מתבצעות במלואן ב<strong>מצב משתמש (User Mode)</strong> באמצעות קריאות מערכת רגילות לחלוטין.
+                            ב. <em>עיקרון המודולריות והחלפת רכיבים:</em> כל משתמש במחשב יכול לבחור ולהריץ מעטפת שונה לפי טעמו האישי (או לכתוב Shell משלו בשיעורי בית), מבלי לשנות אף שורת קוד אחת בגרעין ומבלי לסכן את יציבות המערכת.
+                            ג. <em>מזעור הליבה ואבטחת מידע:</em> הכנסת תוכנית מורכבת שמנתחת מחרוזות טקסט (String Parsing) לתוך ה-Kernel Mode תנפח את הליבה ותחשוף אותה לבאגים ופרצות אבטחה חמורות.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ה-Shell הוא כמו פקיד הקבלה בבנק: הוא יושב בדלפק מול הקהל, מקשיב לבקשות של הלקוחות בשפה פשוטה ("אני רוצה להפקיד צ'ק"), ממלא טופס סטנדרטי ומעביר אותו דרך הצוהר לכספת הראשית (הקרנל). פקיד הקבלה אינו יושב בתוך הכספת המאובטחת ואינו מחזיק במפתח למטילי הזהב – ואם פקיד הקבלה מתעייף, אפשר להחליף אותו בפקיד אחר תוך דקה מבלי לפגוע בכספת.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>לולאת הריצה של ה-Shell:</strong> פועלת בלולאה אינסופית: הדפסת Prompt -> קריאת שורה (`read`) -> יצירת תהליך-בן (`fork`) -> החלפת הקוד בתוכנית המבוקשת (`execve`) -> המתנה לסיום (`waitpid`) -> חזרה להתחלה.</li>
+                                <li><strong>אותו עקרון עבור ה-GUI:</strong> ממשק המשתמש הגרפי (X11, Wayland, Windows Explorer) ממומש אף הוא כתוכנית משתמש המשתמשת בקריאות מערכת.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            פקודות פנימיות של ה-Shell (Built-in Commands): פקודות כמו `cd` או `exit` חייבות להתבצע בתוך תהליך ה-Shell עצמו ולא כתוכנית נפרדת (כי שינוי ספרייה בתהליך-בן לא ישפיע על תהליך ה-Shell האב!).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ה-Shell הוא תוכנית משתמש רגילה ב-User Mode המשמשת כממשק מול המשתמש; הוא אינו חלק מהקרנל וניתן להחלפה חופשית.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטראקטיביות (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>🎯 תרגול שאלות אמריקאיות - 1.5 מושגים בסיסיים:</strong> שאלות רב-ברירה להבנת תהליכים, מרחבי כתובות, קבצים וממשקי מערכת.
+                </div>
+
+                <!-- שאלה אמריקאית 1.5.1 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.5.1">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 1 (1.5.1): איזה מקטע במרחב הכתובות של תהליך גדל באופן דינמי כלפי מעלה ומשמש להקצאות זיכרון על ידי פקודת malloc() בשפת C?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.5.1</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_5_1_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מקטע הטקסט / קוד (Text Segment).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_1_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. המחסנית (Stack).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_5_1_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. הערימה (Heap).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_1_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. מקטע BSS של משתנים לא מאותחלים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_5_1_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מקטע הטקסט מכיל את הוראות המכונה וגודלו קבוע ומוגן לקריאה בלבד.
+                    </div>
+                    <div id="q1_5_1_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המחסנית גדלה כלפי מטה ומשמשת למשתנים מקומיים ומסגרות פונקציות.
+                    </div>
+                    <div id="q1_5_1_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> הערימה (Heap) מתחילה מיד אחרי מקטעי הנתונים וגדלה כלפי מעלה לכיוון כתובות גבוהות לצורך הקצאות דינמיות בזמן ריצה (`malloc`, `calloc`).
+                    </div>
+                    <div id="q1_5_1_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מקטע ה-BSS הוא סטטי וגודלו נקבע בזמן קומפילציה.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.5.1</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרחבת הערימה:</strong> ברמת מערכת ההפעלה, הערימה מוגדלת באמצעות קריאת המערכת <code>brk()</code> או <code>sbrk()</code> (או מיפוי דפים דרך <code>mmap()</code>).</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.5.2 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.5.2">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 2 (1.5.2): מה קורה ב-UNIX כאשר תהליך-אב מסתיים לפני שתהליך-הבן שלו סיים את פעולתו?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.5.2</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_5_2_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. תהליך הבן מחוסל מיד על ידי מערכת ההפעלה (Kill).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_5_2_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. תהליך הבן הופך ל"יתום" ומאומץ אוטומטית על ידי תהליך ה-init (PID = 1).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_2_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. המחשב נכנס לקיפאון (Deadlock) ומחייב אתחול.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_2_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. תהליך הבן הופך להיות תהליך האב של עצמו.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_5_2_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ב-UNIX מות האב אינו גורר בהכרח את מות הבן (אלא אם הוגדרו אותות מפורשים).
+                    </div>
+                    <div id="q1_5_2_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> תהליך שהתייתם מועבר תחת חסותו של תהליך ה-init, שיהיה אחראי לאסוף את קוד הסיום שלו כשיסיים.
+                    </div>
+                    <div id="q1_5_2_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מנגנון האימוץ פותח במיוחד כדי למנוע קיפאון ושגיאות.
+                    </div>
+                    <div id="q1_5_2_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> תהליך אינו יכול להיות האב של עצמו במבנה עץ יוחסין ללא מעגלים.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.5.2</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>חשיבות האימוץ:</strong> אם אף אחד לא יאמץ את הבן, כשהוא יסיים הוא יישאר זומבי לנצח. ה-init דואג לבצע <code>wait()</code> ולפנות את ה-PCB שלו.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.5.3 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.5.3">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 3 (1.5.3): מהו המאפיין המבדיל נתיב מוחלט (Absolute Path) מנתיב יחסי (Relative Path)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.5.3</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_5_3_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. נתיב מוחלט מיועד לקבצי תמונות בלבד, ונתיב יחסי לקבצי טקסט.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_5_3_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. נתיב מוחלט מתחיל תמיד משורש עץ מערכת הקבצים (למשל תו / ב-UNIX) ואינו תלוי בספרייה הנוכחית של התהליך.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_3_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. נתיב מוחלט כולל תמיד סיסמת משתמש מוצפנת בתוכו.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_3_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. נתיב יחסי יכול לפנות רק לקבצים שנמחקו לסל המיחזור.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_5_3_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> סוג הנתיב אינו תלוי בסוג הקובץ.
+                    </div>
+                    <div id="q1_5_3_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> נתיב מוחלט מתחיל תמיד מהשורש (Root `/`) ומצביע על אותו הקובץ מכל מקום; נתיב יחסי מתחיל מהספרייה הפעילה של התהליך.
+                    </div>
+                    <div id="q1_5_3_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> נתיב אינו כולל סיסמאות אלא מזהי תיקיות בלבד.
+                    </div>
+                    <div id="q1_5_3_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> נתיב יחסי פונה לקבצים קיימים ופעילים בסביבת העבודה.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.5.3</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>דוגמאות:</strong> <code>/usr/bin/gcc</code> = מוחלט; <code>./my_script.sh</code> = יחסי.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.5.4 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.5.4">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 4 (1.5.4): איזה מבין ההתקנים הבאים מיוצג ב-UNIX על ידי קובץ מיוחד של התקן תו (Character Special File)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.5.4</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_5_4_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. כונן דיסק קשיח מגנטי (SATA HDD).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_4_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. כונן הבזק NVMe SSD.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_5_4_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מקלדת המשתמש (Keyboard).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_4_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. דיסק און קי (USB Flash Drive).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_5_4_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> דיסק קשיח מחולק לבלוקים ומהווה Block Device קלאסי.
+                    </div>
+                    <div id="q1_5_4_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> כונן SSD מנוהל בבלוקים ודפים ומהווה Block Device.
+                    </div>
+                    <div id="q1_5_4_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> מקלדת מזרימה תווים בודדים בזה אחר זה כזרם בתים סדרתי ללא כתובות בלוקים, ולכן מיוצגת כהתקן תו.
+                    </div>
+                    <div id="q1_5_4_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> דיסק און קי הוא התקן אחסון בלוקים עם כתובות סקטור.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.5.4</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>השוואה:</strong> התקן תו = זרם בתים סדרתי (מקלדת, מודם, מדפסת טורית); התקן בלוק = בלוקים ממוענים עם פנייה אקראית (דיסקים, SSD).</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.5.5 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.5.5">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 5 (1.5.5): מדוע מעטפת הפקודות (Shell) אינה רצה ב-Kernel Mode אלא ב-User Mode?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.5.5</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_5_5_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מכיוון שהמעבד אינו תומך בהרצת פקודות טקסט במצב Kernel.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_5_5_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. כדי לשמור על עקרון ההפרדה והאמינות: ה-Shell אינו זקוק להרשאות מיוחדות, יכול לבצע את כל פעולותיו דרך קריאות מערכת רגילות, וניתן להחלפה חופשית.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_5_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. כדי למנוע מהמשתמש לפתוח קבצים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_5_5_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. מכיוון שה-Shell נמחק מהזיכרון מיד לאחר פתיחת המחשב.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_5_5_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המעבד מריץ כל הוראת מכונה ללא קשר לתוכן הנתונים שלה.
+                    </div>
+                    <div id="q1_5_5_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> ה-Shell הוא תוכנית שירות רגילה לחלוטין. הרצתו ב-User Mode מגינה על הליבה מפני באגים ומאפשרת למשתמשים לבחור מעטפות שונות.
+                    </div>
+                    <div id="q1_5_5_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ה-Shell נועד לסייע למשתמש לנהל קבצים ותוכניות בקלות.
+                    </div>
+                    <div id="q1_5_5_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ה-Shell פעיל כל עוד המשתמש מחובר למערכת.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.5.5</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>פילוסופיית UNIX:</strong> הגרעין קטן ומספק מנגנונים בלבד; הממשק למשתמש (GUI או Shell) הוא יישום חיצוני שניתן להחליפו בכל רגע.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>

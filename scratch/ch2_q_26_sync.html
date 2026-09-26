@@ -1,0 +1,337 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 2.6: classic-sync (בעיות סנכרון קלאסיות)                  -->
+        <!-- ===================================================================== -->
+        <div id="questions-classic-sync" data-title="שאלות מנחות ותרגול - 🔄 2.6 בעיות סנכרון קלאסיות">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 2.6.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.6.1: כיצד מוגדרת בעיית הפילוסופים הסועדים (Dining Philosophers), מדוע הפתרון הנאיבי של "הרמת מקל שמאלי ולאחריו ימני" מוביל בהכרח למבוי סתום (Deadlock), וכיצד גרף הקצאת המשאבים (RAG) ממחיש זאת?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>בעיית הפילוסופים הסועדים (Dining Philosophers):</strong> מודל מופשט שהוצע ע"י אדסחר דייקסטרה ב-1965 להמחשת הקצאת משאבים מרובים במערכות הפעלה. 5 פילוסופים יושבים סביב שולחן עגול, ובין כל שני פילוסופים מונח מקל אכילה (Chopstick) אחד (סה"כ 5 מקלות). כל פילוסוף מקדיש את חייו לחשיבה (Thinking) ולאכילה (Eating). כדי לאכול, פילוסוף <strong>חייב לאחוז בשני המקלות שלצדיו בו-זמנית</strong> (ימינו ושמאלו).<br>
+                            <strong>קריסת הפתרון הנאיבי למבוי סתום (Deadlock):</strong> הפתרון הנאיבי מנחה כל פילוסוף: <code>take_chopstick(left); take_chopstick(right); eat(); put_chopstick(left); put_chopstick(right);</code>. נניח תרחיש שבו כל 5 הפילוסופים הופכים לרעבים בדיוק באותו הרגע (או שמתרחשת החלפת הקשר מתוזמנת היטב). כל פילוסוף מושיט את יד שמאלו ומרים את המקל השמאלי שלו. כעת, כל 5 המקלות תפוסים! בשלב הבא, כל פילוסוף מנסה להרים את המקל הימני שלו, אך המקל הימני שלו הוא המקל השמאלי של שכנו. כל פילוסוף נחסם (Blocked) בהמתנה למקל הימני. מכיוון שאף אחד אינו מוותר על המקל שבידו עד שלא יסיים לאכול, <strong>כל 5 הפילוסופים תקועים לנצח במבוי סתום (Deadlock)</strong> וגוועים ברעב.<br>
+                            <strong>המחשה בגרף הקצאת משאבים (RAG - Resource Allocation Graph):</strong> הגרף כולל צמתי תהליכים ($P_0 \dots P_4$) וצמתי משאבים ($C_0 \dots C_4$). קשת הקצאה יוצאת מכל $C_i$ ל-$P_i$ (כי כל פילוסוף מחזיק את מקל שמאל), וקשת בקשה יוצאת מכל $P_i$ ל-$C_{(i+1)\%5}$ (כי כל פילוסוף ממתין למקל ימין). נוצר <strong>מעגל סגור מכוון יחיד</strong> ($P_0 \to C_1 \to P_1 \to C_2 \to P_2 \to C_3 \to P_3 \to C_4 \to P_4 \to C_0 \to P_0$) שבו כל משאב מכיל עותק בודד, המהווה הוכחה מתמטית לקיומו של Deadlock בלתי נמנע.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על מעגל תנועה (כיכר) שבו חמישה נהגים נכנסים בו-זמנית: כל נהג חוסם את החצי השמאלי של הכיכר וממתין שהנהג שמולו יפנה את החצי הימני. אף נהג לא מוכן לנסוע לאחור (לוותר על המשאב שתפס), ולכן כל המכוניות עומדות פגוש אל פגוש בקיפאון מוחלט. זוהי בדיוק "המתנה מעגלית" שבה שרשרת התלות סוגרת מעגל על עצמה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            התרחשות Deadlock במערכת מחשב מחייבת התקיימות סימולטנית של <strong>ארבעת תנאי קופמן (Coffman Conditions)</strong>:
+                            <br>1. <strong>מניעה הדדית (Mutual Exclusion):</strong> מקל אכילה יכול להיות מוחזק ע"י פילוסוף אחד בלבד ברגע נתון.
+                            <br>2. <strong>החזק והמתן (Hold and Wait):</strong> כל פילוסוף מחזיק מקל אחד וממתין לקבלת מקל נוסף.
+                            <br>3. <strong>היעדר נישול (No Preemption):</strong> לא ניתן לחטוף בכוח מקל מפילוסוף שמחזיק בו.
+                            <br>4. <strong>המתנה מעגלית (Circular Wait):</strong> $P_0$ מחכה ל-$P_1$, שמחכה ל-$P_2 \dots$ שמחכה ל-$P_0$.
+                            <br>שבירת <em>אפילו תנאי אחד</em> מתוך הארבעה מבטלת את אפשרות ה-Deadlock לחלוטין!
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת ה-<strong>Livelock</strong>: נניח שננסה לתקן את הקוד כך שאם פילוסוף לא מצליח להרים את מקל ימין, הוא מניח מיד את מקל שמאל, ממתין שניה, ומנסה שוב. אם כל הפילוסופים פועלים בסנכרון מושלם, כולם ירימו את מקל שמאל יחד, יגלו שמקל ימין תפוס, יניחו את מקל שמאל יחד, ימתינו שניה, וירימו שוב את מקל שמאל יחד – ללא סוף. בתרחיש זה התהליכים אינם חסומים (הם פעילים ורצים), אך המערכת אינה מתקדמת לעולם – תופעה זו מכונה <strong>Livelock</strong> ונפתרת ע"י המתנה באורך אקראי (Randomized Backoff).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: בעיית הפילוסופים הסועדים ממחישה מבוי סתום עקב תחרות על משאבים מרובים; הפתרון הנאיבי יוצר המתנה מעגלית בגרף ה-RAG ומקפיא את כל המערכת.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.6.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.6.2: מהם הפתרונות המרכזיים למניעת מבוי סתום בבעיית הפילוסופים הסועדים, ובפרט כיצד פועל הפתרון האסימטרי של דייקסטרה לעומת פתרון מערך המצבים עם סמפורים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            קיימות מספר גישות קלאסיות למניעת Deadlock בבעיית הפילוסופים הסועדים:
+                            <br>1. <strong>הפתרון האסימטרי (שבירת הסימטריה המעגלית):</strong> פילוסופים $0, 1, 2, 3$ מרימים קודם את מקל שמאל ואז את מקל ימין, בעוד שפילוסוף $4$ (הפילוסוף האחרון) מונחה להרים <strong>קודם את מקל ימין ואז את מקל שמאל</strong> (או: פילוסופים זוגיים מרימים ימין תחילה, ואי-זוגיים שמאל תחילה). שבירת הסימטריה מבטיחה ששני פילוסופים סמוכים ($P_0$ ו-$P_4$) יתחרו על אותו המקל ($C_0$) ראשון. אחד מהם ינצח וימשיך לקחת את המקל השני, בעוד שהמפסיד ימתין מבלי לתפוס משאב. מעגל ההמתנה נשבר לחלוטין ולפחות פילוסוף אחד מובטח שיאכל!
+                            <br>2. <strong>פתרון מערך המצבים והסמפורים (Tanenbaum's Solution):</strong> כל פילוסוף מחזיק מצב במערך: <code>THINKING</code>, <code>HUNGRY</code> או <code>EATING</code>, וסמפור פרטי <code>s[N]</code> (המאותחל ל-0) שעליו הוא נרדם אם אינו יכול לאכול. פילוסוף עובר ל-<code>EATING</code> אך ורק בפונקציית בדיקה (<code>test</code>) המוודאת:
+                            <code>state[i] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING</code>.
+                            בדיקה זו מוגנת ב-<strong>Mutex בינארי יחיד</strong>. אם התנאי מתקיים, הפילוסוף מעלה את הסמפור הפרטי שלו (<code>up(&s[i])</code>) ונכנס לאכול מיד. בעת סיום האכילה, הפילוסוף בודק את שכניו ומעיר אותם אם הם רעבים ויכולים כעת לאכול.
+                            <br>3. <strong>הגבלת מספר הפילוסופים (שוער / Token):</strong> שימוש בסמפור סופר המאותחל ל-4 המאפשר לעד 4 פילוסופים לשבת בו-זמנית סביב השולחן. לפי עקרון שובך היונים, בהינתן 5 מקלות ו-4 פועלים, תמיד יימצא לפחות פילוסוף אחד ששני המקלות שלצדו פנויים.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            שבירת סימטריה היא העיקרון שלפיו תנועת רכבים מתנהלת בצומת ללא רמזורים: אם כולם ינהגו באותו חוק שוויוני ("תן זכות קדימה למי שמימינך"), ארבעה רכבים שמגיעים יחד ייכנסו לקיפאון. ברגע שנקבע תמרור עצור לרכב אחד בלבד (אסימטריה), אחד מוותר מראש, השאר זורמים, והתנועה משתחררת.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            ניתוח הקוד של פתרון טננבאום (מערך המצבים):
+                            <br>• הפילוסוף קורא ל-<code>take_forks(i)</code>: נועל את ה-<code>mutex</code>, קובע <code>state[i] = HUNGRY</code>, קורא ל-<code>test(i)</code> ומשחרר את ה-<code>mutex</code>. לאחר מכן מבצע <code>down(&s[i])</code>. אם <code>test(i)</code> מצאה ששני השכנים אינם אוכלים, היא ביצעה <code>up(&s[i])</code> ולכן ה-<code>down</code> אינו חוסם והוא ממשיך ישירות לאכול! אם אחד השכנים אכל, ה-<code>test</code> לא ביצעה <code>up</code>, והפילוסוף נרדם על הסמפור הפרטי שלו.
+                            <br>• ביציאה <code>put_forks(i)</code>: נועל את ה-<code>mutex</code>, קובע <code>state[i] = THINKING</code>, וקורא ל-<code>test(LEFT)</code> ול-<code>test(RIGHT)</code> כדי לבדוק האם שכניו רעבים וממתינים. אם כן, שחרור המקלות שלו יאפשר להם לעבור ל-<code>EATING</code> ולבצע <code>up(&s[neighbor])</code> להערתם.
+                            <br>פתרון זה ממקסם את המקביליות במערכת: בשולחן של 5 פילוסופים, <strong>שני פילוסופים יכולים לאכול בו-זמנית תמיד</strong> (למשל פילוסוף 0 ופילוסוף 2).
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת ההרעבה (Starvation) בפתרון מערך המצבים: למרות שפתרון טננבאום חסין מ-Deadlock, הוא <strong>אינו חסין מהרעבה ללא מנגנון תור</strong>! נניח שפילוסוף 1 רעב. פילוסופים 0 ו-2 אוכלים לסירוגין: כש-0 מסיים 2 מתחיל, וכש-2 מסיים 0 מתחיל שוב. בכל פעם שפילוסוף 1 נבדק, לפחות אחד משכניו אוכל. פילוסוף 1 עלול לגווע ברעב (Starvation) בעוד שאר המערכת חיה ופעילה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: שבירת סימטריה אסימטרית מבטלת את תנאי ההמתנה המעגלית בעלות אפסית; פתרון מערך המצבים של טננבאום מאפשר מקביליות מרבית (2 אוכלים בו-זמנית) אך דורש הגנה מפני הרעבה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.6.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.6.3: מהי בעיית הקוראים והכותבים (Readers-Writers), כיצד פועל מנגנון הנעילה "הקורא הראשון נועל והקורא האחרון משחרר" בגרסה המעדיפה קוראים, ומדוע גרסה זו גורמת לסכנת הרעבת כותבים (Writer Starvation)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>בעיית הקוראים והכותבים (Readers-Writers):</strong> מדמה ניהול גישה למסד נתונים משותף (כגון מערכת הזמנת כרטיסי טיסה) שבו תהליכים נחלקים לשני סוגים בעלי אינטרסים מנוגדים:
+                            <br>• <strong>קוראים (Readers):</strong> קוראים בלבד ואינם משנים נתונים. לכן, <strong>מספר בלתי מוגבל של קוראים רשאים לגשת למסד במקביל</strong>.
+                            <br>• <strong>כותבים (Writers):</strong> מעדכנים נתונים ולכן חייבים <strong>גישה בלעדית לחלוטין (Mutual Exclusion)</strong> – אסור לאף קורא או כותב אחר להימצא במסד הנתונים בעת כתיבה.<br>
+                            <strong>מנגנון "הקורא הראשון נועל והקורא האחרון משחרר":</strong>
+                            בגרסה הקלאסית המעדיפה קוראים, משתמשים במונה קוראים פעילים <code>rc</code>, בסמפור בינארי <code>mutex</code> להגנה על המונה, ובסמפור <code>db</code> להגנה על מסד הנתונים:
+                            <br>1. <strong>כניסת קורא:</strong> הקורא מגדיל את המונה <code>rc++</code>. אם <code>rc == 1</code> (הוא הקורא הראשון שנכנס), הוא מבצע <code>down(&db)</code> – ובכך <strong>נועל את מסד הנתונים כולו בפני כותבים</strong>. קוראים נוספים שמגיעים אחריו מגדילים את <code>rc</code> ונכנסים ישירות ללא צורך בנעילת <code>db</code>.
+                            <br>2. <strong>יציאת קורא:</strong> הקורא מקטין את המונה <code>rc--</code>. אם <code>rc == 0</code> (הוא הקורא האחרון שיוצא), הוא מבצע <code>up(&db)</code> – ובכך <strong>משחרר את מסד הנתונים ומאפשר לכותב להיכנס</strong>.<br>
+                            <strong>סכנת הרעבת הכותבים (Writer Starvation):</strong> אם קורא ראשון נכנס ונעל את <code>db</code>, ובינתיים מגיע כותב – הכותב נחסם על <code>down(&db)</code>. אם בעוד הקורא הראשון קורא מגיע קורא שני, ואחריו קורא שלישי, וכך הלאה בזרם רציף של קוראים (כפי שקורה באתרי אינטרנט עמוסים), המונה <code>rc</code> לעולם לא ירד ל-0! כתוצאה מכך, <strong>הכותב ימתין לנצח מחוץ לשער ה-<code>db</code> ולעולם לא יקבל גישה לעדכון הנתונים</strong> (הרעבה מוחלטת).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תארו לעצמכם חדר תצוגה במוזיאון (הקובץ המשותף). מבקרים יכולים להיכנס בהמוניהם ולהסתכל על התמונות (קריאה). עובד ניקיון רוצה לשטוף את הרצפה עם חומרים מסוכנים (כותב) וחייב שהחדר יהיה ריק לחלוטין. המבקר הראשון סוגר את דלת הכותבים. כל עוד יש אפילו מבקר אחד בחדר, עובד הניקיון מחכה בחוץ. אם כל מבקר שיוצא חולף על פני מבקר חדש שנכנס, המוזיאון לעולם לא יתרוקן ועובד הניקיון יעמוד שם עד מחר בבוקר מבלי לנקות לעולם.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הקוד המדויק של הגרסה המעדיפה קוראים (Courtois et al. - 1971):
+                            <br><code>void reader() { down(&mutex); rc++; if (rc == 1) down(&db); up(&mutex); read_database(); down(&mutex); rc--; if (rc == 0) up(&db); up(&mutex); }</code>
+                            <br>שימו לב לאטומיות של עדכון <code>rc</code>: ללא ה-<code>mutex</code>, שני קוראים מקבילים עלולים להגדיל את <code>rc</code> בו-זמנית מתאפס ל-1, ושניהם ינסו לבצע <code>down(&db)</code>, מה שיוביל לקריסה או לחסימת הקורא השני. לכן הגנת המונה חיונית לא פחות מהגנת המסד.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות נפוצה בבחינות היא לחשוב שבעיית הקוראים והכותבים זהה לבעיית היצרן והצרכן. <strong>ההבדל תהומי:</strong> ביצרן-צרכן, היצרן מייצר נתונים והצרכן <em>מוציא ומוחק אותם</em> (משאב מתכלה); ב-Readers-Writers, הקוראים אינם צורכים או משנים את הנתונים אלא צופים בהם בלבד, ואין מגבלה על מספר הקוראים בו-זמנית.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: העדפת קוראים ממקסמת קריאה מקבילית ע"י נעילת מסד ב-<code>rc==1</code> ושחרורו ב-<code>rc==0</code>, אך גורמת להרעבה מוחלטת של כותבים כאשר זרם הקוראים רציף.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.6.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.6.4: כיצד בנוי הפתרון המעדיף כותבים (Writers Preference) בבעיית הקוראים והכותבים באמצעות סמפור ה-readTry, ואיזה טרייד-אוף חדש נוצר במערכת בעקבות שינוי זה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מנגנון הפתרון המעדיף כותבים (Writers Preference):</strong>
+                            כדי למנוע את הרעבת הכותבים, מתווסף מנגנון "מחסום מקדים" – סמפור בינארי נוסף בשם <code>readTry</code> (או <code>turnstile</code>) ומונה כותבים ממתינים/פעילים <code>writecount</code>:
+                            <br>• <strong>פעולת הכותב:</strong> כותב שרוצה להיכנס מגדיל את <code>writecount++</code>. אם הוא הכותב הראשון שהביע עניין (<code>writecount == 1</code>), הוא מבצע <code>down(&readTry)</code> – ובכך <strong>נועל את השער הראשי בפני כל קורא חדש</strong>! לאחר מכן הוא ממתין ל-<code>down(&resource)</code> עד שכל הקוראים שכבר היו בתוך המסד יסיימו. כשהוא מסיים, הוא מקטין <code>writecount--</code> ורק כשהכותב האחרון יוצא (<code>writecount == 0</code>) הוא משחרר את <code>up(&readTry)</code> ומאפשר לקוראים לחזור.
+                            <br>• <strong>פעולת הקורא:</strong> לפני שקורא ניגש למונה הקוראים, הוא חייב לעבור דרך <code>down(&readTry)</code> ומיד <code>up(&readTry)</code>. אם כותב ממתין, ה-<code>readTry</code> נעול, ולכן <strong>אף קורא חדש אינו יכול להיכנס</strong>. הקוראים שמגיעים נחסמים בשער, הקוראים שכבר נמצאים בפנים מסיימים במהירות ויוצאים, והכותב מקבל את המשאב מיד ללא עיכוב.<br>
+                            <strong>הטרייד-אוף החדש:</strong> הפתרון פתר לחלוטין את הרעבת הכותבים, אך <strong>יצר את הבעיה ההפוכה בדיוק – סכנת הרעבת קוראים (Reader Starvation)</strong>! אם למערכת מגיעים כותבים ברצף בלתי פוסק (כגון שרת רישום עסקאות כספיות אינטנסיבי), שער ה-<code>readTry</code> יישאר נעול לצמיתות, והקוראים יישארו ממתינים לנצח. במערכות מודרניות משתמשים בפתרונות הוגנים מבוססי תור FIFO (Fair Readers-Writers) שבהם הגישה ניתנת לפי סדר ההגעה המדויק.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            באנלוגיית המוזיאון: מנהל המוזיאון רואה שעובד הניקיון מחכה בחוץ כבר שעתיים. המנהל מציב שומר בכניסה הראשית (סמפור <code>readTry</code>) ועוצר כניסת מבקרים חדשים. הוא אינו מגרש את המבקרים שכבר בפנים; הוא רק ממתין שייצאו. ברגע שהאחרון יוצא, עובד הניקיון נכנס ומנקה מיד. אך אם יגיעו 20 עובדי ניקיון בזה אחר זה, השומר בכניסה לא יפתח את הדלת ומבקרים יורעבו בחוץ.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הקצאת הסמפורים המלאה ב-Writers Preference:
+                            <br>1. <code>readTry = 1</code>: חוסם כניסת קוראים חדשים ברגע שכותב מגיע.
+                            <br>2. <code>resource = 1</code>: מגן על מסד הנתונים עצמו (Mutual exclusion לקוראים מול כותבים וכותב מול כותב).
+                            <br>3. <code>rmutex = 1</code>: מגן על מונה <code>readcount</code>.
+                            <br>4. <code>wmutex = 1</code>: מגן על מונה <code>writecount</code>.
+                            <br>אלגוריתם זה מוכיח חשיבה מערכתית מדורגת: שני מונים נפרדים (אחד לקוראים ואחד לכותבים), כאשר כל קבוצה משתמשת בתבנית "הראשון נועל והאחרון משחרר" כלפי המשאב המתחרה.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מה קורה אם קורא אחד כבר עבר את <code>down(&readTry)</code> ונמצא בדיוק לפני <code>down(&resource)</code>, וברגע זה מגיע כותב? הכותב ינעל את <code>readTry</code> לקוראים הבאים, אך הקורא שכבר עבר את השער ימשיך וייכנס למסד. הכותב ימתין בסבלנות לקורא זה שיסיים, ורק אז ייכנס. אין שום סכנה של תנאי מרוץ או קריאה מלוכלכת כי ה-<code>resource</code> מגן על שלמות הנתונים בכל רגע.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: Writers Preference משתמש ב-<code>readTry</code> לחסימת קוראים חדשים בעת הגעת כותב ומחסל הרעבת כותבים, אך במחיר חשיפת הקוראים להרעבה בתנאי עומס כתיבה כבד.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.6.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.6.5: מהו ההבדל המהותי ביותר בטבע הכשלים שבין בעיית הפילוסופים הסועדים לבין בעיית הקוראים והכותבים, וכיצד בעיית הספר הנרדם (Sleeping Barber) משלבת בין סמפורי ספירה למניעה הדדית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>ההבדל המהותי בטבע הכשלים:</strong>
+                            <br>• <strong>בבעיית הפילוסופים הסועדים:</strong> הכשל המרכזי והחמור מכל הוא <strong>מבוי סתום (Deadlock)</strong>. זוהי קריסה מערכתית טוטאלית שבה <em>אף תהליך אינו יכול להתקדם לעולם</em> עקב מעגל המתנה סגור. המערכת קופאת לחלוטין.
+                            <br>• <strong>בבעיית הקוראים והכותבים:</strong> הכשל המרכזי הוא <strong>הרעבה (Starvation)</strong>. המערכת <em>אינה תקועה ב-Deadlock</em> – קוראים ממשיכים לקרוא או כותבים ממשיכים לכתוב ללא הפרעה והתפוקה זורמת, אלא ש<strong>תהליך מסוים מקופח ואינו זוכה לקבל שירות לעולם</strong> עקב חוסר הוגנות בתעדוף.<br>
+                            <strong>בעיית הספר הנרדם (Sleeping Barber):</strong>
+                            מדמה מספרה עם ספר יחיד, כיסא תספורת, וחדר המתנה עם $N$ כיסאות.
+                            <br>• אם אין לקוחות – הספר הולך לישון בכיסא התספורת.
+                            <br>• כאשר לקוח מגיע: אם הספר ישן, הלקוח מעיר אותו ומתיישב בכיסא. אם הספר עסוק ויש כיסא פנוי בחדר ההמתנה, הלקוח מתיישב וממתין. אם כל $N$ הכיסאות תפוסים – הלקוח עוזב את המספרה מיד (Dropped Request).
+                            <br>• <strong>השילוב הסינכרוני:</strong> הבעיה משלבת <strong>סמפור סופר <code>customers</code></strong> (סופר לקוחות ממתינים ומעיר את הספר), <strong>סמפור בינארי <code>barbers</code></strong> (חוסם את הלקוח עד שהספר מוכן לספר אותו), ו<strong>סמפור בינארי <code>mutex</code></strong> (להגנה על משתנה מונה הכיסאות התפוסים <code>waiting</code>). מודל זה מהווה את הבסיס המדויק למימוש תורי שרתים ו-Thread Pools בעלי קיבולת מוגבלת.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            Deadlock הוא כמו תאונת שרשרת במנהרה – הכל נעצר, אף מכונית לא זזה, והכביש מושבת. Starvation היא כמו מועדון לילה שבו הסלקטור מכניס סלבריטאים בעדיפות: המוזיקה בפנים מנגנת, אנשים רוקדים (המערכת חיה ופועלת), אבל אדם פשוט בתור הרגיל עומד בגשם 8 שעות ולא נכנס לעולם. הספר הנרדם הוא פקיד קבלה שנרדם בעבודה כשהמשרד ריק, מתעורר כשיש קהל, ומחזיר הביתה לקוחות כשחדר ההמתנה מלא.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הקוד הקלאסי של בעיית הספר הנרדם מדגים סנכרון דו-כיווני (Rendezvous):
+                            <br><code>void barber() { while (TRUE) { down(&customers); down(&mutex); waiting--; up(&barbers); up(&mutex); cut_hair(); } }</code>
+                            <br><code>void customer() { down(&mutex); if (waiting &lt; CHAIRS) { waiting++; up(&customers); up(&mutex); down(&barbers); get_haircut(); } else { up(&mutex); } }</code>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת ה-Race בבעיית הספר: אם הלקוח בודק את <code>waiting &lt; CHAIRS</code> ללא הגנת ה-<code>mutex</code>, שני לקוחות שמגיעים במקביל לכיסא הפנוי האחרון עלולים לראות שניהם שיש מקום, שניהם יגדילו את <code>waiting</code> מעבר לקיבולת, ואחד מהם יישב "על הרצפה" או יגרום לחריגת זיכרון.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: פילוסופים סועדים מייצגים סיכון ל-Deadlock קולקטיבי, קוראים וכותבים מייצגים סיכון ל-Starvation של צד מקופח, והספר הנרדם ממחיש ניהול תורי שרת ודחיית בקשות בעומס קיצון.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה (מבחן עצמי):</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 2.6.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="classic-sync" data-qid="2.6.1" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.6.1:</span>
+                        בבעיית הפילוסופים הסועדים, איזה מתנאי קופמן (Coffman Conditions) לקיומו של מבוי סתום (Deadlock) נשבר כאשר פילוסוף אחד מונחה להרים קודם את המקל הימני ואז את השמאלי (פתרון אסימטרי)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 1, 0)">
+                            א. תנאי המניעה ההדדית (Mutual Exclusion).
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 1, 1)">
+                            ב. תנאי היעדר הנישול (No Preemption).
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 1, 2)">
+                            ג. תנאי החזק והמתן (Hold and Wait).
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 1, 3)">
+                            ד. תנאי ההמתנה המעגלית (Circular Wait).
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה: בפתרון האסימטרי, העובדה שפילוסוף אחד מרים קודם את המקל הימני ואז השמאלי שוברת את הסימטריה המעגלית בגרף הקצאת המשאבים (RAG). שרשרת הבקשות המעגלית שבה כל תהליך $i$ ממתין לתהליך $(i+1)\%N$ נקטעת, ולכן תנאי ההמתנה המעגלית (Circular Wait) אינו מתקיים, מה שמונע היווצרות מעגל סגור ומבטל את ה-Deadlock.<br>• א' שגויה: מקל אכילה נשאר משאב במניעה הדדית (רק אחד מחזיק בו).<br>• ב' שגויה: אין נישול בכוח של מקלות מפילוסופים.<br>• ג' שגויה: פילוסופים עדיין יכולים להחזיק מקל אחד ולהמתין לשני.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.6.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="classic-sync" data-qid="2.6.2" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.6.2:</span>
+                        בקוד הקלאסי של בעיית הקוראים והכותבים (גרסה המעדיפה קוראים), מה תפקידו המדויק של קטע הקוד: <code>if (rc == 1) down(&db);</code>?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 2, 0)">
+                            א. הוא מאפשר לכותב לבדוק האם יש קוראים בתוך מסד הנתונים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 2, 1)">
+                            ב. הקורא הראשון שנכנס הוא זה שתופס את נעילת מסד הנתונים ומונע כניסת כותבים לכל אורך זמן שהות הקוראים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 2, 2)">
+                            ג. הוא מאפס את מונה הקוראים בחזרה ל-0 כדי למנוע גלישת זיכרון.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 2, 3)">
+                            ד. הוא מעיר את כל הכותבים שהיו במצב שינה.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה: המשתנה <code>rc</code> מונה את מספר הקוראים הפעילים. כאשר מגיע הקורא הראשון (<code>rc == 1</code>), הוא מקבל על עצמו את המשימה לנעול את סמפור מסד הנתונים <code>db</code> בפני כותבים (<code>down(&db)</code>). כל עוד יש לפחות קורא אחד במסד (כלומר <code>rc >= 1</code>), הכותבים חסומים. הקורא האחרון שיוצא (<code>rc == 0</code>) הוא זה שישחרר את הנעילה (<code>up(&db)</code>).<br>• א' שגויה: קוד זה מתבצע ע"י הקורא, לא ע"י הכותב.<br>• ג' ו-ד' שגויות: אינן קשורות ללוגיקה של הסמפור.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.6.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="classic-sync" data-qid="2.6.3" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.6.3:</span>
+                        מדוע פתרון של הגבלת מספר הפילוסופים הרשאים לשבת סביב השולחן ל-4 לכל היותר (באמצעות סמפור סופר המאותחל ל-4) מונע בוודאות מתמטית כל אפשרות ל-Deadlock?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 3, 0)">
+                            א. מכיוון שלפי עקרון שובך היונים, בהינתן 5 מקלות אכילה ולכל היותר 4 פילוסופים, תמיד יימצא לפחות פילוסוף אחד ששני המקלות לצדו פנויים והוא יוכל לאכול.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 3, 1)">
+                            ב. מכיוון שארבעה פילוסופים אינם צורכים מקלות אכילה ורצים ישירות על המעבד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 3, 2)">
+                            ג. מכיוון שהסמפור הסופר משבית אוטומטית את פסיקות השעון של המערכת.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 3, 3)">
+                            ד. מכיוון שפילוסופים זוגיים מוותרים תמיד על המקלות לפילוסופים אי-זוגיים.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה: במקרה הגרוע ביותר, כל אחד מ-4 הפילוסופים הרעבים מרים מקל אחד. נותרו 4 מקלות תפוסים ומקל אחד פנוי לחלוטין. הפילוסוף שהמקל הפנוי נמצא ליד ידו השנייה ירים אותו, יאכל, ויחזיר את שני מקלותיו לשולחן, ובכך ישחרר את שאר הפילוסופים בשרשרת. לכן Deadlock אינו יכול להיווצר.<br>• ב', ג' ו-ד' הן טענות חסרות בסיס טכנולוגי.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.6.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="classic-sync" data-qid="2.6.4" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.6.4:</span>
+                        מה יתרחש בפתרון המעדיף כותבים (Writers Preference) בבעיית הקוראים והכותבים, כאשר כותב ממתין לשחרור המסד וקורא חדש מנסה להיכנס למערכת?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 4, 0)">
+                            א. הקורא החדש ייכנס מיד ויצטרף לקוראים הקיימים שכבר קוראים במסד הנתונים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 4, 1)">
+                            ב. הקורא החדש יקטול את התהליך הכותב וישחרר את נעילת המסד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 4, 2)">
+                            ג. הקורא החדש ייחסם בסמפור readTry ולא יורשה להצטרף למסד עד שהכותבים יסיימו.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 4, 3)">
+                            ד. הכותב יפסיק את המתנתו ויוותר על זכות הכתיבה.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה: בגרסת Writers Preference, ברגע שהכותב הראשון מביע עניין בכתיבה (<code>writecount == 1</code>), הוא מבצע <code>down(&readTry)</code>. כל קורא שמגיע חייב לבצע <code>down(&readTry)</code> בכניסה, ולכן הוא ייחסם שם מיידית ולא יורשה להיכנס למסד. המסד יתרוקן מהקוראים הקיימים והכותב ייכנס.<br>• א' שגויה: התנהגות זו מאפיינת את גרסת העדפת הקוראים (Readers Preference), לא העדפת כותבים.<br>• ב' ו-ד' שגויות: אין שום קטילת תהליכים או ויתור כתיבה.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.6.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="classic-sync" data-qid="2.6.5" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.6.5:</span>
+                        מהו ההבדל המהותי ביותר באופי הסכנה המערכתית בין בעיית הפילוסופים הסועדים לבין בעיית הקוראים והכותבים?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 5, 0)">
+                            א. בפילוסופים הסכנה היא Starvation בלבד, ואילו בקוראים וכותבים הסכנה היא Deadlock טוטאלי.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 5, 1)">
+                            ב. בפילוסופים הסכנה המרכזית היא Deadlock קבוע שמשתק את כל המערכת, בעוד שבקוראים וכותבים הסכנה המרכזית היא Starvation (הרעבה) של צד מסוים בעוד ששאר המערכת ממשיכה לעבוד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 5, 2)">
+                            ג. אין שום הבדל ביניהן ושתי הבעיות מובילות תמיד לאותה קריסת חומרה בדיוק.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.6, 5, 3)">
+                            ד. בקוראים וכותבים לעולם לא ייתכן מצב של חוסר הוגנות או עדיפות של תהליך אחד על פני משנהו.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה: בבעיית הפילוסופים הסועדים, הכשל הקלאסי הוא מבוי סתום (Deadlock) הנובע ממעגל המתנה סגור – שום פילוסוף אינו מתקדם והמערכת כולה משותקת לחלוטין. לעומת זאת, בבעיית הקוראים והכותבים, המערכת ממשיכה לעבוד ולשרת בקשות בקצב גבוה, אך צד אחד (הכותב בהעדפת קוראים, או הקורא בהעדפת כותבים) סובל מהרעבה (Starvation) ואינו מקבל שירות לעולם.<br>• א' שגויה: בדיוק הפוך מהמציאות.<br>• ג' ו-ד' שגויות: מתעלמות מההבדלים הארכיטקטוניים הברורים.
+                    </div>
+                </div>
+
+            </div>
+        </div>

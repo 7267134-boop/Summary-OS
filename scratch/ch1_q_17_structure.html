@@ -1,0 +1,328 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 1.7: os-structure (מבנה מערכת ההפעלה)                      -->
+        <!-- ===================================================================== -->
+        <div id="questions-os-structure" data-title="שאלות מנחות ותרגול - 🏛️ 1.7 מבנה מערכת ההפעלה">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 1.7.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.7.1: מהו ההבדל המבני המהותי בין מערכת הפעלה מונוליתית (Monolithic) לבין מערכת מיקרו-קרנל (Microkernel), וכיצד הבדל זה מכתיב את הטרייד-אוף שבין ביצועים ליציבות?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>מערכת מונוליתית (Monolithic):</strong> כל שירותי מערכת ההפעלה – ניהול זיכרון, מערכת קבצים, תקשורת רשת וכל מנהלי ההתקנים (דרייברים) – מקומפלים יחד לקובץ בינארי יחיד ורצים בתוך מרחב כתובות משותף אחד במצב גרעין (Kernel Mode, Ring 0).
+                            <br>• <em>ביצועים:</em> מקסימליים (100%). קריאה לשירות או העברת נתונים בין רכיבים מתבצעות כקריאת פונקציה מהירה ב-C ישירות במעבד ללא צורך במעברי מצב או החלפות הקשר.
+                            <br>• <em>יציבות:</em> נמוכה (30%). היעדר בידוד זיכרון גורם לכך שבאג או מצביע שגוי בדרייבר מדפסת או כרטיס רשת יכול לדרוס את טבלאות הגרעין, להקפיא את המערכת כולה ולגרום לקריסה טוטאלית (Kernel Panic / Blue Screen).
+                            <br>2. <strong>מערכת מיקרו-קרנל (Microkernel):</strong> הגרעין מרוקן מרוב תפקידיו ומצטמצם למינימום ההכרחי בלבד: טיפול בסיסי בפסיקות, תזמון פשוט של מעבד, ותקשורת בין-תהליכית (IPC). כל שאר שירותי המערכת (קבצים, רשת, דרייברים) מוצאים מחוץ לגרעין ורצים כתוכניות משתמש רגילות ומבודדות המכונות <em>"שרתים" (User-Space Servers)</em> ב-User Mode (Ring 3).
+                            <br>• <em>יציבות:</em> פנומנלית (100%). בידוד תקלות מושלם (Fault Tolerance). אם שרת קבצים או דרייבר תצוגה קורס עקב באג, מרחב הזיכרון שלו מוגן על ידי ה-MMU, הגרעין אינו נפגע, ושרת ניטור ייעודי (Reincarnation Server) מאתחל אותו מחדש בשבריר שנייה מבלי שהמשתמש מרגיש ומבלי שהמחשב יקרוס.
+                            <br>• <em>ביצועים:</em> נמוכים משמעותית (40%). כל פנייה לשירות מחייבת סדרה של מעברי <code>TRAP</code>, החלפות הקשר (Context Switches) והעתקות הודעות IPC בין הלקוח, המיקרו-קרנל והשרת.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            מערכת מונוליתית היא כמו מטבח ענק שבו השף, מנהל המחסן, שוטף הכלים והשליח עומדים כולם סביב אותו שולחן עבודה אחד ללא מחיצות. הם מעבירים דברים מיד ליד במהירות שיא, אך אם שוטף הכלים שומט דלי מים רותחים – כל העובדים במטבח נכווים והמסעדה נסגרת. מיקרו-קרנל הוא מסעדה שבה כל עובד יושב בחדר נפרד וממוגן מאחורי חלון זכוכית, וכולם מתקשרים דרך פקיד דואר מרכזי (הגרעין). המנות עוברות לאט יותר בגלל הבירוקרטיה, אך אם בחדר השטיפה פורצת שריפה, מכבים אותה בחדר הסגור והמסעדה כולה ממשיכה לתפקד כרגיל.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>גודל קוד הגרעין (Trusted Computing Base):</strong> בגרעין מונוליתי מודרני (כמו לינוקס) יש מעל 30 מיליון שורות קוד, ומעל 70% מהן שייכות לדרייברים של יצרנים צד-שלישי. במיקרו-קרנל (כמו MINIX 3 או seL4), הגרעין מכיל כ-10,000 שורות קוד בלבד שניתן להוכיח מתמטית את נכונותן ללא באגים (Formal Verification).</li>
+                                <li><strong>עלות ה-IPC:</strong> בכל בקשת שירות במיקרו-קרנל מבוצעים לפחות 4 מעברי מצב (Mode Switches) ו-2 החלפות הקשר (Context Switches) בין מרחבי כתובות שונים, הגורמים לשטיפת ה-TLB ומטמוני המעבד.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מערכות הפעלה פופולריות כמו Windows ו-macOS מגדירות את עצמן לעתים כגרעין היברידי (Hybrid Kernel) – הן משתמשות ברעיונות של מיקרו-קרנל (מבנה מודולרי מבוסס הודעות), אך מטעמי ביצועים מחזירות את מנהלי ההתקנים ומערכת הקבצים לרוץ בפועל ב-Ring 0.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מונוליתי מקריב יציבות לטובת מהירות שיא באמצעות מרחב כתובות אחיד בליבה; מיקרו-קרנל מקריב ביצועים לטובת חסינות שגיאות מוחלטת על ידי פירוק השירותים לתהליכי משתמש מבודדים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.7.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.7.2: מהם היתרונות המובהקים של ארכיטקטורה מרובדת (Layered System כמו THE), ומהו הקושי ההנדסי המרכזי שמנע ממנה להפוך למודל הנפוץ במערכות הפעלה מודרניות?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>יתרונות הארכיטקטורה המרובדת (כגון מערכת THE של דייקסטרה):</strong>
+                            <br>• <em>מודולריות והפשטה מובנית:</em> המערכת בנויה כשכבות קונצנטריות (0 עד N), כאשר כל שכבה מסתמכת אך ורק על השירותים של השכבות הנמוכות ממנה ומסתירה את פרטי המימוש שלה מהשכבות שמעליה.
+                            <br>• <em>קלות בדיקה ואיתור תקלות (Incremental Debugging):</em> ניתן לבדוק ולאמת את שכבה 0 (הקצאת מעבד) באופן מבודד לחלוטין. לאחר שהיא הוכחה כתקינה, בונים ובודקים את שכבה 1 (ניהול זיכרון). אם מתגלה שגיאה בשכבה 1, ידוע בוודאות שהיא אינה נובעת משכבה 0.
+                            <br>2. <strong>הקשיים ההנדסיים שמנעו את הצלחתה הבלעדית:</strong>
+                            <br>• <em>קושי בהגדרה היררכית טהורה (תלויות מעגליות - Circular Dependencies):</em> בעולם האמיתי, קשה מאוד לקבוע מי נמצא "מעל" מי. דוגמה קלאסית: דרייבר הדיסק זקוק למערכת ניהול הזיכרון (כדי להקצות חוצצים לקריאת נתונים), אך מערכת הזיכרון הווירטואלי זקוקה לדרייבר הדיסק (כדי לבצע דפדוף ו-Swap לדיסק). תלות מעגלית זו שוברת את עקרון השכבות הטהור.
+                            <br>• <em>תקורת ביצועים מצטברת:</em> כל פעולת קלט/פלט או קריאת נתונים צריכה לחצות שרשרת ארוכה של שכבות, כאשר כל שכבה מוסיפה פרמטרים, בדיקות והמרות נתונים שמאטות את המערכת.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            מערכת מרובדת היא כמו מגדל קומות שבו אסור להשתמש במעלית ישירה אלא רק לעלות קומה-אחר-קומה במדרגות. קל מאוד לבנות את היסודות בנפרד מקומה 1 וקומה 2. אך אם מתברר שדייר בקומה 5 צריך להעביר צינור מים לדייר בקומה 1 שתלוי בחימום שמספקת קומה 5, מבנה השכבות הנוקשה מסתבך ויוצר סתירות תכנוניות קשות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>שכבות מערכת THE (Dijkstra, 1968):</strong> שכבה 0 טיפלה במעבד וריבוי תוכניות; שכבה 1 בזיכרון; שכבה 2 בתקשורת מפעיל-תהליך; שכבה 3 בקלט/פלט; שכבה 4 בתוכניות משתמש; שכבה 5 במפעיל המערכת.</li>
+                                <li><strong>השפעה מודרנית:</strong> אף שמערכות הפעלה מלאות אינן מרובדות טהורות, עקרון הריבוד אומץ במלואו במודלים מוגדרים היטב כמו ערימת הפרוטוקולים ברשת (OSI ו-TCP/IP Stack).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            שגיאה נפוצה היא לחשוב שמערכת מרובדת מעבירה הודעות IPC כמו מיקרו-קרנל. במערכת מרובדת קלאסית כל השכבות יכולות לרוץ בתוך הליבה ולקרוא זו לזו בקריאות פונקציה, כך שהבעיה העיקרית היא תכנונית-היררכית ולאו דווקא מעברי מצב חומרה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מערכת מרובדת מצטיינת במודולריות ואימות שלב-אחר-שלב, אך קורסת מול תלויות מעגליות בלתי נמנעות בחומרה ותקורת מעבר בשכבות רבות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.7.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.7.3: מהי ההבחנה המושגית בין "מכונה מורחבת" (Extended Machine) לבין "מכונה מדומה" בארכיטקטורת VM/370, ומה הופך את שכבת ה-Hypervisor (או ה-CP) למערכת הפעלה בפני עצמה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>מכונה מורחבת (Extended Machine):</strong> הפשטה (אבסטרקציה) ברמה גבוהה של החומרה. במקום שהמתכנת ייאלץ לעבוד עם פקודות חומרה גולמיות, סקטורים פיזיים בדיסק או מעגלי פסיקות, מערכת ההפעלה מספקת לו ממשק עבודה עשיר, נוח ובטוח – כגון קבצים, תיקיות, תהליכים ושקעי רשת (Sockets).
+                            <br>2. <strong>המכונה המדומה ב-VM/370 (שכבת ה-CP):</strong> שכבת ה-Control Program (Hypervisor) ב-VM/370 <strong>אינה</strong> מספקת מכונה מורחבת! היא אינה מספקת ממשק קבצים או שירותים נוחים. תפקידה הוא <em>לשכפל במדויק את החומרה הפיזית הגולמית</em> (חומרת System/370) כך שכל משתמש מקבל אשליה שיש לו מחשב עירום שלם (מעבד, זיכרון, התקני I/O מדומים) שעליו הוא יכול להתקין מערכת הפעלה אורחת משלו (כגון CMS). מערכת ההפעלה האורחת CMS היא זו שמספקת בפועל את המכונה המורחבת.
+                            <br>3. <strong>מדוע שכבת ה-Hypervisor היא מערכת הפעלה בעצמה:</strong> מערכת הפעלה מוגדרת על ידי שני תפקידי יסוד: <em>ניהול משאבים</em> ו<em>יצירת מכונה מורחבת/מדומה</em>. ה-Hypervisor יושב ישירות על החומרה במצב מיוחס (Bare-Metal / Type 1), מקצה בלעדית זיכרון פיזי, מתזמן את המעבדים ומנהל את הפסיקות בין המערכות האורחות – ולכן הוא ממלא במלואו את תפקיד מנהל המשאבים של המחשב.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            מכונה מורחבת היא כמו מסעדה המגישה לכם סטייק מוכן וטעים על צלחת מעוצבת – האבסטרקציה מסתירה את כל הבלגן של בית המטבחיים. שכבת ה-Hypervisor של VM/370 אינה מגישה סטייק מוכן, אלא מחלקת את המטבח כולו ל-10 עמדות בישול זהות הכוללות כיריים וסכינים גולמיים (העתקי חומרה מדויקים). כל שף (מערכת הפעלה אורחת) נכנס לעמדה ומכין בעצמו את האוכל.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>בידוד מוחלט:</strong> במכונות מדומות, קריסה טוטאלית או הדבקת וירוס בתוך מכונה אורחת אחת אינן משפיעות כלל על המכונות האחרות.</li>
+                                <li><strong>לכידה והדמיה (Trap-and-Emulate):</strong> כאשר מערכת אורחת מנסה לבצע פקודה מיוחסת (כגון כיבוי פסיקות), החומרה לוכדת את הפקודה ומעבירה אותה ל-Hypervisor, שמדמה את תוצאת הפקודה רק עבור אותה מכונה וירטואלית ספציפית.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הבחנה סמנטית זו היא אחת השאלות המכשילות ביותר במבחנים: אל תענו שה-Hypervisor יוצר מכונה מורחבת; הוא יוצר מכונות מדומות של חומרה גולמית.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מכונה מורחבת יוצרת הפשטה נוחה (קבצים); Hypervisor ב-VM/370 משכפל חומרה גולמית בלבד ומתפקד כמנהל משאבים בלעדי בחומרה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.7.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.7.4: מהו הרעיון המנחה בארכיטקטורת אקסו-קרנל (Exokernel), כיצד היא שוברת את מודל ההפשטה (Abstraction) המסורתי, ומהו תפקידה של ה-Library OS?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>הרעיון המנחה באקסו-קרנל:</strong> מערכות הפעלה מסורתיות כופות על כל התוכניות אבסטרקציות כלליות (כגון מודל קבצים היררכי ב-UNIX או ניהול דפים בשיטת LRU). אבסטרקציות אלו יוצרות תקורת ביצועים ואינן מתאימות ליישומים הדורשים שליטה מדויקת בחומרה (כגון מסדי נתונים עתירי ביצועים).
+                            <br>2. <strong>שבירת ההפשטה (No Abstractions):</strong> האקסו-קרנל (Exokernel) <strong>מוותר לחלוטין על מתן אבסטרקציות בגרעין</strong>. תפקידו מצטמצם לשני דברים בלבד:
+                            <br>א. <em>הקצאת משאבי חומרה פיזיים</em> (כגון בלוקים גולמיים בדיסק, דפי זיכרון פיזיים, זמני שידור ברשת).
+                            <br>ב. <em>אכיפת הגנה (Protection)</em> ומניעת חריגה בין משתמשים שונים (הבטחה שתוכנית א' לא תיגש לבלוקים שהוקצו לתוכנית ב').
+                            <br>3. <strong>תפקיד ה-Library OS:</strong> כיוון שתוכניות עדיין זקוקות למושגים כמו קבצים ורשת, כל האבסטרקציות מועברות לרמת המשתמש בצורת ספריות תוכנה הנקראות <strong>Library OS</strong>. כל אפליקציה יכולה לקשר (Link) לספריית OS המותאמת אישית לצרכיה, או אף לפתח מנהל זיכרון ומערכת קבצים משלה, מבלי לערב את הגרעין ומבלי לעבור דרך שכבות תקורה מיותרות.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            מערכת הפעלה רגילה היא חברת השכרת דירות מרוהטות קומפלט – הרהיטים נוחים לרוב האנשים, אך אם אתם זקוקים לסטודיו ריק לצילום, הרהיטים הקיימים מפריעים לכם. אקסו-קרנל הוא חברת נדל"ן שמשכירה אך ורק חלל בטון ריק ומאובטח במנעול (חומרה גולמית מאובטחת). כל דייר מביא בעצמו את הרהיטים המתאימים לו בדיוק (Library OS).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>ביצועי קצה (Ultimate Performance):</strong> מסד נתונים יכול לכתוב לבלוקים ספציפיים בדיסק ישירות באלגוריתם ייעודי ללא תקורת מערכת קבצים וללא שמירה כפולה ב-Buffer Cache.</li>
+                                <li><strong>יכולת קביעת זמנים (Fine-grained scheduling):</strong> יישומים יכולים לקבוע במדויק מתי לפנות דפים פיזיים מזיכרון ה-RAM לפי הצרכים הספציפיים שלהם.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            החיסרון המרכזי של אקסו-קרנל הוא אובדן התאימות וקושי עצום בפיתוח: קשה מאוד לפתח יישומים כשלכל יישום יש ספריית מערכת הפעלה משלו, ושיתוף משאבים (כמו גישה של שני יישומים לאותו קובץ) הופך למסובך ביותר.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: אקסו-קרנל מוותר על כל הפשטה ורק מקצה ומגן על חומרה גולמית; כל הניהול הלוגי מבוצע בספריות משתמש (Library OS) לטובת ביצועים וגמישות מקסימליים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.7.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.7.5: כיצד משפיע באג קריטי בדרייבר תצוגה (Display Driver) במערכת מונוליתית לעומת מערכת מיקרו-קרנל (כפי שהומחש בסימולטור מבחן הריסוק הארכיטקטוני)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>במערכת מונוליתית (כגון Linux / דרייברים היסטוריים ב-Windows):</strong>
+                            <br>נהג התצוגה רץ ישירות בתוך ה-Kernel Mode (Ring 0). במצב זה אין עליו שום הגנת זיכרון או בדיקת גבולות חומרה מול שאר חלקי הגרעין. אם מתרחשת בו חריגת זיכרון, דריסת מצביע או לולאה אינסופית, הדרייבר דורס את מבני הנתונים הקריטיים של הליבה או תוקע את פסיקות המערכת. התוצאה: <strong>קריסה מוחלטת של המחשב (Kernel Panic / BSOD)</strong>, אובדן נתונים לא שמורים וחובה לבצע אתחול חומרתי (Reboot).
+                            <br>2. <strong>במערכת מיקרו-קרנל (כגון MINIX 3):</strong>
+                            <br>נהג התצוגה אינו חלק מהגרעין אלא תהליך משתמש עצמאי (User Space Server) הרץ ב-Ring 3 במרחב כתובות וירטואלי מבודד משלו המוגן על ידי ה-MMU. אם מופעל בו באג קריטי או ניסיון גישה לכתובת שאינה שלו, החומרה עוצרת אך ורק את התהליך הזה (Segmentation Fault בשרת). ה-Reincarnation Server (שרת גלגול הנשמות / ניטור) מזהה מיד שהתהליך מת, מקצה לו מרחב כתובות חדש, ומאתחל את דרייבר התצוגה מחדש תוך מילי-שניות – כל זאת כאשר שאר מערכת ההפעלה, תהליכי המשתמש והקבצים ממשיכים לרוץ כרגיל ללא הפרעה.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            במערכת מונוליתית, דרייבר התצוגה הוא עובד בתוך חדר הפיקוד המרכזי של כור גרעיני שיכול ללחוץ על כל כפתור. אם הוא מתעלף על לוח המקשים – הכור כולו מושבת. במיקרו-קרנל, דרייבר התצוגה הוא מסך טלוויזיה חיצוני שמשדר את הנתונים מחוץ לחדר הפיקוד: אם המסך נשבר, פשוט מחליפים מסך חדש, והכור בפנים לא הושפע כלל.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>סטטיסטיקת תקלות במערכות הפעלה:</strong> מחקרים הראו כי כ-70% עד 85% מכלל הקריסות במערכות הפעלה מודרניות נגרמות כתוצאה מבאגים בדרייברים של יצרני חומרה צד-שלישי, ולא מקוד הגרעין המרכזי.</li>
+                                <li><strong>פתרון חלקי ב-Windows Vista ואילך (WDDM):</strong> בעקבות בעיה זו, מיקרוסופט העבירה חלקים ניכרים ממנהל התצוגה ל-User Mode (מודל User-Mode Driver Framework), כך שקריסת דרייבר כרטיס מסך גורמת להבהוב קצר במסך ושחזורו מבלי להפיל את המערכת.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            במערכת מונוליתית, מנגנון ה-Loadable Kernel Modules (LKM) מאפשר לטעון דרייברים בזמן ריצה ללא הידור מחדש של הקרנל. אך מרגע שנטענו, הם רצים ב-Ring 0 לכל דבר ויכולים להקריס את המערכת בדיוק כמו קוד שהיה מקומפל בה מראש.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: באג בדרייבר במונולית מפיל את המערכת כולה עקב ריצה משותפת ב-Ring 0; במיקרו-קרנל הדרייבר רץ ב-Ring 3 מבודד ומאותחל מחדש מיידית ללא השבתה.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה (מבחן עצמי):</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 1.7.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-structure" data-qid="1.7.1" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.7.1:</span>
+                        מהו הגורם המרכזי לפגיעה בביצועים במערכת מיקרו-קרנל (Microkernel) לעומת מערכת מונוליתית?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 1, 0)">
+                            א. המיקרו-קרנל אינו תומך בהפעלת זיכרון מטמון (Cache) בחומרה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 1, 1)">
+                            ב. ריבוי מעברי מצב (Mode Switches), החלפות הקשר (Context Switches) והעתקות נתונים במנגנון העברת ההודעות (IPC) בין תהליך המשתמש, הגרעין ותהליכי השרתים השונים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 1, 2)">
+                            ג. המיקרו-קרנל אינו מאפשר ריבוי תוכניות (Multiprogramming) ומריץ רק תהליך אחד בכל פעם.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 1, 3)">
+                            ד. גודל הגרעין העצום של המיקרו-קרנל גורם לתפוסה של רוב זיכרון ה-RAM הראשי.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה. במערכת מונוליתית פנייה לשירות היא קריאת פונקציה רגילה בתוך הגרעין. במערכת מיקרו-קרנל שירותי מערכת ההפעלה (קבצים, רשת) הם תהליכים נפרדים ב-User Space. לכן, כל פעולה מחייבת מעבר מצב ב-TRAP לגרעין, העברת הודעת IPC, החלפת הקשר (Context Switch) לתהליך השרת, ביצוע הפעולה, וחזרה בתהליך הפוך – דבר המייצר תקורה חישובית משמעותית.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 1.7.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-structure" data-qid="1.7.2" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.7.2:</span>
+                        מהו הקושי התכנוני המרכזי המונע יישום מלא של מערכת הפעלה מרובדת טהורה (Strictly Layered System) במערכות אמיתיות?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 2, 0)">
+                            א. מערכות מרובדות יכולות להיכתב אך ורק בשפת אסמבלי ולא בשפות עיליות.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 2, 1)">
+                            ב. ארכיטקטורה מרובדת אינה תומכת במעבדים מרובי ליבות.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 2, 2)">
+                            ג. קיומן של תלויות מעגליות (Circular Dependencies) בין רכיבי החומרה והשירותים, כגון הצורך של מנהל הזיכרון הווירטואלי בדיסק עבור דפדוף, אל מול הצורך של דרייבר הדיסק בחוצצי זיכרון.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 2, 3)">
+                            ד. חוסר היכולת לבצע בדיקות תוכנה מודולריות בכל שכבה בנפרד.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה במדויק. במודל מרובד טהור כל שכבה N יכולה להשתמש רק בשירותי שכבה N-1. במציאות, דרייבר הדיסק זקוק לזיכרון כדי לאחסן נתונים, אך מנהל הזיכרון זקוק לדיסק כדי לבצע החלפת דפים (Paging/Swap). סתירה מעגלית זו מקשה מאוד על חלוקה היררכית חד-כיוונית מושלמת.
+                    </div>
+                </div>
+
+                <!-- שאלה 1.7.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-structure" data-qid="1.7.3" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.7.3:</span>
+                        לפי ההבחנה הסמנטית המודגשת בפרק, מה מבדיל בין "מכונה מורחבת" (Extended Machine) לבין שכבת ה-CP במערכת VM/370?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 3, 0)">
+                            א. מכונה מורחבת מספקת הפשטה נוחה (כמו קבצים), בעוד ששכבת ה-CP משכפלת חומרה גולמית בלבד ועליה מותקנת מערכת אורחת המספקת את המכונה המורחבת.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 3, 1)">
+                            ב. מכונה מורחבת רצה ב-Kernel Mode, בעוד ששכבת ה-CP רצה תמיד ב-User Mode ללא הרשאות חומרה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 3, 2)">
+                            ג. אין שום הבדל; שני המונחים הם שמות נרדפים לחלוטין לאותו מנגנון בדיוק.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 3, 3)">
+                            ד. שכבת ה-CP אינה מסוגלת לנהל זיכרון פיזי אלא רק לתזמן מעבדים.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה. תחת תיבת "הבחנה סמנטית" בפרק 1.7 מודגש בבירור: מכונה מורחבת מציגה אבסטרקציות נוחות למתכנת (כגון קריאות מערכת לקבצים במקום עבודה מול סקטורים). לעומת זאת, ה-Control Program (CP) של VM/370 רק משכפל את החומרה הפיזית הגולמית עבור מכונות וירטואליות; מערכת ההפעלה האורחת (כמו CMS) שרצה מעל ה-CP היא זו שמספקת בפועל את המכונה המורחבת.
+                    </div>
+                </div>
+
+                <!-- שאלה 1.7.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-structure" data-qid="1.7.4" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.7.4:</span>
+                        מהו העיקרון הארכיטקטוני המרכזי המגדיר מערכת מסוג אקסו-קרנל (Exokernel)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 4, 0)">
+                            א. שילוב כל שירותי המערכת לתוך קובץ בינארי ענק כדי למנוע קריאות מערכת.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 4, 1)">
+                            ב. הדמיית חומרה מוחלטת של מעבדים מדומים עבור עשרות מערכות הפעלה אורחות.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 4, 2)">
+                            ג. ביטול מוחלט של כל מנגנוני ההגנה והרשאות הגישה בחומרה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 4, 3)">
+                            ד. אי-כפיית הפשטות (אבסטרקציות) בגרעין: הקרנל רק מקצה ומגן על משאבי חומרה פיזיים גולמיים, וכל האבסטרקציות ממומשות בספריות ברמת המשתמש (Library OS).
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה. כפי שמודגש בטקסט ובסנדבוקס של סעיף 1.7: האקסו-קרנל מוותר על הפשטות כלליות כמו מערכת קבצים או ניהול זיכרון וירטואלי כפוי בליבה. הוא רק מקצה בלוקים גולמיים בחומרה ומוודא שתוכניות לא דורסות משאבים זו של זו. היישומים משתמשים ב-Library OS מותאמת אישית כדי לממש את הלוגיקה שלהם במהירות מקסימלית.
+                    </div>
+                </div>
+
+                <!-- שאלה 1.7.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="os-structure" data-qid="1.7.5" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 1.7.5:</span>
+                        בסימולטור מבחן הריסוק הארכיטקטוני (Crash Test) בפרק, מה קורה כאשר נהג התצוגה (Display Driver) נתקל בבאג קריטי במערכת מיקרו-קרנל (כמו MINIX 3)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 5, 0)">
+                            א. המחשב קורס מיידית ומוצג מסך כחול / Kernel Panic עקב פגיעה בליבה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 5, 1)">
+                            ב. רק תהליך שרת התצוגה במרחב המשתמש קורס, ושרת הניטור מאתחל אותו מחדש באופן אוטומטי ללא קריסה של מערכת ההפעלה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 5, 2)">
+                            ג. המעבד עובר לצמיתות למצב חומרה מושבת ומחייב החלפת כרטיס מסך.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 1.7, 5, 3)">
+                            ד. הבאג מוחק את כל הקבצים בדיסק הקשיח כיוון שאין הפרדה בין התקנים.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה במדויק. במיקרו-קרנל, הדרייבר רץ כתהליך משתמש מבודד ב-Ring 3. כאשר הבאג מופעל, מרחב הזיכרון שלו מוגן על ידי ה-MMU, הגרעין אינו מושפע, ושרת הפיקוח (Reincarnation Server) מזהה את מות התהליך ומאתחל אותו מחדש בשקיפות מלאה מבלי להפיל את המערכת.
+                    </div>
+                </div>
+            </div>
+        </div>

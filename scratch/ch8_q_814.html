@@ -1,0 +1,440 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 8.1.4: scheduling (תזמון במערכות מרובות מעבדים)             -->
+        <!-- ===================================================================== -->
+        <div id="questions-scheduling" data-title="שאלות מנחות ותרגול - 📊 8.1.4 תזמון במערכות מרובות מעבדים">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף את ניתוח העומק, האנלוגיה האינטואיטיבית והמסקנה המעשית.
+                </div>
+
+                <!-- שאלה 8.1.4.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.4.1: מהי תופעת ה-Cache Thrashing בתזמון שיתוף זמן, וכיצד זיקה למעבד (Affinity) פותרת אותה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            כאשר מתזמן מערכת ההפעלה משתמש בתור מוכנים יחיד משותף, תהליך שמסיים פרוסת זמן במעבד 1 עלול להתחיל את פרוסת הזמן הבאה במעבד 2. מדוע נדידה זו פוגעת קשות בביצועי המערכת, וכיצד מנגנון Processor Affinity מתמודד עמה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו סטודנט שלומד למבחן בספרייה על שולחן מסוים, ומפזר סביבו את כל ספרי הלימוד והסיכומים (זיכרון מטמון חם). לאחר הפסקת קפה קצרה, השומר מעביר אותו לשולחן ריק בקומה אחרת. כעת עליו ללכת למדפים, לחפש שוב את כל הספרים ולהביאם מחדש (Cache Misses). מנגנון Affinity מבטיח שהשומר ישמור לסטודנט את אותו השולחן בדיוק, כדי שיוכל להמשיך ללמוד מיד.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>תופעת ה-Cache Thrashing:</strong> בכל פעם שתהליך נודד למעבד חדש, ה-Cache של המעבד החדש "קר" ביחס אליו. כל פנייה לנתונים או לפקודות מייצרת החטאת מטמון (Cache Miss) המחייבת קריאה מזיכרון ה-RAM הראשי.</li>
+                                <li><strong>זיקה רכה (Soft Affinity):</strong> המתזמן מנסה להקצות לתהליך את אותו המעבד שבו רץ לאחרונה, אך אם המעבד עמוס מאוד ומעבד אחר פנוי, הוא יעביר את התהליך למעבד הפנוי למניעת המתנה.</li>
+                                <li><strong>זיקה קשה (Hard Affinity):</strong> המשתמש או מערכת ההפעלה מקבעים תהליך לסט מעבדים מוגדר בלבד (למשל באמצעות קריאת `sched_setaffinity`), והוא לא ירוץ על שום מעבד אחר בשום תנאי.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            זיקה קשה נוקשה מדי עלולה להוביל למצב שבו מעבד ייעודי עמוס ב-100% בעוד שמעבדים סמוכים יושבים באפס מעשה. נדרש איזון מחושב.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: Processor Affinity שומר על תהליכים באותו מעבד כדי למקסם שימוש בזיכרון מטמון חם ולמנוע תקורת החטאות מיותרת.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.4.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.4.2: מהו עקרון התזמון של שיתוף מרחב (Space Sharing), ומהו החיסרון המבני שלו?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            במקום לחלק את זמן המעבדים לפרוסות זמן קצרות (Timesharing), שיטת שיתוף מרחב מקצה תת-קבוצה של מעבדים לתהליך מקבילי באופן בלעדי. מהם היתרונות הבולטים של שיטה זו ומהו מחיר הקיטוע הפנימי שהיא גובה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על השכרת מסלולים בבריכת שחייה. ב-Timesharing, 20 שחיינים קופצים לאותו מסלול וכל אחד שוחה דקה ויוצא להמתין. ב-Space Sharing, משכירים מסלול שלם לשחיין יחיד למשך שעתיים. השחיין נהנה מביצועים מקסימליים ללא הפרעות. אולם אם השחיין רק צף במקום ולא מנצל את כל רוחב המסלול, המסלול נעול ואף אחד אחר אינו יכול להשתמש בו (קיטוע ובזבוז).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>עקרון הפעולה:</strong> כאשר משימה מקבילית דורשת $k$ מעבדים, המערכת מקצה לה $k$ מעבדים בלעדיים עד לסיום ריצתה (Run-to-completion). המעבדים אינם עוברים החלפות הקשר עבור משימות אחרות.</li>
+                                <li><strong>יתרונות:</strong> אפס תקורת החלפת הקשר, ניצול מושלם של ה-Cache, וסנכרון מיידי בין תהליכונים ללא כל חשש מהרדמת חוטים.</li>
+                                <li><strong>חיסרון - קיטוע פנימי (Internal Fragmentation):</strong> אם יש 16 מעבדים ומשימה אחת מקבלת 10 מעבדים, נותרו 6 מעבדים פנויים. אם המשימה הבאה בתור דורשת 8 מעבדים, 6 המעבדים יישארו מובטלים לחלוטין!</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            חסימת מערכת (Head-of-Line Blocking): תהליך ענק שדורש כמות מעבדים גדולה חוסם את התור, בעוד משימות קטנות שיכלו לנצל את המעבדים הפנויים ממתינות מאחוריו.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: Space Sharing מספק ביצועים ללא הפרעות ליישומים עתירי חישוב, אך סובל מניצולת חומרה נמוכה עקב קיטוע מעבדים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.4.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.4.3: מדוע תזמון עצמאי רגיל כושל בתוכניות מקביליות מסונכרנות, וכיצד תזמון כנופיות (Gang Scheduling) פותר זאת?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            תוכנית מקבילית כוללת 4 תהליכונים המחליפים ביניהם הודעות או נועלים ספינלוקים קצרים. אם מתזמן שיתוף הזמן מתזמן כל תהליכון באופן עצמאי בזמנים אקראיים, מדוע מרבית זמן המעבד מתבזבז, ומהם שלושת העקרונות של Gang Scheduling?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו רביעיית נגנים בכלי מיתר. אם הכנר הראשון מגיע בשעה 10:00, הצ'לן ב-11:00, והוויולן ב-12:00 – אף יצירה לא תנוגן לעולם, וכל אחד מהם ישב לבדו ויחכה לאחרים. Gang Scheduling דורש שכל ארבעת הנגנים ייכנסו לבמה ביחד באותה הדקה, ינגנו את הקטע המשותף יחד, וייצאו יחד להפסקה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הכשל בתזמון עצמאי:</strong> חוט $A$ תופס ספינלוק קצר. שבריר שנייה לאחר מכן פרוסת הזמן של $A$ מסתיימת והוא מורד מהמעבד. כעת עולה חוט $B$ ומנסה לתפוס את המנעול – הוא יבזבז פרוסת זמן שלמה בספינלוק עיוור, כי $A$ אינו רץ ואינו יכול לשחרר את המנעול!</li>
+                                <li><strong>עקרון 1 של Gang Scheduling:</strong> כל התהליכונים הקשורים של אותה משימה מאוגדים יחד כ-"כנופיה" (Gang).</li>
+                                <li><strong>עקרון 2:</strong> כל חברי הכנופיה מתוזמנים בו-זמנית על מעבדים שונים.</li>
+                                <li><strong>עקרון 3:</strong> פרוסת הזמן של כל חברי הכנופיה מתחילה ומסתיימת בדיוק באותו מחזור שעון. הודות לכך, ספינלוקים משתחררים בתוך מיקרו-שניות בודדות כי המחזיק במנעול רץ במקביל.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            Gang Scheduling מחייב סנכרון שעונים הדוק בין המעבדים ופסיקות שעון מתואמות, ומקשה על שילוב משימות בעלות גודל כנופיה שאינו מתחלק בדיוק במספר המעבדים.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: Gang Scheduling מבטל את בעיית ההמתנה העיוורת בספינלוקים על ידי ריצה מתואמת ומסונכרנת של כל חברי הכנופיה בו-זמנית.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.4.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.4.4: מה ההבדל בין תזמון שני שלבים (Two-Level Scheduling) לבין תזמון חוטים ברמת הליבה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            כאשר תהליכים מורכבים מתהליכונים רבים, כיצד מודל תזמון בשני שלבים מחלק את האחריות בין מתזמן מערכת ההפעלה לבין ספריית התהליכונים במרחב המשתמש, ומהו היתרון בביצועים?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            הנהלת חברה גדולה מחלקת תקציב חודשי לכל מחלקה (שלב 1 של מערכת ההפעלה). ההנהלה אינה מתערבת בשאלה איזה עובד ספציפי במחלקה יעבוד על איזה פרויקט בכל שעה – מנהל המחלקה הפנימי מחלק את המשימות בין העובדים שלו (שלב 2 של ספריית המשתמש). החלוקה הפנימית מתבצעת מהר ללא צורך באישור הנהלה בכל פעם.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>שלב 1 (Kernel Level):</strong> מערכת ההפעלה מתזמנת תהליכים (או קבוצות של מעבדים לוגיים) ומקצה להם פרוסות זמן ומעבדים פיזיים.</li>
+                                <li><strong>שלב 2 (User Level):</strong> בתוך מרחב התהליך, ספריית התהליכונים (Thread Library) מחליטה איזה תהליכון משתמש ירוץ על המעבד שהוקצה לתהליך.</li>
+                                <li><strong>מהירות החלפת הקשר:</strong> החלפת הקשר בין חוטים באותו תהליך מתבצעת במרחב משתמש ללא קריאת מערכת וללא מעבר ל-Kernel Mode (כ-10 פקודות מכונה בלבד).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            חסימת כל התהליך: אם תהליכון משתמש מבצע קריאת מערכת חוסמת (כגון קריאה מקובץ), הליבה עלולה לחסום את כל התהליך על כל תהליכוניו, אלא אם קיים מנגנון Scheduler Activations.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: תזמון שני שלבים מאפשר החלפות הקשר מהירות במרחב המשתמש, אך מחייב תיאום עם הליבה למניעת חסימות בלתי צפויות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.4.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.4.5: כיצד אלגוריתם "גניבת עבודה" (Work Stealing) מאזן עומסים בין מעבדים מבלי לחנוק את המערכת בנעילות?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            כאשר לכל מעבד יש תור מוכנים משלו, מעבד אחד עלול לסיים את משימותיו ולהישאר מובטל. כיצד מנגנון Work Stealing מאפשר למעבד הפנוי לקחת עבודה ממעבד אחר תוך מזעור התחרות על מנעול התור?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו ערימת צלחות לשטיפה אצל כל עובד. כל עובד לוקח צלחות תמיד מראש הערימה שלו. אם עובד סיים את כל הצלחות שלו, הוא ניגש בשקט לעובד העמוס ביותר ולוקח צלחת אחת מתחתית הערימה שלו. מכיוון שהעובד העמוס עובד רק בראש הערימה, והגונב לוקח מהתחתית, שניהם לא נוגעים באותה צלחת ואין ביניהם שום התנגשות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>מבנה תור דו-כיווני (Deque):</strong> כל מעבד מנהל תור מוכנים כ-Double-Ended Queue.</li>
+                                <li><strong>פעולה מקומית LIFO/FIFO:</strong> המעבד המקומי דוחף ומוציא משימות מראש התור (Head) בלוק מקומי מהיר ללא תחרות.</li>
+                                <li><strong>גניבה מתחתית התור (Steal from Tail):</strong> כאשר מעבד מזהה שהתור שלו ריק, הוא בוחר באקראי מעבד שכן וגוזל משימה מסוף התור (Tail). הפרדה זו בין הראש לזנב ממזערת את נעילת התור ומאפשרת מקביליות מקסימלית.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            פגיעה במטמון: המשימה שנגנבה מועברת למעבד חדש שבו המטמון קר. לכן עדיף לגנוב משימות גדולות שטרם רצו זמן רב, כדי להצדיק את עלות הנדידה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: Work Stealing משיג איזון עומסים מצוין תוך הפרדה כמעט מוחלטת של נקודות הגישה לתור המשימות.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטראקטיביות (פורמט B) -->
+            <div class="mcq-questions-list space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>🎯 תרגול שאלות אמריקאיות:</strong> בחנו את הבנתכם. לחיצה על אפשרות תציג משוב מיידי וכרטיסיית הסבר מפורטת.
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.4.1 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.4.1">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 1 (8.1.4.1): מה המטרה העיקרית של שימוש במנגנון זיקה למעבד (Processor Affinity) במערכות מרובות ליבות?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.4.1</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_1_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. לוודא שכל המעבדים יפעלו בדיוק באותה טמפרטורה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_4_1_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. להריץ תהליך על אותו מעבד שבו רץ בעבר כדי לנצל את הנתונים שנשארו בזיכרון המטמון (Cache Warmth) ולמנוע החטאות מטמון.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_1_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. למנוע מתהליכים לבצע קריאות מערכת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_1_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. להצפין את תוכן הזיכרון הראשי.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_4_1_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> בקרת טמפרטורה מנוהלת על ידי חיישנים חומרתיים ומאווררים, לא על ידי אלגוריתם ה-Affinity.
+                    </div>
+                    <div id="q8_1_4_1_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> שמירה על תהליך באותו מעבד מונעת טעינה מחדש של הזיכרון המטמון ומביאה לשיפור ביצועים משמעותי.
+                    </div>
+                    <div id="q8_1_4_1_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זיקה אינה מגבילה קריאות מערכת אלא קובעת את מיקום הריצה של התהליך.
+                    </div>
+                    <div id="q8_1_4_1_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> הצפנה היא נושא אבטחה ואינה קשורה לתזמון ליבות.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.4.1</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> ניצול מרבי של זיכרון מטמון חם (Cache Warmth) מפחית תעבורת אפיק ומקצר זמני ריצה.</p>
+                            <p><strong>שורה תחתונה:</strong> Processor Affinity = היצמדות לאותו מעבד לחיסכון בהחטאות מטמון.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.4.2 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.4.2">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 2 (8.1.4.2): מה מאפיין את מודל שיתוף המרחב (Space Sharing) בתזמון מעבדים?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.4.2</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_2_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. כל המעבדים מחליפים תהליכים כל מילי-שנייה באמצעות פסיקות שעון מהירות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_4_2_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. הקצאת תת-קבוצה של מעבדים לתהליך מקבילי באופן בלעדי עד לסיום ריצתו, ללא חלוקת זמן עם תהליכים אחרים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_2_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. חלוקת שטח הדיסק הקשיח בין המשתמשים השונים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_2_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. שימוש בלוויינים בחלל החיצון לתזמון משימות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_4_2_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זוהי הגדרת תזמון שיתוף זמן (Timesharing), לא שיתוף מרחב.
+                    </div>
+                    <div id="q8_1_4_2_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> שיתוף מרחב מחלק את "מרחב" המעבדים כך שכל משימה מקבלת מעבדים בלעדיים עד לסיומה.
+                    </div>
+                    <div id="q8_1_4_2_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> שיתוף מרחב עוסק במעבדים, לא במחיצות דיסק.
+                    </div>
+                    <div id="q8_1_4_2_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המילה "מרחב" (Space) מתייחסת למרחב המעבדים של המחשב, לא לחלל.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.4.2</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> במקום לחלק זמן, מחלקים חומרה. המעבדים מוקצים בלעדית, מה שמבטל החלפות הקשר.</p>
+                            <p><strong>שורה תחתונה:</strong> Space Sharing = הקצאת מעבדים בלעדית לתהליך עד לסיום.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.4.3 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.4.3">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 3 (8.1.4.3): מה הבעיה העיקרית שתזמון כנופיות (Gang Scheduling) נועד לפתור?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.4.3</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q8_1_4_3_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. בזבוז פרוסות זמן שלמות בספינלוקים כאשר תהליכון ממתין למנעול שמוחזק על ידי תהליכון אחר שהורדם על ידי המתזמן.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_3_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מחיקת קבצים עקב וירוסים ברשת המחשבים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_3_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. איטיות של המסך בהצגת סרטוני וידאו.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_3_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. חוסר יכולת לחבר מקלדת אלחוטית.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_4_3_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> אם חברי התוכנית המקבילית לא רצים יחד, חוט שמחכה בספינלוק יבזבז זמן סרק עיוור כי המחזיק במנעול אינו רץ כרגע.
+                    </div>
+                    <div id="q8_1_4_3_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זו אינה בעיית אבטחה או וירוסים אלא בעיית תזמון קלאסית.
+                    </div>
+                    <div id="q8_1_4_3_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> תצוגת מסך שייכת לכרטיס מסך ולא לאלגוריתם תזמון הליבות.
+                    </div>
+                    <div id="q8_1_4_3_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אין שום קשר למקלדות או התקני קלט.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.4.3</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> סנכרון הדוק מחייב תזמון מתואם. הרצת כל התהליכונים יחד מבטיחה שספינלוקים ישתחררו מיד.</p>
+                            <p><strong>שורה תחתונה:</strong> Gang Scheduling = הרצת כל חברי הכנופיה יחד באותה פרוסת זמן.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.4.4 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.4.4">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 4 (8.1.4.4): כיצד פועל אלגוריתם "גניבת עבודה" (Work Stealing) במערכת מרובת מעבדים?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.4.4</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_4_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מעבד עמוס כופה על מעבדים אחרים לכבות את עצמם.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_4_4_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מעבד שהתור המקומי שלו התרוקן מנסה לקחת משימה מתור המוכנים של מעבד אחר כדי למנוע זמן סרק.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_4_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מעבד גונב סיסמאות משתמשים בזמן שהם מקלידים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_4_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. המערכת מוחקת משימות שלא הסתיימו בזמן.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_4_4_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המטרה היא שיתוף עבודה ולא כיבוי מעבדים.
+                    </div>
+                    <div id="q8_1_4_4_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> Work Stealing מאפשר למעבד מובטל לאזן את העומס על ידי נטילת משימה מתור של שכן עמוס.
+                    </div>
+                    <div id="q8_1_4_4_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המילה "גניבה" היא מונח תזמון הנדסי ואינה קשורה לפריצה או לסיסמאות.
+                    </div>
+                    <div id="q8_1_4_4_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> משימות אינן נמחקות אלא מבוצעות עד תום.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.4.4</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> פתרון מבוזר לאיזון עומסים המאפשר לנצל תורים נפרדים ללא חוסר איזון כרוני.</p>
+                            <p><strong>שורה תחתונה:</strong> Work Stealing = מעבד מובטל לוקח עבודה ממעבד עמוס.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.4.5 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.4.5">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 5 (8.1.4.5): מה ההבדל בין זיקה רכה (Soft Affinity) לזיקה קשה (Hard Affinity)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.4.5</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q8_1_4_5_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. בזיקה רכה המערכת שואפת להשאיר תהליך על אותו מעבד אך רשאית להעבירו בעומס; בזיקה קשה התהליך מוגבל אך ורק למעבדים שהוגדרו לו ואסור להעבירו לשום מעבד אחר.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_5_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. זיקה רכה מתאימה רק לתוכנות אופיס, וזיקה קשה מתאימה למשחקי מחשב.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_5_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. בזיקה קשה המעבד מכבה את עצמו פיזית בכל שעה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_4_5_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. אין ביניהן שום הבדל, שתיהן הגדרות זהות לחלוטין.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_4_5_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> זוהי ההגדרה המדויקת של Soft מול Hard Affinity במתזמני מערכות הפעלה.
+                    </div>
+                    <div id="q8_1_4_5_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ההגדרה היא מנגנון תזמון כללי במערכת ההפעלה ללא תלות באפליקציה.
+                    </div>
+                    <div id="q8_1_4_5_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אין שום קשר לכיבוי מעבדים.
+                    </div>
+                    <div id="q8_1_4_5_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ההבדל משמעותי: Soft היא העדפה בלבד, Hard היא אילוץ קשיח ומחייב.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.4.5</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> גמישות תזמון מול התחייבות ביצועים. Soft מאפשרת גמישות עומסים, Hard מאפשרת בידוד מוחלט.</p>
+                            <p><strong>שורה תחתונה:</strong> Soft = העדפה גמישה; Hard = קיבוע קשיח למעבד ספציפי.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>

@@ -1,0 +1,442 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 8.1.2: os-types (סוגי מערכות הפעלה למעבדים מרובים)        -->
+        <!-- ===================================================================== -->
+        <div id="questions-os-types" data-title="שאלות מנחות ותרגול - 💻 8.1.2 סוגי מערכות הפעלה למעבדים מרובים">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף את ניתוח העומק, האנלוגיה האינטואיטיבית והמסקנה המעשית.
+                </div>
+
+                <!-- שאלה 8.1.2.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.2.1: מדוע מודל "לכל מעבד מערכת הפעלה משלו" גורם לבזבוז משאבים וחוסר איזון בעומסים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            במודל הפשוט ביותר לריבוי מעבדים, הזיכרון מחולק סטטית וכל מעבד מריץ עותק עצמאי של מערכת ההפעלה כאילו היה מחשב נפרד. מהן שתי הבעיות החמורות ביותר שנוצרות כתוצאה מכך בניצול הזיכרון ובחלוקת כוח העיבוד?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו מסעדה גדולה עם 4 מטבחים סגורים ונפרדים לחלוטין. בכל מטבח יושב שף עם מזווה אישי ורשימת הזמנות פרטית. במטבח 1 יש תור של 50 סועדים שממתינים שעות, בעוד שבמטבח 4 השף יושב רגל על רגל ומשתעמם. מכיוון שהם לא חולקים תורים ולא חולקים מצרכים, מטבח 4 לא יכול לעזור למטבח 1! זהו בדיוק המודל של "לכל מעבד מערכת הפעלה משלו".
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>בזבוז זיכרון (Memory Duplication):</strong> קוד הליבה, טבלאות המערכת וזיכרונות המטמון של הדיסק (Buffer Cache) משוכפלים $N$ פעמים בזיכרון הפיזי במקום להישמר בעותק יחיד. בנוסף, חלוקת ה-RAM הסטטית מונעת מתהליך במעבד 1 לנצל זיכרון פנוי במעבד 2.</li>
+                                <li><strong>חוסר איזון בעומסים (Load Imbalance):</strong> לכל מעבד יש תור מוכנים עצמאי. אם מעבד אחד מקבל תהליכים כבדים, הוא ייחנק, בעוד שמעבדים אחרים יעמדו בסרק מבלי יכולת להעביר תהליכים ביניהם באופן שקוף.</li>
+                                <li><strong>שיתוף קבצים ומשאבים מוגבל:</strong> שיתוף נתונים דורש תקשורת רשת פנימית איטית (בדומה לשני מחשבים עצמאיים) במקום כתיבה ישירה לזיכרון משותף.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שמודל זה אינו בשימוש כלל. יתרונו הגדול הוא פשטות מוחלטת במימוש (אפס סכנה ל-Race Conditions בין מעבדים בליבה), ולכן הוא שימש מערכות ראשוניות או מערכות זמן-אמת מבודדות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: מודל "מערכת הפעלה לכל מעבד" פשוט מאוד למימוש אך כושל לחלוטין בניצול יעיל של משאבי זיכרון ומעבד משותפים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.2.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.2.2: מדוע מערכת הפעלה מסוג ראשי-משני (Master-Slave) סובלת מצוואר בקבוק במעבד הראשי?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            במערכת Master-Slave יש עותק יחיד של הליבה בזיכרון, אך רק מעבד ה-Master מורשה לבצע קוד ליבה. כיצד מבנה זה פותר בעיות סנכרון בליבה, ומדוע הוא מונע מהמערכת לתפקד ביעילות מעבר למספר קטן של מעבדים?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו משרד שבו יש מנהל אחד (Master) ו-20 פקידים (Slaves). הפקידים מורשים רק להקליד נתונים פשוטים (קוד משתמש). בכל פעם שפקיד צריך דף חדש, חותמת, או שליחת מכתב בדואר (קריאת מערכת I/O), הוא חייב לקום, לעמוד בתור מחוץ לדלת של המנהל, ולחכות שהמנהל יבצע את הפעולה עבורו. עד מהרה המנהל קורס מעומס עבודה, וכל 20 הפקידים עומדים בתור חסרי מעש.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>פשטות הסנכרון:</strong> מכיוון שרק מעבד ה-Master ניגש לטבלאות מערכת ההפעלה (תורי תהליכים, הקצאת דפים, התקני I/O), אין סכנה להתנגשויות נתונים בליבה ואין צורך במנעולים מורכבים.</li>
+                                <li><strong>צוואר הבקבוק (Single Bottleneck):</strong> כל קריאת מערכת (system call) שמעבד משני נתקל בה מחייבת שליחת בקשה ל-Master והעברת המעבד המשני למצב המתנה. כל פסיקות החומרה מטופלות אף הן אך ורק על ידי ה-Master.</li>
+                                <li><strong>חוק תפוקה שולית פוחתת:</strong> אם תוכניות מבצעות פעולות I/O או קריאות מערכת תכופות, ה-Master מגיע ל-100% ניצול, והוספת מעבדי Slave נוספים אינה מגדילה את ביצועי המערכת כלל.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שמודל Master-Slave סובל מקריסות עקב Race Conditions. ההפך הוא הנכון – הוא אמין מאוד וקל לפיתוח, אך מגבלת הביצועים שלו נובעת מחוסר יכולת לחלק את עומס הליבה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: Master-Slave מונע בעיות סנכרון בליבה אך הופך את המעבד הראשי לצוואר בקבוק החונק את יכולת ההתרחבות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.2.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.2.3: מהי מערכת הפעלה מרובת מעבדים סימטרית (SMP), ומהו המחיר התכנותי של ביטול מעבד ה-Master?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            בארכיטקטורת SMP כל המעבדים שווים במעמדם וכל אחד מהם מסוגל להריץ את קוד הליבה. כיצד מודל זה משיג ניצול מקסימלי של החומרה, ואיזה אתגר סנכרון קריטי הוא כופה על מתכנני הליבה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            במקום מנהל יחיד במשרד, כל העובדים מוסמכים לגשת בעצמם לחדר הארכיון ולהחתים מסמכים (קוד ליבה). אין שום תור בכניסה למשרד המנהל. אולם כעת, אם שני עובדים ניגשים בו-זמנית לאותה מגירה כדי לקחת את אותו תיק לקוח, הם עלולים לקרוע את המסמך. הפתרון: שמים מנעול קטן על כל מגירה ומגירה בארכיון, כך שמי שניגש למגירה 4 נועל אותה לחצי דקה, מבלי להפריע למי שניגש למגירה 7.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>עקרון ה-SMP:</strong> עותק יחיד של מערכת ההפעלה שמור בזיכרון המשותף. כל מעבד שמבצע Trap בעקבות קריאת מערכת עובר למצב ליבה (Kernel Mode) ומבצע את שגרת השירות של מערכת ההפעלה באופן עצמאי.</li>
+                                <li><strong>סכנת Race Conditions בליבה:</strong> אם מעבד 1 ומעבד 2 מנסים להקצות דף זיכרון פנוי בו-זמנית, שניהם עלולים לקרוא את אותו מצביע בראש רשימת הדפים הפנויים ולהקצות את אותו הדף לשני תהליכים שונים!</li>
+                                <li><strong>נעילות קטעים קריטיים:</strong> חובה להגן על כל מבנה נתונים פנימי של הליבה (רשימת תהליכים, טבלאות זיכרון, תורי מוכנים) באמצעות מנעולים (Spinlocks / Mutexes).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            נעילה כוללת של הליבה (Big Kernel Lock - BKL): ניסיון להגן על כל הליבה במנעול יחיד מחזיר את המערכת בדיוק להתנהגות של Master-Slave, שכן רק מעבד אחד יכול להיכנס לקוד הליבה בכל רגע.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: SMP היא הארכיטקטורה היעילה ביותר לריבוי מעבדים, אך דורשת מימוש קפדני של נעילות עדינות (Fine-grained locking) בליבה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.2.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.2.4: מה ההבדל בין תור מוכנים יחיד משותף לבין תורים נפרדים לכל מעבד במערכת SMP?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            כיצד משפיעה בחירת מבנה תור המוכנים (Single Shared Queue מול Per-CPU Queues) על תקורת הנעילות, על איזון העומסים ועל ניצול זיכרון המטמון של המעבדים?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תור משותף משול לתור יחיד בסניף דואר שמוביל ל-8 אשנבים – מושלם לחלוקת עומס (אף אשנב לא יושב פנוי כשיש אנשים בתור), אך אם 8 הפקידים צריכים לגשת לאותו פנקס תורים בכל שתי שניות כדי לקרוא ללקוח הבא, הם ידרכו זה לזה על הרגליים. תורים נפרדים משולים לתור נפרד מול כל אשנב – אין חיכוך בין הפקידים, אך תור אחד עלול להתארך בעוד השני ריק.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>תור יחיד משותף:</strong>
+                                    <br>יתרון: איזון עומסים מושלם ואוטומטי.
+                                    <br>חיסרון: תחרות גבוהה על מנעול התור (Lock Contention) ככל שמספר המעבדים גדל, ופגיעה קשה בזיכרון המטמון (תהליך שרץ על מעבד 1 עלול להיבחר לרוץ בהמשך על מעבד 4 שבו המטמון קר לחלוטין).</li>
+                                <li><strong>תורים נפרדים לכל מעבד:</strong>
+                                    <br>יתרון: אפס תחרות על נעילות בתפעול רגיל, ושימור זיקה למעבד (Processor Affinity) הממקסם Cache Hits.
+                                    <br>חיסרון: סכנה לחוסר איזון בעומסים, הדורשת מנגנון "גניבת עבודה" (Work Stealing) שבו מעבד מובטל גונב משימות מתור של מעבד עמוס.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            תקורת אלגוריתם Work Stealing: אם הבדיקה מתבצעת בתדירות גבוהה מדי, מעבדים מובטלים עלולים לייצר עומס נעילות וזיכרון על מעבדים פעילים.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: מערכות SMP מודרניות משתמשות בתורים נפרדים לכל מעבד עם זיקה (Affinity) בשילוב אלגוריתם Work Stealing מבוקר.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.1.2.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.1.2.5: מהו מנעול הליבה הגדול (Big Kernel Lock), ומדוע מערכות הפעלה עברו לנעילה עדינה (Fine-grained Locking)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            בעת המעבר מחד-מעבד ל-SMP, פתרון ביניים קלאסי היה שימוש במנעול יחיד שנועל את כל הליבה (BKL). מדוע פתרון זה ביטל למעשה את יתרון ריבוי המעבדים ביישומים מרובי קריאות מערכת, וכיצד נעילה עדינה פותרת זאת?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            BKL משול לכך שבמקום לנעול רק את כספת הכסף בבנק, השומר נועל את כל דלת הכניסה לבנק בכל פעם שמישהו רוצה לבצע פעולה כלשהי. רק לקוח אחד רשאי להיות בתוך הבנק בכל רגע נתון. אם יש לכם 8 פקידים בבנק, 7 מהם יושבים באפס מעשה ומחכים שהלקוח הבודד יסיים ויצא. נעילה עדינה (Fine-grained) נועלת רק את המגירה הספציפית שבה נמצא הכסף של הלקוח.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>עקרון ה-BKL:</strong> בכל כניסה לקוד הליבה (פסיקה, קריאת מערכת, חריגה), המעבד נועל ספינלוק גלובלי יחיד. רק מעבד אחד יכול לשהות במצב ליבה בכל רגע.</li>
+                                <li><strong>הבעיה ב-BKL:</strong> סריאליזציה מלאה של קוד הליבה. אם מעבדים מבצעים משימות I/O, תקשורת רשת או ניהול קבצים, הם מבלים את רוב זמנם בהמתנה לשחרור ה-BKL. הוספת מעבדים אינה מגדילה את התפוקה.</li>
+                                <li><strong>הפתרון בנעילה עדינה:</strong> פירוק המנעול הגלובלי לעשרות מנעולים עצמאיים: מנעול לטבלת הקבצים הפתוחים, מנעול לתור המוכנים, מנעול למנהל הזיכרון הווירטואלי, וכו'. מעבד שניגש לקובץ אינו חוסם מעבד שמקצה דף זיכרון.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            סכנת קיפאון (Deadlock): שימוש בריבוי מנעולים עדינים יוצר סכנה מוחשית של קיפאון אם שני מעבדים נועלים שני מבני נתונים בסדר הפוך. חובה להקפיד על סדר נעילה גלובלי קבוע (Lock Ordering).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: BKL שימש גשר מעבר ראשוני ל-SMP, אך נעילה עדינה היא תנאי הכרחי למיצוי מלא של מעבדים מרובים במערכות מודרניות.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטראקטיביות (פורמט B) -->
+            <div class="mcq-questions-list space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>🎯 תרגול שאלות אמריקאיות:</strong> בחנו את הבנתכם. לחיצה על אפשרות תציג משוב מיידי וכרטיסיית הסבר מפורטת.
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.2.1 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.2.1">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 1 (8.1.2.1): מהו החיסרון המרכזי של מודל "לכל מעבד מערכת הפעלה משלו" (Each CPU has its own OS)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.2.1</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_1_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. נדרשים מנעולים מורכבים במיוחד בכל גישה לטבלאות הליבה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_2_1_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. הזיכרון מחולק סטטית ומשוכפל, ונוצר חוסר איזון חמור בעומסים שבו מעבד אחד עמוס ואחר ממתין בסרק.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_1_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. המודל אינו תומך בהרצת פקודות בשפת C.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_1_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. המודל דורש כרטיס גרפי נפרד לכל ליבה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_2_1_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> להפך, במודל זה אין כלל צורך במנעולים בליבה כי לכל מעבד יש עותק פרטי נפרד של מערכת ההפעלה.
+                    </div>
+                    <div id="q8_1_2_1_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> חלוקת הזיכרון הסטטית גורמת לבזבוז שכפול, וחוסר היכולת לחלוק תהליכים גורם לחוסר איזון עומסים קיצוני.
+                    </div>
+                    <div id="q8_1_2_1_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> שפת התכנות של התוכניות אינה תלויה במודל מערכת ההפעלה.
+                    </div>
+                    <div id="q8_1_2_1_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אין שום קשר לכרטיסים גרפיים.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.2.1</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> חלוקה מוחלטת מונעת שיתוף פעולה. אם הזיכרון מחולק מראש ל-4 חלקים, מעבד שנגמר לו הזיכרון יקרוס אף שליד יש 10GB פנויים.</p>
+                            <p><strong>שורה תחתונה:</strong> מודל "מערכת הפעלה לכל מעבד" אינו מאפשר שיתוף משאבים ואיזון עומסים גמיש.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.2.2 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.2.2">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 2 (8.1.2.2): מה קורה במערכת Master-Slave כאשר מעבד Slave נתקל בקריאת מערכת (System Call)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.2.2</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_2_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מעבד ה-Slave מבצע את קוד הליבה בעצמו ומעדכן ישירות את טבלאות המערכת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_2_2_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מעבד ה-Slave שולח פסיקה/בקשה למעבד ה-Master, וממתין שה-Master יבצע עבורו את קריאת המערכת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_2_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. התהליך מופסק מיד ונזרקת שגיאת Segmentation Fault.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_2_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. קריאת המערכת נשלחת לדיסק ונשמרת כקובץ לוג.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_2_2_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> במודל Master-Slave מעבדי ה-Slave אינם מורשים להריץ קוד ליבה; רק ב-SMP כל מעבד מבצע קוד ליבה.
+                    </div>
+                    <div id="q8_1_2_2_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> מעבד ה-Slave נעצר, מייצר בקשה ל-Master, וה-Master מבצע את ה-Syscall ומחזיר תוצאה.
+                    </div>
+                    <div id="q8_1_2_2_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> קריאת מערכת היא פעולה חוקית ואינה גורמת לשגיאת גישה לזיכרון.
+                    </div>
+                    <div id="q8_1_2_2_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> קריאות מערכת מטופלות בזיכרון הראשי על ידי מעבד ה-Master ולא בדיסק.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.2.2</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> העברת כל פעולות הניהול לגורם יחיד מונעת תחרות, אך הופכת אותו לצוואר הבקבוק המרכזי.</p>
+                            <p><strong>שורה תחתונה:</strong> ב-Master-Slave, מעבדי ה-Slave תלויים ב-Master לכל שירות מערכת.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.2.3 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.2.3">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 3 (8.1.2.3): מהו המאפיין המגדיר מערכת ריבוי מעבדים סימטרית (SMP)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.2.3</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q8_1_2_3_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. קיים עותק יחיד של מערכת ההפעלה בזיכרון המשותף, וכל מעבד יכול להריץ קוד ליבה וקוד משתמש כאחד.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_3_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. לכל מעבד יש מהירות שעון שונה לחלוטין.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_3_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. אין צורך בשום אמצעי סנכרון או נעילה במערכת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_3_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. המעבדים מחוברים אך ורק דרך רשת האינטרנט.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_2_3_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> זוהי הגדרת SMP: כל המעבדים שווים במעמדם ומריצים את קוד הליבה המשותף עצמאית.
+                    </div>
+                    <div id="q8_1_2_3_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המילה "סימטרי" מתייחסת למעמד השווה של המעבדים ביחס למערכת ההפעלה.
+                    </div>
+                    <div id="q8_1_2_3_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ב-SMP נדרשים מנגנוני סנכרון רבים במיוחד כדי להגן על מבני הנתונים של הליבה.
+                    </div>
+                    <div id="q8_1_2_3_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> SMP היא מערכת מחשב מקומית בעלת זיכרון משותף פיזי.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.2.3</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> סימטריה מלאה בהרצת קוד מערכת הפעלה מונעת צווארי בקבוק ומנצלת את כל הליבות באופן שווה.</p>
+                            <p><strong>שורה תחתונה:</strong> SMP = עותק ליבה יחיד וכל המעבדים מריצים קוד ליבה ומשתמש באופן שווה.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.2.4 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.2.4">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 4 (8.1.2.4): מדוע שימוש במנעול יחיד לכל הליבה (Big Kernel Lock) אינו פתרון יעיל ל-SMP?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.2.4</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_4_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מכיוון שמנעול יחיד גורם למחיקת קבצים אוטומטית בדיסק.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_2_4_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מכיוון שרק מעבד אחד יכול לשהות במצב ליבה בכל רגע, דבר שהופך את קוד הליבה לטורי ופוגע בביצועים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_4_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מכיוון שמעבדי SMP אינם תומכים במנעולי Spinlock.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_4_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. מכיוון שה-BKL דורש שימוש בפקודות מתמטיות של מספרים מרוכבים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_2_4_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> BKL מגן על מבני הנתונים של הליבה ואינו מוחק קבצים.
+                    </div>
+                    <div id="q8_1_2_4_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> BKL מבצע סריאליזציה מלאה של כל קריאות המערכת, וכך מעבדים רבים ממתינים בסרק למנעול במקום לנצל את כוח החישוב.
+                    </div>
+                    <div id="q8_1_2_4_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> BKL ממומש בדיוק באמצעות ספינלוק.
+                    </div>
+                    <div id="q8_1_2_4_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אין קשר למספרים מרוכבים.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.2.4</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> גרנולריות נעילה. מנעול יחיד הוא גס מדי וחונק את המקביליות; נעילה עדינה מאפשרת לרוץ במקביל בחלקים שונים של הליבה.</p>
+                            <p><strong>שורה תחתונה:</strong> BKL סובל מסריאליזציה של קוד הליבה; הפתרון הוא מעבר לנעילות עדינות על מבני נתונים נפרדים.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.1.2.5 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.1.2.5">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 5 (8.1.2.5): מהו היתרון המרכזי של שימוש בתורי מוכנים נפרדים לכל מעבד לעומת תור יחיד משותף?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.1.2.5</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_5_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מובטח שתמיד כל המעבדים יהיו בעומס עבודה זהה לחלוטין.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_1_2_5_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. הפחתת התחרות על מנעול התור ושימור זיקה למעבד (Affinity) המאפשרת ניצול מרבי של זיכרון המטמון.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_5_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. אין צורך במתזמן במערכת ההפעלה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_1_2_5_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. התהליכים רצים ללא צורך בהקצאת זיכרון RAM.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_1_2_5_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> להפך, בתורים נפרדים עלול להיווצר חוסר איזון המצריך אלגוריתמי Work Stealing.
+                    </div>
+                    <div id="q8_1_2_5_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> כל מעבד ניגש לתור שלו ללא תחרות נעילות, ותהליכים נשארים על אותו המעבד וכך נהנים מזיכרון מטמון חם (Cache Warmth).
+                    </div>
+                    <div id="q8_1_2_5_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המתזמן עדיין נדרש לנהל כל תור ולבצע החלפות הקשר.
+                    </div>
+                    <div id="q8_1_2_5_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> תהליכים תמיד דורשים זיכרון RAM להרצתם.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.1.2.5</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> ביזור תורים מקטין תחרות על מנעולים ומחזק את עקרון ה-Cache Affinity, במחיר של צורך במנגנוני איזון עומסים.</p>
+                            <p><strong>שורה תחתונה:</strong> תורים נפרדים = פחות תחרות וביצועי מטמון טובים יותר.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>

@@ -1,0 +1,493 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 9.6: glossary-tab (סיכום מנגנוני הגנה ומילון מושגים)        -->
+        <!-- ===================================================================== -->
+        <div id="questions-glossary-tab" data-title="שאלות מנחות ותרגול - 📚 סיכום מנגנוני הגנה">
+            
+            <!-- 1. שאלות פתוחות להעמקה מסכמות (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה - סיכום פרק 9:</strong> שאלות אינטגרטיביות הבוחנות את תפיסת ההגנה הכוללת במערכת ההפעלה, מודל תחומי ההגנה, מטריצת הגישה וסוגיות ביטול הרשאות וערוצים סמויים.
+                </div>
+
+                <!-- שאלה 9.6.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 9.5.1: סינתזה השוואתית כוללת – מתי מערכת הפעלה תעדיף ACL ומתי תעדיף C-Lists?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            מערכות קבצים (כמו NTFS ו-ext4) משתמשות כמעט תמיד ברשימות בקרת גישה (ACL), בעוד שניהול משאבים פעילים בזמן ריצה (כמו File Descriptors פתוחים או אובייקטי IPC) ממומש כרשימת יכולות (C-Lists). מהו הרציונל הטכנולוגי העמוק מאחורי פיצול זה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דלת כניסה לבניין משרדים מנוהלת באמצעות רשימת שמות אצל השומר בכניסה (ACL) – השומר מביט בתעודת הזהות שלכם ובודק אם אתם ברשימה של הבניין. לעומת זאת, כניסה למעלית פנימית לקומה 40 מתבצעת באמצעות כרטיס מגנטי מקודד שבידכם (Capability) – המעלית לא מכירה את שמכם, אלא רק בודקת אם הכרטיס שבידכם מחזיק בהרשאה לקומה זו. בסטטי (קבצים על דיסק) רוצים לדעת מי מורשה; בדינמי (ריצה במעבד) רוצים פעולה מהירה ללא חיפוש ברשימות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>יתרון ACL בקבצים:</strong> קבצים הם אובייקטים פסיביים וארוכי חיים. קל מאוד לענות על השאלה "למי יש גישה לקובץ זה?" וקל מאוד לבטל הרשאה למשתמש מסוים ישירות מה-i-node/MFT.</li>
+                                <li><strong>יתרון C-Lists בזמן ריצה:</strong> בדיקת ACL בכל פקודת `read()` או `write()` דורשת תקורת חיפוש ברשימה. במקום זאת, בפקודת `open()` המערכת בודקת את ה-ACL פעם אחת בלבד ומחזירה File Descriptor, שהוא למעשה יכולת (Capability) שמורה בטבלת התהליך המוגנת. כל גישה עוקבת מתבצעת בזמן קבוע $O(1)$ ללא חיפוש.</li>
+                                <li><strong>עיקרון המידור (Principle of Least Privilege):</strong> שימוש ב-Capabilities מאפשר העברת הרשאות נקודתיות לתהליכי-בן או שירותים זמניים מבלי לפתוח הרשאות כלליות במערכת.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שניתן לממש מערכת הפעלה מודרנית המבוססת על מודל אחד בלבד. שילוב שני המודלים (ACL להגדרה סטטית ו-C-Lists לביצועים דינמיים) הוא הסטנדרט המנצח.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: ACL מצטיין בניהול וביטול הרשאות של אובייקטים פסיביים; C-Lists מספק מהירות גישה של $O(1)$ ומידור מדויק בזמן ריצה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 9.6.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 9.5.2: ביטול הרשאות (Revocation) – מדוע ביטול ב-C-Lists הוא אתגר הנדסי כבד וכיצד פותרים אותו?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            כאשר מנהל המערכת רוצה לשלול הרשאה לקובץ רגיש, ב-ACL הדבר דורש מחיקת שורה אחת מהרשימה הצמודה לקובץ. מדוע ברשימות יכולות (C-Lists) מדובר בבעיה מורכבת ביותר, ואילו ארבע שיטות פותחו כדי להתמודד עמה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ביטול ב-ACL משול למחיקת שם מרשימת המוזמנים של מועדון – מוחקים את השם מהדף בכניסה, והאדם לא ייכנס יותר לעולם. ביטול ב-Capabilities משול לכך שחילקתם 1,000 כרטיסי כניסה פיזיים ברחוב. כדי לבטל כעת את הזכות לאדם ספציפי, עליכם לרדוף אחרי כל האנשים בעיר, לחטוף להם את הכרטיסים מהיד, או להחליף את המנעול של הדלת הראשית ולחלק כרטיסים חדשים לכל האחרים.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>סריקה גלובלית (Acquisition/Global Scan):</strong> מעבר על כל טבלאות היכולות של כל התהליכים במערכת ומחיקת המצביעים לאובייקט. שיטה כבדה מאוד ולא מעשית במערכות גדולות ($O(P \times C)$).</li>
+                                <li><strong>הפניה עקיפה (Back-Pointers / Indirection):</strong> במקום שהיכולת תצביע ישירות לאובייקט, היא מצביעה על רשומת ביניים (Alias/Proxy). ביטול ההרשאה מוחק את רשומת הביניים והופך את כל היכולות הקיימות לבלתי שמישות מיידית.</li>
+                                <li><strong>טבלת אובייקטים גלובלית (Master Object Table):</strong> היכולת מכילה אינדקס בטבלה מרכזית. ביטול הרשאה דורש שינוי ערך בטבלה המרכזית.</li>
+                                <li><strong>מפתחות ותגי תוקף (Keys and Locks / Capability Epoch):</strong> לכל אובייקט יש מפתח (Lock) המאוחסן אצלו, וביכולת יש ערך (Key). אם הערכים תואמים, הגישה מאושרת. ביטול הרשאה מתבצע על ידי החלפת המנעול באובייקט בלבד, מה שפוסל מיידית את כל היכולות הישנות.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            בשיטת המפתחות והמנעולים (Keys/Locks), החלפת המפתח באובייקט שוללת את ההרשאה מ*כל* מחזיקי היכולות בעולם, ולא רק מחוט ספציפי. אם רוצים ביטול פרטני, נדרשת היררכיית מפתחות או שכבת אינדיירקציה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: ביטול ב-ACL הוא טריוויאלי; ב-C-Lists משתמשים באינדיירקציה (Indirection) או במפתחות (Keys) כדי לקבל ביטול מידי באפס עלות סריקה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 9.6.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 9.5.3: ערוצים סמויים (Covert Channels) – כיצד מידע דולף ללא כל הפרת הרשאות?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            מערכת הפעלה מבודדת לחלוטין שני תהליכים: לתהליך סודי מותר רק לקרוא מידע מסווג ואסור לו לכתוב לשום קובץ או רשת, ולתהליך רגיל מותר לכתוב לרשת. כיצד התהליך הסודי מצליח להעביר סודות לתהליך הרגיל תוך עקיפה מושלמת של מטריצת ההגנה, ומה ההבדל בין ערוץ אחסון לערוץ זמן?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            שני אסירים יושבים בשני תאי צינוק מבודדים ללא דלת מקשרת ובלי יכולת לדבר. הסוהר מונע כל העברת מכתבים (מטריצת הגנה). האסיר בתא א' רוצה להעביר מסר לאסיר בתא ב'. כדי לשדר '1', הוא מוריד את המים בשירותים במשך שעה שלימה, מה שגורם ללחץ המים בצינור של תא ב' לרדת (ערוץ אחסון משותף). כדי לשדר '0', הוא לא נוגע במים. האסיר בתא ב' מודד את זרימת המים ומפענח את הביטים. הצינור המשותף הפך לערוץ תקשורת סמוי.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>ערוץ אחסון סמוי (Covert Storage Channel):</strong> תקשורת באמצעות שינוי מצב של משאב מערכת משותף. לדוגמה: התהליך הסודי ממלא את הדיסק עד אפס מקום כדי לשדר '1', ומוחק קובץ כדי לשדר '0'. התהליך הרגיל מנסה להקצות בלוק ובודק אם קיבל שגיאת `ENOSPC`.</li>
+                                <li><strong>ערוץ זמן סמוי (Covert Timing Channel):</strong> תקשורת המבוססת על מודולציה של זמני ביצוע. לדוגמה: התהליך הסודי רץ בלולאה אינטנסיבית של 100% CPU כדי לשדר '1', או הולך לישון כדי לשדר '0'. התהליך הרגיל מודד במדויק כמה מחזורי שעון ארך לו לבצע משימה סטנדרטית.</li>
+                                <li><strong>רוחב פס של ערוץ סמוי:</strong> נמדד בביטים לשנייה (bps). מערכות ביטחוניות שואפות לצמצם את רוחב הפס של ערוצים סמויים לפחות מ-1 ביט לשנייה (למשל על ידי הוספת רעש אקראי לשעון המערכת או חלוקה קשיחה של משאבים).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שחסימת כל ערוצי ה-IPC (צינורות, זיכרון משותף, קבצים) מונעת דליפת מידע. כל משאב פיזי משותף (מטמון מעבד, אפיק, תזמון מעבד) מהווה ערוץ סמוי פוטנציאלי.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: ערוצים סמויים מנצלים תופעות לוואי פיזיות של משאבים משותפים; מניעתם המוחלטת כמעט בלתי אפשרית ומחייבת הפרדה פיזית מלאה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 9.6.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 9.5.4: מהי בעיית "הסגן המבולבל" (Confused Deputy), וכיצד מודל יכולות פותר אותה באופן מובנה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            תוכנית שירות בעלת הרשאות מנהל (סגן) מספקת שירות למשתמשים פשוטים. משתמש פשוט מבקש ממנה לבצע פעולה על קובץ רגיש שהמשתמש עצמו אינו מורשה לגשת אליו, והתוכנית מבצעת זאת תוך ניצול סמכותה שלה. כיצד Capabilities פותרות בעיה זו שבה מודל ACL כושל?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            שוטר עומד בכניסה לחניון סגור עם מפתח מאסטר. אדם זר פונה לשוטר ואומר לו "שלום, שכחתי את המפתח בבית, תוכל בבקשה לפתוח עבורי את שער 4?". השוטר האדיב משתמש במפתח המאסטר שלו ופותח את השער, מבלי לבדוק אם לאדם הזר מותר להיכנס. השוטר הוא "הסגן המבולבל" – הוא השתמש בסמכותו שלו לטובת גורם בלתי מורשה. ב-Capabilities, האדם הזר חייב למסור לשוטר את המפתח הספציפי שלו כדי שהשוטר ישתמש בו, ואם אין לו מפתח - הפעולה תיכשל מיד.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הכשל ב-ACL / Ambient Authority:</strong> במודל ACL, ההרשאה נקבעת לפי זהות המבצע (Identity). כאשר תהליך שרת (סגן) רץ, יש לו "סמכות סביבתית" (Ambient Authority) לגשת לכל הקבצים המותרים לו. השרת אינו יכול להבדיל אם בקשת המשתמש נעשית במסגרת הרשאות המשתמש או תוך ניצול הרשאות השרת.</li>
+                                <li><strong>הפתרון המובנה ב-Capabilities:</strong> במודל יכולות אין סמכות סביבתית. בכל קריאה לפונקציה או שירות, הלקוח *חייב להעביר את היכולת* (Capability Token) כפרמטר יחד עם הבקשה. השרת פועל אך ורק באמצעות היכולת שהועברה אליו על ידי הלקוח, וכך אין שום אפשרות לשרת לדרוס קובץ אלא אם ללקוח יש יכולת מפורשת עבורו.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            תוכניות `setuid root` במערכות UNIX הן דוגמה קלאסית לפוטנציאל של Confused Deputy, כאשר קבצים מועברים בנתיבים יחסיים או כמשתני סביבה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: בעיית הסגן המבולבל נובעת מסמכות סביבתית ב-ACL; Capabilities מונעות אותה מעצם הדרישה להעברת הרשאה מפורשת בכל בקשה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 9.6.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 9.5.5: מדוע תהליך זקוק למעבר בין תחומי הגנה, וכיצד שערי כניסה מאפשרים זאת בבטחה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            מדוע צימוד קשיח של תהליך לתחום הגנה יחיד לאורך כל חייו פוגע בעקרון ה-Least Privilege, וכיצד מנגנוני Domain Switching (כגון שערים / Gates או פקודת setuid) מאפשרים מעבר בטוח בין תחומים?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו עובד מעבדה שנמצא כל היום עם חליפת מגן מסורבלת וכפפות כבדות (תחום הגנה מחמיר) גם כשהוא רק כותב במחשב או שותה קפה במטבח. זה מסורבל ומגושם. המודל הנכון הוא מנעול אוויר (Airlock / Gate): כאשר העובד ניגש לחומרים המסוכנים, הוא עובר דרך שער מבוקר, מחליף סטטוס, מבצע את המשימה המוגדרת בלבד, וחוזר מיד לתחום הרגיל.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>תחום הגנה כקבוצת זוגות:</strong> תחום הגנה $D$ מוגדר כאוסף של זוגות $\langle \text{Object}, \text{Rights} \rangle$.</li>
+                                <li><strong>מעבר בין תחומים כמבצע מוגן:</strong> מעבר מתחום $D_1$ לתחום $D_2$ מוגדר בעצמו כזכות כניסה (Switch right) בטבלת ההגנה: אם ב-$D_1$ יש זכות $\text{switch}$ ל-$D_2$, המעבר מאושר.</li>
+                                <li><strong>שערי חומרה (Call Gates ב-x86):</strong> מעבר בין טבעות הגנה (Ring 3 ל-Ring 0) מתבצע אך ורק דרך נקודות כניסה מוגדרות מראש בחומרה (Interrupt / Syscall Gate), המבצעות בדיקת הרשאות והחלפת מחסנית בטוחה.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מתקפות חזרה (Return-to-libc / ROP) שבהן תוקף גורם לתהליך שביצע מעבר לתחום מיוחס לקפוץ לקוד זדוני מבלי לחזור באופן מבוקר לתחום הנחות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: תחומי הגנה דינמיים מגבילים את החשיפה של המערכת; מעבר תחומים חייב להתבצע דרך שערים מבוקרים בלבד.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטראקטיביות מסכמות (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>🎯 תרגול שאלות אמריקאיות - סיכום פרק 9:</strong> שאלות רב-ברירה מקיפות על כלל נושאי הפרק לבחינת הבנת העומק.
+                </div>
+
+                <!-- שאלה אמריקאית 9.6.1 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="9.6.1">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 1 (9.6.1): מהו ההבדל המרכזי בין רשימות גישה (ACL) לבין רשימות יכולות (Capabilities / C-Lists) במטריצת ההגנה?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 9.6.1</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q9_6_1_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. ACL מייצגת את עמודות מטריצת ההגנה (צמודה לכל אובייקט ומפרטת אילו תחומים מורשים לגשת אליו), ואילו C-List מייצגת את שורות המטריצה (צמודה לכל תחום/תהליך ומפרטת את כל האובייקטים וההרשאות שלו).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_1_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. ACL משמשת רק לחומרה ואילו C-Lists משמשת רק למערכות הפעלה מבוזרות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_1_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. ב-ACL כל משתמש מחזיק כרטיס גישה פיזי אצלו, וב-C-Lists השומר בודק את הרשימה בכניסה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_1_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. אין ביניהן הבדל מהותי, אלו רק שמות נרדפים לאותו מבנה נתונים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q9_6_1_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> זוהי ההגדרה המדויקת של ייצוג מטריצת ההגנה: פירוק לפי עמודות (הצמדה לאובייקט) יוצר רשימות ACL; פירוק לפי שורות (הצמדה לנושא/תחום) יוצר רשימות Capabilities.
+                    </div>
+                    <div id="q9_6_1_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> שתי השיטות הן שיטות תוכנה/מערכת הפעלה קלאסיות המשמשות בכל סוגי המערכות.
+                    </div>
+                    <div id="q9_6_1_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> האנלוגיה הפוכה: ב-C-Lists המשתמש מחזיק כרטיס גישה (יכולת), וב-ACL השומר בודק רשימה המוצמדת לדלת האובייקט.
+                    </div>
+                    <div id="q9_6_1_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ההבדל הארכיטקטוני ביניהן תהומי ומשפיע ישירות על זמני גישה, מנגנוני ביטול וניהול הרשאות.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 9.6.1</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> מטריצת ההגנה (Protection Matrix) היא מודל תיאורטי דליל ביותר. בעולם האמיתי לא שומרים מטריצה ענקית ריקה.</p>
+                            <p><strong>מימוש:</strong> שומרים רק את התאים הלא-ריקים: או כרשימת עמודות (ACL הצמוד לקובץ) או כרשימת שורות (C-Lists השמורה בתהליך).</p>
+                            <p><strong>שורה תחתונה:</strong> עמודות = ACL; שורות = Capabilities.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 9.6.2 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="9.6.2">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 2 (9.6.2): מדוע ביטול הרשאה (Revocation) ברשימות יכולות (Capabilities) מורכב משמעותית בהשוואה ל-ACL?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 9.6.2</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q9_6_2_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. בגלל שרשימות יכולות מאוחסנות תמיד בזיכרון ROM לקריאה בלבד שאינו ניתן למחיקה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q9_6_2_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מכיוון שהיכולות מבוזרות בין תהליכים שונים במערכת ויכולות להיות מועתקות, כך שאין רשימה מרכזית המרכזת אילו תהליכים מחזיקים כרגע ביכולת לגשת לאובייקט.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_2_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מכיוון שביטול יכולת גורם לקריסה מיידית של המעבד (Kernel Panic).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_2_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. מכיוון ש-ACL אינו תומך בהרשאות כתיבה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q9_6_2_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> יכולות נשמרות במרחב הליבה של ה-RAM, לא ב-ROM.
+                    </div>
+                    <div id="q9_6_2_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> בדיוק כך: ב-ACL יש מקום מרכזי יחיד לקובץ שבו מוחקים את ההרשאה. ב-Capabilities היכולת עברה מתהליך לתהליך, וכדי לשלול אותה יש לאתר את כל העותקים הפזורים או להשתמש באינדיירקציה/מפתחות.
+                    </div>
+                    <div id="q9_6_2_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ביטול הרשאה הוא נוהל תקין וסטנדרטי של מערכת ההפעלה ואינו גורם לקריסת ליבה.
+                    </div>
+                    <div id="q9_6_2_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ACL תומך באופן מלא בכל סוגי ההרשאות (Read, Write, Execute וכו').
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 9.6.2</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> ביזור מול ריכוז. ב-ACL המידע מרוכז ליד האובייקט; ב-Capabilities המידע מבוזר אצל מחזיקי ההרשאות.</p>
+                            <p><strong>פתרונות נפוצים:</strong> שימוש ב-Indirection Pointers, Master Tables, או Keys & Locks המאפשרים ביטול עקיף מיידי.</p>
+                            <p><strong>שורה תחתונה:</strong> ב-Capabilities קשה לדעת מי מחזיק בעותק; לכן משתמשים במצביעי ביניים או במפתחות לביטול מהיר.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 9.6.3 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="9.6.3">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 3 (9.6.3): מה מאפיין "ערוץ זמן סמוי" (Covert Timing Channel) בהשוואה לערוץ אחסון סמוי?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 9.6.3</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q9_6_3_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. ערוץ זמן משתמש בקבצים מיוחדים המאוחסנים על הדיסק הקשיח.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q9_6_3_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. ערוץ זמן מעביר מידע באמצעות מודולציה של זמני תגובה או עומס על משאבי חישוב משותפים (כמו מעבד או מטמון), כאשר המקלט מודד את משך הזמן שנדרש לו לבצע משימות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_3_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. ערוץ זמן אינו מסוגל להעביר ביטים אלא רק מספרי שעון.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_3_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. ערוץ זמן נחסם לחלוטין על ידי הפעלת חומת אש (Firewall).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q9_6_3_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> שימוש בקבצים או משאבי זיכרון הוא המאפיין של ערוץ אחסון (Storage Channel), לא ערוץ זמן.
+                    </div>
+                    <div id="q9_6_3_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> ערוץ זמן מנצל מדידות זמן עקיפות (למשל: האם לקח לי 10 מיקרו-שניות או 100 מיקרו-שניות לבצע פעולה עקב עומס שיצר התהליך הסודי) כדי לפענח ביטים.
+                    </div>
+                    <div id="q9_6_3_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ערוץ זמן מעביר ביטים בינאריים לכל דבר על ידי קידוד '0' ו-'1' בזמני המתנה שונים.
+                    </div>
+                    <div id="q9_6_3_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> חומת אש מגינה על תעבורת רשת; ערוץ זמן מתרחש מקומית בתוך המעבד והזיכרון של המחשב.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 9.6.3</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> ערוצי זמן עוקפים את כל מנגנוני בקרת הגישה מפני שאינם כותבים לאף אובייקט משותף; הם רק משנים את זמן השימוש במעבד.</p>
+                            <p><strong>דוגמה קלאסית:</strong> התקפות Side-Channel מודרניות כגון Spectre ו-Meltdown מנצלות זמני גישה למטמון (Cache Hits vs Misses) כערוץ זמן סמוי.</p>
+                            <p><strong>שורה תחתונה:</strong> ערוץ אחסון = שינוי נתונים במשאב; ערוץ זמן = שינוי משך הביצוע של המערכת.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 9.6.4 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="9.6.4">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 4 (9.6.4): מהי בעיית "הסגן המבולבל" (Confused Deputy Problem) ומדוע מודל Capabilities חסין מפניה מטבעו?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 9.6.4</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q9_6_4_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מצב שבו סגן מנהל המערכת מוחק בטעות את קובץ הסיסמאות; הפתרון הוא גיבוי יומי.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q9_6_4_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מצב שבו שירות בעל הרשאות מנוצל לבצע פעולה על אובייקט שהמשתמש שביקש את השירות אינו מורשה לגשת אליו; Capabilities מונעות זאת כי המשתמש חייב לספק במפורש את כרטיס ההרשאה עם הבקשה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_4_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מצב שבו המעבד מתבלבל בין פסיקת שעון לפסיקת דיסק.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_4_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. בעיה שמתרחשת רק במערכות הפעלה ישנות מסוג MS-DOS.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q9_6_4_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> המונח "סגן" מתייחס לתוכנית שירות מורשית (Deputy), לא לתפקיד אנושי בארגון.
+                    </div>
+                    <div id="q9_6_4_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> ב-ACL לתוכנית השירות יש סמכות סביבתית (Ambient Authority), ולכן תוקף מנצל אותה לדרוס קבצים מוגנים. ב-Capabilities אין סמכות סביבתית: השירות מבצע פעולות אך ורק עם היכולת שהלקוח העביר לו.
+                    </div>
+                    <div id="q9_6_4_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זו אינה בעיית חומרת פסיקות אלא כשל אבטחתי במודל בקרת הגישה.
+                    </div>
+                    <div id="q9_6_4_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> בעיה זו רלוונטית מאוד גם כיום במערכות שרת-לקוח מודרניות, קריאות RPC ותוכניות setuid.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 9.6.4</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> הפרדת זהות מהרשאה. ב-ACL ההרשאה צמודה לזהות התהליך שמבצע; ב-Capability ההרשאה מועברת יחד עם הבקשה.</p>
+                            <p><strong>פתרון מעשי:</strong> שימוש בעקרון ה-Least Privilege והעברת File Descriptors / Capability Handles ספציפיים.</p>
+                            <p><strong>שורה תחתונה:</strong> Capabilities מונעות סגן מבולבל כי השרת פועל רק בכוח ההרשאה שסופקה לו במפורש.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 9.6.5 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="9.6.5">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 5 (9.6.5): מה מייצגת זכות ה-Switch במטריצת ההגנה?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 9.6.5</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q9_6_5_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. את הזכות של תהליך הרץ בתחום הגנה מסוים לעבור באופן דינמי לתחום הגנה אחר בעל הרשאות שונות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_5_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. את הפקודה המכבה את מתג החשמל של המחשב.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_5_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. זכות שניתנת אך ורק לכרטיסי רשת פיזיים (Network Switches).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q9_6_5_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. זכות המאפשרת למחוק קובץ ללא בדיקת הרשאות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q9_6_5_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> כאשר תחומי ההגנה עצמם מוגדרים כאובייקטים במטריצת ההגנה, זכות ה-Switch מאפשרת מעבר מבוקר ומורשה בין תחום לתחום.
+                    </div>
+                    <div id="q9_6_5_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זוהי זכות בקרת גישה לוגית במערכת ההפעלה, לא פעולת חומרה פיזית.
+                    </div>
+                    <div id="q9_6_5_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אין קשר למתגי תקשורת רשת.
+                    </div>
+                    <div id="q9_6_5_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מחיקת קובץ מבוקרת על ידי זכות Delete או Write, לא Switch.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 9.6.5</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> גמישות במטריצת ההגנה. תהליך אינו "כלוא" בתחום יחיד; הוא יכול לבצע מעבר לתחום אחר אם יש לו הרשאת Switch מוגדרת.</p>
+                            <p><strong>מימוש:</strong> דוגמה לכך היא מנגנון ה-Gate ב-Multics או מעבר Ring ב-x86.</p>
+                            <p><strong>שורה תחתונה:</strong> Switch right = הרשאה למעבר בין תחומי הגנה במטריצה.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- 3. שאלות מהמדריך (פרק 9) -->
+            <div class="guide-questions-list space-y-4">
+                <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl mb-4 text-xs md:text-sm text-amber-900 leading-relaxed">
+                    <strong>📖 שאלות מהמדריך ושאלות חזרה רשמיות:</strong> שאלות מתוך מדריך הלמידה והסיכום של פרק 9, ערוכות ומבוארות להבנה מעמיקה.
+                </div>
+
+                <!-- שאלה 1 מהמדריך -->
+                <details class="group border border-amber-200 rounded-2xl bg-white p-4 transition-all shadow-sm mb-3">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-black">שאלה מהמדריך</span>
+                            <span>שאלה 1: כיצד בעל קובץ במטריצת ההגנה יכול להעביר זכויות גישה מבלי לאפשר העברה הלאה?</span>
+                        </span>
+                        <span class="text-amber-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-amber-100 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div><strong>השאלה המקורית:</strong> כיצד בעל קובץ במטריצת ההגנה יכול להעביר זכויות גישה למשתמשים אחרים מבלי להעניק להם את היכולת להעביר את הזכות הלאה?</div>
+                        <div><strong>כיוון חשיבה ופתרון:</strong>
+                            <p class="mb-1.5">במטריצת ההגנה מוגדרות זכויות מיוחדות על הזכויות עצמן:</p>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>זכות הבעלות (Owner):</strong> מעניקה את היכולת להוסיף או למחוק כל זכות עבור אותו אובייקט בעמודה הרלוונטית.</li>
+                                <li><strong>זכות ההעתקה (Copy Flag / `*`):</strong> מסומנת לרוב בכוכבית, למשל `Read*`. אם לתחום יש `Read*`, הוא יכול להעתיק את זכות ה-`Read` לתחום אחר. אם הוא מעביר `Read` (ללא כוכבית), המקבל רשאי לקרוא בלבד אך אינו יכול להפיץ את הזכות למשתמשים נוספים.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2 מהמדריך -->
+                <details class="group border border-amber-200 rounded-2xl bg-white p-4 transition-all shadow-sm mb-3">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-black">שאלה מהמדריך</span>
+                            <span>שאלה 2: מהו ההבדל המושגי היסודי בין הגנה (Protection) לאבטחה (Security) במערכות הפעלה?</span>
+                        </span>
+                        <span class="text-amber-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-amber-100 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div><strong>השאלה המקורית:</strong> מהו ההבדל המושגי היסודי בין הגנה (Protection) לאבטחה (Security) במערכות הפעלה?</div>
+                        <div><strong>כיוון חשיבה ופתרון:</strong>
+                            <p class="mb-1.5">ההבחנה המקובלת בספרות האקדמית (סילברשץ וטננבאום):</p>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הגנה (Protection):</strong> מנגנון פנימי במערכת השולט על הגישה של תוכניות, תהליכים ומשתמשים למשאבי המחשב (כגון זיכרון, קבצים, מעבד). מדובר ב-<em>מנגנונים</em> (Mechanisms) האוכפים מדיניות.</li>
+                                <li><strong>אבטחה (Security):</strong> המדד הכולל להגנה על המערכת מפני איומים חיצוניים ופנימיים, כולל אותנטיקציה (אימות זהות, סיסמאות), הצפנה, שלמות מידע, ומניעת חדירות והתקפות סייבר.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>

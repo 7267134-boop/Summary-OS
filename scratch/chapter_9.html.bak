@@ -1,0 +1,1896 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרק 9: מנגנוני הגנה</title>
+    <meta name="ai-document-summary" content="פרק 9 עוסק במנגנוני הגנה ואבטחה. הנושאים המפורטים: מנגנוני הגנה המבוססים על עקרון ההרשאה המזערית (Least Privilege) וצורך-לדעת. יישום הגנה באמצעות קביעת תחומי הגנה מוגדרים (Protection Domains) ומעבר בטוח ביניהם דרך קריאות מערכת. מודל מטריצת הגישה להגדרת זכויות (אילו פעולות מותר לתהליך לבצע על איזה עצם). פיצול מטריצת הגישה לשתי שיטות מנוגדות: ניהול רשימות בקרת גישה שצמודות לעצמים (ACL - Access Control Lists), וניהול רשימות יכולות שצמודות לתהליכים (C-lists).">
+
+
+    <!-- Google Fonts Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        racket: '#9e0000',
+                        primary: '#1d4ed8',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        codebg: '#1e293b',
+                        highlight: '#38bdf8',
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            900: '#134e4a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f4f7fb;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        /* 3D Flashcards */
+        .flashcard-scene {
+            perspective: 1000px;
+            cursor: pointer;
+            min-height: 180px;
+        }
+
+        .flashcard-card {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard-scene.flipped .flashcard-card {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .flashcard-front {
+            background-color: #ffffff;
+            color: #1e293b;
+            border-top: 4px solid #2563eb;
+        }
+
+        .flashcard-back {
+            background-color: #f8fafc;
+            color: #334155;
+            transform: rotateY(180deg);
+            border-top: 4px solid #94a3b8;
+        }
+
+        .flashcard-scene.flat-mode {
+            min-height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-card {
+            transform: none !important;
+            transform-style: flat;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .flashcard-scene.flat-mode .flashcard-face {
+            position: static;
+            backface-visibility: visible;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            height: auto;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-front {
+            background-color: #eff6ff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .flashcard-scene.flat-mode .flashcard-back {
+            transform: none;
+            background-color: #ffffff;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .thought-box {
+            background: #fdf4ff;
+            border-right: 4px solid #d946ef;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .concept-box {
+            background: #f0fdf4;
+            border-right: 4px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .sim-console {
+            background-color: #000 !important;
+            color: #0f0 !important;
+            text-shadow: 0 0 5px #0f0;
+            font-family: 'Consolas', monospace;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-y: auto;
+            max-height: 200px;
+            direction: ltr;
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        /* Hide scrollbar for sidebar */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* Sidebar collapse transition & styles */
+        aside {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .sidebar-collapsed aside {
+            width: 0 !important;
+            min-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 0.85rem 1rem 0.85rem 3rem;
+            border-radius: 0.5rem;
+            color: #cbd5e1;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            background-color: #1e293b;
+            color: #fff;
+            padding-right: 1.5rem;
+        }
+
+        .nav-btn.active-nav {
+            background-color: #2563eb;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            border-right: 4px solid #60a5fa;
+        }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Simulator specific styles */
+        .hacker-icon {
+            font-size: 2rem;
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .shield-icon {
+            font-size: 3rem;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            opacity: 0;
+            color: #3b82f6;
+        }
+
+        @keyframes explosion {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                background-color: red;
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        .explode {
+            animation: explosion 0.8s forwards;
+        }
+
+        @keyframes firewallBlock {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .firewall-block {
+            animation: firewallBlock 0.5s forwards;
+        }
+
+        .matrix-cell {
+            transition: all 0.5s ease;
+        }
+
+        .matrix-list-item {
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .matrix-list-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Premium navigation buttons styling */
+        .nav-btn-prev,
+        .nav-btn-next {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-btn-prev:hover {
+            transform: translateX(2px);
+        }
+
+        .nav-btn-next:hover {
+            transform: translateX(-2px);
+        }
+    </style>
+    <script src="theme-manager.js"></script>
+</head>
+
+<body class="text-slate-800 h-screen flex overflow-hidden">
+
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay"
+        class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0"
+        onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside
+        class="w-80 bg-darker text-slate-300 flex flex-col h-full shadow-2xl z-50 flex-shrink-0 border-l border-slate-800 absolute lg:relative lg:translate-x-0 translate-x-full transition-transform duration-300"
+        id="sidebar">
+        <div class="p-6 border-b border-slate-800 bg-darker relative">
+            <h1 class="text-3xl font-black text-white tracking-tight leading-tight">מערכות<br><span
+                    class="text-brand-500">הפעלה</span></h1>
+            <p class="text-xs text-slate-400 mt-2">פרק 9: מנגנוני הגנה</p>
+
+            <button onclick="toggleSidebar()" class="lg:hidden absolute left-4 top-6 text-slate-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="mt-4">
+                <a href="index.html"
+                    class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 12l9-9m-9 9l9 9" />
+                    </svg>
+                    חזרה לדף הבית
+                </a>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto dark-scroll hide-scrollbar p-4 pb-20">
+            <div class="nav-group">
+                <div class="nav-group-title">נושאי הלימוד</div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('intro-tab')" id="btn-intro-tab" class="nav-btn active-nav">
+                        <span>🛡️ 9.2 מנגנוני הגנה</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('domains-tab')" id="btn-domains-tab" class="nav-btn">
+                        <span>🏰 9.2.1 הגנה על ידי קביעת תחומים (protection domains)</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('matrix-tab')" id="btn-matrix-tab" class="nav-btn">
+                        <span>📋 9.2.2 רשימות גישה (ACL)</span>
+                    </button>
+                </div>
+
+                <div class="relative group/nav mb-1">
+                    <button onclick="showTab('clist-security-tab')" id="btn-clist-security-tab" class="nav-btn">
+                        <span>🔐 9.2.3 רשימות יכולות (C-lists)</span>
+                    </button>
+                </div>
+
+
+
+                <div class="relative group/nav mb-1 mt-4">
+                    <button onclick="showTab('glossary-tab')" id="btn-glossary-tab" class="nav-btn">
+                        <span>📚 מילון מושגים מסכם</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto scroll-smooth bg-white relative w-full">
+        <!-- Toggle button for mobile -->
+        <button id="sidebar-toggle-btn" onclick="toggleSidebar()"
+            class="lg:hidden fixed bottom-6 right-6 bg-brand-600 text-white p-3 rounded-full shadow-lg z-40 hover:bg-brand-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+        <button onclick="toggleSidebarDesktop()"
+            class="hidden lg:flex fixed bottom-6 right-6 bg-slate-800 text-white p-3 rounded-full shadow-lg z-40 hover:bg-slate-900 transition-colors"
+            title="הסתר/הצג תפריט">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <div class="max-w-5xl mx-auto p-6 lg:p-16 pb-32">
+
+            <!-- ==========================================
+                 TAB 1: INTRO
+            =========================================== -->
+            <div id="intro-tab" class="tab-content active">
+                <header class="mb-12 border-b pb-6">
+                    <div
+                        class="inline-block px-4 py-1 bg-brand-700 text-brand-50 rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        פרק 9
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight mb-4">9.2 מנגנוני הגנה</h2>
+                    <p class="text-xl text-slate-600 leading-relaxed">
+                        פיקוח, הסדרה ואכיפה של מדיניות הגישה של תוכניות, תהליכים ומשתמשים למשאבי המערכת השונים במערכות
+                        מרובות משתמשים ותהליכים.
+                    </p>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <p class="text-lg leading-relaxed text-slate-700 mb-6">
+                        במערכות הפעלה מודרניות – ובמיוחד במערכות מרובות משתמשים (Multi-user) או מרובות תהליכים – קיים
+                        צורך קריטי למנוע מתהליכים שונים לפגוע זה בזה, בין אם בשוגג (באג בתוכנית) ובין אם בזדון. מטרתם של
+                        מנגנוני ההגנה היא לפקח, להסדיר ולאכוף את מדיניות הגישה.
+                    </p>
+
+                    <div class="concept-box">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                </path>
+                            </svg>
+                            עקרונות יסוד אבטחתיים
+                        </h3>
+                        <p class="text-slate-600 mb-2">עיצוב מנגנוני הגנה במערכת נשען לרוב על עקרונות אלו:</p>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700 font-medium">
+                            <li><span class="text-brand-700">עקרון הצורך לדעת (Need-to-Know Principle)</span></li>
+                            <li><span class="text-brand-700">עקרון ההרשאה המזערית (Least Privilege)</span></li>
+                        </ul>
+                        <p class="mt-3 text-sm text-slate-500">
+                            לפיהם כל תהליך צריך לקבל אך ורק את ההרשאות המינימליות ההכרחיות לו כדי לבצע את משימתו
+                            הנוכחית, ולא שום גישה מעבר לכך.
+                        </p>
+                    </div>
+
+                    <!-- Simulator 1: Least Privilege Sandbox -->
+                    <div class="mt-12 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 9.2: זירת ההרשאה המזערית (Least
+                                Privilege)</span>
+                        </div>
+
+                        <div class="p-6 md:p-10">
+                            <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+                                המושג <strong class="text-white">"עקרון ההרשאה המזערית" (Least Privilege)</strong> קובע
+                                כי כל תהליך (Subject) צריך לקבל הרשאות אך ורק לעצמים (Objects) הדרושים לו, ורק את
+                                הפעולות ההכרחיות לביצוע משימתו. הדבר נועד לצמצם את "רדיוס הפגיעה" (Blast Radius) במקרה
+                                של השתלטות זדונית על תוכנית לגיטימית.<br>
+                                בניגוד לסינון פקודות גרידא, מערכת ההפעלה אוכפת עיקרון זה על ידי הגדרת <strong>תחומי הגנה
+                                    (Protection Domains)</strong> מדויקים. אם תוכנית נועדה לקרוא קובץ לוג בלבד, תחום
+                                ההגנה שלה לא יכלול הרשאת ביצוע (Execute) או גישה לחיבורי רשת.<br>
+                                <strong class="text-brand-400 mt-2 block">בנה את מנגנון ההגנה עבור "קורא
+                                    הלוגים":</strong> סמן רק את ההרשאות ההכרחיות לפעולתו התקינה, והפעל את הסימולציה.
+                            </p>
+
+                            <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+                                <!-- App Container -->
+                                <div class="relative bg-slate-800 p-6 rounded-xl border-2 border-blue-500 text-center w-48 transition-all duration-300"
+                                    id="sandbox-app">
+                                    <div class="text-4xl mb-2">📜</div>
+                                    <div class="text-white font-bold">קורא קובצי לוג</div>
+                                    <div id="hacker-icon" class="hacker-icon">🦹‍♂️</div>
+                                </div>
+
+                                <!-- Arrows -->
+                                <div class="flex md:flex-col gap-2 text-slate-500">
+                                    <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </div>
+
+                                <!-- Server Container -->
+                                <div
+                                    class="relative bg-slate-800 p-6 rounded-xl border-2 border-slate-700 flex gap-6 w-72 h-40 items-center justify-center">
+                                    <div id="server-firewall" class="shield-icon">🛡️ <span
+                                            class="text-sm font-bold block text-red-400 bg-slate-900 p-1 rounded mt-1">Access
+                                            Denied!</span></div>
+
+                                    <!-- Log File -->
+                                    <div class="text-center" id="obj-logfile">
+                                        <div class="text-3xl mb-2">📄</div>
+                                        <div class="text-slate-300 text-sm">קובץ לוג</div>
+                                    </div>
+
+                                    <!-- Database -->
+                                    <div class="text-center transition-all duration-500 relative" id="obj-database">
+                                        <div class="text-3xl mb-2">🗄️</div>
+                                        <div class="text-slate-300 text-sm">מסד נתונים</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div
+                                class="mt-8 flex flex-col items-center justify-center gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                                <div class="flex flex-wrap gap-4 justify-center" id="syscall-checkboxes">
+                                    <label
+                                        class="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white transition-colors">
+                                        <input type="checkbox" id="sys_read" checked class="w-4 h-4 accent-brand-500">
+                                        <span class="font-mono text-sm">sys_read</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white transition-colors">
+                                        <input type="checkbox" id="sys_write" class="w-4 h-4 accent-brand-500">
+                                        <span class="font-mono text-sm">sys_write</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white transition-colors">
+                                        <input type="checkbox" id="sys_socket" class="w-4 h-4 accent-brand-500">
+                                        <span class="font-mono text-sm">sys_socket</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white transition-colors">
+                                        <input type="checkbox" id="sys_execve" class="w-4 h-4 accent-brand-500">
+                                        <span class="font-mono text-sm">sys_execve</span>
+                                    </label>
+                                </div>
+
+                                <div class="flex gap-4 w-full justify-center mt-2">
+                                    <button onclick="runLeastPrivilege()"
+                                        class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-bold text-sm flex justify-center items-center gap-2 transition-transform active:scale-95 shadow-lg min-w-[150px]">
+                                        <span>▶️ הפעל סימולציה</span>
+                                    </button>
+                                    <button onclick="resetLeastPrivilege()"
+                                        class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold text-sm flex justify-center items-center gap-2 transition-transform active:scale-95">
+                                        <span>🔄 איפוס</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="lp-console" class="sim-console">
+                                > מערכת מאותחלת. ממתין להרצת התוכנית...
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 2: DOMAINS
+            =========================================== -->
+            <div id="domains-tab" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-4xl font-black text-slate-800 tracking-tight mb-4">9.2.1 הגנה על ידי קביעת תחומים
+                        (protection domains)</h2>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <p class="text-slate-700 mb-6 text-lg">
+                        כדי ליישם מדיניות הגנה מסודרת וגמישה, מערכת ההפעלה עושה שימוש במודל מופשט של "תחומי הגנה"
+                        (Domains).
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <h3 class="text-xl font-bold text-brand-700 mb-3">מהו תחום (Domain)?</h3>
+                            <p class="text-slate-700 mb-4">
+                                תחום מוגדר כסביבת עבודה או אוסף של "זכויות גישה" (Access Rights). כל תהליך במערכת הפעלה
+                                רץ בכל רגע נתון בתוך תחום הגנה מסוים. באופן מעשי, התחום תוחם במדויק אילו פעולות מותר
+                                לאותו תהליך לבצע.
+                            </p>
+                            <div class="bg-brand-50 p-4 rounded-lg border border-brand-100">
+                                <p class="font-semibold text-slate-800 mb-2">כל זכות גישה מורכבת מזוג ערכים:</p>
+                                <code
+                                    class="block bg-white px-3 py-2 rounded border border-brand-200 text-brand-700 font-bold mb-3 text-center shadow-sm">
+                                    &lt;עצם, אוסף הרשאות&gt;
+                                </code>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <h3 class="text-xl font-bold text-brand-700 mb-3">סוגי העצמים (Objects)</h3>
+                            <ul class="space-y-4 text-sm text-slate-700">
+                                <li><strong>עצמים פיזיים:</strong> חומרה כמו I/O, מדפסות, תוויינים.</li>
+                                <li><strong>עצמים לוגיים:</strong> קבצים, סמפורים, קטעים קריטיים.</li>
+                                <li><strong>עצמים פעילים:</strong> תהליכים (שליחת סיגנלים).</li>
+                            </ul>
+                            <div
+                                class="mt-4 p-3 bg-amber-50 border-r-4 border-amber-400 text-sm text-amber-900 rounded">
+                                <strong>נקודה חשובה:</strong> גם התחומים עצמם נחשבים לעצמים שניתן לגשת אליהם ולשנות אותם
+                                במידה ויש הרשאה.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 mb-10 bg-blue-50 border-r-4 border-blue-500 p-4 rounded shadow-sm">
+                        <h4 class="text-blue-800 font-bold mb-1 text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            חיבור לתעשייה: תחומי הגנה, קונטיינרים ומובייל
+                        </h4>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            המושג הקלאסי של "תחום" (Domain) הוא הבסיס לארכיטקטורת הבידוד במערכות מודרניות. לדוגמה,
+                            במערכת ההפעלה <strong>אנדרואיד</strong>, ההפרדה בין אפליקציות שונות מתבססת על תחומי הגנה (כל
+                            אפליקציה רצה עם User ID ו-Domain משלה). בשרתים מודרניים, טכנולוגיות כמו <strong>Docker
+                                ו-Namespaces ב-Linux</strong> לוקחות את הרעיון הזה צעד קדימה ומייצרות "תחומים" אטומים
+                            לחלוטין (קונטיינרים), שבהם תהליך רואה רק את מערכת הקבצים והמשאבים שהוקצו לתחום שלו.
+                        </p>
+                    </div>
+
+                    <!-- Simulator 2: The Domain Gateway -->
+                    <div class="mt-12 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 9.2.1: שער המעבר בין תחומים (Domain
+                                Gateway)</span>
+                        </div>
+
+                        <div class="p-6 md:p-10">
+                            <p class="text-slate-300 text-sm mb-6">
+                                תהליך משתמש מנסה לגשת לדיסק הקשיח. בדיוק לשם כך נדרשת "קריאת מערכת" (System Call) המשמשת
+                                כשער המעביר את התהליך באופן זמני לתחום מתקדם יותר (Kernel Domain).
+                            </p>
+
+                            <div
+                                class="mb-4 bg-slate-950 border border-slate-700 p-3 rounded-lg font-mono text-sm flex justify-between items-center text-slate-300 shadow-inner">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-500">CPU Status:</span>
+                                    <span id="psw-status"
+                                        class="bg-blue-900/50 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30 transition-colors duration-300">[PSW:
+                                        Mode 1]</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-500">Instruction Pointer:</span>
+                                    <span id="ip-status"
+                                        class="text-emerald-400 transition-colors duration-300">0x400A2C</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="relative bg-slate-800 rounded-xl p-8 border border-slate-700 min-h-[300px] flex items-center justify-between overflow-hidden">
+
+                                <!-- User Domain -->
+                                <div
+                                    class="w-1/3 h-64 border-2 border-blue-500 rounded-lg bg-blue-900/20 relative flex flex-col items-center p-4">
+                                    <div class="text-blue-400 font-bold mb-2 text-center text-sm md:text-base">תחום
+                                        משתמש (User)</div>
+                                    <div class="text-xs text-blue-300 text-center mb-8">הרשאות מוגבלות</div>
+
+                                    <!-- Process Ball -->
+                                    <div id="process-ball"
+                                        class="w-12 h-12 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)] flex items-center justify-center text-white font-bold text-xs absolute bottom-8 transition-all duration-700 z-20">
+                                        P1
+                                    </div>
+                                </div>
+
+                                <!-- The Wall & Gate -->
+                                <div class="w-16 h-64 relative flex flex-col items-center justify-center">
+                                    <div class="w-2 h-full bg-slate-600 relative">
+                                        <div id="hw-wall"
+                                            class="absolute inset-0 bg-red-500 opacity-0 transition-opacity duration-300 blur-sm">
+                                        </div>
+                                    </div>
+                                    <!-- TRAP Gate -->
+                                    <div id="trap-gate"
+                                        class="absolute w-16 h-20 bg-slate-700 border-2 border-slate-500 rounded-lg flex items-center justify-center flex-col z-10 transition-colors">
+                                        <div class="text-xs text-white font-bold">TRAP</div>
+                                        <div class="text-[10px] text-slate-300">שער</div>
+                                    </div>
+                                </div>
+
+                                <!-- Kernel Domain -->
+                                <div
+                                    class="w-1/3 h-64 border-2 border-green-500 rounded-lg bg-green-900/20 relative flex flex-col items-center p-4">
+                                    <div class="text-green-400 font-bold mb-2 text-center text-sm md:text-base">תחום
+                                        ליבה (Kernel)</div>
+                                    <div class="text-xs text-green-300 text-center mb-8">גישה מלאה לחומרה</div>
+
+                                    <!-- Disk -->
+                                    <div id="hw-disk" class="text-4xl absolute bottom-8 transition-transform">
+                                        💾
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-8 flex flex-col md:flex-row justify-center gap-4">
+                                <button onclick="runDomainSim('direct')"
+                                    class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">
+                                    💥 גישה ישירה לדיסק
+                                </button>
+                                <button onclick="runDomainSim('syscall')"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">
+                                    🚪 קריאת מערכת (Syscall)
+                                </button>
+                                <button onclick="resetDomainSim()"
+                                    class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">
+                                    🔄 איפוס
+                                </button>
+                            </div>
+
+                            <div id="domain-console" class="sim-console">
+                                > תהליך P1 רץ בתחום המשתמש.
+                            </div>
+
+                            <div
+                                class="mt-6 p-4 bg-slate-800 border-l-4 border-brand-500 rounded-r-lg text-sm text-slate-300 leading-relaxed">
+                                <strong class="text-white">הסבר:</strong> המעבר בין התחומים אינו לוגי בלבד, אלא חומרתי.
+                                פקודת <code>TRAP</code> גורמת לפסיקת תוכנה. החומרה שומרת את מצב התהליך הנוכחי במחסנית
+                                הליבה (Kernel Stack), ומשנה את סיבית המצב ב-PSW (Program Status Word) למצב מיוחס. רק אז,
+                                נטען מונה הפקודות (PC) עם הכתובת של שגרת הטיפול במערכת ההפעלה.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 3: MATRIX (ACL vs C-LISTS)
+            =========================================== -->
+            <div id="matrix-tab" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-4xl font-black text-slate-800 tracking-tight mb-4">9.2.2 רשימות גישה (ACL)</h2>
+                    <p class="text-lg text-slate-600">רשימות בקרת גישה (ACL) מול רשימות יכולות (C-Lists)</p>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <p class="text-slate-700 mb-6">
+                        במודל התאורטי, זכויות הגישה נשמרות במטריצה אחת גדולה שבה שורות הן תהליכים ועמודות הן
+                        קבצים/עצמים. במציאות, המטריצה ענקית ודלילה, לכן מערכות הפעלה מפצלות אותה:
+                        או <strong>פיצול אנכי (לפי עמודות)</strong> הנשמר בצמוד לקבצים כ-ACL (לרוב בתוך
+                        ה-<code>Inode</code> של הקובץ), או <strong>פיצול אופקי (לפי שורות)</strong> הנשמר אצל התהליכים
+                        כ-C-Lists (בתוך בלוק בקרת התהליך, ה-<code>PCB</code>).
+                    </p>
+
+                    <!-- Simulator 3: The Matrix Slicer -->
+                    <div
+                        class="mt-8 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800 relative z-10">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-400 font-mono text-sm">סימולטור: מחתך המטריצה הגדול (The Matrix
+                                Slicer)</span>
+                        </div>
+
+                        <div class="p-6 md:p-10 relative">
+                            <!-- Matrix Table -->
+                            <div class="flex justify-center mb-12 overflow-x-auto">
+                                <table class="text-white border-collapse border border-slate-600 text-sm md:text-base"
+                                    id="matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="border border-slate-600 p-2 md:p-3 bg-slate-800">תחום / עצם</th>
+                                            <th class="border border-slate-600 p-2 md:p-3 bg-slate-700 transition-colors duration-500"
+                                                id="col-f1">📄 קובץ 1</th>
+                                            <th class="border border-slate-600 p-2 md:p-3 bg-slate-700 transition-colors duration-500"
+                                                id="col-p1">🖨️ מדפסת 1</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="border border-slate-600 p-2 md:p-3 bg-slate-800 transition-colors duration-500"
+                                                id="row-a">👩 אליס</td>
+                                            <td class="border border-slate-600 p-2 md:p-3 text-center matrix-cell"
+                                                id="cell-a-f1">Read, Write</td>
+                                            <td class="border border-slate-600 p-2 md:p-3 text-center matrix-cell"
+                                                id="cell-a-p1">--</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border border-slate-600 p-2 md:p-3 bg-slate-800 transition-colors duration-500"
+                                                id="row-b">👨 בוב</td>
+                                            <td class="border border-slate-600 p-2 md:p-3 text-center matrix-cell"
+                                                id="cell-b-f1">Read</td>
+                                            <td class="border border-slate-600 p-2 md:p-3 text-center matrix-cell"
+                                                id="cell-b-p1">Execute</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Target Zones -->
+                            <div class="flex justify-between items-start pt-8 border-t border-slate-700"
+                                id="matrix-targets">
+                                <!-- Users Zone -->
+                                <div class="w-1/2 flex flex-col items-center border-l border-slate-700 pl-2">
+                                    <h4 class="text-brand-400 font-bold mb-4 text-center">בלוק בקרת תהליך (PCB)<br><span
+                                            class="text-xs text-slate-400">מימושי C-List (שורות)</span></h4>
+                                    <div class="flex gap-4 md:gap-8">
+                                        <div class="flex flex-col items-center">
+                                            <div class="text-3xl mb-2">👩</div>
+                                            <div class="text-white text-xs md:text-sm font-mono">PCB_Alice</div>
+                                            <div id="target-alice"
+                                                class="mt-2 min-h-[50px] w-20 md:w-32 border border-dashed border-slate-600 rounded bg-slate-800/50 p-2 flex flex-col gap-1">
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <div class="text-3xl mb-2">👨</div>
+                                            <div class="text-white text-xs md:text-sm font-mono">PCB_Bob</div>
+                                            <div id="target-bob"
+                                                class="mt-2 min-h-[50px] w-20 md:w-32 border border-dashed border-slate-600 rounded bg-slate-800/50 p-2 flex flex-col gap-1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Objects Zone -->
+                                <div class="w-1/2 flex flex-col items-center pr-2">
+                                    <h4 class="text-brand-400 font-bold mb-4 text-center">צומתי אינדקס (Inode)<br><span
+                                            class="text-xs text-slate-400">מימושי ACL (עמודות)</span></h4>
+                                    <div class="flex gap-4 md:gap-8">
+                                        <div class="flex flex-col items-center">
+                                            <div class="text-3xl mb-2">📄</div>
+                                            <div class="text-white text-xs md:text-sm font-mono">Inode_File1</div>
+                                            <div id="target-f1"
+                                                class="mt-2 min-h-[50px] w-20 md:w-32 border border-dashed border-slate-600 rounded bg-slate-800/50 p-2 flex flex-col gap-1">
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <div class="text-3xl mb-2">🖨️</div>
+                                            <div class="text-white text-xs md:text-sm font-mono">Inode_Printer</div>
+                                            <div id="target-p1"
+                                                class="mt-2 min-h-[50px] w-20 md:w-32 border border-dashed border-slate-600 rounded bg-slate-800/50 p-2 flex flex-col gap-1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex flex-col md:flex-row justify-center gap-4">
+                                <button onclick="sliceMatrix('acl')"
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">
+                                    🔪 הדגם ACL (פיצול אנכי)
+                                </button>
+                                <button onclick="sliceMatrix('clist')"
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">
+                                    🔪 הדגם C-Lists (פיצול אופקי)
+                                </button>
+                                <button onclick="resetMatrix()"
+                                    class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">
+                                    🔄 איפוס
+                                </button>
+                            </div>
+
+                            <div id="matrix-console" class="sim-console">
+                                > מטריצת ההגנה מוצגת בשלמותה (מצב תיאורטי).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Simulator 4: Revocation Challenge -->
+                    <div class="mt-12 bg-slate-800 rounded-2xl p-8 shadow-inner border border-slate-700">
+                        <h3 class="text-2xl font-bold text-white mb-6">דילמת ביטול ההרשאות (The Revocation Challenge)
+                        </h3>
+                        <p class="text-slate-300 text-sm mb-6">לחצו על האתגרים כדי לראות מדוע לכל מודל יש "עקב אכילס"
+                            משלו מבחינת ניהול הרשאות והסרתן.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- ACL Challenge -->
+                            <div class="bg-indigo-900/40 p-6 rounded-xl border border-indigo-500/50 hover:bg-indigo-900/60 transition-colors cursor-pointer"
+                                onclick="runRevocation('acl')">
+                                <h4 class="text-indigo-300 font-bold mb-2 text-lg">אתגר ACL: בוב פוטר!</h4>
+                                <p class="text-white text-sm mb-4">"בוב עזב את החברה. גלה לאילו קבצים יש לו גישה ומחק את
+                                    כולם."</p>
+                                <button class="bg-indigo-600 text-white px-3 py-1 text-xs rounded mb-4 w-full">הפעל
+                                    תרחיש</button>
+                                <div id="revocation-acl-result"
+                                    class="text-xs text-indigo-200 font-mono hidden bg-slate-900 p-3 rounded leading-loose border border-indigo-500/30">
+                                    🔍 סורק רשימת ACL של קובץ 1... נמצא בוב. נמחק.<br>
+                                    🔍 סורק רשימת ACL של מדפסת 1... נמצא בוב. נמחק.<br>
+                                    🔍 סורק רשימת ACL של קובץ 2... לא נמצא.<br>
+                                    🔍 סורק רשימת ACL של קובץ 3... לא נמצא.<br>
+                                    ...<br>
+                                    <span class="text-red-400 font-bold block mt-2">⚠️ חיסרון ACL: קושי בסקירת תחומים.
+                                        יש לסרוק את ה-ACL של *כל קובץ ועצם* במערכת כדי למצוא הרשאות של משתמש
+                                        ספציפי.</span>
+                                </div>
+                            </div>
+
+                            <!-- C-List Challenge -->
+                            <div class="bg-emerald-900/40 p-6 rounded-xl border border-emerald-500/50 hover:bg-emerald-900/60 transition-colors cursor-pointer relative overflow-hidden"
+                                onclick="runRevocation('clist')">
+                                <h4 class="text-emerald-300 font-bold mb-2 text-lg">אתגר C-Lists: קובץ נגוע!</h4>
+                                <p class="text-white text-sm mb-4">"קובץ 1 נגוע בווירוס קטלני. חסום מיד את הגישה אליו
+                                    מכולם!"</p>
+                                <button
+                                    class="bg-emerald-600 text-white px-3 py-1 text-xs rounded mb-4 w-full relative z-10">הפעל
+                                    סריקה O(N)</button>
+
+                                <div id="revocation-clist-result" class="hidden relative z-10">
+                                    <div
+                                        class="bg-slate-950 p-3 rounded-lg border border-emerald-500/30 mb-3 font-mono text-xs text-emerald-400">
+                                        <pre><code>for (int i = 0; i < MAX_PROCESSES; i++) {
+    search_clist(PCB[i], "File_1");
+}</code></pre>
+                                    </div>
+                                    <div
+                                        class="w-full bg-slate-900 rounded-full h-4 mb-2 overflow-hidden border border-slate-700">
+                                        <div id="clist-progress"
+                                            class="bg-emerald-500 h-4 rounded-full transition-all duration-300"
+                                            style="width: 0%"></div>
+                                    </div>
+                                    <div id="clist-log"
+                                        class="text-xs text-emerald-200 font-mono bg-slate-900 p-3 rounded leading-relaxed border border-emerald-500/30 min-h-[100px] overflow-y-auto max-h-[150px]">
+                                        ממתין לתחילת סריקה...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 4: C-LIST SECURITY
+            =========================================== -->
+            <div id="clist-security-tab" class="tab-content">
+                <header class="mb-12 border-b pb-6">
+                    <h2 class="text-4xl font-black text-slate-800 tracking-tight mb-4">9.2.3 רשימות יכולות (C-lists)
+                    </h2>
+                </header>
+
+                <div class="prose prose-slate max-w-none prose-lg">
+                    <p class="text-slate-700 mb-6 text-lg">
+                        השאלה המתבקשת היא: <strong class="text-brand-700">מה ימנע מתהליך לערוך את "הכרטיס" שלו ולזייף
+                            לעצמו הרשאות?</strong><br>
+                        כדי לפתור זאת, ישנן 3 גישות מרכזיות בארכיטקטורת מערכות הפעלה. גישה אחת דורשת חומרה ייעודית
+                        (שימוש ב-<strong>Tag Bit</strong> לכל מילת זיכרון, שמונע מתהליך משתמש לדרוס נתונים), ושתי גישות
+                        מבוססות תוכנה (ללא תמיכת חומרה), שהן הנפוצות יותר כיום.
+                    </p>
+
+                    <div class="bg-indigo-50 border-r-4 border-indigo-500 p-6 md:p-8 rounded-2xl mb-8 shadow-sm">
+                        <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-3">
+                            <svg class="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                            </svg>
+                            הגישה הראשונה: תמיכת חומרה (Tag Bit)
+                        </h3>
+
+                        <p class="text-slate-700 leading-relaxed mb-6 text-lg">
+                            בגישה זו, ההגנה אינה מתבצעת על ידי תוכנה, אלא מוטמעת בארכיטקטורת המעבד והזיכרון. הרעיון הוא
+                            להרחיב את הזיכרון הפיזי: לכל מילת זיכרון במערכת מצורפת <strong>סיבית תווית (Tag
+                                Bit)</strong> סמויה. סיבית זו מנוהלת אך ורק על ידי החומרה, והמשתמש אינו יכול לגשת אליה
+                            ישירות.
+                        </p>
+
+                        <div
+                            class="flex flex-col md:flex-row gap-6 mb-6 justify-center items-center bg-white p-6 rounded-xl border border-indigo-100 shadow-inner">
+
+                            <div class="flex flex-col items-center">
+                                <div
+                                    class="flex items-stretch h-12 shadow-md rounded overflow-hidden border border-slate-300">
+                                    <div class="bg-slate-200 text-slate-800 font-mono font-bold px-3 flex items-center border-l border-slate-300"
+                                        title="Tag Bit">0</div>
+                                    <div class="bg-white text-slate-600 font-mono px-6 flex items-center">10110010...
+                                        (Data)</div>
+                                </div>
+                                <div class="mt-3 text-center">
+                                    <span class="block font-bold text-slate-700">נתונים רגילים</span>
+                                    <span class="text-xs text-slate-500">התהליך יכול לקרוא ולשנות (Read/Write)</span>
+                                </div>
+                            </div>
+
+                            <div class="text-indigo-300 font-bold text-2xl hidden md:block">VS</div>
+
+                            <div class="flex flex-col items-center">
+                                <div
+                                    class="flex items-stretch h-12 shadow-md rounded overflow-hidden border-2 border-indigo-500">
+                                    <div class="bg-indigo-600 text-white font-mono font-bold px-3 flex items-center border-l border-indigo-700"
+                                        title="Tag Bit">1</div>
+                                    <div class="bg-indigo-50 text-indigo-900 font-mono px-6 flex items-center">File_A,
+                                        Read (Capability)</div>
+                                </div>
+                                <div class="mt-3 text-center">
+                                    <span class="block font-bold text-indigo-700">יכולת (Capability)</span>
+                                    <span class="text-xs text-indigo-500">קריאה בלבד! החומרה תחסום ניסיון כתיבה</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/60 p-4 rounded-lg text-slate-700">
+                            <strong class="text-indigo-900">איך זה מונע זיוף?</strong><br>
+                            רשימת ה-C-List יושבת ממש בתוך מרחב הזיכרון של התהליך (מה שחוסך מקום יקר בליבה). עם זאת, כאשר
+                            המעבד קורא פקודת כתיבה (Store) לאותה כתובת זיכרון, הוא בודק את ה-Tag Bit. אם הסיבית שווה ל-1
+                            <strong>והמעבד נמצא במצב משתמש (User Mode)</strong> – החומרה מסרבת לבצע את הפקודה ומייצרת
+                            פסיקת שגיאה (Exception). רק כאשר המעבד במצב מיוחס (Kernel Mode), מערכת ההפעלה מורשית לשנות
+                            את תוכן המילה.
+                        </div>
+                    </div>
+
+                    <div class="my-8 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-slate-800 text-white p-4">
+                            <h3 class="text-xl font-bold flex items-center gap-2">
+                                <svg class="w-6 h-6 text-brand-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                הגישות השנייה והשלישית: חלופות תוכנה (Software-Only)
+                            </h3>
+                            <p class="text-slate-400 text-sm mt-1">דילמת המהנדס: היכן נשמור את הרשאות ה-C-Lists ומה
+                                המחיר שנשלם?</p>
+                        </div>
+
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x md:divide-x-reverse divide-slate-200">
+                            <div class="p-6 bg-slate-50">
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">1. שמירה במרחב הליבה (Kernel Space)
+                                </h4>
+                                <p class="text-sm text-slate-600 mb-4 h-16">
+                                    רשימות היכולות (C-Lists) מוחזקות בלעדית בזיכרון המוגן של הליבה. לתהליך המשתמש אין
+                                    שום גישה ישירה אליהן. הוא מקבל מהליבה רק "מצביע" (Handle / File Descriptor) ומשתמש
+                                    בו.
+                                </p>
+                                <div class="space-y-3">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-green-600 mt-0.5">✔️</span>
+                                        <div><span class="font-bold text-sm text-slate-700">יתרון:</span> <span
+                                                class="text-sm text-slate-600">רמת אבטחה גבוהה מאוד. למשתמש אין אפשרות
+                                                פיזית לשנות את הרשימה, והמימוש פשוט יחסית במערכת ריכוזית.</span></div>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-red-500 mt-0.5">❌</span>
+                                        <div><span class="font-bold text-sm text-slate-700">חיסרון:</span> <span
+                                                class="text-sm text-slate-600">בזבוז משאבים. זיכרון הליבה מוגבל ויקר.
+                                                תחזוקת רשימות ענק עבור כל תהליך במערכת יוצרת צוואר בקבוק, וכל שימוש דורש
+                                                תקורה (Overhead) של קריאת מערכת.</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 bg-white">
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">2. הגנה קריפטוגרפית (Cryptographic
+                                    Hash)</h4>
+                                <p class="text-sm text-slate-600 mb-4 h-16">
+                                    רשימות היכולות נשמרות אצל <strong class="text-brand-600">המשתמש</strong> (User
+                                    Space), אך המערכת חותמת עליהן מתמטית בעזרת מפתח סודי (Server Secret) שרק הליבה
+                                    מכירה.
+                                </p>
+                                <div class="space-y-3">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-green-600 mt-0.5">✔️</span>
+                                        <div><span class="font-bold text-sm text-slate-700">יתרון:</span> <span
+                                                class="text-sm text-slate-600">חיסכון עצום בזיכרון הליבה. אידיאלי
+                                                למערכות מבוזרות (Distributed Systems) כי כל שרת יכול לאמת את הכרטיס ללא
+                                                צורך בסנכרון מסד נתונים מרכזי.</span></div>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-red-500 mt-0.5">❌</span>
+                                        <div><span class="font-bold text-sm text-slate-700">חיסרון:</span> <span
+                                                class="text-sm text-slate-600">תקורה חישובית. המעבד מתאמץ יותר לחשב Hash
+                                                בכל גישה לקובץ. כמו כן, אם המפתח הסודי של השרת דולף, כל המערכת פרוצה
+                                                לחלוטין.</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-700 mb-6 font-medium">
+                        בשיטה הקריפטוגרפית, הנוסחה שמערכת ההפעלה מריצה ברקע נראית כך:
+                    </p>
+                    <div
+                        class="bg-slate-900 p-4 rounded-lg mb-8 shadow-inner flex flex-col items-center border border-slate-700">
+                        <code class="text-emerald-400 font-mono text-sm md:text-base text-center w-full block"
+                            dir="ltr">
+                            Signature = Hash(Object_ID + Rights + Server_Secret)
+                        </code>
+                        <span class="text-slate-400 text-xs mt-2">ה-Server_Secret לעולם אינו נחשף למשתמש.</span>
+                    </div>
+
+                    <!-- Simulator 5: Forgery Simulator -->
+                    <div class="mt-8 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800">
+                        <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-400 font-mono text-sm">סימולטור 9.2.3: זיוף כרטיס Capability ואימות
+                                קריפטוגרפי</span>
+                        </div>
+
+                        <div class="p-6 md:p-10">
+                            <div class="flex flex-col md:flex-row items-center gap-12 justify-center">
+                                <!-- The Ticket -->
+                                <div
+                                    class="w-full max-w-2xl mx-auto mb-8 bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-center items-center gap-6">
+                                    <div class="text-slate-300 text-sm font-bold">הגדר סביבת עבודה:</div>
+                                    <label
+                                        class="flex items-center gap-2 cursor-pointer text-amber-400 hover:text-amber-300 transition-colors">
+                                        <input type="radio" name="sec-mode" value="crypto" checked
+                                            class="w-4 h-4 accent-amber-500">
+                                        <span class="text-sm">הגנה קריפטוגרפית (תוכנה)</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center gap-2 cursor-pointer text-indigo-400 hover:text-indigo-300 transition-colors">
+                                        <input type="radio" name="sec-mode" value="hardware"
+                                            class="w-4 h-4 accent-indigo-500">
+                                        <span class="text-sm">הגנת Tag Bit (חומרה)</span>
+                                    </label>
+                                </div>
+                                <div class="bg-amber-100 border-2 border-amber-400 rounded-xl p-6 w-80 shadow-lg relative transform rotate-1 transition-all"
+                                    id="capability-ticket">
+                                    <div
+                                        class="absolute -top-3 -right-3 bg-brand-600 text-white px-2 py-1 text-xs font-bold rounded-lg transform rotate-12">
+                                        Capability Token</div>
+                                    <h4 class="font-mono font-bold text-amber-900 mb-4 border-b border-amber-300 pb-2">
+                                        Ticket #A9F2</h4>
+                                    <div
+                                        class="flex justify-between items-center mb-2 text-amber-800 font-mono text-sm">
+                                        <span>Object ID:</span>
+                                        <span class="bg-amber-200 px-2 rounded">File_Secret_1</span>
+                                    </div>
+                                    <div
+                                        class="flex justify-between items-center mb-4 text-amber-800 font-mono text-sm">
+                                        <span>Rights:</span>
+                                        <!-- Editable part -->
+                                        <input type="text" id="ticket-rights" value="READ_ONLY"
+                                            class="bg-white border-2 border-amber-400 px-2 py-1 rounded w-32 text-center text-red-600 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 font-mono text-xs">
+                                    </div>
+                                    <div
+                                        class="text-[10px] text-amber-600 font-mono mt-4 pt-2 border-t border-amber-300 leading-tight">
+                                        Cryptographic Signature (Hash):<br>
+                                        <input type="text" id="ticket-hash" value="e3b0c442..."
+                                            class="mt-1 bg-white border border-amber-400 px-2 py-1 rounded w-full text-center text-amber-900 font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono text-[10px] transition-colors">
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col gap-4 max-w-sm text-center md:text-right">
+                                    <p class="text-slate-300 text-sm">
+                                        אתם משחקים תהליך זדוני.<br>נסו לערוך את ההרשאה ב"עורך ההקסדצימלי" שעל הכרטיס
+                                        (שנו מ-<code>READ_ONLY</code> ל-<code>WRITE</code>).
+                                    </p>
+                                    <p class="text-slate-300 text-sm">
+                                        לאחר מכן הגישו את הכרטיס המזויף לליבה (Kernel) כדי לקבל גישה לקובץ. הליבה תחשב
+                                        מחדש את החתימה ותשווה אותה לחתימה הרשומה על הכרטיס.
+                                    </p>
+
+                                    <button onclick="submitTicket()"
+                                        class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition-transform active:scale-95 shadow-lg flex items-center justify-center gap-2 text-sm w-full">
+                                        🛡️ הגש כרטיס (System Call)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="forgery-console" class="sim-console mt-12">
+                                > ממתין להגשת כרטיס C-List לאימות מול מנגנוני הליבה...
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- ==========================================
+                 TAB 6: GLOSSARY (מילון מושגים)
+            =========================================== -->
+            <div id="glossary-tab" class="tab-content font-sans">
+                <header class="mb-12 border-b pb-6">
+                    <div
+                        class="inline-block px-4 py-1 bg-indigo-600 text-white rounded-full font-bold text-sm mb-4 tracking-wider uppercase">
+                        סיכום מונחים
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight mb-4">מילון מושגים מסכם -
+                        פרק 9</h2>
+                    <p class="text-xl text-slate-655 leading-relaxed">
+                        ריכוז המונחים החשובים שנלמדו בפרק לשינון מהיר וחזרה למבחן. השתמשו בכרטיסיות הזיכרון
+                        האינטראקטיביות כדי לשנן ולבחון את עצמכם.
+                    </p>
+                </header>
+
+                <!-- Interactive Flashcard Widget Controls -->
+                <div
+                    class="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 p-6 rounded-3xl border-2 border-blue-200/60 mb-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <!-- Mode toggles -->
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-slate-700">מצב תצוגה:</span>
+                        <button id="flashcard-mode-study" onclick="setFlashcardMode('study')"
+                            class="bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95">📖
+                            מצב למידה (כרטיסים גלויים)</button>
+                        <button id="flashcard-mode-test" onclick="setFlashcardMode('test')"
+                            class="bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95">❓
+                            מצב בחינה (לחיצה להפיכה)</button>
+                    </div>
+                    <!-- Stats / Reset -->
+                    <div
+                        class="text-xs font-bold text-slate-600 flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+                        <div id="flashcard-stats-container" class="hidden">נחשפו: <span id="flashcard-opened-count"
+                                class="text-blue-600 font-extrabold text-sm">0</span> מתוך <span
+                                id="flashcard-total-count" class="font-bold">0</span></div>
+                        <button onclick="resetFlashcards()"
+                            class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 font-bold py-1 px-3 rounded-lg text-[10px] transition-colors cursor-pointer">איפוס
+                            כרטיסיות</button>
+                    </div>
+                </div>
+
+                <!-- Categories Filter Tabs -->
+                <div class="flex flex-wrap gap-2 mb-8 border-b pb-4 border-slate-100" id="flashcard-categories-tabs">
+                    <!-- Dynamic tabs populated in JS -->
+                </div>
+
+                <!-- Flashcard Grid Deck -->
+                <div id="flashcard-deck" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <!-- Cards will be dynamically generated by Javascript -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JS Logic -->
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+            const overlay = document.getElementById('mobile-overlay');
+            if (document.body.classList.contains('sidebar-collapsed')) {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('opacity-100');
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            }
+        }
+
+        function toggleSidebarDesktop() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        // Tab Switching
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active-nav');
+            });
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) activeBtn.classList.add('active-nav');
+
+            // On mobile, close sidebar after click
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('sidebar-collapsed');
+                document.getElementById('mobile-overlay').classList.add('hidden');
+            }
+        }
+
+        // Console utility
+        function logToConsole(consoleId, msg, color = '#0f0') {
+            const cons = document.getElementById(consoleId);
+            const line = document.createElement('div');
+            line.style.color = color;
+            line.style.marginBottom = '4px';
+            line.innerHTML = '> ' + msg;
+            cons.appendChild(line);
+            cons.scrollTop = cons.scrollHeight;
+        }
+
+        // Simulator 1: Least Privilege
+        function runLeastPrivilege() {
+            const hacker = document.getElementById('hacker-icon');
+            const db = document.getElementById('obj-database');
+            const firewall = document.getElementById('server-firewall');
+            const hasExecve = document.getElementById('sys_execve').checked;
+
+            logToConsole('lp-console', '================', '#555');
+            logToConsole('lp-console', 'הפעלת התוכנית "קורא קובצי לוג" התחילה...', '#aaa');
+
+            // Reset visuals
+            hacker.style.opacity = '1';
+            hacker.style.transform = 'scale(1.2)';
+
+            setTimeout(() => {
+                logToConsole('lp-console', '⚠️ אזהרה: חולשת Buffer Overflow נוצלה!', 'yellow');
+                logToConsole('lp-console', '🦹 האקר מריץ קוד מרחוק: מנסה לקרוא ל-sys_execve כדי לפתוח Shell...', 'orange');
+
+                setTimeout(() => {
+                    if (hasExecve) {
+                        // Explode DB
+                        db.classList.add('explode');
+                        logToConsole('lp-console', '💥 הקריאה sys_execve הותרה ב-Sandbox.', 'red');
+                        logToConsole('lp-console', '💥 ההאקר פתח Shell (טרמינל) במערכת והשתלט עליה לחלוטין! הנזק עצום.', 'red');
+                    } else {
+                        // Block by firewall
+                        firewall.classList.add('firewall-block');
+                        logToConsole('lp-console', '🛡️ מערכת ההפעלה אוכפת הרשאה מזערית (sys_execve אינה מסומנת).', '#3b82f6');
+                        logToConsole('lp-console', '🛡️ שגיאה: לתוכנית נחסמה הגישה (Access Denied). הליבה הרגה את התהליך (SIGKILL) והמערכת ניצלה.', '#0f0');
+                    }
+                }, 1000);
+            }, 1000);
+        }
+
+        function resetLeastPrivilege() {
+            document.getElementById('hacker-icon').style.opacity = '0';
+            const db = document.getElementById('obj-database');
+            db.classList.remove('explode');
+            db.style.display = 'block';
+            document.getElementById('server-firewall').classList.remove('firewall-block');
+            document.getElementById('server-firewall').style.opacity = '0';
+            logToConsole('lp-console', '================', '#555');
+            logToConsole('lp-console', 'מערכת אופסה.', '#aaa');
+        }
+
+        // Simulator 2: Domain Gateway
+        let domainSimBusy = false;
+        function runDomainSim(type) {
+            if (domainSimBusy) return;
+            domainSimBusy = true;
+            const ball = document.getElementById('process-ball');
+            const wall = document.getElementById('hw-wall');
+            const gate = document.getElementById('trap-gate');
+            const disk = document.getElementById('hw-disk');
+            const psw = document.getElementById('psw-status');
+            const ip = document.getElementById('ip-status');
+
+            logToConsole('domain-console', '================', '#555');
+            if (type === 'direct') {
+                logToConsole('domain-console', 'P1 מנסה לגשת לדיסק ישירות תוך כדי שהות בתחום ה-User...', 'yellow');
+
+                // For responsive design, percentages might be better, but we use fixed px for animation simplicity
+                const rectBox = ball.parentElement.parentElement.getBoundingClientRect();
+                const dist = (rectBox.width / 3) + 10;
+
+                ball.style.transform = `translateX(-${dist}px)`; // RTL goes left (-)
+
+                setTimeout(() => {
+                    wall.style.opacity = '1';
+                    logToConsole('domain-console', '❌ התרחשה חריגת חומרה (Exception). ניסיון פריצת תחום נחסם!', 'red');
+                    setTimeout(() => {
+                        ball.style.transform = 'translate(0, 0)';
+                        wall.style.opacity = '0';
+                        domainSimBusy = false;
+                    }, 1000);
+                }, 600);
+            } else {
+                logToConsole('domain-console', 'P1 קורא ל-System Call (TRAP) דרך מערכת ההפעלה...', '#0f0');
+
+                ball.style.transform = 'translate(-40px, -80px)'; // move towards gate
+
+                setTimeout(() => {
+                    gate.classList.add('bg-green-600');
+                    ball.classList.replace('bg-blue-500', 'bg-green-500');
+                    ball.style.boxShadow = '0 0 15px rgba(34,197,94,0.8)';
+
+                    // Update PSW
+                    if (psw) {
+                        psw.innerText = '[PSW: Mode 0]';
+                        psw.className = 'bg-green-900/50 text-green-400 px-2 py-0.5 rounded border border-green-500/30 transition-colors duration-300 animate-pulse';
+                        ip.innerText = '0xFFFFFFFF80200000';
+                    }
+
+                    logToConsole('domain-console', '✔️ חומרה: מעבר ל-Mode 0. המעבד כופה בדיקה בטבלת הפסיקות (Trap Table).', '#3b82f6');
+                    logToConsole('domain-console', '💾 חומרה: מגבה את מצב המעבד (Registers, PC) של התהליך לתוך מחסנית הליבה (Kernel Stack)...', '#f59e0b');
+
+                    setTimeout(() => {
+                        ball.style.transform = 'translate(-200px, 0)'; // Move to kernel
+                        disk.style.transform = 'scale(1.2)';
+                        logToConsole('domain-console', '💾 הדיסק במרחב הליבה קורא את הנתונים בהצלחה.', '#0f0');
+
+                        setTimeout(() => {
+                            disk.style.transform = 'scale(1)';
+                            ball.style.transform = 'translate(-40px, -80px)'; // Move back to gate
+                            logToConsole('domain-console', '↩️ הנתונים הוחזרו. התהליך חוזר לשער כדי לאבד את הרשאותיו הגבוהות.', '#aaa');
+
+                            setTimeout(() => {
+                                gate.classList.remove('bg-green-600');
+                                ball.classList.replace('bg-green-500', 'bg-blue-500');
+                                ball.style.boxShadow = '0 0 15px rgba(59,130,246,0.8)';
+                                ball.style.transform = 'translate(0, 0)';
+
+                                // Restore PSW
+                                if (psw) {
+                                    psw.innerText = '[PSW: Mode 1]';
+                                    psw.className = 'bg-blue-900/50 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30 transition-colors duration-300';
+                                    ip.innerText = '0x400A2C';
+                                }
+
+                                logToConsole('domain-console', '✔️ P1 הוחזר לתחום המשתמש הבטוח עם תוצאת הקריאה.', '#0f0');
+                                domainSimBusy = false;
+                            }, 800);
+                        }, 1000);
+                    }, 800);
+                }, 800);
+            }
+        }
+
+        function resetDomainSim() {
+            if (domainSimBusy) return;
+            const ball = document.getElementById('process-ball');
+            ball.classList.replace('bg-green-500', 'bg-blue-500');
+            ball.style.boxShadow = '0 0 15px rgba(59,130,246,0.8)';
+            ball.style.transform = 'translate(0,0)';
+            document.getElementById('trap-gate').classList.remove('bg-green-600');
+
+            const psw = document.getElementById('psw-status');
+            const ip = document.getElementById('ip-status');
+            if (psw) {
+                psw.innerText = '[PSW: Mode 1]';
+                psw.className = 'bg-blue-900/50 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30 transition-colors duration-300';
+                ip.innerText = '0x400A2C';
+            }
+
+            logToConsole('domain-console', '================', '#555');
+            logToConsole('domain-console', 'מערכת אופסה.', '#aaa');
+        }
+
+        // Simulator 3: Matrix Slicer
+        function sliceMatrix(mode) {
+            logToConsole('matrix-console', '================', '#555');
+            const cells = document.querySelectorAll('.matrix-cell');
+
+            // Clean old elements
+            document.querySelectorAll('.matrix-list-item').forEach(el => el.remove());
+
+            if (mode === 'acl') {
+                logToConsole('matrix-console', 'מבצע פיצול אנכי (עמודות) ליצירת רשימות בקרת גישה (ACL).', '#818cf8');
+                cells.forEach(cell => {
+                    cell.style.backgroundColor = 'transparent';
+                    cell.style.opacity = '0.3';
+                });
+                document.getElementById('col-f1').style.backgroundColor = '#4f46e5'; // highlight
+                document.getElementById('col-p1').style.backgroundColor = '#4f46e5';
+                document.getElementById('row-a').style.opacity = '0.3';
+                document.getElementById('row-b').style.opacity = '0.3';
+
+                setTimeout(() => {
+                    createListItem('target-f1', 'אליס: Read, Write');
+                    createListItem('target-f1', 'בוב: Read');
+                    createListItem('target-p1', 'בוב: Execute');
+                    logToConsole('matrix-console', '✔️ עמודות המטריצה הודבקו פיזית אל ה-Inode של העצמים עצמם. המטריצה "נחתכה".', '#0f0');
+                }, 800);
+
+            } else if (mode === 'clist') {
+                logToConsole('matrix-console', 'מבצע פיצול אופקי (שורות) ליצירת רשימות יכולות (C-Lists).', '#10b981');
+                cells.forEach(cell => {
+                    cell.style.backgroundColor = 'transparent';
+                    cell.style.opacity = '0.3';
+                });
+                document.getElementById('row-a').style.backgroundColor = '#059669'; // highlight
+                document.getElementById('row-b').style.backgroundColor = '#059669';
+                document.getElementById('col-f1').style.opacity = '0.3';
+                document.getElementById('col-p1').style.opacity = '0.3';
+
+                setTimeout(() => {
+                    createListItem('target-alice', 'קובץ 1: R, W');
+                    createListItem('target-bob', 'קובץ 1: Read');
+                    createListItem('target-bob', 'מדפסת 1: Exec');
+                    logToConsole('matrix-console', '✔️ שורות המטריצה חולקו כ"כרטיסיות" לתוך ה-PCB של כל תהליך. המטריצה אינה קיימת יותר בשלמותה.', '#0f0');
+                }, 800);
+            }
+        }
+
+        function createListItem(targetId, text) {
+            const target = document.getElementById(targetId);
+            const el = document.createElement('div');
+            el.className = 'matrix-list-item text-[10px] md:text-xs bg-slate-700 text-white p-1 rounded text-center border border-slate-500 w-full whitespace-nowrap overflow-hidden text-ellipsis';
+            el.innerText = text;
+            target.appendChild(el);
+            setTimeout(() => el.classList.add('show'), 50);
+        }
+
+        function resetMatrix() {
+            document.querySelectorAll('.matrix-cell, th, td').forEach(el => {
+                el.style.backgroundColor = '';
+                el.style.opacity = '1';
+            });
+            document.querySelectorAll('.matrix-list-item').forEach(el => el.remove());
+            logToConsole('matrix-console', '================', '#555');
+            logToConsole('matrix-console', 'מטריצה אופסה למצב התחלתי תיאורטי.', '#aaa');
+        }
+
+        // Simulator 4: Revocation Challenge
+        function runRevocation(mode) {
+            if (mode === 'acl') {
+                const el = document.getElementById('revocation-acl-result');
+                el.classList.remove('hidden');
+            } else {
+                const wrapper = document.getElementById('revocation-clist-result');
+                if (!wrapper.classList.contains('hidden')) return; // already running
+                wrapper.classList.remove('hidden');
+
+                const progress = document.getElementById('clist-progress');
+                const log = document.getElementById('clist-log');
+
+                progress.style.width = '0%';
+                log.innerHTML = '🔒 ניסיון לנעול את קובץ 1... נכשל (הרשאות לא ב-Inode).<br>';
+
+                let i = 0;
+                const total = 30; // simulated processes to scan
+                const interval = setInterval(() => {
+                    i++;
+                    const percent = Math.floor((i / total) * 100);
+                    progress.style.width = percent + '%';
+
+                    if (i === 2) {
+                        log.innerHTML += `🔍 סורק PCB[1] (אליס)... נמצא. מוחק כרטיס.<br>`;
+                    } else if (i === 12) {
+                        log.innerHTML += `🔍 סורק PCB[11] (בוב)... נמצא. מוחק כרטיס.<br>`;
+                    } else if (i % 6 === 0) {
+                        log.innerHTML += `🔍 סורק PCB[${i - 1}]... נקי.<br>`;
+                    }
+
+                    if (i >= total) {
+                        clearInterval(interval);
+                        log.innerHTML += `<span class="text-red-400 font-bold block mt-2">⚠️ סריקת O(N) הסתיימה. נסרקו ${total} תהליכים. צוואר בקבוק!</span>`;
+                    }
+
+                    log.scrollTop = log.scrollHeight;
+                }, 150);
+            }
+        }
+
+        // Simulator 5: Forgery
+        let forgeryBusy = false;
+        function submitTicket() {
+            if (forgeryBusy) return;
+            forgeryBusy = true;
+            logToConsole('forgery-console', '================', '#555');
+
+            // בדיקה באיזה מודל אנו נמצאים
+            const secMode = document.querySelector('input[name="sec-mode"]:checked');
+            const secModeValue = secMode ? secMode.value : 'crypto';
+
+            // מודל הגנת חומרה (Tag Bit)
+            if (secModeValue === 'hardware') {
+                logToConsole('forgery-console', 'התהליך מנסה לבצע פקודת Store כדי לשנות את ה-C-List בזיכרון המשתמש...', 'yellow');
+
+                setTimeout(() => {
+                    logToConsole('forgery-console', '❌ שגיאת חומרה (Hardware Exception)!', 'red');
+                    logToConsole('forgery-console', '❌ המעבד מזהה שה-Tag Bit שווה ל-1, ושהמעבד כרגע ב-User Mode (מצב 1). החומרה עצמה חוסמת את הזרם! הנתון לא שונה.', 'red');
+                    forgeryBusy = false;
+                }, 1000);
+                return;
+            }
+
+            // מודל קריפטוגרפי (תוכנה)
+            const rightsInput = document.getElementById('ticket-rights').value.trim();
+            const hashInput = document.getElementById('ticket-hash').value.trim();
+            const hashBox = document.getElementById('ticket-hash');
+
+            logToConsole('forgery-console', 'מוסר כרטיס Capability לליבה (Kernel) לבדיקה...', '#aaa');
+
+            setTimeout(() => {
+                const serverSecret = "X9T2";
+                logToConsole('forgery-console', `הליבה מחשבת מחדש: SHA-256("File_Secret_1" + "${rightsInput}" + "${serverSecret}")...`, 'yellow');
+
+                setTimeout(() => {
+                    // Simulated hash check
+                    const expectedHash = rightsInput === 'READ_ONLY' ? 'e3b0c442...' : 'f8d3b2a1...';
+
+                    logToConsole('forgery-console', `תוצאת הליבה: ${expectedHash}`, 'yellow');
+
+                    if (hashInput !== expectedHash) {
+                        hashBox.style.borderColor = 'red';
+                        hashBox.style.color = 'red';
+                        logToConsole('forgery-console', `❌ התראה! הגיבוב המחושב (${expectedHash}) אינו תואם לגיבוב על הכרטיס (${hashInput})!`, 'red');
+                        logToConsole('forgery-console', '❌ התגלה זיוף. המערכת דוחה את הבקשה ורושמת חריגת אבטחה.', 'red');
+                    } else {
+                        hashBox.style.borderColor = '#10b981';
+                        hashBox.style.color = '#065f46';
+                        logToConsole('forgery-console', '✔️ הגיבוב תואם לחתימה. הכרטיס אותנטי ולא שונה.', '#3b82f6');
+                        setTimeout(() => {
+                            logToConsole('forgery-console', `✔️ גישה להרשאת ${rightsInput} אושרה.`, '#0f0');
+                        }, 500);
+                    }
+                    forgeryBusy = false;
+                }, 1500);
+            }, 800);
+        }
+
+        // ==========================================
+        // FLASHCARD DECK LOGIC (GLOSSARY)
+        // ==========================================
+        let flashcardMode = 'study'; // 'study' or 'test'
+        let flashcardActiveCategory = 'הכל';
+        let openedFlashcards = new Set();
+
+        const flashcardData = [
+            {
+                "term": "תחום הגנה (Protection Domain)",
+                "definition": "אוסף של הרשאות גישה למשאבים. קובע אילו אובייקטים זמינים לתהליך (Subject) ואילו פעולות מותרות לו עליהם.",
+                "category": "מושגי יסוד"
+            },
+            {
+                "term": "עקרון ההרשאה המזערית (Least Privilege)",
+                "definition": "עיקרון אבטחה הקובע כי כל תהליך במערכת חייב לפעול עם אוסף ההרשאות המינימלי הנדרש לו לביצוע משימתו, כדי לצמצם את 'רדיוס הפגיעה' במקרה של פרצה.",
+                "category": "מושגי יסוד"
+            },
+            {
+                "term": "רשימות גישה (ACL)",
+                "definition": "מטריצת הגנה מבוססת עמודות. לכל אובייקט במערכת (למשל קובץ) מוצמדת רשימה המפרטת אילו תהליכים/משתמשים רשאים לגשת אליו. מקל על ביטול הרשאות מרוכז.",
+                "category": "בקרת גישה (Access Control)"
+            },
+            {
+                "term": "רשימות יכולות (C-Lists)",
+                "definition": "מטריצת הגנה מבוססת שורות. לכל תהליך מוצמדת רשימה של אובייקטים שהוא רשאי לגשת אליהם. פועל כמו 'צרור מפתחות' (כרטיסים). מהיר מאוד לגישה אך מקשה מאוד על ביטול הרשאות.",
+                "category": "בקרת גישה (Access Control)"
+            },
+
+            {
+                "term": "Tag Bit",
+                "definition": "פתרון מבוסס חומרה לאבטחת כרטיסי C-List. סיבית תווית שמתווספת לזיכרון ומונעת מתהליך לערוך (לזייף) את כרטיס ה-Capability שלו, מכיוון שהמעבד יחסום כתיבה אם הוא במצב משתמש (User Mode).",
+                "category": "בקרת גישה (Access Control)"
+            },
+            {
+                "term": "מספרי דורות (Generation Numbers)",
+                "definition": "פתרון לבעיית ביטול ההרשאות ב-C-Lists (שיטת מנעול ומפתח). הליבה משנה את מספר הדור בקובץ עצמו וכך פוסלת מידית את כל הכרטיסים עם מספרי הדור הישנים ברחבי המערכת מבלי לסרוק אותם.",
+                "category": "בקרת גישה (Access Control)"
+            }
+        ];
+
+        const catMap = {
+            "מושגי יסוד": "יסוד",
+            "בקרת גישה (Access Control)": "בקרת גישה"
+        };
+
+        function initFlashcards() {
+            const categories = ['הכל', ...new Set(flashcardData.map(item => catMap[item.category] || item.category))];
+            const tabsContainer = document.getElementById("flashcard-categories-tabs");
+            if (!tabsContainer) return;
+            tabsContainer.innerHTML = "";
+
+            categories.forEach(cat => {
+                const tabBtn = document.createElement("button");
+                tabBtn.className = cat === flashcardActiveCategory
+                    ? "bg-slate-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                tabBtn.textContent = cat;
+                tabBtn.onclick = () => filterFlashcards(cat);
+                tabsContainer.appendChild(tabBtn);
+            });
+
+            renderFlashcards();
+        }
+
+        function setFlashcardMode(mode) {
+            flashcardMode = mode;
+
+            const btnStudy = document.getElementById("flashcard-mode-study");
+            const btnTest = document.getElementById("flashcard-mode-test");
+            const statsEl = document.getElementById("flashcard-stats-container");
+
+            if (mode === 'study') {
+                btnStudy.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                btnTest.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                if (statsEl) statsEl.classList.add("hidden");
+            } else {
+                btnStudy.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                btnTest.className = "bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer shadow-sm shadow-blue-500/10 active:scale-95";
+                if (statsEl) statsEl.classList.remove("hidden");
+            }
+
+            renderFlashcards();
+        }
+
+        function filterFlashcards(category) {
+            flashcardActiveCategory = category;
+
+            const tabs = document.getElementById("flashcard-categories-tabs").children;
+            for (let tab of tabs) {
+                if (tab.textContent === category) {
+                    tab.className = "bg-slate-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer shadow-sm active:scale-95";
+                } else {
+                    tab.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-lg text-xs transition-all cursor-pointer active:scale-95";
+                }
+            }
+
+            renderFlashcards();
+        }
+
+        function renderFlashcards() {
+            const deck = document.getElementById("flashcard-deck");
+            if (!deck) return;
+            deck.innerHTML = "";
+
+            const filteredData = flashcardData.filter(item => {
+                const mappedCat = catMap[item.category] || item.category;
+                return flashcardActiveCategory === 'הכל' || mappedCat === flashcardActiveCategory;
+            });
+
+            const totalEl = document.getElementById("flashcard-total-count");
+            const openedEl = document.getElementById("flashcard-opened-count");
+
+            if (totalEl) totalEl.textContent = filteredData.length;
+
+            let openedFiltered = 0;
+            filteredData.forEach(item => {
+                if (openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            if (openedEl) openedEl.textContent = openedFiltered;
+
+            filteredData.forEach((item, index) => {
+                const cardScene = document.createElement("div");
+
+                if (flashcardMode === 'study') {
+                    cardScene.className = "flashcard-scene flat-mode";
+                    cardScene.innerHTML = `
+                        <div class="flashcard-card">
+                            <div class="flashcard-face flashcard-front">
+                                <div>
+                                    <span class="text-[9px] font-bold text-blue-600 bg-blue-100/60 border border-blue-200/50 px-2 py-0.5 rounded-full mb-2 inline-block">${catMap[item.category] || item.category}</span>
+                                    <h4 class="text-sm font-black text-slate-800 leading-tight">${item.term}</h4>
+                                </div>
+                            </div>
+                            <div class="flashcard-face flashcard-back">
+                                <p class="text-xs text-slate-600 leading-relaxed">${item.definition}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const isFlipped = openedFlashcards.has(item.term);
+                    cardScene.className = isFlipped ? "flashcard-scene flipped" : "flashcard-scene";
+                    cardScene.onclick = () => toggleFlashcard(cardScene, item.term);
+
+                    cardScene.innerHTML = `
+                        <div class="flashcard-card">
+                            <div class="flashcard-face flashcard-front flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[9px] font-bold text-blue-600 bg-blue-100/60 border border-blue-200/50 px-2 py-0.5 rounded-full mb-2 inline-block">${catMap[item.category] || item.category}</span>
+                                    <h4 class="text-sm font-black text-slate-800 leading-tight mt-1">${item.term}</h4>
+                                </div>
+                                <div class="text-[9px] text-slate-400 font-bold border-t pt-2 border-slate-100 flex items-center justify-between">
+                                    <span>לחיצה לחשיפה</span>
+                                    <span>❓</span>
+                                </div>
+                            </div>
+                            <div class="flashcard-face flashcard-back flex flex-col justify-between font-sans">
+                                <div class="overflow-y-auto pr-1">
+                                    <span class="text-[9px] font-bold text-slate-400 bg-slate-100 border border-slate-200/50 px-2 py-0.5 rounded-full mb-2 inline-block">${catMap[item.category] || item.category}</span>
+                                    <h5 class="text-xs font-black text-slate-700 leading-tight mt-1">${item.term}</h5>
+                                    <p class="text-[11px] text-slate-655 leading-relaxed mt-2" dir="rtl">${item.definition}</p>
+                                </div>
+                                <div class="text-[9px] text-blue-500 font-bold border-t pt-1.5 border-slate-200 flex items-center justify-between select-none">
+                                    <span>נחשף</span>
+                                    <span>✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                deck.appendChild(cardScene);
+            });
+        }
+
+        function toggleFlashcard(el, term) {
+            if (flashcardMode === 'study') return;
+
+            const openedEl = document.getElementById("flashcard-opened-count");
+
+            if (openedFlashcards.has(term)) {
+                openedFlashcards.delete(term);
+                el.classList.remove("flipped");
+            } else {
+                openedFlashcards.add(term);
+                el.classList.add("flipped");
+            }
+
+            let openedFiltered = 0;
+            flashcardData.forEach(item => {
+                const mappedCat = catMap[item.category] || item.category;
+                const isInCategory = (flashcardActiveCategory === 'הכל' || mappedCat === flashcardActiveCategory);
+                if (isInCategory && openedFlashcards.has(item.term)) openedFiltered++;
+            });
+            if (openedEl) openedEl.textContent = openedFiltered;
+        }
+
+        function resetFlashcards() {
+            openedFlashcards.clear();
+            renderFlashcards();
+        }
+
+        window.setFlashcardMode = setFlashcardMode;
+        window.filterFlashcards = filterFlashcards;
+        window.toggleFlashcard = toggleFlashcard;
+        window.resetFlashcards = resetFlashcards;
+
+        // Document Initialization hook
+        document.addEventListener('DOMContentLoaded', () => {
+            initFlashcards();
+        });
+
+        // Initialize first tab
+        showTab('intro-tab');
+
+        // Inject navigation buttons at the bottom of each tab
+        const tabs = [];
+        const seenIds = new Set();
+        document.querySelectorAll('.tab-content').forEach(el => {
+            const id = el.id;
+            if (id && !seenIds.has(id)) {
+                seenIds.add(id);
+                tabs.push(el);
+            }
+        });
+
+        tabs.forEach((tab, index) => {
+            const navContainer = document.createElement('div');
+            navContainer.className = 'flex justify-between items-center mt-12 pt-6 border-t border-slate-200';
+
+            // Previous Button
+            if (index > 0) {
+                const prevTabId = tabs[index - 1].id;
+                const prevBtn = document.createElement('button');
+                prevBtn.onclick = () => showTab(prevTabId);
+                prevBtn.className = 'nav-btn-prev flex items-center gap-2 px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                prevBtn.innerHTML = `
+                    <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>הקודם</span>
+                `;
+                navContainer.appendChild(prevBtn);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'w-10 invisible';
+                navContainer.appendChild(placeholder);
+            }
+
+            // Next Button
+            if (index < tabs.length - 1) {
+                const nextTabId = tabs[index + 1].id;
+                const nextBtn = document.createElement('button');
+                nextBtn.onclick = () => showTab(nextTabId);
+                nextBtn.className = 'nav-btn-next flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 shadow-sm text-sm cursor-pointer';
+                nextBtn.innerHTML = `
+                    <span>הבא</span>
+                    <svg class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                `;
+                navContainer.appendChild(nextBtn);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'w-10 invisible';
+                navContainer.appendChild(placeholder);
+            }
+
+            tab.appendChild(navContainer);
+        });
+
+        // Ensure desktop layout starts open
+        if (window.innerWidth >= 1024) {
+            document.body.classList.remove('sidebar-collapsed');
+        } else {
+            document.body.classList.add('sidebar-collapsed');
+        }
+    </script>
+    <script src="ai_widget.js"></script>
+</body>
+
+</html>

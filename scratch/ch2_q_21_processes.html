@@ -1,0 +1,312 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 2.1: processes-intro (מבוא לתהליכים)                       -->
+        <!-- ===================================================================== -->
+        <div id="questions-processes-intro" data-title="שאלות מנחות ותרגול - 🔄 2.1 מבוא לתהליכים">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 2.1.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.1.1: מדוע תהליך (Process) איננו זהה לתוכנית (Program), וכיצד אנלוגיית אפיית העוגה ממחישה את ההפרדה בין האלגוריתם, המעבד, הנתונים ופעולת הריצה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            תוכנית (Program) היא ישות פסיבית המאוחסנת על גבי הדיסק (קובץ הרצה המכיל הוראות מכונה בפורמט בינארי, כגון ELF או PE), בעוד שתהליך (Process) הוא מופע חי, פעיל ודינמי של התוכנית בזמן ריצה, הכולל את כל ההקשר החישובי: מרחב כתובות מוקצה בזיכרון הראשי (טקסט, נתונים, מחסנית וערימה), מונה הפקודות (PC), אוגרי המעבד, מצביעי מחסנית ומשאבי מערכת פתוחים. באנלוגיית אפיית העוגה: <strong>המתכון</strong> הוא התוכנית (סדרת ההוראות הסטטית), <strong>הטבח/האופה</strong> הוא המעבד (CPU המבצע את הפעולות), <strong>חומרי הגלם</strong> (קמח, סוכר) הם נתוני הקלט (Data), <strong>והפעולה הכוללת של ערבוב, אפייה ומעקב אחר השלבים</strong> היא התהליך עצמו (Process). יתרה מכך, כאשר הילד של האופה נכנס עם עקיצת דבורה, האופה שומר את מיקום הקריאה במתכון, עובר לטפל בעקיצה (טיפול בפסיקה בעדיפות גבוהה), וחוזר מאוחר יותר להמשיך באפייה מאותה נקודה בדיוק.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ההבדל בין תוכנית לתהליך מקביל להבדל בין דפי תווים מוזיקליים לבין קונצרט חי המנוגן באולם. התווים הכתובים על הנייר אינם מייצרים צלילים כשלעצמם ואינם משתנים לעולם. רק כאשר תזמורת (המעבד) לוקחת את התווים, מקצה כלי נגינה וזמן (משאבים וזיכרון), ומתחילה לנגן בפועל בקצב השעון, מתרחש הקונצרט (התהליך). שתי תזמורות יכולות לנגן את אותה היצירה בדיוק בו-זמנית בשני אולמות נפרדים (שני תהליכים נפרדים המריצים את אותו קובץ הרצה), ולכל אחת יהיה קצב משלה, משאבים משלה ונקודת התקדמות שונה לחלוטין.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            כאשר מערכת ההפעלה יוצרת תהליך מתוך קובץ תוכנית, היא מבצעת מספר שלבים קריטיים: (1) הקצאת מרחב כתובות וירטואלי מבודד המחולק למקטעי Text (הוראות קוד לקריאה בלבד), Data (משתנים גלובליים מאותחלים), BSS (משתנים גלובליים בלתי מאותחלים המאופסים ע"י המערכת), Heap (ערימה להקצאות דינמיות כגון <code>malloc</code> שגדלה כלפי מעלה), ו-Stack (מחסנית לקריאות פונקציות, משתנים מקומיים וכתובות חזרה שגדלה כלפי מטה). (2) טעינת הקוד הבינארי מהדיסק למקטע ה-Text. (3) אתחול אוגרי המעבד, כאשר מונה הפקודות (PC) מכוון לנקודת הכניסה של התוכנית (כגון פונקציית <code>main</code> או קוד האתחול <code>_start</code>), ומצביע המחסנית (SP) מכוון לראש המחסנית. (4) יצירת מבנה נתונים ייעודי בקרנל – בלוק בקרת התהליך (PCB - Process Control Block) המכיל את מזהה התהליך (PID), מצב התהליך, טבלת מתארי הקבצים והרשאות האבטחה.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת נפוצה היא ההנחה שאם משתמש מריץ תוכנית עריכת טקסט (כמו <code>vim</code>) שלוש פעמים במקביל, קוד התוכנית משוכפל שלוש פעמים בזיכרון הפיזי. בפועל, מערכות הפעלה מודרניות מזהות שמקטע ה-Text הוא קריאה בלבד (Read-Only) ולכן משתפות את אותם עמודי זיכרון פיזיים בין כל שלושת התהליכים, בעוד שלכל תהליך מוקצים עמודי Data, Stack, Heap ו-PCB נפרדים לחלוטין. מקרה קצה נוסף הוא תוכניות מרובות תהליכונים (Multithreaded): בתוכנית כזו יש תהליך יחיד בעל מרחב כתובות משותף, אך מספר חוטים עצמאיים שלכל אחד מהם מונה פקודות ומחסנית נפרדים משלו.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: תוכנית היא קובץ סטטי פסיבי בדיסק; תהליך הוא ישות דינמית פעילה בזיכרון המנוהלת ע"י מערכת ההפעלה, עם מרחב כתובות, הקשר מעבד (אוגרים, מחסנית, PC) וטבלת משאבים משלה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.1.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.1.2: מהם ארבעת האירועים המביאים ליצירת תהליך חדש ומהם ארבעת המצבים לסיומו, ומה ההבדל המהותי בין סיום רצוני לשגיאה פטאלית בלתי רצונית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>ארבעת האירועים ליצירת תהליך:</strong> (1) <strong>אתחול מערכת (System Boot):</strong> בעת עליית המערכת נוצרים תהליכי רקע (Daemons/Services) כגון תהליך ניהול הרשת וההדפסה, ותהליך ממשק המשתמש. (2) <strong>קריאת מערכת ע"י תהליך רץ:</strong> תהליך קיים קורא לקריאת מערכת מפורשת (כגון <code>fork()</code> ביוניקס או <code>CreateProcess()</code> בחלונות) כדי לבצע תת-משימה במקביל. (3) <strong>בקשת משתמש יזומה:</strong> המשתמש לוחץ על צלמית בממשק הגרפי או מקליד פקודה בשורת הפקודה (Shell). (4) <strong>אתחול עבודה באצווה (Batch Job):</strong> מחשב מרכזי או שרת מחשוב שולף עבודה מתור האצוות ומקצה לה תהליך ייעודי.<br>
+                            <strong>ארבעת המצבים לסיום תהליך:</strong> (1) <strong>יציאה רגילה (Normal exit - רצוני):</strong> התהליך השלים את עבודתו וקורא ל-<code>exit(0)</code>. (2) <strong>יציאה בעקבות שגיאה לוגית (Error exit - רצוני):</strong> התהליך גילה שקובץ הקלט אינו קיים או שגוי, וקורא מרצונו ל-<code>exit(code)</code> עם קוד שגיאה. (3) <strong>שגיאה פטאלית (Fatal error - בלתי רצוני):</strong> חריגת חומרה/מערכת כגון חלוקה באפס או חריגת גישה לזיכרון (Segmentation Fault), שבה מערכת ההפעלה קוטלת את התהליך. (4) <strong>הריגה ע"י תהליך אחר (Killed by another process - בלתי רצוני):</strong> תהליך מורשה שולח אות סיום כפוי כגון <code>kill -9</code> או <code>TerminateProcess()</code>.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ניתן להקביל זאת לחיים של עובד במפעל: הוא יכול להיווצר כשהמפעל נפתח בבוקר (אתחול מערכת), כשהמנהל שלו מגייס אותו למשימה (תהליך יוצר תהליך), כשלמפעל מגיע לקוח ומבקש שירות (בקשת משתמש), או כשרשימת הזמנות אוטומטית מופעלת (אצווה). בסיום עבודתו, העובד יכול לעזוב בסוף היום כי סיים את כל המטלות (יציאה רגילה), לעזוב מיוזמתו כי חסרים חומרי גלם (יציאה עקב שגיאה), להיפצע ולהיות מפונה מיידית (שגיאה פטאלית), או להיות מפוטר במקום ע"י מנהל חיצוני (הריגה ע"י תהליך אחר).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            ההבחנה המהותית בין סיום רצוני (Voluntary) לבלתי רצוני (Involuntary) היא נקודת השליטה: בסיום רצוני, התהליך עצמו מחזיק בשליטה ומבצע קריאת מערכת מתוכננת (<code>sys_exit</code>). הוא יכול לשחרר משאבים זמניים, לסגור קבצים, לרוקן חוצצי כתיבה (Flush) ולשלוח הודעת סטטוס מסודרת להורה. בסיום בלתי רצוני (כגון Segmentation Fault או קבלת סיגנל <code>SIGKILL</code>), המעבד מייצר Trap או שמערכת ההפעלה מיירטת את הריצה. לתוכנית אין אפשרות לתפוס את הסיגנל או לנקות את עצמה; הקרנל תופס שליטה מיידית, מפקיע את מרחב הכתובות, סוגר קבצים פתוחים בכוח, משחרר דפי זיכרון, ומשאיר רק את קוד הסיום ב-PCB עבור תהליך ההורה שממתין בקריאת <code>wait()</code>.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות נפוצה היא לסווג יציאה בגין "קובץ לא נמצא" כשגיאה פטאלית בלתי רצונית. אם התוכנית בדקה את ערך החזרה של <code>open()</code>, זיהתה שגיאה והדפיסה הודעת שגיאה ולאחר מכן קראה בעצמה ל-<code>exit(1)</code>, זוהי <strong>יציאת שגיאה רצונית (Error Exit)</strong>. שגיאה בלתי רצונית (Fatal Error) מתרחשת אך ורק כאשר קוד התוכנית גרם לחריגה שלא נתפסה (כגון פנייה למצביע NULL המתרגמת ל-Page Fault בכתובת בלתי חוקית) שגרמה לחומרה להעביר שליטה לקרנל לקטילה מיידית של התהליך.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: יצירת תהליך מתרחשת באתחול, בקריאת מערכת, בפקודת משתמש או באצווה; סיום מתחלק לרצוני (סיום רגיל או יציאת שגיאה מתוכננת) ולבלתי רצוני (חריגה פטאלית בחומרה או קטילה מאולצת ע"י תהליך חיצוני).
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.1.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.1.3: מדוע במודל שלושת המצבים (Running, Ready, Blocked) לא קיים מעבר ישיר ממצב Blocked למצב Running, ומהו תפקידו המדויק של המתזמן (Scheduler) במעברים אלו?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            מעבר ישיר מ-Blocked ל-Running אסור לחלוטין מכיוון שברגע נתון המעבד (או כל ליבת מעבד) כבר מריץ תהליך מסוים, או שישנם תהליכים אחרים הממתינים בסבלנות בתור התהליכים המוכנים (Ready Queue). כאשר תהליך חסום משלים פעולת I/O, הוא הופך ל<strong>כשיר לריצה</strong> בלבד. לא ניתן להקצות לו את המעבד מיידית "באופן עיוור" בלי לעבור דרך המתזמן (Scheduler), שתפקידו לבחון את סדרי העדיפויות, מדיניות התזמון (כגון Round Robin או Priority) והקצאת הזמן של התהליך הרץ כעת. לפיכך, האירוע המסיים חסימה מעביר את התהליך אך ורק למצב <strong>Ready</strong>, ורק משם יוכל המתזמן, בשיקול דעת מערכתי, להעבירו למצב <strong>Running</strong>.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו תור בקופת סופרמרקט: לקוח שעומד ליד הקופאי גילה ששכח להביא ארנק ויוצא לחפש אותו ברכב (עובר מ-Running ל-Blocked). בזמן שהוא מחפש, הקופאי ממשיך לשרת לקוחות אחרים שעמדו בתור (Ready). כשהלקוח חוזר עם הארנק, המשאב שחסם אותו סופק, אך הוא אינו יכול לדחוף בכוח את הלקוח שמשלם באותו רגע בקופה ולקבל שירות מיידי! עליו לחזור אל התור של הממתינים (Ready), ורק כשיגיע תורו לפי סדר התור והחוקים, הקופאי יקרא לו וישרת אותו (Dispatch).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מודל שלושת המצבים מגדיר 4 מעברים חוקיים בדיוק:
+                            <br>1. <strong>Running &rarr; Blocked:</strong> התהליך הרץ מבקש שירות מערכת הדורש המתנה (קריאת דיסק, קבלת מנות רשת, סמפור מאופס). התהליך מוותר על המעבד מרצונו.
+                            <br>2. <strong>Running &rarr; Ready:</strong> פסיקת שעון (Timer Interrupt) מודיעה שתמה מנת הזמן (Quantum Expired), או שתהליך בעל עדיפות גבוהה יותר הפך מוכן במערכת נשלטת-עדיפויות (Preemption).
+                            <br>3. <strong>Ready &rarr; Running:</strong> המתזמן בוחר את התהליך הבא בתור ה-Ready ומבצע החלפת הקשר (Dispatch).
+                            <br>4. <strong>Blocked &rarr; Ready:</strong> בקר החומרה של התקן ה-I/O מפיק פסיקה (Interrupt) המודיעה שהנתונים נקראו והונחו בחוצץ הזיכרון. שגרת הטיפול בפסיקה (ISR) מעדכנת את מצב ה-PCB מ-Blocked ל-Ready ומעבירה אותו לתור המוכנים. שימו לב: מעבר Blocked &rarr; Ready מתרחש <strong>בגלל אירוע חיצוני שאינו תלוי בתהליך הרץ</strong>, בעוד Running &rarr; Blocked מתרחש <strong>באשמת התהליך הרץ עצמו</strong>.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            סטודנטים רבים שואלים: "ומה אם התהליך שזה עתה השתחרר מחסימה הוא בעל העדיפות הגבוהה ביותר במערכת בזמן אמת (Real-Time Preemptive System)?" גם במקרה זה, המעבר הלוגי הוא קודם כל <code>Blocked &rarr; Ready</code>. מיד עם שינוי המצב והכנסתו לתור ה-Ready, מנגנון הנישול (Preemption) של המתזמן מופעל, מנשל את התהליך הרץ (שעובר מ-<code>Running &rarr; Ready</code>), ומקצה את המעבד לתהליך החדש (<code>Ready &rarr; Running</code>). לעולם אין דילוג ישיר מעל מצב Ready ברמת הארכיטקטורה.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מעבר Blocked &rarr; Running לא קיים כי המעבד הוא משאב מנוהל שבו יש תהליך רץ ותור ממתינים; שחרור חסימה הופך תהליך ל"מוכן" בלבד, ורק החלטת מתזמן יכולה להעניק לו את המעבד.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.1.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.1.4: כיצד בנוי בלוק בקרת התהליך (PCB), ומהו רצף הפעולות המדויק ברמת החומרה ומערכת ההפעלה בעת התרחשות פסיקה (Interrupt) והחלפת הקשר?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            בלוק בקרת התהליך (PCB - Process Control Block) הוא מבנה הנתונים המרכזי של מערכת ההפעלה עבור כל תהליך קיים, המאפשר לה להשהות את ריצתו ולחדשה מאוחר יותר מבלי שהתהליך ירגיש בהפרעה. ה-PCB כולל: (1) <strong>מידע ניהול מעבד/הקשר חומרה:</strong> ערכי האוגרים, מונה הפקודות (PC), מצביע המחסנית (SP), ומילות סטטוס (PSW). (2) <strong>מידע ניהול זיכרון:</strong> מצביעי טבלאות דפים (CR3 / Page Directory), גבולות מקטעים (Base/Limit). (3) <strong>מידע ניהול קבצים ומשאבים:</strong> טבלת מתארי קבצים (File Descriptors), ספריית שורש/עבודה, התקני I/O מוקצים. (4) <strong>מידע תזמון וסטטוס:</strong> מזהה תהליך (PID), מצב נוכחי (Running/Ready/Blocked), עדיפות, זמן מעבד מנוצל וזמני המתנה.<br>
+                            בעת פסיקה מתרחש הרצף הבא: החומרה דוחפת למחסנית את ה-PC וה-PSW וטוענת את וקטור הפסיקה המתאים; שגרת אסמבלי שומרת את יתר האוגרים ב-PCB של התהליך הנוכחי; מצביע המחסנית מועבר למחסנית הקרנל; שגרת C של הטיפול בפסיקה מתבצעת; המתזמן נקרא להחליט מי ירוץ הבא; ולבסוף נטענים האוגרים ומרחב הזיכרון של התהליך הנבחר והמעבד חוזר ל-User Mode.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ה-PCB הוא "תעודת הזהות ותיק הסימנייה" של התהליך. בדיוק כמו קורא ספרים שעוצר באמצע משפט ומניח סימנייה שבה רשום בדיוק באיזה עמוד, שורה ומילה הוא עצר, ואילו כלי כתיבה היו לו ביד, כך ה-PCB שומר את תמונת המצב המלאה של המעבד. ללא שמירה מושלמת זו, חזרה לתהליך הייתה גורמת לדריסת משתנים באוגרים, לקפיצה לכתובת אקראית ולקריסה מיידית של התוכנית.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            רצף שלבי הטיפול בפסיקה והחלפת הקשר (Context Switch) ברמה האקדמית המדויקת של טננבאום:
+                            <br>1. <strong>חומרה:</strong> בקר הפסיקות שולח אות לקו הפסיקה במעבד. המעבד משלים את פקודת המכונה הנוכחית, דוחף את ה-PC וה-PSW (ובארכיטקטורות מודרניות גם את ה-SP) למחסנית הקרנל של התהליך הנוכחי, וטוען ל-PC את הכתובת מתוך וקטור הפסיקות (Interrupt Vector).
+                            <br>2. <strong>אסמבלי נמוך:</strong> שגרת האסמבלי הראשונית שומרת את כל שאר אוגרי המעבד הכלליים (General Purpose Registers) לתוך כניסת התהליך בטבלת התהליכים (PCB).
+                            <br>3. <strong>קרנל C:</strong> מעבר למחסנית קרנל ייעודית והפעלת שגרת הטיפול בפסיקה (Interrupt Handler / ISR) שנכתבה בשפת C. השגרה קוראת מחוצצי ההתקן ומעדכנת מונים.
+                            <br>4. <strong>קריאה למתזמן:</strong> בסיום הטיפול, מערכת ההפעלה בודקת האם נדרש לבצע תזמון מחדש (למשל אם תמה מנת הזמן או שתהליך עדיף הפך מוכן). אם המתזמן בוחר תהליך אחר, מתבצעת <strong>החלפת הקשר מלאה</strong>: החלפת מצביע טבלת הדפים ב-MMU (דבר הגורם לניקוי ה-TLB אלא אם כן יש תמיכה ב-ASID) וטעינת ערכי ה-PCB של התהליך החדש.
+                            <br>5. <strong>חזרה למשתמש:</strong> פקודת חזרה מיוחדת (כגון <code>IRET</code> ב-x86) מחזירה את ה-PSW וה-PC, מורידה את רמת הפריבילגיה מ-Kernel Mode ל-User Mode, והמעבד ממשיך בריצת התהליך החדש בדיוק מהמקום שבו נעצר.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            יש להבחין בין <strong>עלות פסיקה פשוטה</strong> לבין <strong>עלות החלפת הקשר מלאה (Context Switch)</strong>. טיפול בפסיקת שעון שלא מוביל להחלפת תהליך עולה כמה עשרות מחזורי שעון בלבד (שמירה וחזרה). לעומת זאת, החלפת הקשר מלאה דורשת דריסת טבלאות זיכרון, איפוס שורות זיכרון מטמון (Cache Pollution / Cold Cache) ואיפוס ה-TLB. עלות זו כבדה בסדרי גודל ועלולה להגיע לאלפי מחזורי מעבד, ולכן מערכות הפעלה משתדלות למזער החלפות הקשר מיותרות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ה-PCB הוא מבנה הנתונים השומר את מצב המעבד, הזיכרון והמשאבים של התהליך; בעת פסיקה, רצף מתואם של חומרה ושגרות קרנל שומר את מצב התהליך הישן ל-PCB וטוען את נתוני התהליך הנבחר להמשך ריצה שקופה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.1.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.1.5: כיצד מוגדר מודל ריבוי התוכניות ההסתברותי של טננבאום ($1 - p^n$), כיצד הוא מנבא את ניצולת המעבד, ומדוע חריגה מסף מסוים מובילה לקריסה (Thrashing)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            המודל ההסתברותי לריבוי תוכניות (Probabilistic Multiprogramming Model) של טננבאום מניח כי כל תהליך במערכת מבלה בממוצע שבריר זמן $p$ בהמתנה לפעולות קלט/פלט ($0 \le p \le 1$), וכי בזיכרון הראשי נמצאים $n$ תהליכים עצמאיים. בהנחה שההסתברויות בלתי תלויות, ההסתברות ש<strong>כל $n$ התהליכים</strong> ימתינו ל-I/O בו-זמנית היא $p^n$. במצב זה בלבד המעבד נותר חסר מעש (Idle). מכאן, ש<strong>ניצולת המעבד (CPU Utilization)</strong> נתונה ע"י המשלים:
+                            $$\text{CPU Utilization} = 1 - p^n$$
+                            ככל שמספר התהליכים בזיכרון ($n$, דרגת ריבוי התוכניות) גדל, הביטוי $p^n$ שואף ל-0 וניצולת המעבד שואפת ל-100%. אולם, ניבוי תיאורטי זה מניח שלכל התהליכים יש מספיק זיכרון פיזי (RAM). בפועל, כאשר $n$ גדל מעבר לקיבולת ה-RAM, המערכת נאלצת לדפדף ללא הרף דפים אל הדיסק וממנו. הדיסק איטי במיליוני מחזורים מהמעבד, המערכת מבלה 99% מזמנה ב-Paging, וניצולת המעבד מתרסקת כמעט לאפס – תופעה הרסנית המכונה <strong>Thrashing (דשדוש / נקודת השבירה)</strong>.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו מנהל של צוות עובדים: כל עובד מחכה לחומרי גלם 80% מהזמן ($p=0.8$). אם יש רק עובד אחד ($n=1$), המנהל יעסיק אותו רק 20% מהזמן והמנהל יהיה פנוי 80% מהזמן. אם המנהל יעסיק 4 עובדים, ההסתברות שכולם יחכו ביחד היא $0.8^4 = 0.4096$, ולכן המנהל יהיה עסוק כמעט 60% מהזמן! נראה שכדאי להביא 50 עובדים. אך המשרד (ה-RAM) מוגבל בגודלו. כשמכניסים 50 עובדים לחדר של 5 אנשים, הם ידרכו זה על זה, יריבו על מקום ישיבה ויוציאו ויכניסו כיסאות מהמסדרון (החלפת דפים מול הדיסק) במקום לעבוד כלל – המפעל משתתק לחלוטין (Thrashing).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הנוסחה ממחישה את הצידוק הכלכלי וההנדסי של מערכות מרובות משימות (Time-Sharing / Multiprogramming): בתהליכים עתירי קלט/פלט (I/O Bound) שבהם $p=0.8$ (80% זמן המתנה), מעבד עם תהליך יחיד מנוצל רק ב-20% ($1-0.8$). הוספת תהליך שני ($n=2$) מקפיצה את הניצולת ל-$1 - 0.8^2 = 36\%$. עם $n=5$, הניצולת מגיעה ל-$1 - 0.8^5 \approx 67.2\%$, ועם $n=10$ ל-$1 - 0.107 \approx 89.3\%$.<br>
+                            אולם המודל סובל משתי הנחות מפשטות שאינן תמיד מתקיימות במציאות:
+                            <br>1. <strong>חוסר תלות סטטיסטי:</strong> בפועל, תהליכים עשויים לחכות לאותו התקן דיסק פיזי או לאותו שרת רשת, ולכן ההמתנות אינן בלתי תלויות ועלול להיווצר צוואר בקבוק משותף.
+                            <br>2. <strong>התעלמות מעומס זיכרון:</strong> המודל מניח שהגדלת $n$ דורשת רק הוספת תהליך, בעוד שבמציאות כל תהליך דורש קבוצת עבודה של דפי זיכרון (Working Set). ברגע ש-$\sum \text{Working Set} > \text{Total RAM}$, מתחיל Thrashing ומערכת ההפעלה חייבת להתערב ע"י השהיית תהליכים (Swapping Out לדיסק) כדי להקטין את $n$.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת חישובית נפוצה בבחינות: אם נתון שמעבד מנוצל ב-80% ויש 3 תהליכים בזיכרון, ושואלים מהו שבריר זמן ה-I/O של כל תהליך:
+                            $$1 - p^3 = 0.8 \implies p^3 = 0.2 \implies p = \sqrt[3]{0.2} \approx 0.5848$$
+                            טעות שכיחה היא לבלבל בין $p$ (זמן ה-I/O של תהליך יחיד) לבין $p^n$ (זמן הבטלה הכולל של המעבד). מקרה קצה נוסף: כאשר התהליכים הם CPU Bound ($p \approx 0$), אפילו עם $n=1$ ניצולת המעבד היא כמעט 100%, ולכן אין כמעט תועלת בהגדלת דרגת ריבוי התוכניות $n$.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: נוסחת טננבאום $1 - p^n$ מוכיחה שריבוי תוכניות מגדיל דרמטית את ניצולת המעבד בתהליכי I/O, אך תקפה רק כל עוד הזיכרון הפיזי מספיק; מעבר לסף הזיכרון, מתרחש Thrashing והביצועים קורסים.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה (מבחן עצמי):</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 2.1.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="processes-intro" data-qid="2.1.1" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.1.1:</span>
+                        מהו ההבדל המהותי ביותר בין תוכנית (Program) לבין תהליך (Process)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 1, 0)">
+                            א. תוכנית היא קוד הכתוב בשפת C או Java, ואילו תהליך הוא קוד שתורגם לשפת אסמבלי בלבד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 1, 1)">
+                            ב. תוכנית היא ישות פסיבית של הוראות השמורה בדיסק, בעוד שתהליך הוא מופע חי ופעיל בזמן ריצה בעל מרחב כתובות, מונה פקודות ומשאבים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 1, 2)">
+                            ג. תהליך אינו יכול להחזיק במשאבי קלט/פלט או קבצים, אלא רק בזיכרון RAM, בעוד שתוכנית מנהלת את הקבצים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 1, 3)">
+                            ד. לא ניתן להריץ שני תהליכים שמקורם באותו קובץ תוכנית בו-זמנית באותה מערכת הפעלה.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה. תוכנית היא קובץ בינארי פסיבי המאוחסן על גבי הדיסק. ברגע שהיא נטענת לזיכרון ומוקצים לה משאבים (מרחב כתובות, מחסנית, ערימה, אוגרים, מונה פקודות ו-PCB), היא הופכת לתהליך חי ופעיל.<br>• א' שגויה: ההבדל אינו שפת התכנות; שניהם מבוססים על קוד מכונה.<br>• ג' שגויה: תהליך הוא זה שמחזיק במשאבים פעילים ומתארי קבצים.<br>• ד' שגויה: ניתן להריץ עותקים מרובים מאותו קובץ בו-זמנית כשני תהליכים עצמאיים.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.1.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="processes-intro" data-qid="2.1.2" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.1.2:</span>
+                        כיצד שונה מודל היררכיית התהליכים של מערכת יוניקס (UNIX) ממודל התהליכים של מערכת חלונות (Windows)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 2, 0)">
+                            א. ביוניקס כל התהליכים מקבילים לחלוטין ללא קשר ביניהם, בעוד שבחלונות קיים עץ היררכי קשיח ששורשו הוא תהליך ה-Explorer.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 2, 1)">
+                            ב. בחלונות תהליך אב לא יכול לסיים את ריצתו לפני שכל תהליכי הבנים שלו הסתיימו, בעוד שביוניקס האב יכול להיסגר מיד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 2, 2)">
+                            ג. ביוניקס נוצר עץ היררכי ברור שבו כל תהליך (פרט ל-init/systemd) נוצר ע"י הורה ומחזיק ב-PPID, בעוד שבחלונות אין היררכיית הורה-ילד מובנית והשליטה מבוססת על ידיות (Handles).
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 2, 3)">
+                            ד. ביוניקס תהליך בן משתף תמיד את אותה מחסנית ואותם אוגרים של ההורה, בעוד שבחלונות מוקצה זיכרון נפרד.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה. ביוניקס קיים עץ תהליכים היררכי מושלם: כל תהליך נוצר ע"י הורה באמצעות <code>fork()</code>, מקושר ל-Parent PID (PPID), ומשתייך לקבוצת תהליכים. בחלונות אין מושג מובנה של היררכיית תהליכים – כאשר תהליך יוצר תהליך אחר באמצעות <code>CreateProcess()</code>, הוא מקבל ידית (Handle) לשליטה עליו, אך אין עץ היררכי פורמלי שנשמר במערכת.<br>• א' שגויה: בדיוק הפוך – עץ ההיררכיה הוא של יוניקס.<br>• ב' שגויה: אב יכול להסתיים ובניו יאומצו ע"י <code>init</code>.<br>• ד' שגויה: בשתיהן תהליך בן מקבל מרחב כתובות מבודד.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.1.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="processes-intro" data-qid="2.1.3" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.1.3:</span>
+                        תהליך נמצא במצב Running ומבצע קריאת מערכת <code>read()</code> כדי לקרוא בלוק נתונים מהדיסק. לאיזה מצב יעבור התהליך כעת, ולאיזה מצב יעבור בעת שהדיסק יסיים לקרוא את הנתונים?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 3, 0)">
+                            א. הוא יעבור מיידית למצב Blocked, ובסיום פעולת הדיסק יעבור למצב Ready.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 3, 1)">
+                            ב. הוא יעבור למצב Ready, ובסיום פעולת הדיסק יעבור ישירות למצב Running.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 3, 2)">
+                            ג. הוא יישאר במצב Running תוך ביצוע Busy Waiting, ובסיום ימשיך לפקודה הבאה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 3, 3)">
+                            ד. הוא יעבור למצב Blocked, ובסיום פעולת הדיסק יחזור ישירות למצב Running.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה. כאשר תהליך מבצע קריאת I/O חוסמת, מערכת ההפעלה מעבירה אותו מ-Running למצב <strong>Blocked</strong>. כשהדיסק מסיים את הקריאה, פסיקת חומרה מודיעה לקרנל שהנתונים מוכנים; התהליך אינו יכול לחזור ישירות למעבד (כי המעבד תפוס), ולכן הוא מועבר למצב <strong>Ready</strong> וממתין שהמתזמן יבחר בו שוב (Dispatch).<br>• ב' ו-ד' שגויות: אין מעבר ישיר מ-Blocked ל-Running.<br>• ג' שגויה: קריאה חוסמת משחררת את המעבד ולא מבצעת המתנה פעילה.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.1.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="processes-intro" data-qid="2.1.4" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.1.4:</span>
+                        במערכת מחשב נמצאים בזיכרון 4 תהליכים בו-זמנית ($n=4$). כל תהליך מבלה בממוצע 80% מזמנו בהמתנה לקלט/פלט ($p=0.8$). מהי ניצולת המעבד (CPU Utilization) המשוערת לפי מודל ריבוי התוכניות ההסתברותי של טננבאום?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 4, 0)">
+                            א. 20.00%
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 4, 1)">
+                            ב. 40.96%
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 4, 2)">
+                            ג. 80.00%
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 4, 3)">
+                            ד. 59.04%
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה. לפי נוסחת טננבאום: $\text{CPU Utilization} = 1 - p^n$. נציב $p = 0.8$ ו-$n = 4$: $p^4 = 0.8^4 = 0.4096$. כלומר, ההסתברות שכל 4 התהליכים ימתינו ל-I/O בו-זמנית והמעבד יהיה סרק (Idle) היא 40.96%. ניצולת המעבד היא המשלים: $1 - 0.4096 = 0.5904 = 59.04\%$.<br>• א' שגויה: 20% היא ניצולת לתהליך יחיד ($n=1$).<br>• ב' שגויה: 40.96% הוא זמן הסרק (Idle), לא הניצולת.<br>• ג' שגויה: 80% הוא זמן ה-I/O של תהליך בודד ($p$).
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.1.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="processes-intro" data-qid="2.1.5" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.1.5:</span>
+                        מה מתרחש במערכת ההפעלה כאשר תופעת ה-Thrashing (דשדוש) מתפרצת עקב הגדלת דרגת ריבוי התוכניות ($n$)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 5, 0)">
+                            א. המעבד מגיע ל-100% עומס חישובי עקב עודף החלפות הקשר (Context Switches) מהירות במיוחד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 5, 1)">
+                            ב. בקר הדיסק נכנס לתרדמת ומשבית את קווי הפסיקות לחומרה עד לאתחול ידני.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 5, 2)">
+                            ג. עמודי הזיכרון הנדרשים לתהליכים אינם נכנסים יחדיו ב-RAM, המערכת מבלה את רוב זמנה בהחלפת דפים מול הדיסק (Paging), וניצולת המעבד מתרסקת.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.1, 5, 3)">
+                            ד. כל התהליכים מסיימים באופן בלתי רצוני עקב שגיאות Fatal Error ונמחקים מטבלת התהליכים.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה. תופעת ה-Thrashing מתרחשת כאשר סך עמודי הזיכרון של קבוצות העבודה (Working Sets) של כל $n$ התהליכים חורג מקיבולת הזיכרון הפיזי (RAM). בכל פעם שתהליך מנסה לרוץ, מתרחש Page Fault שמאלץ הבאת דף מהדיסק ופינוי דף של תהליך אחר. כתוצאה מכך, התהליכים כולם ממתינים לדיסק האיטי, תור ה-I/O נסתם, המעבד אינו מקבל עבודה חישובית אמיתית וניצולתו צונחת כמעט לאפס.<br>• א' שגויה: ניצולת המעבד קורסת כמעט לאפס, לא ל-100%.<br>• ב' שגויה: בקר הדיסק עמוס עד לקצה היכולת ולא בתרדמת.<br>• ד' שגויה: התהליכים אינם קורסים אלא ממתינים בדישדוש.
+                    </div>
+                </div>
+            </div>
+        </div>

@@ -1,0 +1,387 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 4.5: examples (מערכות קבצים לדוגמה)                        -->
+        <!-- ===================================================================== -->
+        <div id="questions-examples" data-title="שאלות מנחות ותרגול - 💻 4.5 מערכות קבצים לדוגמה">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 4.5.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.5.1: כיצד התפתחה משפחת מערכות הקבצים של MS-DOS (FAT-12, FAT-16, FAT-32), מהו מושג ה"אשכול" (Cluster), ומדוע ב-FAT32 לא ניתן בשום אופן לאחסן קובץ בודד שגודלו עולה על 4GB?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>התפתחות משפחת FAT:</strong>
+                            <br>המספר בשם המערכת מציין את <strong>מספר הסיביות המוקצה לכתובת אשכול</strong> בטבלת הקצאת הקבצים (FAT):
+                            <br>1. <strong>FAT-12:</strong> השתמשה ב-12 ביט לכתובת אשכול ($2^{12} = 4096$ אשכולות לכל היותר). נועדה במקור עבור תקליטוני דיסקטים (Floppy disks) של 1.44MB.
+                            <br>2. <strong>FAT-16:</strong> 16 ביט לכתובת ($2^{16} = 65,536$ אשכולות). תמכה בדיסקים של עד 2GB (עם אשכולות של 32KB). בדיסקים גדולים, גודל האשכול הענק גרם לבזבוז עצום עקב קיטוע פנימי.
+                            <br>3. <strong>FAT-32:</strong> משתמשת בפועל ב-28 ביט מתוך 32 ביט לכתובת אשכול ($2^{28} \approx 268$ מיליון אשכולות). אפשרה תמיכה במחיצות של עד 2TB עם אשכולות סטנדרטיים של 4KB.<br>
+                            <strong>מושג ה"אשכול" (Cluster / Allocation Unit):</strong>
+                            <br>יחידת ההקצאה הבסיסית של FAT. אשכול מורכב מרצף של סקטורים פיזיים (למשל, 8 סקטורים של 512B יוצרים אשכול של 4KB). המערכת מקצה שטח ומנהלת מצביעים בטבלה אך ורק ברמת אשכולות ולא ברמת סקטורים בודדים.<br>
+                            <strong>מגבלת 4GB לקובץ בודד ב-FAT32:</strong>
+                            <br>המגבלה נובעת ישירות ממבנה רשומת המדריך (Directory Entry) של FAT:
+                            <br>שדה גודל הקובץ (File Size Field) מוגדר כמשתנה מסוג <strong>32-bit unsigned integer</strong>.
+                            <br>הערך המרבי שניתן לייצג ב-32 ביט הוא:
+                            $$2^{32} - 1 = 4,294,967,295\text{ Bytes} = 4\text{ GB} - 1\text{ Byte}$$
+                            גם אם במחיצה יש עוד 500GB של שטח פנוי, לא ניתן פיזית לתעד ברשומת המדריך גודל קובץ גדול מ-4GB (הסיבה לכך שקובצי וידאו HD או קובצי ISO גדולים נכשלים בהעתקה לכונן USB המפורמט ב-FAT32).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו מד-מרחק ברכב ישן שיש בו מקום רק ל-4 ספרות: גם אם המכונית תסע מיליון קילומטר, השעון פשוט יתאפס או יתקע ב-9999. רשומת המדריך ב-FAT32 "תוכננה בשנות ה-90" ולא השאירה מקום ליותר מ-32 ביט עבור אורך הקובץ.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מדוע השתמשו רק ב-28 ביט ב-FAT32 ולא ב-32 ביט מלאים?
+                            <br>חברת Microsoft שמרה את 4 הביטים העליונים של כל כניסה בת 32 ביט עבור שימושים עתידיים (דגלים פנימיים), ולכן מספר האשכולות המרבי המעשי הוא $2^{28}$. כדי להתגבר על מגבלת 4GB ועדיין לשמור על תאימות לכוננים נשלפים, מיקרוסופט פיתחה מאוחר יותר את <strong>exFAT (Extended FAT)</strong> המשתמשת בשדה גודל קובץ של 64 ביט.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            במערכת FAT אין שום תמיכה בהרשאות משתמשים (User Permissions / ACLs), אין Inodes, ואין תמיכה מובנית ב-Hard Links.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: FAT מנהלת הקצאה ברמת אשכולות (Clusters), ו-FAT32 מוגבלת לקבצים של עד 4GB בגלל שדה אורך של 32 ביט ברשומת המדריך.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.5.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.5.2: מהם מאפייני מערכת הקבצים המסורתית של UNIX (UNIX V7), מה היה גודל הבלוק והמגבלות שלה, וכיצד נראתה רשומת מדריך קלאסית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מאפייני UNIX V7 File System (1979):</strong>
+                            <br>מערכת הקבצים המיתולוגית שהגדירה את ארכיטקטורת ה-Inodes המודרנית של כל משפחת UNIX ולינוקס עד היום:
+                            <br>• <strong>גודל בלוק:</strong> 512 בתים בלבד (זהה לגודל סקטור פיזי בדיסק).
+                            <br>• <strong>מבנה רשומת מדריך (Directory Entry):</strong>
+                            <br>באורך קבוע של <strong>16 בתים בלבד</strong>:
+                            <br>1. שני בתים ראשונים: מספר ה-Inode (מ-1 עד 65,535, כלומר עד 64K קבצים במחיצה).
+                            <br>2. 14 בתים הבאים: שם הקובץ כמחרוזת ASCII. (אם השם קצר מ-14, הוא מסתיים בתו NULL; אם השם בן 14 תווים בדיוק, אין תו NULL!).
+                            <br>• <strong>מבנה ה-Inode:</strong>
+                            <br>גודל ה-Inode היה 64 בתים, והכיל: מצב קובץ והרשאות (File Mode), מונה קישורים (Link Count), מזהה בעלים (UID/GID), גודל קובץ, זמני גישה/שינוי, ו-13 מצביעי בלוקים (10 ישירים, 1 עקיף יחיד, 1 עקיף כפול, 1 עקיף משולש).
+                            <br>• <strong>מגבלות עיקריות:</strong>
+                            <br>שמות קבצים מוגבלים ל-14 תווים לכל היותר; גודל בלוק קטן של 512B גרם לביצועי I/O ירודים (תפוקה נמוכה של כ-4% ממהירות הדיסק); כל ה-Inodes רוכזו בתחילת הדיסק וגרמו לתנועות ראש מסיביות; היעדר מנגנוני התאוששות מקריסות (תלות מלאה ב-<code>fsck</code>).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו המודל הראשוני של "פורד מודל T": פשוט, אלגנטי, גאוני מבחינה רעיונית, אבל גיר ידני ללא מזגן עם מהירות מרבית של 40 קמ"ש. כל המכוניות המודרניות מבוססות על העקרונות שלו, אך עם שכלולים עצומים.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            המעבר ל-BSD FFS (Fast File System):
+                            <br>כדי להתגבר על חולשות הביצועים של UNIX V7, פותחה בברקלי מערכת FFS (1983): היא הגדילה את הבלוק ל-4KB/8KB (והכניסה מושג של Fragments למניעת בזבוז), פיצלה את הדיסק ל-Cylinder Groups, והאריכה את שמות הקבצים ל-255 תווים.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה ששם קובץ תמיד הסתיים ב-NULL ב-UNIX V7: אם שם הקובץ היה באורך של 14 תווים בדיוק, לא נותר מקום לבייט ה-NULL, ותוכניות משתמש שלא נזהרו סבלו מגלישות חוצץ בעת הדפסת השם.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: UNIX V7 ביססה את הפרדת המדריכים מה-Inodes עם רשומות של 16 בתים ובלוקים של 512 בתים, שהיוו את הבסיס לכל מערכות UNIX המודרניות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.5.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.5.3: מהי שרשרת ההתפתחות של מערכות הקבצים בלינוקס (ext2 $\to$ ext3 $\to$ ext4), מה החידוש המרכזי שהוצג בכל דור, וכיצד מנגנון ה-Extents ב-ext4 החליף את מצביעי הבלוקים המסורתיים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>שרשרת ההתפתחות בלינוקס:</strong>
+                            <br>1. <strong>ext2 (Second Extended File System - 1993):</strong>
+                            <br>מערכת הקבצים הסטנדרטית של לינוקס במשך שנים רבות. השתמשה ב-Block Groups, שמות קבצים עד 255 תווים, בלוקים של 1KB-4KB ומערך מצביעים קלאסי ב-Inode (ישירים, עקיף, כפול, משולש).
+                            <br><em>חסרון מרכזי:</em> <strong>היעדר יומן עסקאות (No Journaling)</strong>. כל כיבוי פתאומי חייב סריקת <code>fsck</code> ארוכה ומייגעת.
+                            <br>2. <strong>ext3 (Third Extended File System - 2001):</strong>
+                            <br><strong>החידוש המרכזי: הוספת יומן עסקאות (Journaling)</strong> המבוסס על מנגנון ה-JBD (Journaling Block Device).
+                            <br>שמרה על תאימות מלאה לאחור וקדימה עם ext2 (ניתן היה לעגון מחיצת ext2 כ-ext3 ולהפך ללא פרמוט!). ביטלה את זמני ההשבתה הארוכים לאחר קריסות.
+                            <br>3. <strong>ext4 (Fourth Extended File System - 2008):</strong>
+                            <br>תמיכה במחיצות של עד 1 Exabyte ($10^{18}$ בתים) וקבצים של עד 16 Terabytes.
+                            <br><strong>החידוש המהפכני: מעבר למקטעים רציפים - Extents:</strong>
+                            <br>במקום לתעד ב-Inode מצביע נפרד לכל בלוק בודד (למשל, קובץ של 1GB בבלוקי 4KB דרש 262,144 מצביעים נפרדים ועץ עקיפין שלם), ext4 משתמשת ב-<strong>Extent</strong>:
+                            <br>מבנה המגדיר שלשה: <code>(בלוק לוגי התחלתי, מספר בלוקים רציפים, בלוק פיזי התחלתי בדיסק)</code>.
+                            <br>Extent בודד יכול לייצג עד 128MB של בלוקים רציפים ב-12 בתים בלבד!
+                            <br>• <em>יתרונות Extents:</em> צמצום דרסטי של שטח המטא-דאטה, קריאה מהירה בהרבה, והפחתת קיטוע.
+                            <br>חידושים נוספים ב-ext4: הקצאה מושהית (Delayed Allocation) לצורך מציאת רצפים אופטימליים, ו-Checksums על היומן לאמינות מקסימלית.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ההבדל בין מצביעים ל-Extents הוא כמו לקנות כרטיסים לקולנוע:
+                            שיטת המצביעים: להדפיס 100 כרטיסים נפרדים שעל כל אחד כתוב "כיסא 1", "כיסא 2", "כיסא 3"...
+                            שיטת Extents: להדפיס כרטיס קבוצתי יחיד שכתוב עליו: "שורה 5, כיסאות 1 עד 100 רצוף".
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            עץ Extents ב-Inode של ext4:
+                            <br>שטח 12 המצביעים ב-Inode המסורתי הוסב לראש עץ Extent (Extent Tree Root). אם לקובץ יש עד 4 מקטעים רציפים, כולם נכנסים ישירות לתוך ה-Inode ללא שום בלוק חיצוני נוסף! רק אם הקובץ קטוע מאוד וכולל מקטעים רבים, נוצר עץ H-Tree של Extents.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            למרות ש-ext4 היא מערכת קבצים פופולרית ויציבה במיוחד, היא אינה מבוססת Copy-On-Write (COW), ולכן אינה תומכת ב-Snapshots ברמת מערכת הקבצים כפי שמאפשרות Btrfs או ZFS.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ext2 הציגה מבנה יציב, ext3 הוסיפה יומן עסקאות, ו-ext4 שיפרה ביצועים ונפח דרמטית באמצעות מנגנון ה-Extents.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.5.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.5.4: מהם מאפייני מערכת הקבצים ISO 9660 לתקליטורי CD-ROM, מדוע נבחרה בה שיטת ההקצאה הרציפה (Contiguous Allocation), וכיצד הרחבות Rock Ridge ו-Joliet גיטרו את מגבלותיה המקוריות?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מאפייני מערכת הקבצים ISO 9660:</strong>
+                            <br>תקן בינלאומי שפותח ב-1988 כדי להבטיח שתקליטורי מידע (CD-ROM) יוכלו להיקרא בכל מערכת הפעלה בעולם (PC, Mac, UNIX).
+                            <br>• <strong>שיטת הקצאה רציפה (Contiguous Allocation):</strong>
+                            <br>כל קובץ בתקליטור נצרב כמחרוזת של בלוקים פיזיים עוקבים לחלוטין ברצועה הספירלית של הדיסק.
+                            <br><em>מדוע שיטה זו אידיאלית ל-CD-ROM?</em>
+                            <br>1. <strong>מדיה לקריאה בלבד (Read-Only):</strong> קבצים נצרבים פעם אחת ולעולם אינם גדלים או משתנים. לכן אין שום חשש מקיטוע חיצוני בעת הרחבה!
+                            <br>2. <strong>ביצועים אופטימליים בכונן אופטי:</strong> מהירות ה-Seek של כונני תקליטורים אופטיים הייתה איטית להחריד (מאות מילי-שניות). הקצאה רציפה אפשרה לקרוא קבצים ענקיים ברצף ללא הזזת ראש הקריאה בלייזר.
+                            <br>3. <strong>מטא-דאטה מינימלי:</strong> כל רשומת קובץ במדריך צריכה לציין רק <code>(מספר סקטור התחלתי, אורך הקובץ)</code>.<br>
+                            <strong>הרחבות להתגברות על מגבלות ISO 9660 המקוריות:</strong>
+                            <br>התקן המקורי (Level 1) היה נוקשה ביותר: שמות קבצים בפורמט 8.3 באותיות גדולות בלבד, ללא שמות באותיות קטנות וללא הרשאות.
+                            <br>• <strong>הרחבת Rock Ridge (עבור UNIX/Linux):</strong>
+                            <br>מנצלת שדות שמורים (System Use Fields) בתוך רשומות המדריך כדי לקודד שמות קבצים ארוכים (עד 255 תווים), אותיות גדולות וקטנות, הרשאות קבצים של UNIX (rwx, UID, GID), קישורים סימבוליים וקבצי התקן.
+                            <br>• <strong>הרחבת Joliet (עבור Windows - פותחה ע"י Microsoft):</strong>
+                            <br>בונה עץ מדריכים מקביל המשתמש בקידוד Unicode (UTF-16) לשמות קבצים של עד 64 תווים, כולל תמיכה בשפות שאינן אנגלית (עברית, יפנית וכו').
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו ספר מודפס: ברגע שהספר ירד לדפוס, אי אפשר להוסיף עמוד באמצע פרק 3. לכן אפשר להדפיס את כל העמודים ברצף מושלם מ-1 עד 300, ומספיק לכתוב בתוכן העניינים "פרק 3 מתחיל בעמוד 50 ואורכו 20 עמודים".
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            תאימות לאחור גלובלית (Universal Compatibility):
+                            <br>דיסק שנצרב עם תקן ISO 9660 והרחבות Joliet ו-Rock Ridge מכיל למעשה מידע המאפשר למערכת DOS ישנה לראות שמות קצרים בפורמט 8.3, ל-Windows לראות שמות Unicode יפים, וללינוקס לראות קבצי מערכת עם הרשאות POSIX מלאות – והכל מאותו תקליטור בודד.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            בתקן ISO 9660 מספרים נשמרו פעמיים ברציפות (Both-endian): פעם ב-Little-endian ופעם ב-Big-endian, כדי שמעבדי x86 ומעבדי Motorola/SPARC יוכלו לקרוא אותם ישירות בחומרה ללא המרה!
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: תקן ISO 9660 מנצל הקצאה רציפה לאחסון אופטי אופטימלי, והורחב ע"י Rock Ridge ו-Joliet לתמיכה בשמות ארוכים, יוניקוד והרשאות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 4.5.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 4.5.5: כיצד פועלת מערכת הקבצים NTFS של Windows, מה תפקידה של טבלת הקבצים הראשית (Master File Table - MFT), וכיצד היא מטפלת בקבצים קטנים במיוחד לעומת קבצים גדולים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>ארכיטקטורת NTFS וטבלת ה-MFT (Master File Table):</strong>
+                            <br>NTFS היא מערכת הקבצים הראשית של Windows מזה עשורים. עקרון היסוד שלה הוא: <strong>"הכל ב-NTFS הוא קובץ"</strong>, ואפילו המטא-דאטה של מערכת הקבצים עצמה מנוהל כקבצים בתוך טבלת ה-MFT (לדוגמה: <code>$MFT</code>, <code>$LogFile</code>, <code>$Bitmap</code>).<br>
+                            <strong>מבנה רשומת MFT:</strong>
+                            <br>ה-MFT היא מערך ליניארי של רשומות באורך קבוע (בדרך כלל 1KB לכל רשומה). כל קובץ או מדריך במחיצה מקבל לפחות רשומת MFT אחת.
+                            <br>רשומת ה-MFT בנויה מסדרה של <strong>תכונות (Attributes)</strong>: שם הקובץ, מידע סטנדרטי (תאריכים), רשימות בקרת גישה (Security ACL), ותוכן הקובץ עצמו (תכונת <code>$DATA</code>).<br>
+                            <strong>טיפול בקבצים קטנים במיוחד - תכונות תושבות (Resident Attributes):</strong>
+                            <br>אם הקובץ קטן מאוד (פחות מכ-700-800 בתים), <strong>תוכן הקובץ נשמר ישירות בתוך רשומת ה-MFT עצמה!</strong>
+                            <br>קובץ כזה אינו תופס שום אשכול נתונים חיצוני בדיסק!
+                            <br>• <em>יתרון ביצועים ענק:</em> כאשר פותחים את הקובץ וקוראים את ה-MFT, תוכן המידע נקרא מיד באותה פעולת I/O בודדת, ללא צורך בפנייה נוספת לדיסק.<br>
+                            <strong>טיפול בקבצים גדולים - תכונות בלתי-תושבות (Non-Resident Attributes):</strong>
+                            <br>כאשר גודל הקובץ עולה על שטח הרשומה ב-MFT, תכונת ה-<code>$DATA</code> הופכת ל-Non-resident:
+                            <br>במקום הנתונים עצמם, רשומת ה-MFT מכילה סדרה של <strong>VCN-to-LCN Runs (Extents)</strong> – זוגות של <code>(מספר אשכולות רציף, כתובת אשכול בדיסק)</code> המצביעים לבלוקי הנתונים. אם הקובץ עצום וקטוע, מוקצות רשומות MFT נוספות המקושרות ביניהן בעץ B-Tree.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו תיק לקוח במשרד עורכי דין: אם הלקוח הביא רק פתק קטן (קובץ זעיר), המזכירה מהדקת את הפתק ישירות על גב התיקייה עצמה (Resident). אם הלקוח הביא 5 ארגזי מסמכים (קובץ ענק), כותבים על התיקייה הפניה: "המסמכים מאוחסנים במדף 4 בארכיון" (Non-resident).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            עמידות ורישום יומן ב-NTFS:
+                            <br>NTFS כוללת מנגנון Journaling מלא למטא-דאטה דרך קובץ היומן <code>$LogFile</code>. בנוסף, כל המדריכים ב-NTFS ממומשים כ<strong>עצי B-Tree מאוזנים</strong> (תכונת <code>$INDEX_ROOT</code> ו-<code>$INDEX_ALLOCATION</code>), מה שמאפשר חיפוש קובץ במדריך עם מיליון קבצים בסיבוכיות של $O(\log N)$ בלבד.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            NTFS תומכת בזרמי נתונים חלופיים (Alternate Data Streams - ADS). קובץ בודד יכול להכיל מספר תכונות <code>$DATA</code> שונות במקביל, למשל קובץ טקסט שבתוכו מוטמע זרם נסתר המכיל תמונת וידאו.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: NTFS מנהלת הכל בטבלת MFT שבה קבצים קטנים שמורים ישירות בתוך הרשומה (Resident), וקבצים גדולים מנוהלים כ-Extents ועצי B-Tree.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות (5 שאלות בפורמט B) -->
+            <div class="multiple-choice-list space-y-6 mt-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות אמריקאיות להערכה עצמית:</strong> בחרו את התשובה הנכונה ביותר. לחיצה על האפשרות תחשוף מיד האם צדקתם בליווי נימוק אקדמי מלא.
+                </div>
+
+                <!-- שאלה 4.5.6 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.5.6: משתמש מנסה להעתיק קובץ ISO של סרט וידאו בנפח של 4.5GB לתוך כונן הבזק (USB Flash Drive) ריק לחלוטין בנפח של 64GB המפורמט ב-FAT32. מדוע הפעולה נכשלת מיד עם שגיאת "File too large"?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. מפני שסך כל האשכולות בכונן אינו מספיק לאחסון 4.5GB.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. מכיוון ששדה גודל הקובץ ברשומת המדריך של FAT32 הוא באורך 32 ביט בלבד, מה שמגביל את גודלו המרבי של קובץ בודד ל-$2^{32}-1$ בתים (כ-4GB).</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. כיוון ש-FAT32 אינה תומכת בקבצי וידאו בינאריים.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. משום שטבלת ה-FAT אינה מסוגלת להכיל יותר מ-100 אשכולות ברצף.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-5-6" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> שדה אורך הקובץ ברשומת המדריך ב-FAT32 הוא שלם אי-שלילי בן 32 סיביות, ולכן הגודל המרבי האפשרי לקובץ יחיד הוא $4,294,967,295$ בתים (4GB פחות בייט אחד). ללא קשר לשטח הפנוי הכולל במחיצה, קובץ של 4.5GB אינו ניתן לייצוג ב-FAT32 (והפתרון הוא פרמוט ב-exFAT או NTFS).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.5.7 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.5.7: מהו היתרון המרכזי של שימוש במקטעים (Extents) במערכת הקבצים ext4 של לינוקס בהשוואה לשיטת מצביעי הבלוקים המסורתית של ext2 ו-ext3?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. ביטול הצורך בשימוש ביומן עסקאות (Journal).</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. ייצוג קבוצה גדולה של בלוקים פיזיים רצופים באמצעות רשומה אחת קטנה, מה שמקטין דרמטית את שטח המטא-דאטה ומאיץ פעולות I/O בקבצים גדולים.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. הגבלת כל הקבצים בדיסק לגודל אחיד של 4KB.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. מניעת אפשרות ליצירת קישורים קשיחים (Hard Links).</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-5-7" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ב!</strong><br>
+                            <strong>נימוק מפורט:</strong> במקום להחזיק רשימה של עשרות אלפי מצביעים בודדים לכל בלוק ובלוק בדיסק, Extent בודד מתעד רצף שלם (למשל: "החל מבלוק לוגי 0, רצף של 25,000 בלוקים בבלוק פיזי 100,000"). הדבר חוסך בלוקי אינדקס עקיפים מרובים, מפחית משמעותית את תקורת ה-Inode, ומאפשר לקרוא מקטעים עצומים בפקודת דיסק בודדת.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.5.8 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.5.8: מה קורה במערכת הקבצים NTFS כאשר נוצר קובץ טקסט קטן במיוחד שגודלו 200 בתים בלבד?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. תוכן הקובץ נשמר ישירות בתוך רשומת ה-MFT עצמה כתכונה תושבת (Resident Attribute), ללא הקצאת אשכול נתונים חיצוני בדיסק.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. הקובץ נדחה כיוון ש-NTFS אינה מאפשרת קבצים הקטנים מ-4KB.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. הקובץ נשמר בתוך ה-Superblock של המחיצה.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. מוקצה עבורו אשכול שלם של 64KB והשאר ממולא באפסים.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-5-8" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: א!</strong><br>
+                            <strong>נימוק מפורט:</strong> רשומת MFT ב-NTFS היא בגודל 1KB. אם הקובץ קטן מספיק (עד כ-700-800 בתים), תכונת ה-<code>$DATA</code> מוגדרת כ-Resident ונשמרת בתוך שטח הרשומה עצמה. הדבר חוסך הקצאת אשכול חיצוני בדיסק ומאפשר קריאה מיידית של תוכן הקובץ יחד עם המטא-דאטה שלו בפניית I/O יחידה.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.5.9 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.5.9: מדוע שיטת ההקצאה הרציפה (Contiguous Allocation) מתאימה במיוחד לתקליטורי CD-ROM לפי תקן ISO 9660, על אף שאינה מקובלת בדיסקים קשיחים רגילים?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. מפני שתקליטורי CD-ROM אינם מכילים מדריכים.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. כיוון שבתקליטורים אין ראשי קריאה פיזיים אלא רק חיישני מגנט.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. מאחר שתקליטור הוא מדיה לקריאה בלבד (Read-Only) שבה גודל הקבצים ידוע מראש ולעולם אינו משתנה, מה שמבטל לחלוטין את בעיית הקיטוע בעת הרחבת קבצים וממקסם את קצב הקריאה.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. משום שהקצאה מקושרת נאסרה באמנת ז'נבה עבור מדיה אופטית.</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-4-9" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: ג!</strong><br>
+                            <strong>נימוק מפורט:</strong> החסרון הקטלני של הקצאה רציפה בדיסקים רגילים הוא הקושי להגדיל קובץ קיים והיווצרות חורים (קיטוע חיצוני). בתקליטורים (CD-ROM), המידע נצרב פעם אחת בלבד ואינו משתנה לעולם. לכן הקצאה רציפה מעניקה ביצועי שיא (תנועת לייזר רציפה ללא תנועות Seek איטיות) ותקורה אפסית (די לציין בלוק התחלתי ואורך).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- שאלה 4.5.10 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3">
+                        שאלה 4.5.10: מהו התפקיד העיקרי של הרחבת Rock Ridge על גבי תקן ISO 9660 לתקליטורים?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <button type="button" onclick="handleOptionClick(this, true, 'exp-4-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>א. הוספת תמיכה בתכונות מערכת קבצים של UNIX (שמות ארוכים רגישי אותיות, הרשאות גישה, קישורים סימבוליים וקבצי התקן) בתוך שדות שמורים של ISO 9660.</span>
+                            <span class="text-slate-400 font-mono text-xs">A</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ב. הגדלת קיבולת התקליטור מ-650MB ל-4.7GB.</span>
+                            <span class="text-slate-400 font-mono text-xs">B</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ג. הצפנת כל תוכן התקליטור באמצעות מפתח AES-256.</span>
+                            <span class="text-slate-400 font-mono text-xs">C</span>
+                        </button>
+                        <button type="button" onclick="handleOptionClick(this, false, 'exp-4-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                            <span>ד. המרת התקליטור למערכת קבצים עם יומן עסקאות (Journaling).</span>
+                            <span class="text-slate-400 font-mono text-xs">D</span>
+                        </button>
+                    </div>
+                    <div id="exp-4-5-10" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                            <strong>תשובה נכונה: א!</strong><br>
+                            <strong>נימוק מפורט:</strong> תקן ISO 9660 המקורי תמך רק בשמות קצרים בני 8.3 תווים ללא הבדל בין אותיות גדולות לקטנות וללא הרשאות. הרחבת Rock Ridge ניצלה את שדות המשתמש השמורים כדי לקודד את כל הסמנטיקה של UNIX (שמות עד 255 תווים, הרשאות POSIX, Symlinks ו-Device files) באופן שקוף לחלוטין.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>

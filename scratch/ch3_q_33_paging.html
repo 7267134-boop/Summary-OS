@@ -1,0 +1,373 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 3.3: paging-concepts (עקרונות הדפדוף וזיכרון וירטואלי)       -->
+        <!-- ===================================================================== -->
+        <div id="questions-paging-concepts" data-title="שאלות מנחות ותרגול - 📄 3.3 עקרונות הדפדוף וזיכרון וירטואלי">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 3.3.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.3.1: מהו ההבדל המהותי בין "דף וירטואלי" (Virtual Page) ל"מסגרת דף פיזית" (Page Frame), כיצד בנויה כתובת וירטואלית ומדוע גודל הדף הוא תמיד חזקה של 2?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הגדרות יסוד:</strong>
+                            <br>• <strong>דף וירטואלי (Virtual Page):</strong> יחידת חלוקה בגודל קבוע של <em>מרחב הכתובות הווירטואלי</em> של התהליך (הזיכרון הלוגי שהתוכנית "רואה").
+                            <br>• <strong>מסגרת דף פיזית (Page Frame):</strong> יחידת חלוקה באותו הגודל בדיוק של <em>הזיכרון הפיזי הראשי (RAM)</em>.
+                            <br>הדפים הווירטואליים ממופים למסגרות פיזיות; לא כל דף וירטואלי חייב להיות נוכח ב-RAM (הוא עשוי להימצא בדיסק או לא להיות מוקצה כלל).<br>
+                            <strong>מבנה הכתובת הווירטואלית:</strong>
+                            <br>הכתובת הווירטואלית באורך $N$ סיביות מפוצלת לשני חלקים לוגיים:
+                            <br>1. <strong>מספר דף וירטואלי (Virtual Page Number - VPN):</strong> הסיביות העליונות (MSB), המשמשות כאינדקס ישיר לשורת טבלת הדפים (PTE).
+                            <br>2. <strong>הסט בתוך הדף (Offset):</strong> $P$ הסיביות התחתונות (LSB), המצביעות על הבייט המדויק בתוך הדף הנבחר.<br>
+                            <strong>מדוע גודל הדף הוא תמיד חזקה של 2 ($2^P$):</strong>
+                            <br>כאשר גודל הדף הוא חזקה מדויקת של 2 (כגון $4\text{KB} = 2^{12}$ בתים, כלומר $P=12$), <strong>אין צורך לבצע פעולות חילוק או כפל יקרות</strong> בחומרה כדי לפרק כתובת!
+                            <br>הפיצול מתבצע ברמת החיווט החשמלי הפיזי בלבד: 12 הגידים התחתונים באפיק הכתובות מייצגים ישירות את ה-Offset, ושאר הגידים העליונים מייצגים את ה-VPN. יתרה מזאת, <strong>ההסט מועתק כפשוטו (As-is)</strong> מהכתובת הווירטואלית לכתובת הפיזית ללא שום שינוי!
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו ספר גדול ומדף ספרים: הדף הווירטואלי הוא עמוד מספר 7 בספר. מסגרת הדף היא חריץ פלסטיק במגירה פיזית שבו אפשר לתייק דף אחד. ההסט הוא מספר השורה בעמוד (שורה 15). לא משנה לאיזה חריץ במגירה נכניס את הדף (בחריץ 1, 5 או 200), השורה ה-15 בעמוד תישאר בדיוק השורה ה-15! לכן ההסט לעולם אינו משתנה בתרגום.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            דוגמה מספרית בארכיטקטורת 32-bit עם דפים של 4KB:
+                            <br>• גודל דף: $4\text{KB} = 4096 = 2^{12}$ בתים &larr; $P = 12$ סיביות להסט (Offset).
+                            <br>• אורך כתובת וירטואלית: 32 סיביות.
+                            <br>• מספר סיביות ל-VPN: $32 - 12 = 20$ סיביות.
+                            <br>• סך כל הדפים הווירטואליים במרחב התהליך: $2^{20} = 1,048,576$ דפים (מרחב וירטואלי של 4GB).
+                            <br>• אם כתובת וירטואלית היא <code>0x0000814C</code>: 12 הביטים התחתונים (<code>14C</code>) הם ההסט, ו-20 הביטים העליונים (<code>00008</code>) הם ה-VPN (דף מס' 8).
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות נפוצה היא לחשוב שמספר הדפים הווירטואליים חייב להיות שווה למספר מסגרות הדף ב-RAM. מרחב הדפים הווירטואליים מוכתב אך ורק מרוחב אפיק הכתובות של המעבד (למשל 4GB ב-32-bit), בעוד שמספר המסגרות הפיזיות תלוי בכמות כרטיסי ה-RAM שנקנו והותקנו פיזית במחשב (למשל 512MB בלבד).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: דף וירטואלי שייך לתהליך, מסגרת שייכת ל-RAM; גודל דף של חזקת 2 מאפשר לחומרה לפצל כתובת ע"י חיווט סיביות ולהעתיק את ההסט ישירות ללא חישוב.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.3.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.3.2: כיצד פועלת יחידת ניהול הזיכרון (MMU), מהו תפקידה של רשומת טבלת דפים (PTE), ומהי המשמעות המדויקת של שדות הבקרה (Present, Dirty, Referenced, Protection)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>עקרון הפעולה של ה-MMU (Memory Management Unit):</strong>
+                            <br>ה-MMU הוא רכיב חומרה השוכן בין ה-CPU לבין אפיק הזיכרון הראשי. בכל ניסיון שליפת פקודה או קריאה/כתיבה לכתובת וירטואלית, ה-MMU מקבל את הכתובת, משתמש ב-VPN כאינדקס לטבלת הדפים, בודק את שדות הבקרה ברשומה המתאימה (PTE), ומייצר את הכתובת הפיזית המקבילה ב-RAM (שילוב של מספר המסגרת עם ה-Offset המקורי).<br>
+                            <strong>שדות הבקרה הקריטיים ב-PTE (Page Table Entry):</strong>
+                            <br>1. <strong>ביט נוכחות (Present / Valid Bit):</strong>
+                            <br><code>1</code> = הדף שוכן כעת ב-RAM במסגרת המצוינת ברשומה; <code>0</code> = הדף אינו ב-RAM (שוכן בדיסק או אינו חוקי). אם נגיש לדף כשהביט הוא <code>0</code>, ה-MMU עוצר מיידית ומייצר פסיקת חומרה: <strong>פסיקת דף (Page Fault)</strong>.
+                            <br>2. <strong>מספר מסגרת הדף (Page Frame Number - PFN):</strong>
+                            <br>הכתובת הפיזית של בסיס המסגרת ב-RAM.
+                            <br>3. <strong>ביטי הגנה והרשאות (Protection Bits):</strong>
+                            <br>קובעים את סוג הגישה המותר: Read, Write, Execute (או ביט R/W יחיד). כתיבה לדף שמוגדר לקריאה בלבד (כמו קוד תוכנית) תפעיל Protection Fault (Segmentation Fault).
+                            <br>4. <strong>ביט שינוי / "מלוכלך" (Dirty / Modified Bit - M):</strong>
+                            <br>החומרה מדליקה ביט זה ל-<code>1</code> בכל פעולת כתיבה לדף. אם הדף נבחר לפינוי בעתיד, הקרנל בודק ביט זה: אם <code>1</code>, חובה לשמור אותו לדיסק; אם <code>0</code>, ניתן לדרוס אותו מיד כי הדיסק מכיל עותק זהה.
+                            <br>5. <strong>ביט התייחסות (Referenced Bit - R):</strong>
+                            <br>החומרה מדליקה אותו ל-<code>1</code> בכל גישה (קריאה או כתיבה) לדף. משמש את אלגוריתמי החלפת הדפים (כגון NRU, Clock, Aging).
+                            <br>6. <strong>ביט ביטול זיכרון מטמון (Caching Disabled):</strong>
+                            <br>מורה למעבד לא לשמור דף זה ב-L1/L2 Cache. קריטי עבור דפי זיכרון הממופים לאוגרי חומרת קלט/פלט (Memory-Mapped I/O).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ה-MMU הוא הש"ג של מחנה הזיכרון. בכל פעם שחייל (המעבד) מציג תעודת מעבר (כתובת וירטואלית), הש"ג פותח את פנקס הרישום (טבלת הדפים). אם כתוב "נמצא בבסיס" (Present=1), הש"ג אומר לו לאיזה אוהל לגשת (Frame). אם החייל מנסה לצבוע את האוהל בלי אישור (Write לדף לקריאה בלבד), הש"ג עוצר אותו וקורא למשטרה הצבאית (OS Trap).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מי מדליק ומי מכבה את הביטים?
+                            <br>• ביטי <strong>R (Referenced)</strong> ו-<strong>M (Dirty)</strong> מודלקים ל-<code>1</code> <strong>אוטומטית על ידי חומרת ה-MMU</strong> בכל גישה או כתיבה.
+                            <br>• אולם, כיבוי הביטים חזרה ל-<code>0</code> הוא <strong>באחריותה הבלעדית של מערכת ההפעלה (בתוכנה)</strong>!
+                            <br>מערכת ההפעלה מאפסת את ביטי ה-R בפסיקת שעון מחזורית, ומאפסת את ביט ה-M לאחר שהיא משלימה כתיבה של הדף המלוכלך אל הדיסק.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות נפוצה: לחשוב ש-Page Fault הוא באג בתוכנה. פסיקת דף היא מנגנון תקין ושגרתי לחלוטין של מערכת ההפעלה לטעינת דפים לפי דרישה (Demand Paging). רק גישה לכתובת שאינה שייכת כלל למרחב הכתובות של התוכנית נחשבת לשגיאת תוכנה פטאלית.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ה-MMU מתרגם כתובות בזמן אמת ומאכוף הרשאות; ה-PTE שומר את ביטי הסטטוס (Present, Dirty, Referenced) המאפשרים דפדוף לפי דרישה ואלגוריתמי החלפה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.3.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.3.3: מדוע טבלת דפים שטוחה (Flat Single-Level Page Table) אינה ישימה במערכות 32-bit ו-64-bit, וכיצד טבלאות מרובות רמות (Multi-Level Page Tables) פותרות את תקורת הזיכרון?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מדוע טבלה שטוחה אינה ישימה:</strong>
+                            <br>במערכת 32-bit עם דפים של 4KB ($2^{12}$):
+                            <br>ישנם $2^{20}$ דפים וירטואליים ($1,048,576$). אם כל רשומה (PTE) תופסת 4 בתים, גודל טבלת הדפים של <strong>תהליך יחיד</strong> הוא:
+                            $$2^{20} \times 4\text{ Bytes} = 4\text{ MB}$$
+                            <br>טבלה זו חייבת להישמר בזיכרון רציף. אם רצים במחשב 100 תהליכים, נדרשים <strong>400MB של RAM פיזי יקר רק עבור טבלאות הדפים</strong>, עוד לפני שמילה אחת של קוד או נתונים נטענה!
+                            <br>במערכות 64-bit המצב הופך לאבסורדי מתמטית: טבלה שטוחה הייתה דורשת יותר מ-30 מיליון גיגה-בייט של זיכרון לכל תהליך.<br>
+                            <strong>הפתרון: טבלאות דפים מרובות רמות (Hierarchical / Multi-Level Page Tables):</strong>
+                            <br>במקום טבלה שטוחה ענקית אחת, ה-VPN מחולק לשניים (או יותר) חלקים:
+                            <br>• <strong>ספריית דפים (Page Directory / Level 1 Table):</strong> טבלה ראשית המכילה 1024 כניסות ($2^{10}$), כל כניסה מצביעה על טבלת דפים ברמה 2.
+                            <br>• <strong>טבלת דפים ברמה 2 (Level 2 Page Table):</strong> כל אחת מכילה 1024 כניסות ($2^{10}$) המצביעות על מסגרות הדף ב-RAM.<br>
+                            <strong>כיצד נחסך הזיכרון במרחב דליל (Sparse Address Space):</strong>
+                            <br>רוב התוכניות משתמשות רק בחלק זעיר ממרחב ה-4GB: קוד בתחתית הזיכרון, ערימה קטנה, ומחסנית בראש הזיכרון. כל המרחב העצום שביניהם ריק לחלוטין!
+                            <br>בטבלה רב-דרגתית, <strong>טבלאות רמה 2 עבור אזורים ריקים כלל אינן מוקצות ב-RAM</strong>. ברשומת ה-Page Directory המתאימה דגל ה-Present הוא פשוט <code>0</code>.
+                            <br>עבור תהליך טיפוסי נדרשת רק ספריית הדפים הראשית (4KB) ועוד 2-3 טבלאות רמה 2 (4KB כ"א) – <strong>סך הכל כ-16KB בלבד במקום 4MB! (חיסכון של מעל 99.6%)</strong>.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו ספר טלפונים של מדינה שלמה: במקום להדפיס כרך ענק של מיליון עמודים שמכיל שורות ריקות לכל שם משפחה אפשרי, מחזיקים חוברת קטנה ראשית של "אינדקס אותיות ומחוזות". רק עבור שמות משפחה שאנשים באמת גרים בהם (כמו "כהן" או "לוי"), מדפיסים דפים מפורטים. אותיות שאין בהן תושבים כלל אינן מודפסות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            חלוקת הכתובת בטבלה דו-דרגתית (x86 32-bit):
+                            <br>כתובת וירטואלית בת 32 סיביות מתפצלת: <code>[Directory: 10 bits | Page Table: 10 bits | Offset: 12 bits]</code>.
+                            <br>1. אוגר המעבד <code>CR3</code> מצביע על הכתובת הפיזית של ה-Page Directory.
+                            <br>2. החומרה לוקחת את 10 הביטים העליונים וניגשת לרשומה בספרייה.
+                            <br>3. הרשומה מצביעה על טבלת הדפים ברמה 2.
+                            <br>4. החומרה לוקחת את 10 הביטים האמצעיים וניגשת ל-PTE ברמה 2, שם היא מוצאת את מספר המסגרת.
+                            <br>5. מחברת את מספר המסגרת עם 12 ביטי ה-Offset לקבלת הכתובת הפיזית ב-RAM.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            החיסרון של טבלאות מרובות רמות הוא <strong>הכפלת זמני הגישה לזיכרון</strong>: בכל פנייה לכתובת בזיכרון, החומרה חייבת לבצע שתי קריאות זיכרון מקדימות (אחת לספרייה ואחת לטבלה) לפני שהיא מגיעה לבייט עצמו! בעיה קריטית זו נפתרת אך ורק ע"י רכיב ה-TLB.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: טבלה שטוחה מבזבזת מגה-בייטים שלמים על מרחב כתובות ריק; טבלאות רב-דרגתיות מקצות טבלאות משניות רק עבור אזורים שנמצאים בשימוש בפועל, במחיר של שלבי תרגום נוספים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.3.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.3.4: מהי "טבלת דפים הפוכה" (Inverted Page Table), מדוע היא פותחה למערכות 64-bit, וכיצד היא מתמודדת עם האתגר של חיפוש איטי ותרגום כתובות?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>הרעיון וההגדרה:</strong>
+                            <br>בטבלאות דפים רגילות, מספר הכניסות בטבלה תלוי בגודל <em>מרחב הכתובות הווירטואלי</em> (לכל דף וירטואלי יש כניסה).
+                            <br>ב<strong>טבלת דפים הפוכה (Inverted Page Table - IPT)</strong> קיים <strong>מבנה נתונים מערכתי יחיד עבור כל המחשב כולו</strong>, שבו מספר הכניסות תלוי אך ורק ב<strong>מספר מסגרות ה-RAM הפיזיות</strong> המותקנות במחשב!
+                            <br>הכניסה ה-$i$ בטבלה מייצגת את מסגרת הדף הפיזית ה-$i$ ב-RAM, ומכילה את הצמד: <code>(PID, Virtual Page Number)</code> של התהליך והדף שמאכלסים אותה כרגע.<br>
+                            <strong>מדוע פותחה עבור מערכות 64-bit:</strong>
+                            <br>במערכות 64-bit, מרחב הכתובות הווירטואלי עצום כל כך ($2^{64}$ בתים), שאפילו טבלאות 4 או 5 רמות גוזלות זיכרון רב ומסרבלות את פעולת ה-Walk. טבלת IPT שומרת על גודל קבוע וצנוע התלוי אך ורק ב-RAM הפיזי (למשל עבור 16GB RAM עם דפים של 4KB יש בדיוק $4,194,304$ כניסות, ללא תלות במספר התהליכים במערכת).<br>
+                            <strong>האתגר: חיפוש איטי והפתרון באמצעות טבלת גיבוב (Hash Anchor Table):</strong>
+                            <br>הבעיה הקריטית ב-IPT: בהינתן כתובת וירטואלית <code>(PID, VPN)</code>, היא אינה מהווה עוד אינדקס ישיר לטבלה! כדי לתרגם כתובת היה צורך לסרוק את כל הטבלה שורה אחר שורה ($O(N)$) – איטי להחריד!
+                            <br><strong>הפתרון:</strong> הוספת <strong>טבלת גיבוב (Hash Table) בחומרה או בתוכנה</strong>. פונקציית גיבוב $h(\text{PID}, \text{VPN})$ מייצרת אינדקס לטבלת שרשראות (Chaining) המצביעות על כניסות ה-IPT, מה שמחזיר את מהירות החיפוש הממוצעת ל-$O(1)$.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            במלון רגיל (טבלה רגילה), מנהלים רשימה לפי שמות כל האזרחים במדינה ובודקים מי מהם נמצא במלון. בטבלה הפוכה, פשוט לוקחים את לוח המפתחות של המלון (שבו יש תא לכל חדר פיזי קיים) ומצמידים לכל מפתח פתק: "בחדר 204 מתאכסן כרגע דני (PID 5)". כמות התאים בלוח שווה בדיוק לכמות החדרים במלון.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            חיסרון מובנה של טבלה הפוכה: קושי במימוש זיכרון משותף (Shared Memory):
+                            <br>מכיוון שכל מסגרת פיזית ב-IPT מכילה שורה אחת בלבד עם תהליך יחיד <code>(PID, VPN)</code>, אם שני תהליכים שונים ($P_1$ ו-$P_2$) רוצים למפות את הדפים הווירטואליים שלהם לאותה מסגרת פיזית בדיוק, ה-IPT אינה יכולה לייצג זאת ישירות!
+                            <br>מערכות המשתמשות ב-IPT נאלצות להשתמש בטכניקות מעקף מורכבות (כמו Aliasing דרך כתובות מקשרות מיוחדות או שרשור מצביעים נוסף ב-Hash).
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הבחנה קריטית: בטבלת דפים רגילה יש טבלה נפרדת לכל תהליך; בטבלת דפים הפוכה יש <strong>טבלה אחת ויחידה לכל מערכת ההפעלה כולה</strong>, וזו הסיבה שה-PID הוא חלק בלתי נפרד מכל רשומה ומכל בדיקת גיבוב.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: טבלת דפים הפוכה חוסכת זיכרון דרמטי במערכות 64-bit ע"י מיפוי מבוסס מסגרות פיזיות; טבלת גיבוב (Hash) מפצה על אובדן האינדקס הישיר ומאפשרת חיפוש מהיר.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.3.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.3.5: מהו רכיב ה-TLB (Translation Lookaside Buffer), כיצד הוא פועל כזיכרון אסוציאטיבי, וכיצד מחושב זמן הגישה האפקטיבי לזיכרון (EMAT)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מהו ה-TLB:</strong>
+                            <br>זיכרון מטמון חומרתי מיוחד (Cache) השוכן בתוך ה-MMU, קטן ומהיר במיוחד (בדרך כלל 64 עד 1024 כניסות בלבד), השומר את תרגומי הכתובות שבוצעו לאחרונה (מיפויים מ-VPN ל-PFN).
+                            <br>ה-TLB מבוסס על <strong>זיכרון אסוציאטיבי (Associative Memory)</strong>: כל השורות ב-TLB נסרקות ומושווות למספר הדף המבוקש <strong>במקביל בעת ובעונה אחת במחזור שעון בודד</strong>.<br>
+                            <strong>רצף הטיפול בעת גישה:</strong>
+                            <br>1. <strong>פגיעת TLB (TLB Hit):</strong> ה-VPN נמצא ב-TLB. ה-PFN נשלף מיידית (לרוב בתוך כ-1 ננו-שנייה או פחות), ומורכב עם ההסט לפנייה ל-RAM. אין צורך לפנות לטבלת הדפים!
+                            <br>2. <strong>החטאת TLB (TLB Miss):</strong> ה-VPN אינו נמצא ב-TLB.
+                            <br>• ב-Hardware-managed TLB (כמו ב-x86): רכיב חומרה (Page Table Walker) סורק את טבלאות הדפים ב-RAM, שולף את ה-PTE, מעדכן את ה-TLB ומבצע את הגישה.
+                            <br>• ב-Software-managed TLB (כמו ב-MIPS / SPARC): נוצרת פסיקת חומרה קלה (TLB Miss Trap), ומערכת ההפעלה בתוכנה שולפת את ה-PTE וטוענת אותו ל-TLB.<br>
+                            <strong>חישוב זמן גישה אפקטיבי (EMAT - Effective Memory Access Time):</strong>
+                            <br>אם זמן חיפוש ב-TLB הוא $t_{tlb}$, זמן גישה ל-RAM הוא $t_{ram}$, ואחוז הפגיעות (Hit Ratio) הוא $\alpha$:
+                            $$\text{EMAT} = \alpha \times (t_{tlb} + t_{ram}) + (1 - \alpha) \times (t_{tlb} + k \times t_{ram} + t_{ram})$$
+                            (כאשר $k$ הוא מספר הרמות בטבלת הדפים, למשל $k=1$ בטבלה שטוחה, $k=2$ בטבלה דו-דרגתית).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            ה-TLB הוא כמו "חיוג מהיר" בטלפון הנייד. במקום לחפש כל פעם את מספר הטלפון של החבר בספר הטלפונים העבה של העירייה (גישה ל-RAM), לוחצים על הכפתור בחיוג המהיר ומגיעים אליו ברגע. רק אם מתקשרים למישהו זר (TLB Miss), נאלצים לפתוח את הספר הגדול, ומיד לאחר מכן שומרים אותו בחיוג המהיר לפעם הבאה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            דוגמה מספרית מלאה לחישוב EMAT:
+                            <br>נניח: גישה ל-RAM נמשכת 100ns, בדיקת TLB נמשכת 10ns, טבלת דפים דו-דרגתית ($k=2$), ואחוז הפגיעות הוא $\alpha = 0.98$ (98%).
+                            <br>• במקרה של Hit: נדרש זמן $10\text{ns (TLB)} + 100\text{ns (Data)} = 110\text{ns}$.
+                            <br>• במקרה של Miss: נדרש זמן $10\text{ns (TLB)} + 100\text{ns (Dir)} + 100\text{ns (Table)} + 100\text{ns (Data)} = 310\text{ns}$.
+                            $$\text{EMAT} = 0.98 \times 110 + 0.02 \times 310 = 107.8 + 6.2 = \mathbf{114\text{ ns}}$$
+                            למרות הטבלה הדו-דרגתית שהייתה אמורה לשלש את זמן הגישה (300ns), בזכות ה-TLB ההאטה בפועל היא של 14% בלבד!
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            החלפת הקשר ואיפוס ה-TLB (TLB Flush):
+                            <br>מכיוון שמרחב הכתובות הווירטואלי שייך לתהליך ספציפי, בעת החלפת הקשר תרגומי ה-TLB הופכים לבלתי חוקיים. מערכת ההפעלה חייבת לרוקן את ה-TLB (TLB Flush), אלא אם החומרה תומכת ב-<strong>ASID (Address Space Identifier)</strong> – תג המזהה את ה-PID בתוך כל שורת TLB ובכך מונע את הצורך בריקון!
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ה-TLB הופך את הזיכרון הווירטואלי למעשי על ידי שמירת תרגומים בזיכרון אסוציאטיבי מהיר, ומשיג זמני גישה קרובים ל-RAM פיזי ישיר בזכות עקרון המקומיות.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה (מבחן עצמי):</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 3.3.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="paging-concepts" data-qid="3.3.1" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.3.1:</span>
+                        במערכת בעלת מרחב כתובות וירטואלי של 32 סיביות ודפים בגודל 8KB ($2^{13}$ בתים), כמה דפים וירטואליים קיימים במרחב הכתובות של תהליך, וכמה סיביות מוקצות להסט (Offset)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 1, 0)">
+                            א. $2^{20}$ דפים ו-12 סיביות להסט.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 1, 1)">
+                            ב. $2^{19}$ (524,288) דפים ו-13 סיביות להסט.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 1, 2)">
+                            ג. $2^{16}$ דפים ו-16 סיביות להסט.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 1, 3)">
+                            ד. 8192 דפים ו-8 סיביות להסט.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה: גודל הדף הוא $8\text{KB} = 8192 = 2^{13}$ בתים, לכן נדרשות 13 סיביות עבור ההסט (Offset). מתוך 32 סיביות של הכתובת הווירטואלית, נותרות $32 - 13 = 19$ סיביות עבור מספר הדף הווירטואלי (VPN), ולכן קיימים $2^{19} = 524,288$ דפים וירטואליים במרחב הכתובות.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.3.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="paging-concepts" data-qid="3.3.2" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.3.2:</span>
+                        מה מתרחש ברמת החומרה כאשר המעבד מנסה לגשת לכתובת וירטואלית שברשומת טבלת הדפים (PTE) שלה ביט הנוכחות (Present/Valid Bit) שווה ל-0?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 2, 0)">
+                            א. המעבד מחזיר תמיד ערך אפס והתוכנית ממשיכה כרגיל.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 2, 1)">
+                            ב. המעבד מקצה מיד מסגרת ב-RAM ומאתחל אותה במספרים אקראיים ללא התערבות מערכת ההפעלה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 2, 2)">
+                            ג. ה-MMU עוצר את ביצוע הפקודה ומייצר פסיקת חומרה מסוג Page Fault המעבירה את השליטה לקרנל מערכת ההפעלה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 2, 3)">
+                            ד. המחשב מבצע הפעלה מחדש (Reboot) מיידית.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה: Present Bit מאופס מציין שהדף אינו נוכח כרגע בזיכרון ה-RAM הראשי. ה-MMU אינו מסוגל להשלים את התרגום הפיזי, ולכן עוצר את פעולת המעבד ומייצר פסיקת חומרה (Trap) המכונה Page Fault, כדי שמערכת ההפעלה תטען את הדף מהדיסק.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.3.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="paging-concepts" data-qid="3.3.3" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.3.3:</span>
+                        כיצד חוסכת טבלת דפים דו-דרגתית (Two-Level Page Table) זיכרון בהשוואה לטבלת דפים שטוחה (Single-Level Flat Table)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 3, 0)">
+                            א. טבלאות רמה שנייה אינן מוקצות כלל ב-RAM עבור אזורי זיכרון וירטואליים שאינם בשימוש על ידי התהליך.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 3, 1)">
+                            ב. היא דוחסת את תוכן הדפים באלגוריתם ZIP בטרם שמירתם ב-RAM.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 3, 2)">
+                            ג. היא מבטלת לחלוטין את הצורך בהחזקת מסגרות דף ב-RAM.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 3, 3)">
+                            ד. היא מאפשרת לשתף את כל נתוני המשתמש בין כל התהליכים ללא הגנה.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה: במרחב כתובות דליל (Sparse), רוב מרחב הכתובות הווירטואלי אינו מוקצה. בספריית הדפים (Level 1), כניסות עבור תחומים ריקים מכילות Present=0 ואינן מצביעות על שום טבלת רמה שנייה. כתוצאה מכך, נחסך הצורך להקצות אלפי טבלאות רמה 2 בזיכרון הפיזי.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.3.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="paging-concepts" data-qid="3.3.4" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.3.4:</span>
+                        במערכת בעלת זמן גישה ל-RAM של 100ns וזמן גישה ל-TLB של 20ns, מהו זמן הגישה האפקטיבי לזיכרון (EMAT) עם טבלת דפים דו-דרגתית, בהנחה שאחוז הפגיעות ב-TLB (Hit Ratio) הוא 90%?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 4, 0)">
+                            א. 120ns.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 4, 1)">
+                            ב. 320ns.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 4, 2)">
+                            ג. 220ns.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 4, 3)">
+                            ד. 140ns.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה: חישוב מדויק:<br>• זמן במקרה של פגיעה (Hit): $20\text{ns (TLB)} + 100\text{ns (RAM)} = 120\text{ns}$.<br>• זמן במקרה של החטאה (Miss בטבלה דו-דרגתית): $20\text{ns (TLB)} + 100\text{ns (ספרייה)} + 100\text{ns (טבלה)} + 100\text{ns (נתון)} = 320\text{ns}$.<br>$$\text{EMAT} = 0.90 \times 120 + 0.10 \times 320 = 108 + 32 = \mathbf{140\text{ ns}}.$$
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.3.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="paging-concepts" data-qid="3.3.5" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.3.5:</span>
+                        איזה מנגנון מאפשר למעבד להימנע מריקון מלא של ה-TLB (TLB Flush) בכל החלפת הקשר (Context Switch) בין תהליכים?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 5, 0)">
+                            א. שימוש בזיכרון RAM מבוסס פלאש.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 5, 1)">
+                            ב. הפעלת מנגנון אינטרפט מיוחד של המקלדת.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 5, 2)">
+                            ג. הצמדת תג מזהה מרחב כתובות (ASID - Address Space Identifier / Process Tag) לכל שורה ב-TLB.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.3, 5, 3)">
+                            ד. הכפלת גודל הדף הווירטואלי ל-1GB.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה: ה-ASID הוא תג מספרי (המתאים ל-PID של התהליך) המוצמד לכל כניסה ב-TLB. בעת חיפוש ב-TLB, המעבד משווה גם את ה-VPN וגם את ה-ASID הנוכחי של התהליך הרץ, וכך רשומות של תהליכים שונים יכולות לדור בכפיפה אחת ב-TLB מבלי להתערבב, מה שמייתר את הצורך ב-TLB Flush יקר.
+                    </div>
+                </div>
+
+            </div>
+        </div>

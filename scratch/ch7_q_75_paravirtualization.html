@@ -1,0 +1,242 @@
+        <div id="questions-paravirtualization" data-title="7.5 פרא-וירטואליזציה (Paravirtualization) ומיקרו-קרנל">
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 7.5.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.5.1: מהו עקרון הפעולה של פרא-וירטואליזציה (Paravirtualization) ובמה הוא שונה מווירטואליזציה מלאה (Full Virtualization)?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> בפרא-וירטואליזציה מוותרים על הדרישה להריץ מערכת הפעלה ללא שינוי. קוד המקור של מערכת ההפעלה האורחת מותאם ומקומפל מחדש כך שהיא "מודעת" לכך שהיא רצה ב-VM, וכל ההוראות הרגישות מוחלפות בקריאות API ישירות ל-Hypervisor המכונות Hypercalls.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> בוירטואליזציה מלאה המלצר מתחזה לאדם רגיל ומנסה להתגנב למטבח, והשומר תופס אותו בכל פעם ומחזיר אותו (Trap). בפרא-וירטואליזציה המלצר יודע שהוא במסעדה, ניגש ישירות לצוהר השירות ומבקש את המנה בנימוס (Hypercall).
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>בווירטואליזציה מלאה, ה-VMM משקיע מאמץ כביר להסתיר את קיומו: הוא מציג חומרה מדומה זהה לחלוטין למקור, לוכד פקודות ומבצע תרגום בינארי מורכב. בפרא-וירטואליזציה (שהומצאה ופותחה במקור בפרויקט Xen באוניברסיטת קיימברידג'), מערכת ההפעלה האורחת משתפת פעולה: במקום לבצע פקודות הרסניות כמו כתיבה לטבלאות דפים אמיתיות או נגיעה בבקרי פסיקות, הקרנל שלה קורא ל-Hypercall מוגדר. כתוצאה מכך ה-Hypervisor אינו זקוק למנגנוני לכידה מורכבים או לתרגום בינארי, וקוד ה-Hypervisor הופך לקל, פשוט ומהיר במיוחד.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: פרא-וירטואליזציה משנה את מערכת ההפעלה האורחת כך שתקרא ישירות ל-Hypercalls, ובכך חוסכת את תקורת ה-Traps והתרגום הבינארי.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.5.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.5.2: מהי קריאת Hypercall וכיצד היא מתקשרת לתפיסת המיקרו-קרנל (Microkernel)?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> Hypercall היא קריאה יזומה של מערכת ההפעלה האורחת אל ה-Hypervisor, בדיוק כפי ש-System Call (קריאת מערכת) היא קריאה יזומה של תוכנית משתמש אל הקרנל. ה-Hypervisor מתפקד כמיקרו-קרנל שמספק שירותי חומרה בסיסיים למערכות האורחות שרצות מעליו.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> היררכיה של פניות: אזרח פונה לפקיד עירייה בטופס בקשה (Syscall), ופקיד העירייה פונה למשרד הפנים הממשלתי בערוץ תקשורת ישיר ומאובטח (Hypercall).
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>בארכיטקטורת מיקרו-קרנל קלאסית, הגרעין מכיל רק את המינימום ההכרחי (סנכרון, תזמון בסיסי, ופסיקות), ושרתים שונים רצים מעליו ומבקשים ממנו שירותים באמצעות הודעות IPC. ב-Paravirtualization מתרחש אותו דבר בדיוק: ה-Hypervisor מהווה מיקרו-קרנל קטן ומהיר. כאשר מערכת האורח זקוקה לשירות מיוחס (כגון עדכון מיפוי דף זיכרון, הגדרת טיימר או שיגור חבילת רשת), היא מבצעת Hypercall מפורש (באמצעות פקודה ייעודית כמו <code>VMCALL</code> באינטל או <code>VMMCALL</code> ב-AMD). ה-Hypervisor מבצע את השירות ומחזיר קוד תשובה.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: Hypercall הוא ה-Syscall של מערכת האורח אל ה-Hypervisor, ומממש ארכיטקטורת שירותים נקייה בסגנון מיקרו-קרנל.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.5.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.5.3: מהו החיסרון המרכזי והחמור ביותר של פרא-וירטואליזציה מבחינה עסקית ופרקטית?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> חוסר תאימות למערכות הפעלה קנייניות בעלות קוד סגור (כגון Microsoft Windows) שאי אפשר לשנות ולקמפל מחדש את הגרעין שלהן, ותלות בתחזוקה מתמדת של ענפי קרנל מיוחדים.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> רכישת רכב שדורש דלק מיוחד שמיוצר רק במפעל ספציפי אחד: אם יש לך שליטה על יצור הדלק (קוד פתוח כמו לינוקס) זה עובד נפלא, אך אינך יכול לתדלק שם שום רכב סטנדרטי שנרכש מהחנות (Windows).
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>מכיוון שפרא-וירטואליזציה מחייבת התאמות בקוד המקור של הגרעין, היא ישימה בקלות רק במערכות קוד פתוח (Linux, FreeBSD, NetBSD). משתמשים וארגונים שרצו להריץ מכונות Windows נתקלו במחסום, שכן מיקרוסופט לא אפשרה לשנות את הקרנל שלה עבור Xen. אמנם בהמשך פותחו דרייברים פרא-וירטואליים מיוחדים לקלט/פלט עבור חלונות (PV Drivers / Virtio), אך הווירטואליזציה של המעבד עצמו בחלונות דרשה וירטואליזציה מלאה. בנוסף, כל עדכון גרסה של מערכת ההפעלה דורש בדיקה והתאמה של שכבת ה-Paravirt.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: אי-היכולת להריץ מערכות הפעלה בעלות קוד סגור ללא שינוי היא החיסרון העיקרי שמנע מפרא-וירטואליזציה להשתלט על השוק.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.5.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.5.4: מה היה תקן ה-VMI (Virtual Machine Interface) ומהי שכבת paravirt_ops בלינוקס?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> תקן VMI ושכבת <code>paravirt_ops</code> בלינוקס הם ממשק הפשטה המאפשר לאותו קובץ בינארי של קרנל לינוקס לפעול על גבי חומרה פיזית, על גבי VMware, על גבי Xen, או על גבי KVM, ע"י החלפה דינמית של מצביעי פונקציות לפקודות רגישות.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> מתאם שקעים בינלאומי אוניברסלי: מכשיר החשמל שלכם מגיע עם תקע אחד, ובזמן החיבור לקיר המתאם מנתב את הזרם בהתאם לסוג השקע במדינה שבה אתם נמצאים.
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>כדי למנוע פיצול של גרעין לינוקס לגרסה ייעודית עבור Xen, גרסה נפרדת עבור VMware וגרסה עבור חומרה רגילה, פותחה בגרעין לינוקס שכבת <code>paravirt_ops</code> (pv-ops). שכבה זו מגדירה טבלת מצביעים לפונקציות (Function Pointers Table) עבור כל הפעולות הרגישות (השבתת פסיקות, כתיבה לטבלאות דפים, טעינת אוגרי בקרה). בזמן האתחול (Boot), הקרנל מזהה באיזו סביבה הוא רץ: אם הוא רץ על מחשב פיזי, הטבלה מצביעה על פקודות אסמבלי רגילות (כמו <code>cli</code>); אם הוא רץ בתוך Xen או KVM, המצביעים מוחלפים בקוד המבצע Hypercall מתאים.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: <code>paravirt_ops</code> איחדה את קוד לינוקס כך שקרנל יחיד מסוגל להחליף דינמית בזמן אתחול בין הרצה רגילה לפרא-וירטואליזציה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.5.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.5.5: מהו המבנה הארכיטקטוני של מערכת Xen (ההבדל בין Domain 0 לבין Domain U)?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> ב-Xen, ה-Hypervisor עצמו מנהל רק הקצאת מעבד וזיכרון. Domain 0 (Dom0) היא המכונה הווירטואלית הראשית והמיוחסת ביותר שמכילה את מנהלי ההתקנים ומנהלת את המערכת, בעוד Domain U (DomU) הן המכונות הווירטואליות האורחות של המשתמשים (Unprivileged).
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> בית מלון: ה-Hypervisor הוא שלד הבניין ומערכת החשמל; Dom0 הוא משרד הקבלה והנהלת המלון שמחזיק בכל המפתחות והשירותים; DomU הם החדרים של האורחים שרק נהנים מהאירוח ללא סמכויות ניהול.
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>ארכיטקטורת Xen מיישמת הפרדת רשויות מלאה:
+                            - <em>Xen Hypervisor:</em> שכבת מיקרו-קרנל דקה שרצה במצב המיוחס ביותר.
+                            - <em>Domain 0 (Dom0):</em> מכונת לינוקס מותאמת שמופעלת ראשונה בעת אתחול המחשב. ל-Dom0 יש גישה ישירה לחומרת ה-I/O (כרטיסי רשת ובקרי דיסקים) והיא כוללת את כלי הניהול (יצירה, כיבוי והגדרת מכונות וירטואליות).
+                            - <em>Domain U (DomU):</em> מכונות וירטואליות של משתמשים. הן אינן יכולות לגשת לחומרה ישירות, וכאשר הן צריכות לשלוח חבילת רשת או לכתוב לדיסק, הן פונות בערוצי תקשורת מהירים בזיכרון משותף (Shared Memory Ring Buffers) אל מנהלי ההתקנים ב-Dom0.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: Xen מפצל את הניהול: Hypervisor רזה בחומרה, Dom0 שולט בהתקנים ובניהול, ו-DomU מארח את אפליקציות המשתמשים.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- שאלות אמריקאיות רב-ברירה -->
+            <div class="multiple-choice-list space-y-4 mt-6">
+                <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl mb-4 text-xs md:text-sm text-purple-900 leading-relaxed">
+                    <strong>🎯 שאלות אמריקאיות רב-ברירה:</strong> בחרו את התשובה הנכונה. לחיצה תחשוף מיד האם צדקתם עם הסבר מפורט.
+                </div>
+
+                <!-- שאלה 7.5.6 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.5.6">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.5.6: מהו המאפיין המרכזי המבדיל פרא-וירטואליזציה (Paravirtualization) מווירטואליזציה מלאה?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. פרא-וירטואליזציה אינה משתמשת במעבד פיזי כלל אלא רק בכרטיס הגרפי.
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'exp-7-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. קוד המקור של מערכת ההפעלה האורחת עובר התאמה ושינוי כך שהיא מודעת לקיומו של ה-Hypervisor ומבצעת Hypercalls.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. פרא-וירטואליזציה מחייבת התקנת שרת מארח של Windows בלבד.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. פרא-וירטואליזציה איטית פי 10 מווירטואליזציה מלאה.
+                        </button>
+                    </div>
+                    <div id="exp-7-5-6" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> הגדרת היסוד של Paravirtualization היא שינוי מערכת ההפעלה האורחת כך שהיא משתפת פעולה באופן גלוי עם ה-Hypervisor במקום לנסות לדמות עבורה חומרה מלאה ללא ידיעתה.
+                    </div>
+                </div>
+
+                <!-- שאלה 7.5.7 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.5.7">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.5.7: לאיזה מושג קלאסי במערכות הפעלה מקבילה קריאת ה-Hypercall בפרא-וירטואליזציה?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, true, 'exp-7-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. קריאת מערכת (System Call) שבה תהליך פונה לגרעין.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. פסיקת שעון (Timer Interrupt) שאינה תלויה בתוכנה.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. דפדוף דפים (Paging) בדיסק הקשיח.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. אתחול מחדש (Reboot) של המחשב.
+                        </button>
+                    </div>
+                    <div id="exp-7-5-7" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> בדיוק כפי שתוכנית משתמש מבצעת Syscall כדי לבקש שירות מיוחס מהקרנל שלה, כך מערכת ההפעלה האורחת מבצעת Hypercall כדי לבקש שירות מיוחס מה-Hypervisor.
+                    </div>
+                </div>
+
+                <!-- שאלה 7.5.8 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.5.8">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.5.8: מה תפקידו של Domain 0 בארכיטקטורת ה-Hypervisor של Xen?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. מכונה וירטואלית רגילה ללא הרשאות מיוחדות המשמשת משתמש יחיד.
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'exp-7-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. מכונה וירטואלית מיוחסת המכילה את מנהלי ההתקנים (Device Drivers) הפיזיים ואת כלי הניהול של שאר המכונות.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. רכיב חומרה שמודפס ישירות על גבי לוח האם.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. מסד נתונים פנימי לשמירת סיסמאות משתמשים בלבד.
+                        </button>
+                    </div>
+                    <div id="exp-7-5-8" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> ב-Xen, ה-Hypervisor עצמו הוא מיקרו-קרנל. Domain 0 היא המכונה הראשונה שמופעלת, יש לה הרשאות גישה ישירה לחומרה הפיזית, והיא מנהלת את יצירת ושליטת שאר המכונות (Domain U).
+                    </div>
+                </div>
+
+                <!-- שאלה 7.5.9 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.5.9">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.5.9: מהי מטרתה של שכבת paravirt_ops בגרעין לינוקס?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, true, 'exp-7-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. לאפשר לאותו קרנל לינוקס יחיד לתמוך בהרצה על גבי חומרה טבעית או על גבי Hypervisors שונים באמצעות טבלת מצביעים מתחלפת.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. להמיר קוד שנכתב ב-Python לקוד שפת C באופן אוטומטי.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. לאסור על הרצת מכונות וירטואליות בלינוקס.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. להגדיל את נפח הדיסק הקשיח של המחשב.
+                        </button>
+                    </div>
+                    <div id="exp-7-5-9" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> שכבת <code>paravirt_ops</code> מייצאת ממשק אחיד. בזמן האתחול, המצביעים מאותחלים לפקודות מקוריות אם המערכת רצה ישירות על חומרה, או ל-Hypercalls אם היא מזהה שהיא רצה בתוך Xen, KVM או VMware.
+                    </div>
+                </div>
+
+                <!-- שאלה 7.5.10 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.5.10">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.5.10: מדוע הצורך בפרא-וירטואליזציה מלאה של המעבד פחת עם השנים?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. כי אנשים הפסיקו להשתמש במחשבים ועברו לטלפונים בלבד.
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'exp-7-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. כי מעבדים מודרניים כוללים הרחבות חומרה (VT-x/AMD-V) המאפשרות וירטואליזציה מלאה בביצועים כמעט זהים ללא צורך בשינוי מערכת ההפעלה.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. כי חברות התוכנה החליטו להפיץ את כל מערכות ההפעלה בקוד פתוח.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. כי תרגום בינארי בוטל לחלוטין מכל מערכות ההפעלה.
+                        </button>
+                    </div>
+                    <div id="exp-7-5-10" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> שילוב תמיכת חומרה (Intel VT-x, AMD-V, EPT) סגר את פערי הביצועים, ואפשר להריץ כל מערכת הפעלה ללא שום שינוי במהירות מקסימלית, מה שהפך את הטרחה של שינוי קוד האורח עבור המעבד למיותרת (אם כי פרא-וירטואליזציה של I/O עדיין פופולרית מאוד באמצעות Virtio).
+                    </div>
+                </div>
+            </div>
+        </div>

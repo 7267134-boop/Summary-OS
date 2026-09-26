@@ -1,0 +1,518 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 8.5: summary (סיכום מערכות מרובות מעבדים ושאלות חזרה)       -->
+        <!-- ===================================================================== -->
+        <div id="questions-summary" data-title="שאלות מנחות ותרגול - 📝 8.5 סיכום הפרק ושאלות חזרה">
+            
+            <!-- 1. שאלות פתוחות להעמקה מסכמות (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה - סיכום פרק 8:</strong> שאלות אינטגרטיביות הבוחנות את התמונה המלאה של מערכות מרובות מעבדים, ארכיטקטורות חומרה, סנכרון ותזמון.
+                </div>
+
+                <!-- שאלה 8.5.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.5.1: מהם השיקולים ההנדסיים בבחירה בין UMA, NUMA ומערכות מבוזרות, ומתי תועדף כל ארכיטקטורה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            ארגון מפתח מערכת עתירת חישוב. מהם השיקולים המכריעים בבחירה בין מחשב מרובה מעבדים בארכיטקטורת UMA, מערכת NUMA רחבת היקף, לבין אשכול מחשבים מבוזר (Cluster), וכיצד משפיעים זמני הגישה לזיכרון ועלויות החומרה על ההחלטה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו צוות של 100 אנליסטים. במודל UMA כולם יושבים סביב שולחן ישיבות אחד וקוראים מאותו ספר עב-כרס במרכז השולחן – מעולה ל-4 אנשים, בלתי אפשרי ל-100 כי הידיים יתנגשו. במודל NUMA, לכל קבוצה של 8 אנליסטים יש שולחן משלה עם ספרים משלה, אך אם הם צריכים מידע משולחן שכן, שליח ניגש להביא אותו (עיכוב קל). במודל Cluster, כל אנליסט יושב בבניין אחר ומתקשר רק במיילים או בטלפון (רשת) – הכי קל להרחיב למיליון עובדים, אך העברת נתונים דורשת זמן רב.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>UMA (Uniform Memory Access):</strong> מתאים למערכות קטנות עד בינוניות (עד 16-32 ליבות). כל הליבות זוכות לאותו זמן השהיה בדיוק ($T_{access} = const$). צוואר הבקבוק: רוחב הפס של האפיק המשותף.</li>
+                                <li><strong>NUMA (Non-Uniform Memory Access):</strong> מאפשר טיפוס למאות ליבות. מרחב הכתובות הוא יחיד, אך זמן הגישה תלוי מיקום ($T_{local} \ll T_{remote}$). מחייב את מערכת ההפעלה להפעיל אלגוריתמי תזמון מודעי-נומה (NUMA-aware scheduling) והקצאת זיכרון מקומי כדי למנוע ירידת ביצועים של פי 2 עד פי 5.</li>
+                                <li><strong>Cluster / Distributed Memory:</strong> אין זיכרון משותף בחומרה (No Shared Memory). מעבר נתונים נעשה באמצעות העברת הודעות (Message Passing / MPI) על גבי רשת מהירה (InfiniBand). אין מגבלת חומרה עליונה, אך התכנות מורכב משמעותית.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שגויה שקוד שנכתב ומקבילי עבור UMA ירוץ באותה יעילות על NUMA. אם תהליך רץ על צומת 1 אך הזיכרון שלו הוקצה בצומת 3, כל פעולת קריאה/כתיבה תעבור ברשת הבין-צומתית (Interconnect) ותחנוק את המערכת.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: UMA אידיאלית לפשטות וסדרי גודל קטנים; NUMA הכרחית למחשבי-על מרובי ליבות בעלי זיכרון משותף; ו-Cluster מיועד לחישובים מסיביים המנותקים משיתוף חומרה ישיר.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.5.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.5.2: מדוע מנגנון Bus Snooping מוגבל למספר קטן של מעבדים, וכיצד שיטת Directory פותרת את בעיית שידורי ה-Broadcast?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            מדוע פרוטוקול מעקב אפיק (Snooping) מוגבל למספר קטן של ליבות, וכיצד מנגנון מבוסס ספרייה (Directory-based Coherence) פותר את בעיית שידורי ה-Broadcast במערכות NUMA מרובות מעבדים?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            Snooping משול לשיחה בקשר פתוח: בכל פעם שמישהו רוצה לשנות פריט, הוא צועק ברשת הקשר לכל 1,000 החיילים "תמחקו את הדף שיש לכם ביד!". אם יש 4 חיילים, זה יעיל; אם יש 1,000, כל רשת הקשר תהיה חסומה בצעקות ביטול. Directory-based משול למרכזייה חכמה שבה רשום בדיוק מי מחזיק בעותק של כל מסמך. אם דף 5 נמצא רק אצל חייל א' וד', המרכזייה תשלח הודעת ביטול ישירה אך ורק לשניהם (Point-to-Point), מבלי להפריע ל-998 החיילים האחרים.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>מגבלת Snooping:</strong> כל ליבה מאזינה לכל תנועת אפיק. בעת כתיבה נשלחת הודעת Invalidating Broadcast. כמות הודעות המעקב גדלה בריבוע לכמות הליבות ($O(N^2)$ ביחס לתעבורה), מה שמוביל לקריסת האפיק מעבר לכ-16-32 ליבות.</li>
+                                <li><strong>מנגנון Directory:</strong> לכל בלוק בזיכרון הראשי מוצמד ערך מטא-דאטה (Directory Entry) הכולל ביטים לזיהוי המצב (Shared, Exclusive, Modified) ומערך ביטים (Bitmask) המציין לאילו צמתים יש עותק של הבלוק במטמון המקומי שלהם.</li>
+                                <li><strong>שידור ממוקד:</strong> בעת פקודת כתיבה, הבקר בודק את הספרייה ושולח פקודות Invalidation ישירות רק לצמתים הרשומים בביטמאסק (Unicast/Multicast), וכך נפח התעבורה ברשת האינטרקונקט נשאר ליניארי ובר-קיימא.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            תקורת הזיכרון של הספרייה. במערכות עם אלפי צמתים, שמירת ביטמאסק מלא עבור כל שורת מטמון עלולה לצרוך אחוזים ניכרים מנפח ה-RAM הכללי.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: Snooping מצטיין בפשטות ובזמני תגובה אפסיים על אפיק משותף במערכות קטנות; Directory-based הכרחי לסקלביליות במערכות NUMA גדולות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.5.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.5.3: מדוע ספינלוק המבצע פקודות TSL רציפות חונק את אפיק הזיכרון, וכיצד בדיקת קריאה (TTAS) מונעת זאת?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            כאשר 16 ליבות ממתינות בספינלוק המבוסס על פקודת TSL רגילה (Test-and-Set Lock), מדוע תפוקת המעבד הכללית צונחת כמעט לאפס, וכיצד אלגוריתם Test and Test-and-Set (TTAS) פותר את צוואר הבקבוק על אפיק הזיכרון?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            דמיינו דלת שירותים עם מנעול. ב-TSL גולמי, כל 16 האנשים הממתינים מנסים לסובב את הידית בחוזקה בכל שבריר שנייה. הידית עצמה חורקת והאדם שבפנים לא יכול אפילו לצאת. ב-TTAS, האנשים רק מסתכלים על השלט "תפוס/פנוי" בעיניים ממרחק (קריאה מקומית מהמטמון הפרטי). רק כשהשלט מתהפך לירוק, הם מנסים לגעת בידית.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>הבעיה ב-TSL:</strong> פקודת TSL מבצעת כתיבה אטומית בכל איטרציה של הלולאה. כל פעולת כתיבה דורשת בעלות בלעדית (Exclusive) על שורת המטמון, שולחת הודעת Invalidate לכל שאר הליבות, ונועלת את אפיק הזיכרון. כתוצאה מכך, האפיק מוצף ב-Cache Invalidation Traffic.</li>
+                                <li><strong>מנגנון TTAS (Test and Test-and-Set):</strong>
+                                    הלולאה מפוצלת לשני שלבים:
+                                    <br>שלב 1 (Spin on Read): הליבה בודקת את המנעול בקריאה רגילה בלבד (Read-only) ללא פקודה אטומית. כל עוד המנעול תפוס, הערך נקרא מה-Cache המקומי (מצב Shared) באפס תעבורת אפיק.
+                                    <br>שלב 2 (Atomic Write): רק כאשר הליבה רואה שהמנעול הפך ל-0, היא מנסה לבצע TSL אטומי.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            תופעת ה-Thundering Herd בעת שחרור המנעול ב-TTAS: כאשר המנעול משתחרר, שורת המטמון נפסלת אצל כל הליבות הממתינות בבת אחת, וכולן מזנקות יחד לבצע TSL אטומי.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: אין להשתמש ב-TSL גולמי במרובי מעבדים; TTAS עם Spin on Shared Read מונע חניקת אפיק ומאפשר סקיילביליות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.5.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.5.4: מדוע תזמון עצמאי גורם לבזבוז משאבים בתוכניות מקביליות, וכיצד Gang Scheduling מתאם את ריצת התהליכונים?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            מערכת מקבילית מריצה תוכנית המורכבת מ-8 תהליכונים המתקשרים ביניהם לעיתים קרובות. מדוע תזמון עצמאי רגיל גורם לבזבוז עצום של מחזורי שעון בספינלוקים, וכיצד Gang Scheduling פותר בעיה זו לעומת Affinity Scheduling?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על תזמורת סימפונית. אם כל נגן יגיע באקראי בשעה אחרת לחזרה, נגן הכינור ימתין לנגן הצ'לו, שימתין לנגן התופים – אף יצירה לא תנוגן. Gang Scheduling דורש שכל חברי התזמורת ייכנסו לבמה בדיוק באותה שעה וינגנו יחד (All or Nothing). לעומת זאת, Affinity Scheduling מבטיח שכל נגן יישב תמיד על אותו כיסא עם התווים המסודרים שלו כדי לא לבזבז זמן על התארגנות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>בעיית התזמון העצמאי:</strong> אם חוט $T_1$ נועל מנעול קצר וחוט $T_2$ ממתין לו בספינלוק, אך $T_1$ מורד מהמעבד עקב סיום פרוסת זמן (Preemption), החוט $T_2$ יבזבז פרוסת זמן שלמה בהמתנה עיוורת לספינלוק שלעולם לא ישתחרר.</li>
+                                <li><strong>עקרונות Gang Scheduling:</strong>
+                                    1. קבוצת תהליכונים הקשורים זה לזה מוגדרת כ-"כנופיה" (Gang).
+                                    2. כל חברי הכנופיה מתחילים ומסיימים את פרוסת הזמן שלהם בו-זמנית על מעבדים שונים.
+                                    3. זמני המתנה לספינלוק מתקצרים למיקרו-שניות בודדות כי המחזיק במנעול רץ במקביל.</li>
+                                <li><strong>תפקיד ה-CPU Affinity:</strong> שמירת חוט על אותה ליבה ספציפית שומרת על מצב הזיכרון המטמון חם (Cache Warmth) ומונעת עלויות Cache Misses והעברת דפים ב-NUMA.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            קיטוע פנימי (Internal Fragmentation) ב-Gang Scheduling: אם יש 16 מעבדים וכנופיה של 9 תהליכונים, 7 מעבדים עלולים להישאר ללא ניצול אופטימלי אם לא ניתן לשלב כנופיות קטנות יותר.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: לאפליקציות עם סנכרון הדוק וספינלוקים קצרים - Gang Scheduling מונע בזבוז של זמני המתנה; ליישומים א-סינכרוניים - תזמון מבוסס Affinity ממקסם ניצול זיכרון מטמון.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 8.5.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 8.5.5: מה גורם לתופעת שיתוף שווא (False Sharing) בזיכרון המטמון, וכיצד ריפוד מבני נתונים (Padding) פותר בעיה זו?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200 text-amber-900 font-medium">
+                            <strong>🎯 שאלת הרקע והדילמה:</strong>
+                            שני תהליכונים הרצים על ליבות שונות מעדכנים משתנים נפרדים לחלוטין בקוד (למשל `counterA` ו-`counterB`). מדוע ביצועי התוכנית קורסים כאילו הם מעדכנים את אותו משתנה, וכיצד פותרים בעיה זו ברמת החומרה והתוכנה?
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תארו לעצמכם שאתם ושותפכם כותבים כל אחד יומן אישי נפרד, אך שני היומנים מודפסים משום מה על אותו עמוד של בלוק דפים. בכל פעם שאתם רוצים לכתוב אות ביומן שלכם, אתם חוטפים את כל העמוד מהשותף. השותף לא יכול לכתוב מילה עד שהוא חוטף את העמוד בחזרה. למרות שאינכם משתפים תוכן, שיתוף הנייר הפיזי (שורת המטמון) הופך את העבודה למלחמת התשה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח אלגוריתמי וטכנולוגי מפורט:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>גודל גרנולריות של מטמון:</strong> החומרה אינה מנהלת עקביות ברמת בתים או מילים בודדות, אלא ברמת שורת מטמון שלמה (Cache Line, בדרך כלל 64 בתים).</li>
+                                <li><strong>מנגנון ה-Ping-Pong:</strong> אם `counterA` ו-`counterB` נמצאים באותה שורת מטמון של 64 בתים, כתיבה של ליבה 1 ל-`counterA` פוסלת (Invalidates) את כל שורת המטמון בליבה 2. ליבה 2 נאלצת לטעון מחדש את השורה מהזיכרון כדי לכתוב ל-`counterB`, וחוזר חלילה.</li>
+                                <li><strong>פתרון בתוכנה (Padding & Alignment):</strong> הוספת ריפוד (Cache Line Padding) כדי לוודא שמשתנים של תהליכונים שונים ישבו בשורות מטמון נפרדות לחלוטין.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שנעילות פותרות False Sharing. הוספת מנעול על משתנים שסובלים משיתוף שווא אינה פותרת את בעיית החומרה ורק מוסיפה תקורת נעילה מיותרת.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה ומסקנה טכנית: False Sharing היא תקלת ביצועים שקטה ברמת החומרה; ריפוד מבני נתונים לגבולות שורת מטמון מחזיר ביצועים מקביליים מלאים.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטראקטיביות מסכמות (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>🎯 תרגול שאלות אמריקאיות - סיכום פרק 8:</strong> שאלות רב-ברירה מקיפות על כלל נושאי הפרק לבחינת הבנת העומק.
+                </div>
+
+                <!-- שאלה אמריקאית 8.5.1 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.5.1">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 1 (8.5.1): מהו ההבדל המהותי ביותר בין ארכיטקטורת UMA לבין ארכיטקטורת NUMA במערכות מרובות מעבדים?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.5.1</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_5_1_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. ב-UMA לכל מעבד יש מרחב כתובות זיכרון נפרד לחלוטין, ואילו ב-NUMA כל המעבדים חולקים מרחב כתובות אחיד.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_5_1_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. בשתי הארכיטקטורות מרחב הכתובות מאוחד, אך ב-UMA זמן הגישה לכל כתובת זהה עבור כל המעבדים, ואילו ב-NUMA זמן הגישה תלוי במיקום הפיזי של הזיכרון ביחס למעבד המבקש.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_1_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. UMA אינה דורשת מנגנוני עקביות זיכרון מטמון (Cache Coherence), בעוד ש-NUMA מחייבת חומרה מיוחדת לעקביות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_1_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. NUMA מתבססת תמיד על אפיק זיכרון משותף יחיד (Single Shared Bus), בעוד UMA משתמשת ברשת מיתוג צולב (Crossbar).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_5_1_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> שתי הארכיטקטורות חולקות מרחב כתובות פיזי יחיד ומאוחד (Shared Memory). מערכת שבה לכל מעבד מרחב כתובות נפרד נקראת מערכת מבוזרת (Distributed / Message Passing) או קלאסטר.
+                    </div>
+                    <div id="q8_5_1_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> זוהי בדיוק ההגדרה המדויקת של UMA מול NUMA: מרחב הכתובות בשתיהן משותף, אך ב-UMA זמן ההשהיה קבוע וזהה (Uniform), ואילו ב-NUMA זמן הגישה לזיכרון מקומי מהיר פי כמה מגישה לזיכרון מרוחק (Non-Uniform).
+                    </div>
+                    <div id="q8_5_1_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> כל מערכת מרובת מעבדים בעלת זיכרונות מטמון פרטיים (בין אם UMA ובין אם NUMA) מחייבת מנגנון עקביות מטמון (Snooping או Directory-based) כדי למנוע קריאת מידע לא עדכני.
+                    </div>
+                    <div id="q8_5_1_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ההפך הוא הנכון: UMA קלאסית מתבססת על אפיק משותף יחיד (או Crossbar קטן), ואילו NUMA מתבססת על רשת מבוזרת של צמתים (Interconnection Network) ללא אפיק מרכזי יחיד.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.5.1</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> ההגדרה הקריטית של ארכיטקטורות זיכרון נשענת על פרספקטיבת החומרה של זמני הגישה. ב-UMA זמן הגישה אחיד; ב-NUMA חלוקת הזיכרון לצמתים יוצרת אי-אחידות מובהקת.</p>
+                            <p><strong>שורה תחתונה:</strong> UMA = גישה אחידה בזמן; NUMA = גישה מהירה מקומית ואיטית מרוחקת, שתיהן עם מרחב כתובות מאוחד.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.5.2 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.5.2">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 2 (8.5.2): מדוע פרוטוקול Snooping לעקביות זיכרון מטמון אינו מסוגל להתרחב למערכות בעלות מאות מעבדים?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.5.2</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, true, 'q8_5_2_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מכיוון ש-Snooping דורש שידור הודעות ב-Broadcast לכל הליבות על גבי אפיק משותף, ונפח תעבורת ההאזנה והביטולים חונק את רוחב הפס של המערכת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_2_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מכיוון ש-Snooping אינו תומך בפעולות כתיבה אלא רק בקריאה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_2_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מכיוון שזיכרון מטמון רמה L1 אינו מסוגל לשמור כתובות פיזיות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_2_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. מכיוון ש-Snooping דורש נעילת שורת מטמון למשך שניות רבות בכל פעם.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_5_2_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> ב-Snooping כל כתיבה מחייבת שידור Broadcast לכל הליבות. ככל שיש יותר מעבדים, האפיק מוצף בהודעות Invalidate, מה שגורם לקריסת ביצועים מעבר לכ-16-32 ליבות.
+                    </div>
+                    <div id="q8_5_2_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> Snooping בהחלט תומך בכתיבה.
+                    </div>
+                    <div id="q8_5_2_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> בקרי המטמון מתרגמים כתובות ועובדים מול תגיות זיכרון פיזיות.
+                    </div>
+                    <div id="q8_5_2_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> פעולות עקביות מתבצעות בננו-שניות, לא בשניות.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.5.2</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> רוחב פס של אפיק שידור (Broadcast Bus) הוא משאב מוגבל הגדל בריבוע $O(N^2)$.</p>
+                            <p><strong>פתרון:</strong> מעבר לספריות (Directory-based) הפונות רק לצמתים הרלוונטיים.</p>
+                            <p><strong>שורה תחתונה:</strong> Snooping מוגבל למערכות קטנות; Directory מתאים למערכות גדולות.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.5.3 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.5.3">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 3 (8.5.3): מהו היתרון המרכזי של ארכיטקטורת Symmetric Multiprocessing (SMP) על פני ארכיטקטורת Master-Slave?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.5.3</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_5_3_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. ב-SMP אין צורך בשום מנגנוני נעילה או סנכרון בתוך קוד הליבה של מערכת ההפעלה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_3_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. ב-SMP כל מעבד מריץ עותק נפרד לחלוטין של מערכת ההפעלה ואינו משתף מבני נתונים עם מעבדים אחרים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_5_3_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. ב-SMP כל מעבד מסוגל להריץ קוד מערכת הפעלה וקריאות מערכת בעצמו, וכך נמנע צוואר הבקבוק החמור שבו מעבד ה-Master יחיד משרת את כל הבקשות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_3_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. SMP מתאימה רק למעבדים חסרי זיכרון מטמון.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_5_3_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ב-SMP נדרשות נעילות עדינות בליבה להגנה על מבני נתונים משותפים.
+                    </div>
+                    <div id="q8_5_3_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זהו מודל Each CPU has its own OS.
+                    </div>
+                    <div id="q8_5_3_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> ב-SMP כל המעבדים שווים במעמדם (Symmetric) ומבצעים קוד ליבה עצמאית ללא תלות במעבד Master בודד.
+                    </div>
+                    <div id="q8_5_3_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> SMP היא הארכיטקטורה הסטנדרטית במעבדים מודרניים עם מטמון.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.5.3</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> חלוקת עומס סימטרית מבטלת נקודת כשל וצוואר בקבוק יחיד.</p>
+                            <p><strong>שורה תחתונה:</strong> SMP מאפשר ריצה מקבילית של קוד ליבה על כל המעבדים.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.5.4 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.5.4">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 4 (8.5.4): באיזה תרחיש אלגוריתם תזמון כנופיות (Gang Scheduling) מספק יתרון ביצועים דרמטי על פני תזמון עצמאי?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.5.4</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_5_4_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. כאשר התהליכים במערכת אינם קשורים זה לזה ומבצעים רק משימות רקע א-סינכרוניות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_5_4_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. כאשר תוכנית מקבילית כוללת קבוצת תהליכונים המתקשרים ביניהם באופן אינטנסיבי ומשתמשים בספינלוקים קצרים להחלפת מידע הדדית.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_4_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. כאשר במערכת יש מעבד פיזי בודד עם ליבה אחת בלבד.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_4_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. כאשר כל התהליכים במערכת חסומים בהמתנה לדיסק קשיח מגנטי איטי.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_5_4_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> לתהליכים בלתי תלויים תזמון עצמאי רגיל יעיל בהרבה.
+                    </div>
+                    <div id="q8_5_4_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> כאשר חוטים תלויים זה בזה בספינלוקים, אם הם לא ירוצו יחד, חוט שממתין יבזבז פרוסת זמן שלמה בהמתנה עיוורת לחוט שהורדם.
+                    </div>
+                    <div id="q8_5_4_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> Gang Scheduling דורש ריבוי מעבדים להקצאה מקבילית.
+                    </div>
+                    <div id="q8_5_4_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> תהליכים מוגבלי I/O אינם נהנים מ-Gang Scheduling.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.5.4</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> מניעת תופעת Busy Waiting פתולוגית כאשר המחזיק במנעול אינו רץ.</p>
+                            <p><strong>שורה תחתונה:</strong> Gang Scheduling מבטיח הרצה מתואמת של חוטים מסונכרנים.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 8.5.5 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="8.5.5">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 5 (8.5.5): מה גורם לתופעת "שיתוף שווא" (False Sharing) במערכות מרובות ליבות וכיצד מונעים אותה?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 8.5.5</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q8_5_5_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. שני תהליכים ניגשים לאותו קובץ דיסק ללא הרשאות מתאימות; הפתרון הוא הגדרת ACL.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_5_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. שגיאה בהגדרת זיכרון וירטואלי הגורמת לשני תהליכים לחלוק את אותו ה-Page Table; הפתרון הוא אתחול TLB.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q8_5_5_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. שני משתנים בלתי תלויים לחלוטין ממוקמים בזיכרון באותה שורת מטמון (Cache Line), כך שכתיבה לאחד פוסלת את כל השורה אצל הליבה האחרת; הפתרון הוא ריפוד (Padding) גבולות שורת המטמון.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q8_5_5_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. מתקפת סייבר שבה תהליך זדוני מזייף כתובת זיכרון משותפת כדי לקרוא סיסמאות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q8_5_5_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> False Sharing היא תופעת חומרה ברמת זיכרון המטמון, ללא קשר לדיסק.
+                    </div>
+                    <div id="q8_5_5_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זו אינה בעיית טבלאות דפים ואינה נפתרת על ידי TLB.
+                    </div>
+                    <div id="q8_5_5_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> החומרה פועלת ברמת שורת מטמון (64B). אם שני משתנים נפרדים חולקים את אותה שורה, עדכון של אחד גורם ל-Invalidation אצל הליבה השנייה ומייצר תנועת פינג-פונג הרסנית.
+                    </div>
+                    <div id="q8_5_5_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זהו מאפיין חומרתי של זיכרון מטמון ולא מתקפת סייבר.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 8.5.5</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>הרעיון המנחה:</strong> אי-התאמה בין גודל משתנה בודד לגודל בלוק המטמון (Cache Line) מייצרת שיתוף שווא.</p>
+                            <p><strong>שורה תחתונה:</strong> ריפוד מבני נתונים (Padding ל-64 בתים) מונע False Sharing.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- 3. שאלות מהמדריך (איחוד שאלות חזרה מפרק 8) -->
+            <div class="guide-questions-list space-y-4">
+                <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl mb-4 text-xs md:text-sm text-amber-900 leading-relaxed">
+                    <strong>📖 שאלות מהמדריך ושאלות חזרה רשמיות:</strong> שאלות מתוך מדריך הלמידה והסיכום של פרק 8, ערוכות ומבוארות להבנה מעמיקה.
+                </div>
+
+                <!-- שאלה 1 מהמדריך -->
+                <details class="group border border-amber-200 rounded-2xl bg-white p-4 transition-all shadow-sm mb-3">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-black">שאלה מהמדריך</span>
+                            <span>שאלה 1: מה מתרחש בחומרה כאשר 4 ליבות ניגשות לאותה כתובת זיכרון פיזית בו-זמנית?</span>
+                        </span>
+                        <span class="text-amber-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-amber-100 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div><strong>השאלה המקורית:</strong> מה קורה בדיוק בזמן שבו כל ארבע הליבות במעבד מנסות לגשת לאותה כתובת זיכרון באותו הזמן?</div>
+                        <div><strong>כיוון חשיבה ופתרון:</strong>
+                            <p class="mb-1.5">כאשר מספר ליבות מנסות לגשת לאותה כתובת פיזית בדיוק באותו שבריר שנייה (מחזור שעון), החומרה נכנסת לפעולה למניעת התנגשויות (Memory Contention):</p>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>סריאליזציה (Serialization):</strong> אפיק הזיכרון או בקר הזיכרון מסדרים את הבקשות בטור ומטפלים בהן בזו אחר זו, ולא במקביל.</li>
+                                <li><strong>עקביות מטמון (Cache Coherence):</strong> אם לפחות ליבה אחת מבצעת <em>כתיבה</em>, פרוטוקול עקביות המטמון מודיע לשאר הליבות שהעותק השמור אצלן במטמון המקומי נפסל (Invalidated), כדי להבטיח שאף ליבה לא תעבוד עם מידע מיושן.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2 מהמדריך -->
+                <details class="group border border-amber-200 rounded-2xl bg-white p-4 transition-all shadow-sm mb-3">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-black">שאלה מהמדריך</span>
+                            <span>שאלה 2: האם ניתן לממש סנכרון בין ליבות באמצעות פקודת SWP / XCHG אטומית?</span>
+                        </span>
+                        <span class="text-amber-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-amber-100 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div><strong>השאלה המקורית:</strong> האם ניתן לממש סנכרון בין כמה ליבות בעזרת פקודת SWP המבצעת החלפה בצורה אטומית?</div>
+                        <div><strong>כיוון חשיבה ופתרון:</strong>
+                            <p class="mb-1.5"><strong>כן, בהחלט.</strong> פקודת SWP (Swap) או פקודות דומות כמו XCHG מאפשרות להחליף ערך של אוגר פנימי עם ערך בזיכרון המשותף כפעולה אטומית אחת שלא ניתנת להפרעה.</p>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li>הליבה רושמת באוגר שלה את הערך '1' (נעול), ומבצעת SWP מול משתנה המנעול בזיכרון המשותף.</li>
+                                <li>אם הערך שחזר לאוגר הוא <strong>'0'</strong>: הליבה זכתה במנעול ונכנסת לקטע הקריטי.</li>
+                                <li>אם הערך שחזר הוא <strong>'1'</strong>: המנעול כבר היה תפוס, והליבה תיכנס להמתנה פעילה (Spinlock) או שחרור מעבד.</li>
+                            </ul>
+                            <p class="mt-1">מכיוון שההחלפה אטומית (בנעילת אפיק חומרה זמנית), מובטח שאף שתי ליבות לא יקראו '0' במקביל.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3 מהמדריך -->
+                <details class="group border border-amber-200 rounded-2xl bg-white p-4 transition-all shadow-sm mb-3">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-black">שאלה מהמדריך</span>
+                            <span>שאלה 3: מדוע מנגנון ה-TLB Shootdown נדרש במערכות SMP ומהי תקורתו?</span>
+                        </span>
+                        <span class="text-amber-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-amber-100 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+                        <div><strong>השאלה המקורית:</strong> מהו מנגנון TLB Shootdown ומדוע הוא מהווה תקורה כבדה במערכות SMP?</div>
+                        <div><strong>כיוון חשיבה ופתרון:</strong>
+                            <p class="mb-1.5">כאשר מערכת ההפעלה משנה מיפוי דף זיכרון (למשל בהחלפת דפים או שחרור זיכרון munmap):</p>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li>ליבות אחרות עלולות להחזיק תרגום ישן של הדף ב-TLB המקומי שלהן.</li>
+                                <li>מערכת ההפעלה שולחת פסיקה בין-מעבדית (IPI - Inter-Processor Interrupt) לכל שאר הליבות.</li>
+                                <li>כל ליבה משהה את פעולתה, מנקה את רשומת ה-TLB, ומאשרת חזרה (Ack). פעולה זו נקראת TLB Shootdown והיא יקרה מאוד כי היא גוזלת מחזורי שעון מכל הליבות.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>

@@ -1,0 +1,313 @@
+            <div id="questions-clocks" data-title="שאלות מנחות ותרגול - ⏱️ 5.5 שעונים וקוצבי זמן">
+                <div class="open-questions-list space-y-4">
+                    <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                        <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                    </div>
+
+                    <!-- שאלה 5.5.1 -->
+                    <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                        <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                            <span class="flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.1</span>
+                                <span class="text-sm md:text-base font-semibold">מהו המבנה של חומרת השעון (מתנד קוורץ, דלפק, אוגר החזקה) ומה ההבדל בין מצב One-Shot למצב Square-Wave (מחזורי)?</span>
+                            </span>
+                            <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                            <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong class="text-emerald-900 block mb-1">🎯 רכיבי חומרת השעון ומצבי פעולתו:</strong>
+                                <ul class="list-disc list-inside space-y-1 mt-1">
+                                    <li><strong>מתנד קוורץ (Crystal Oscillator):</strong> מייצר אות גל ריבועי בתדר יציב ומדויק במיוחד (למשל עשרות או מאות מגה-הרץ).</li>
+                                    <li><strong>מונה/דלפק (Counter):</strong> מונה היורד ב-1 בכל פעימת אות של המתנד. כשהמונה מגיע ל-0, מופקת פסיקת חומרה (Clock Tick).</li>
+                                    <li><strong>אוגר החזקה (Holding Register):</strong> אוגר השומר את הערך ההתחלתי של המונה.</li>
+                                </ul>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div class="p-2.5 bg-blue-50/80 rounded-xl border border-blue-200 text-blue-950">
+                                        <strong>מצב חד-פעמי (One-Shot):</strong> המונה סופר לאחור עד 0, מפיק פסיקה אחת ועוצר עד להפעלה ידנית מחדש.
+                                    </div>
+                                    <div class="p-2.5 bg-purple-50/80 rounded-xl border border-purple-200 text-purple-950">
+                                        <strong>מצב מחזורי (Square-Wave / Periodic):</strong> בהגעה ל-0 מופקת פסיקה, וערך המונה נטען אוטומטית מחדש מאוגר ההחזקה. מייצר פסיקות בקצב קבוע (Tick Rate).
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                                🎯 שורה תחתונה: שעון מחזורי טוען אוטומטית את המונה מאוגר ההחזקה ומייצר פסיקות מערכת קצובות (Clock Ticks) המניעות את כל תזמון הגרעין.
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- שאלה 5.5.2 -->
+                    <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                        <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                            <span class="flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.2</span>
+                                <span class="text-sm md:text-base font-semibold">מהם ששת התפקידים המרכזיים של תוכנת השעון (Clock Software) במערכת ההפעלה?</span>
+                            </span>
+                            <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                            <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong class="text-emerald-900 block mb-1">🎯 ששת תפקידי תוכנת השעון:</strong>
+                                1. <strong>שמירת שעה ותאריך (Time of Day):</strong> קידום שעון המערכת בכל פסיקה (מספר השניות שחלפו מ-1 בינואר 1970 - Epoch ב-UNIX).<br>
+                                2. <strong>מניעת מונופול על המעבד:</strong> הפחתת קוונטום הזמן (Time Quantum) של התהליך הרץ בשיטת Round-Robin והפעלת המתזמן כשהקוונטום תם.<br>
+                                3. <strong>מעקב וחשבונאות משאבים (Accounting):</strong> רישום זמני CPU מנוצלים עבור כל תהליך ומשתמש (חיוב וסטטיסטיקה).<br>
+                                4. <strong>אכיפת קריאות מערכת של השהייה (alarm / sleep):</strong> השהיית תהליך לפרק זמן קצוב והחזרתו למצב מוכן.<br>
+                                5. <strong>קוצבי זמן לשומרי סף (Watchdog Timers):</strong> זיהוי כשלים והשהיות בתקשורת או פניות להתקנים תקועים.<br>
+                                6. <strong>איסוף פרופיל ביצועים (Profiling):</strong> דגימה סטטיסטית של מונה הפקודות (PC) לזיהוי פונקציות הצורכות הכי הרבה זמן מעבד.
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                                🎯 שורה תחתונה: השעון הוא הלב הפועם של מערכת ההפעלה: הוא כופה שיתוף הוגן של המעבד, מנהל תאריך ומעיר תהליכים בזמנם.
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- שאלה 5.5.3 -->
+                    <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                        <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                            <span class="flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.3</span>
+                                <span class="text-sm md:text-base font-semibold">כיצד מערכת ההפעלה מממשת מאות קוצבי זמן (Timers) שונים בעזרת חומרת שעון יחידה ורשימת הפרשים (Delta-List)?</span>
+                            </span>
+                            <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                            <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong class="text-emerald-900 block mb-1">🎯 מבנה נתונים חכם - רשימת הפרשים (Delta List):</strong>
+                                במחשב יש חומרת שעון יחידה, אך עשרות תהליכים מבקשים טיימרים שונים (לתפוגה בעוד 3, 7, 9 שניות וכו').
+                                <br>במקום לעבור על כל הטיימרים בכל פסיקה, מערכת ההפעלה שומרת <strong>רשימה מקושרת וממוינת של הפרשי זמנים (Delta Times)</strong>:
+                                <ul class="list-disc list-inside space-y-1 mt-1">
+                                    <li>האיבר הראשון מכיל את מספר הטיקים שנותרו עד לפקיעת הטיימר הקרוב ביותר (למשל 3).</li>
+                                    <li>האיבר הבא שומר רק את ההפרש בינו לבין קודמו (למשל $7-3 = 4$).</li>
+                                    <li>האיבר השלישי שומר את ההפרש הבא ($9-7 = 2$).</li>
+                                </ul>
+                                <strong>הרווח העצום:</strong> בכל פסיקת שעון, המערכת מקטינה ב-1 <strong>אך ורק את האיבר הראשון ברשימה!</strong> שאר האיברים אינם נבדקים כלל. כשהאיבר הראשון מגיע ל-0, מפעילים את הפעולה ומסירים אותו.
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                                🎯 שורה תחתונה: רשימת הפרשים מאפשרת ניהול אינסוף טיימרים בסיבוכיות $O(1)$ לכל פסיקת שעון.
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- שאלה 5.5.4 -->
+                    <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                        <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                            <span class="flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.4</span>
+                                <span class="text-sm md:text-base font-semibold">מה ההבדל בין שעון קיר בזמן אמת (Real-Time Clock - RTC) לשעון מערכת (System Timer Tick)?</span>
+                            </span>
+                            <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                            <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong class="text-emerald-900 block mb-1">🎯 השוואת שעוני המערכת:</strong>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                                    <div class="p-3 bg-amber-50/70 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm">
+                                        <strong class="text-amber-900 block mb-1">🔋 שעון RTC (Real-Time Clock):</strong>
+                                        שבב עצמאי הניזון מסוללת לוח אם קטנה (CMOS Battery). ממשיך לספור שניות, דקות, חודשים ושנים גם כשהמחשב מכובה ומנותק מהחשמל. מערכת ההפעלה קוראת ממנו <strong>רק פעם אחת בעת עליית המערכת (Boot)</strong> כדי לדעת מה השעה בעולם האמיתי.
+                                    </div>
+                                    <div class="p-3 bg-blue-50/70 rounded-xl border border-blue-200 text-blue-950 text-xs md:text-sm">
+                                        <strong class="text-blue-900 block mb-1">⚡ שעון מערכת (System Timer Tick):</strong>
+                                        רכיב חומרה פנימי שמייצר פסיקות בקצב גבוה (100-1000 פסיקות בשנייה) כל עוד המחשב פועל. משמש לתזמון קוונטום, מניה יחסית וטיימרים פנימיים.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                                🎯 שורה תחתונה: ה-RTC שומר על השעה כשהמחשב כבוי; שעון המערכת מודד זמנים ומנהל את פסיקות התזמון כשהמחשב דולק.
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- שאלה 5.5.5 -->
+                    <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                        <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                            <span class="flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.5</span>
+                                <span class="text-sm md:text-base font-semibold">מהו מנגנון "Tickless Kernel" ומדוע הוא מהווה מהפכה קריטית במחשבים ניידים ובסמארטפונים?</span>
+                            </span>
+                            <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                        </summary>
+                        <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                            <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                                <strong>הבעיה המסורתית:</strong> מערכת הפעלה מסורתית מקבלת פסיקת שעון 1,000 פעמים בשנייה ($HZ=1000$). גם כשהמחשב אינו עושה דבר (Idle), המעבד מתעורר 1,000 פעמים בשנייה ממצב שינה חסכוני (Deep Sleep / C-States) רק כדי לבדוק האם מישהו צריך עבודה! הדבר מבזבז סוללה בצורה ניכרת ומייצר חום.
+                                <br><strong>הפתרון ב-Tickless Kernel (מערכת ללא פסיקות מחזוריות סרק):</strong>
+                                כאשר כל התהליכים ממתינים, מערכת ההפעלה <strong>מבטלת את פסיקות השעון המחזוריות</strong>! היא בודקת מתי צפוי האירוע הבא הקרוב ביותר (למשל טיימר בעוד 4 שניות), מתכנתת את השעון במצב One-Shot לפסוק בעוד 4 שניות בדיוק, ומכניסה את המעבד לשינה עמוקה ורציפה.
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                                🎯 שורה תחתונה: Tickless Kernel מבטל פסיקות סרק במצב חוסר מעש ומאריך דרמטית את חיי הסוללה במכשירים ניידים.
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="multiple-choice-list space-y-4 mt-6">
+                    <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl mb-4 text-xs md:text-sm text-purple-900 leading-relaxed">
+                        <strong>🎯 שאלות אמריקאיות רב-ברירה:</strong> בחרו את התשובה הנכונה. לחיצה תחשוף מיד האם צדקתם עם הסבר מפורט.
+                    </div>
+
+                    <!-- שאלה 5.5.6 -->
+                    <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="5-5-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.6</span>
+                            <span class="text-xs text-slate-600">שאלת בחירה</span>
+                        </div>
+                        <p class="font-bold text-slate-800 text-sm md:text-base mb-3 leading-relaxed">כיצד פועל שעון מתוכנת במצב Square-Wave (מחזורי)?</p>
+                        <div class="space-y-2">
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">א</span>
+                                <span class="flex-1">הוא סופר לאחור פעם אחת עד 0, מפיק פסיקה ועוצר לצמיתות.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, true, 'exp-5-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ב</span>
+                                <span class="flex-1">כאשר המונה מגיע ל-0, מופקת פסיקה וערך המונה נטען אוטומטית מחדש מאוגר ההחזקה להמשך ספירה רציפה.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ג</span>
+                                <span class="flex-1">הוא אינו מפיק פסיקות כלל, אלא רק מציג את השעה על גבי המסך.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ד</span>
+                                <span class="flex-1">הוא מכפיל את תדר השעון בכל שעה עגולה.</span>
+                            </button>
+                        </div>
+                        <div id="exp-5-5-6" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong>תשובה נכונה: ב!</strong><br>
+                                <strong>נימוק מפורט:</strong> במצב Square-Wave, שבב השעון טוען את המונה אוטומטית מאוגר ההחזקה בכל פעם שהספירה מגיעה ל-0 ומפיק פסיקה (Interrupt Tick), מה שמבטיח זרם רציף ומדויק של פסיקות קצובות בזמן.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- שאלה 5.5.7 -->
+                    <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="5-5-7">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.7</span>
+                            <span class="text-xs text-slate-600">שאלת בחירה</span>
+                        </div>
+                        <p class="font-bold text-slate-800 text-sm md:text-base mb-3 leading-relaxed">כיצד תוכנת השעון מבטיחה שתהליך עתיר חישובים לא ישתלט על המעבד ללא הגבלה במערכת שיתוף זמן (Time-Sharing)?</p>
+                        <div class="space-y-2">
+                            <button onclick="handleOptionClick(this, true, 'exp-5-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">א</span>
+                                <span class="flex-1">היא מפחיתה בכל פסיקת שעון את יתרת קוונטום הזמן של התהליך, ומפעילה את המתזמן כאשר הקוונטום מסתיים.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ב</span>
+                                <span class="flex-1">היא מוחקת את קוד התוכנית מתוך הדיסק הקשיח.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ג</span>
+                                <span class="flex-1">היא מכבה את מאוורר הקירור של המעבד.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ד</span>
+                                <span class="flex-1">היא ממתינה שהמשתמש ינתק את המחשב מהחשמל.</span>
+                            </button>
+                        </div>
+                        <div id="exp-5-5-7" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong>תשובה נכונה: א!</strong><br>
+                                <strong>נימוק מפורט:</strong> פסיקת השעון (Clock Interrupt) מפקיעה את השליטה מהתהליך הרץ לטובת הגרעין. שגרת השעון מקטינה את מונה הקוונטום של התהליך ב-1. כשהוא מגיע לאפס, התהליך מועבר לסוף תור ה-Ready והמתזמן מעביר את המעבד לתהליך הבא (Preemptive Multitasking).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- שאלה 5.5.8 -->
+                    <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="5-5-8">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.8</span>
+                            <span class="text-xs text-slate-600">שאלת בחירה</span>
+                        </div>
+                        <p class="font-bold text-slate-800 text-sm md:text-base mb-3 leading-relaxed">מה היתרון של ניהול קוצבי זמן (Timers) ברשימת הפרשים (Delta List) ביחס לעדכון פשוט של כל הטיימרים בכל פסיקה?</p>
+                        <div class="space-y-2">
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">א</span>
+                                <span class="flex-1">היא אינה דורשת שימוש בזיכרון RAM כלל.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, true, 'exp-5-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ב</span>
+                                <span class="flex-1">בכל פסיקת שעון מעדכנים ומפחיתים ב-1 אך ורק את הערך בראש הרשימה בסיבוכיות O(1), במקום לסרוק את כל הטיימרים.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ג</span>
+                                <span class="flex-1">היא מאפשרת לחומרת השעון לספור זמן לאחור ללא חשמל.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ד</span>
+                                <span class="flex-1">היא מגבילה את מספר הטיימרים במערכת ל-3 בלבד.</span>
+                            </button>
+                        </div>
+                        <div id="exp-5-5-8" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong>תשובה נכונה: ב!</strong><br>
+                                <strong>נימוק מפורט:</strong> אם קיימים אלפי טיימרים פעילים במערכת, סריקת כולם בכל פסיקת שעון (מאות פעמים בשנייה) תחנוק את המעבד. ברשימת הפרשים מקטינים רק את האיבר הראשון; שאר הטיימרים נשארים ללא מגע עד שהראשון פוקע.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- שאלה 5.5.9 -->
+                    <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="5-5-9">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.9</span>
+                            <span class="text-xs text-slate-600">שאלת בחירה</span>
+                        </div>
+                        <p class="font-bold text-slate-800 text-sm md:text-base mb-3 leading-relaxed">מתי מערכת ההפעלה פונה לשבב שעון זמן האמת (RTC) שעל לוח האם?</p>
+                        <div class="space-y-2">
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">א</span>
+                                <span class="flex-1">בכל פסיקת שעון מחזורית (1000 פעמים בשנייה).</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ב</span>
+                                <span class="flex-1">בכל פעם שתהליך מבצע קריאת זיכרון מתוך המטמון.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, true, 'exp-5-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ג</span>
+                                <span class="flex-1">בעת אתחול המחשב (Boot) בלבד כדי לאתחל את שעון המערכת, ולאחר מכן מקדמת את הזמן בפסיקות תוכנה.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ד</span>
+                                <span class="flex-1">אך ורק כשהדיסק הקשיח מלא עד אפס מקום.</span>
+                            </button>
+                        </div>
+                        <div id="exp-5-5-9" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong>תשובה נכונה: ג!</strong><br>
+                                <strong>נימוק מפורט:</strong> קריאה משבב ה-RTC איטית יחסית. לכן, בעת האתחול (Boot) מערכת ההפעלה קוראת את התאריך והשעה האמיתיים מ-RTC, מאתחלת משתנה גלובלי בזיכרון, ומאז ואילך מקדמת משתנה זה באופן מהיר באמצעות פסיקות השעון המחזוריות.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- שאלה 5.5.10 -->
+                    <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="5-5-10">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold">שאלה 5.5.10</span>
+                            <span class="text-xs text-slate-600">שאלת בחירה</span>
+                        </div>
+                        <p class="font-bold text-slate-800 text-sm md:text-base mb-3 leading-relaxed">מדוע מנגנון "Tickless Kernel" חיוני כל כך לחסכון באנרגיה במחשבים ניידים?</p>
+                        <div class="space-y-2">
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">א</span>
+                                <span class="flex-1">הוא מנתק את המסך של המחשב בכל 10 שניות.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, true, 'exp-5-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ב</span>
+                                <span class="flex-1">הוא מבטל את פסיקות השעון המחזוריות כשאין עבודה (Idle), ומאפשר למעבד להישאר במצב שינה עמוקה (Deep Sleep) ללא הפרעות.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ג</span>
+                                <span class="flex-1">הוא מאט את כרטיס הרשת למהירות של 1Kbps.</span>
+                            </button>
+                            <button onclick="handleOptionClick(this, false, 'exp-5-5-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs md:text-sm font-medium text-slate-700 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">ד</span>
+                                <span class="flex-1">הוא מונע שימוש באפיק ה-PCIe.</span>
+                            </button>
+                        </div>
+                        <div id="exp-5-5-10" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm leading-relaxed">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                                <strong>תשובה נכונה: ב!</strong><br>
+                                <strong>נימוק מפורט:</strong> כניסה למצבי חיסכון בחשמל (C-States) דורשת מהמעבד להישאר ישן לפרקי זמן רצופים. פסיקות שעון מחזוריות מעירות את המעבד מאות פעמים בשנייה גם כשהמערכת לא עושה כלום, ובכך מרוקנות את הסוללה. Tickless Kernel מתכנת פסיקה בודדת בדיוק למועד הטיימר הבא ומאפשר שינה רציפה.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>

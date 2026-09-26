@@ -1,0 +1,488 @@
+<div id="questions-mount-maman03" class="hidden" data-title="שאלות מנחות ותרגול - 10.4 מנגנוני סנכרון, עגינה וממ&quot;ן 03">
+
+    <!-- 1. רשימת שאלות פתוחות ומנחות להעמקה -->
+    <div class="open-questions-list space-y-4">
+        <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+            <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף את ניתוח העומק, האנלוגיה האינטואיטיבית והמסקנה המעשית.
+        </div>
+
+        <!-- שאלה 10.4.1 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.4.1: מנגנון ה-Spinlock ב-xv6 – כיצד פועלת ההוראה האטומית `xchg` ומדוע חייבים לבטל פסיקות?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    הפונקציה <code>acquire()</code> משתמשת בהוראת האסמבלי האטומית <code>xchg()</code> שמחליפה מילה בזיכרון במילה באוגר בפעולה יחידה שאינה ניתנת לחלוקה בחומרה. בנוסף, <strong>חובה לבטל פסיקות מקומיות (בעזרת `pushcli()`) לפני רכישת המנעול</strong>. אם לא נבטל פסיקות, פסיקת חומרה (למשל פסיקת שעון או דיסק) עלולה להתרחש באותה ליבה בדיוק כאשר הקוד מחזיק במנעול; אם שגרת הפסיקה תנסה לרכוש את אותו מנעול, הליבה תיכנס ל-Spinning אינסופי והמערכת תיקפא (Deadlock של ליבה יחידה).
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    כירורג שמבצע ניתוח לב פתוח רגיש (מחזיק Spinlock). אסור לאף אחד להיכנס לחדר הניתוח או לצלצל לו בטלפון (ביטול פסיקות). אם הטלפון יצלצל והוא ינסה לענות לשיחה דחופה שדורשת ממנו בדיוק את אותן הידיים שהוא עובד איתן כעת – החולה ייפגע והעבודה תיעצר כליל.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>אטומיות ברמת ה-Bus:</strong> הוראת `xchg` נועלת את ערוץ הזיכרון (Memory Bus Lock) ומבטיחה ששתי ליבות במערכת SMP לא יוכלו לקרוא ולכתוב לערך המנעול בו-זמנית.</li>
+                        <li><strong>קינון פסיקות (`pushcli` ו-`popcli`):</strong> מאחר שפונקציות גרעין עשויות לקרוא לפונקציות אחרות שרוכשות מנעולים, לא ניתן להפעיל פסיקות (`sti`) בעיוורון בשחרור מנעול; xv6 מנהלת מונה קינון לכל מעבד (`cpu->ncli`), ורק כאשר המונה מתאפס לחלוטין מוחזרות הפסיקות.</li>
+                        <li><strong>מחסום זיכרון (Memory Barrier):</strong> ב-`release()` מבוצעת כתיבה אטומית לאפס תוך שימוש במחסום זיכרון למניעת שינוי סדר פקודות (Out-of-order execution) ע"י המעבד או המהדר.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> אסור בתכלית האיסור לישון (`sleep()`) או לבצע קריאות קלט/פלט ממושכות בזמן החזקת Spinlock! ליבות אחרות יבזבזו 100% מכוח המחשוב שלהן בסיבוב עקר.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: Spinlock מיועד להגנה על מקטעים קריטיים קצרים מאוד של נתוני גרעין, ומחייב ביטול פסיקות מקומיות.
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.4.2 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.4.2: מנגנון Sleep & Wakeup – תופעת ה-"Lost Wakeup" ומדוע `sleep()` חייבת לקבל מנעול?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    הפונקציה <code>sleep(chan, lk)</code> מרדימה תהליך עד להתרחשות מאורע בערוץ <code>chan</code>. המנעול <code>lk</code> מגן על התנאי הנבדק (למשל, האם התור ריק). <strong>הפונקציה `sleep` מקבלת את המנעול ומשחררת אותו רק לאחר שרכשה את `ptable.lock` והגדירה את מצב התהליך כ-SLEEPING</strong>. אטומיות זו חיונית כדי למנוע את תופעת ה-<strong>Lost Wakeup</strong>: מצב שבו תהליך בדק את התנאי, גילה שעליו לישון, אך לפני שהספיק להירדם התרחשה פסיקה או מעבד אחר קרא ל-<code>wakeup()</code>; ללא המנעול, אות ההשכמה היה "הולך לאיבוד" והתהליך היה נרדם לנצח!
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    אתם מחכים לשליח עם חבילה. אתם מסתכלים מהחלון ורואים שהוא עדיין לא הגיע (בדיקת התנאי). בדיוק ברגע שאתם שמים אטמי אוזניים והולכים לישון, השליח דופק בדלת והולך. לא שמעתם את הדפיקה (Lost Wakeup) ותמשיכו לישון לנצח. הפתרון: נעילת הדלת והאזנה משולבת עד שהראש מונח על הכרית.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>ערוץ שינה (Wait Channel):</strong> הערוץ `chan` אינו מבנה נתונים מיוחד ב-xv6, אלא פשוט כתובת זיכרון שמשמשת כמזהה מוסכם (למשל כתובת של חיץ, צינור או מבנה PCB).</li>
+                        <li><strong>כיצד פועלת `wakeup(chan)`?</strong> היא סורקת את כל 64 התהליכים בטבלה, ומעבירה כל תהליך שמצבו `SLEEPING` וה-`chan` שלו תואם למצב `RUNNABLE`.</li>
+                        <li><strong>Spurious Wakeups:</strong> מאחר ש-`wakeup` מעירה את כל התהליכים שממתינים על אותו ערוץ, תמיד חובה לקרוא ל-`sleep()` בתוך לולאת `while(!condition)` ולא בתוך משפט `if`.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> שחרור המנעול לפני הקריאה ל-`sleep()`. זוהי טעות קלאסית הגורמת למרוץ זמנים (Race Condition) שבו תהליכים נתקעים בהמתנה לקלט/פלט ללא מענה.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: העברת המנעול לתוך `sleep()` פותרת בצורה אלגנטית את סכנת איבוד ההשכמה (Lost Wakeup).
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.4.3 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.4.3: מימוש סמפור (Counting Semaphore) בממ"ן 03 – כיצד משלבים Spinlock ו-Sleep/Wakeup?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    בממ"ן 03 נדרש לממש סמפור מניה בגרעין:
+                    <ul class="list-disc list-inside space-y-1 mt-1 font-mono text-xs">
+                        <li>מגדירים מבנה נתונים: <code>struct sem { int val; struct spinlock lock; };</code></li>
+                        <li>בפעולת <strong>down() / wait()</strong>: רוכשים את `sem->lock`, בלולאת <code>while(sem->val &lt;= 0) sleep(sem, &amp;sem->lock);</code> ממתינים, מפחיתים <code>sem->val--</code> ומשחררים את המנעול.</li>
+                        <li>בפעולת <strong>up() / signal()</strong>: רוכשים את `sem->lock`, מגדילים <code>sem->val++</code>, קוראים ל-<code>wakeup(sem)</code> ומשחררים את המנעול.</li>
+                    </ul>
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 אנלוגיה אינטואיטיבית:</strong><br>
+                    חניון מקורה עם 5 מקומות פנויים (מונה הסמפור). שומר בכניסה (Spinlock) מאפשר לכל רכב בתורו לבדוק את לוח המקומות: אם יש מקום, מורידים אחד ונכנסים. אם אין מקום, הנהג מכבה את המנוע וישן בצד. כשרכב יוצא, הוא מצלצל בפעמון (wakeup) והשומר מעיר את הרכבים הממתינים.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>חשיבות לולאת ה-while:</strong> כאשר יש מספר תהליכים שממתינים ורכב אחד יוצא (`val++`), הפונקציה `wakeup` מעירה את כל הממתינים. רק תהליך אחד יספיק להפחית את הערך לאפס; כל השאר יבצעו איטרציה נוספת בלולאה ויחזרו לישון מיד.</li>
+                        <li><strong>מנעולי שינה (Sleeplocks):</strong> xv6 כוללת מנגנון מובנה דומה בשם `sleeplock` המשמש להגנה על פעולות דיסק ו-inodes, שבהן אסור להחזיק Spinlock לאורך זמן.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> שכחה לאתחל את המנעול של הסמפור בעזרת `initlock()`. שימוש במנעול לא מאותחל יוביל לקריסת גרעין מיידית (Kernel Panic).
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: שילוב Spinlock קצר יחד עם `sleep/wakeup` מאפשר בניית כל מנגנוני הסנכרון המתקדמים במערכת ההפעלה.
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.4.4 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.4.4: היפוך עדיפויות (Priority Inversion) – כיצד הוא נוצר ומהו פרוטוקול Priority Inheritance?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    <strong>היפוך עדיפויות</strong> מתרחש כאשר תהליך בעל עדיפות נמוכה ($L$) מחזיק במנעול שנדרש ע"י תהליך בעל עדיפות גבוהה ($H$). אם מגיע תהליך בעל עדיפות בינונית ($M$) שאינו זקוק למנעול כלל, המתזמן יריץ את $M$ במקום את $L$. כתוצאה מכך, $L$ אינו מתקדם ואינו משחרר את המנעול, ו-$H$ נחסם לזמן בלתי מוגבל בגלל $M$! הפתרון הוא <strong>הורשת עדיפות (Priority Inheritance)</strong>: תהליך $L$ "יורש" זמנית את העדיפות הגבוהה של $H$ כל עוד הוא מחזיק במנעול ש-$H$ ממתין לו.
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 האסון המפורסם של נאס"א (Mars Pathfinder, 1997):</strong><br>
+                    הגשושית על מאדים ביצעה אתחולים חוזרים ונשנים בגלל משימת תקשורת בעדיפות בינונית שמנעה ממשימת חיזוי מטאורולוגי בעדיפות נמוכה לשחרר מנעול שנדרש למשימת הניהול הראשית של הגשושית. התקלה נפתרה מהקרקע ע"י הפעלת Priority Inheritance במערכת ההפעלה VxWorks.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>Priority Ceiling Protocol:</strong> גישה מחמירה יותר שבה לכל מנעול מוגדרת עדיפות מקסימלית קבועה מראש מבין כל התהליכים שעשויים לדרוש אותו, וכל תהליך שנועל אותו מוקפץ מיד לעדיפות זו.</li>
+                        <li><strong>שרשרת הורשה:</strong> אם תהליך $A$ ממתין ל-$B$ שממתין ל-$C$, העדיפות הגבוהה ביותר צריכה להתפשט במורד כל שרשרת התלות.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> לחשוב שתהליך בעדיפות בינונית לא יכול להזיק לתהליך בעדיפות גבוהה. בפועל, התהליך הבינוני הוא זה שגורם לעיכוב הקטלני ביותר!
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: מנגנון Priority Inheritance הוא המפתח למניעת תקיעת מערכות זמן-אמת (Real-Time Systems).
+                </div>
+            </div>
+        </details>
+
+        <!-- שאלה 10.4.5 -->
+        <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>שאלה 10.4.5: סדר רכישת מנעולים (Lock Ordering) – מדוע הוא קריטי בגרעין למניעת קיפאון (Deadlock)?</span>
+                </span>
+                <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                    <strong>🎯 תשובה תמציתית:</strong><br>
+                    אחד מ-4 תנאי קופמן לקיום קיפאון (Deadlock) הוא <strong>המתנה מעגלית (Circular Wait)</strong>. אם תהליך 1 נועל את מנעול A ומבקש את מנעול B, ותהליך 2 נועל את מנעול B ומבקש את מנעול A – שניהם יקפאו לעד. הדרך המרכזית למנוע זאת בגרעין היא <strong>היררכיית מנעולים גלובלית מוגדרת מראש</strong>: כל חלקי הגרעין מחויבים תמיד לרכוש מנעולים לפי סדר עולה קבוע (למשל: תמיד מנעול מערכת הקבצים תחילה, ורק אחר כך `ptable.lock`).
+                </div>
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                    <strong>💡 דוגמה מ-xv6:</strong><br>
+                    בעת קריאה ל-`pipewrite()`, הקוד נועל את מנעול הצינור (`pipe->lock`). אם הצינור מלא, הוא קורא ל-`sleep(&pipe->nread, &pipe->lock)`. ה-`sleep()` רוכשת את `ptable.lock` תוך כדי שחרור מנעול הצינור. הסדר תמיד קבוע, וכך נמנעת המתנה מעגלית.
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                    <strong>🔬 ניתוח טכנולוגי והנדסי מעמיק:</strong>
+                    <ul class="list-disc list-inside space-y-1.5 pr-2">
+                        <li><strong>כללי נעילה של Inodes:</strong> כאשר קוראים או כותבים לנתיב הכולל מספר ספריות, ה-Inodes ננעלים תמיד בסדר יורד מהשורש לקובץ המטרה, ומשוחררים בסיום הפעולה.</li>
+                        <li><strong>בדיקות אוטומטיות (Lockdep בלינוקס):</strong> בלינוקס קיים כלי גרעין בשם Lockdep המאמת בזמן ריצה שכל המנעולים נרכשים בסדר תואם לגרף ההיררכיה ומתריע מיד על פוטנציאל ל-Deadlock עוד לפני שהקיפאון מתרחש בפועל.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ מלכודת נפוצה:</strong> רכישת מנעולים בסדר הפוך בפונקציות שונות (למשל פונקציה אחת נועלת A ואז B, ופונקציה אחרת נועלת B ואז A). תחת עומס רב המערכת תיכנס לקיפאון שקשה מאוד לשחזר.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: הקפדה על סדר רכישת מנעולים גלובלי שוברת את תנאי ההמתנה המעגלית ומבטיחה חופש מקיפאון.
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- 2. רשימת שאלות אמריקאיות אינטראקטיביות (פורמט B) -->
+    <div class="mcq-questions-list space-y-6">
+        <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl mb-4 text-xs md:text-sm text-purple-900 leading-relaxed">
+            <strong>🎯 שאלות אמריקאיות רב-ברירה:</strong> בחרו את התשובה הנכונה. לחיצה תחשוף מיד האם צדקתם עם הסבר מפורט.
+        </div>
+
+        <!-- שאלה 10.4.6 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.4.6">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.4.6: מה עלול להתרחש אם ליבה תחזיק Spinlock מבלי לבטל פסיקות מקומיות?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.4.6</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_4_6_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. מהירות השעון של המעבד תרד בחצי באופן אוטומטי.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_4_6_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. פסיקת חומרה עשויה להפסיק את הקוד, ושגרת הטיפול בפסיקה שתנסה לקחת את אותו מנעול תיכנס ללולאת ספינינג אינסופית ותנעל את הליבה (Deadlock).</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_6_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. כל התהליכים ברקע יימחקו מטבלת ה-PCB.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_6_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. שגיאת Page Fault בלתי הפיכה בטבלת ה-GDT.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_4_6_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> מהירות השעון נקבעת ע"י מנגנוני ניהול צריכת חשמל של החומרה.
+            </div>
+            <div id="q10_4_6_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> אם פסיקה מגיעה לאותה ליבה, הקוד שהחזיק במנעול לא ירוץ עד ששגרת הפסיקה תסתיים, אך שגרת הפסיקה לעולם לא תסתיים כי היא מסתובבת וממתינה למנעול! זהו קיפאון מוחלט של הליבה.
+            </div>
+            <div id="q10_4_6_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> טבלת התהליכים לא נמחקת.
+            </div>
+            <div id="q10_4_6_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> GDT הוא מבנה סגמנטציה ואינו קשור ישירות לשגיאות דף או מנעולים.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.4.6</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> ב-xv6 הפונקציה `pushcli()` מבטלת פסיקות לפני רכישת המנעול, ו-`popcli()` מחזירה אותן רק כשכל המנעולים שוחררו.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.4.7 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.4.7">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.4.7: מדוע אסור לתהליך להחזיק Spinlock וללכת לישון (`sleep`)?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.4.7</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, true, 'q10_4_7_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. כי מעבדים אחרים שינסו לקחת את המנעול יבצעו ספינינג פעיל ויבזבזו 100% מזמן המעבד שלהם לזמן ממושך, מה שיגרור פגיעה חמורה בביצועים ואף קיפאון.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_7_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. כי החומרה מנתקת את אספקת החשמל לליבה שישנה.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_7_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. כי לא ניתן לגשת ל-RAM בזמן שינה.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_7_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. כי פונקציית `sleep()` מוחקת את מפתח ההצפנה של המנעול.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_4_7_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> מנעול ספין מתוכנן להחזקה של מיקרו-שניות בלבד. שינה עשויה להימשך מילישניות או שניות רבות (למשל המתנה לדיסק או למקלדת), וספינינג ממושך יחנוק את המערכת.
+            </div>
+            <div id="q10_4_7_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> שינה של תהליך תוכנתי אינה ניתוק חשמל פיזי לליבה.
+            </div>
+            <div id="q10_4_7_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> הזיכרון נגיש תמיד לכל הליבות.
+            </div>
+            <div id="q10_4_7_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> למנעולים אין מפתחות הצפנה.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.4.7</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> עבור פעולות ארוכות משתמשים ב-`sleeplock` שמרדים תהליכים ממתינים במקום לבזבז זמן מעבד בספינינג.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.4.8 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.4.8">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.4.8: מה תפקיד הארגומנט `chan` (ערוץ השינה) בקריאות `sleep` ו-`wakeup` ב-xv6?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.4.8</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_4_8_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. מספר הפורט של כרטיס הרשת שעליו מועבר המידע.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_4_8_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. כתובת זיכרון שמשמשת כמזהה מוסכם המקשר בין האירוע שעליו התהליך ממתין לבין הפונקציה שמעירה אותו.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_8_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. גודל החיץ בבתים המוקצה לתהליך.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_8_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. כתובת טבלת הדפים הראשית ברמת המשתמש.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_4_8_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> ערוץ השינה הוא מושג סנכרון פנימי בגרעין, לא פורט רשת.
+            </div>
+            <div id="q10_4_8_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> ב-xv6 כל כתובת זיכרון ייחודית (כגון מצביע למבנה הנתונים) משמשת כערוץ סנכרון (`void *chan`).
+            </div>
+            <div id="q10_4_8_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> אין קשר לגודל חיץ.
+            </div>
+            <div id="q10_4_8_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> כתובת טבלת הדפים נשמרת ב-`p->pgdir` וב-CR3.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.4.8</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> פשטות העיצוב ביוניקס: כתובת של אובייקט קיים היא מזהה מושלם וייחודי ללא צורך בהקצאת מבני סנכרון ייעודיים.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.4.9 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.4.9">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.4.9: מה ההבדל המרכזי בין Spinlock לבין Sleeplock?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזה intelligence: 10.4.9</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, false, 'q10_4_9_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. Spinlock מיועד רק למעבדים בודדים ו-Sleeplock מיועד ל-SMP.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, true, 'q10_4_9_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. Spinlock משאיר את המעבד בלולאת המתנה פעילה ומבטל פסיקות, בעוד ש-Sleeplock מוותר על המעבד ומרדים את התהליך עד לשחרור המנעול.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_9_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. Sleeplock משתמש בהצפנת חומרה של מעבדי אינטל.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_9_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. אין שום הבדל; מדובר בשמות נרדפים לאותה פונקציה.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_4_9_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> Spinlock משמש בעיקר במערכות SMP.
+            </div>
+            <div id="q10_4_9_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> ספינלוק מסתובב ומבזבז מעבד לזמנים קצרים מאוד; סליפלוק מרדים את התהליך (Context Switch) ומתאים לפעולות ארוכות כמו קריאה וכתיבה לדיסק.
+            </div>
+            <div id="q10_4_9_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> מנעולי שינה הם מנגנון תוכנתי בגרעין ללא הצפנה.
+            </div>
+            <div id="q10_4_9_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> מדובר בשני מנגנונים שונים לחלוטין באופיים.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.4.9</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> Sleeplock עצמו ממומש ב-xv6 בעזרת Spinlock קצר שמגן על שדות המבנה וקריאות `sleep` ו-`wakeup`.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- שאלה 10.4.10 -->
+        <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="10.4.10">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 10.4.10: בממ"ן 03, מדוע חובה להשתמש בלולאת `while` בבדיקת ערך הסמפור לפני שינה ולא במשפט `if`?</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 10.4.10</span>
+            </div>
+            <div class="space-y-2.5 mb-4">
+                <button onclick="handleOptionClick(this, true, 'q10_4_10_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>א. כי כאשר מבוצעת קריאה ל-`wakeup()`, כל התהליכים הממתינים מתעוררים, ותהליך אחר עשוי לתפוס את המשאב לפני שהתהליך שהתעורר מספיק לרוץ (Spurious Wakeup).</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_10_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ב. כי שפת C אינה מאפשרת קריאה לפונקציות גרעין מתוך משפט `if`.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_10_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ג. כי לולאת `while` מאפסת אוטומטית את האוגרים במעבד.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+                <button onclick="handleOptionClick(this, false, 'q10_4_10_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                    <span>ד. כדי למנוע יצירת תהליכי זומבי בטבלת ה-PCB.</span>
+                    <span class="opt-icon opacity-0"></span>
+                </button>
+            </div>
+            <div id="q10_4_10_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                ✅ <strong>תשובה נכונה!</strong> `wakeup` מעירה את כל התהליכים באותו ערוץ. אם מתפנה משאב יחיד ו-3 תהליכים מתעוררים, הראשון יקח אותו והשניים האחרים חייבים לבדוק שוב את התנאי בלולאת ה-while ולחזור לישון.
+            </div>
+            <div id="q10_4_10_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> משפט `if` תקף לחלוטין בשפת C לכל קריאת פונקציה.
+            </div>
+            <div id="q10_4_10_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> הלולאה אינה מאפסת אוגרים.
+            </div>
+            <div id="q10_4_10_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                ❌ <strong>תשובה שגויה:</strong> תהליכי זומבי נוצרים מסיום ללא `wait()`, לא מסנכרון סמפור.
+            </div>
+            <details class="group mt-4 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                    <span>📖 הרחבה והסבר מעמיק לשאלה 10.4.10</span>
+                    <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                </summary>
+                <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <p><strong>הרעיון המנחה:</strong> עקרון ה-Mesa Monitor Semantics: התעוררות משינה מהווה רק רמז (Hint) לכך שהתנאי עשוי להתקיים, ולכן תמיד חובה לבדוק אותו מחדש בלולאה.</p>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- 3. שאלות מהמדריך וממ"נים -->
+    <div class="guide-questions-list space-y-4">
+        <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl mb-4 text-xs md:text-sm text-amber-900 leading-relaxed">
+            <strong>📖 שאלות מהמדריך וממ"ן 03:</strong> מימוש מעשי מלא של Counting Semaphore בגרעין xv6.
+        </div>
+
+        <details class="group border border-amber-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+            <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                <span class="flex items-center gap-2">
+                    <span class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-black">ממ"ן 03 פתור</span>
+                    <span>מימוש שלם של Counting Semaphore עם מניעת מרוצי זמנים ו-Lost Wakeup</span>
+                </span>
+                <span class="text-amber-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-amber-100 text-xs md:text-sm text-slate-700 leading-relaxed space-y-3">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs">
+                    <strong>דרישת המטלה (ממ"ן 03):</strong><br>
+                    הוספת תמיכה בסמפורים למערכת ההפעלה xv6: קריאות המערכת `sem_init(int val)`, `sem_down(int id)` ו-`sem_up(int id)`. על המימוש לתמוך במספר סמפורים במקביל ולהבטיח הגנה מלאה בסביבת ריבוי מעבדים (SMP).
+                </div>
+                <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed font-mono text-xs space-y-2">
+                    <p class="font-bold font-sans text-sm text-emerald-950">קוד המימוש המנצח בגרעין:</p>
+                    <div class="bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">
+<pre>struct sem {
+  int val;
+  int allocated;
+  struct spinlock lock;
+};
+struct sem semtab[MAX_SEM];
+
+void sem_down(struct sem *s) {
+  acquire(&amp;s-&gt;lock);
+  while (s-&gt;val &lt;= 0) {
+    sleep(s, &amp;s-&gt;lock); // משחרר את המנעול ונרדם אטומית!
+  }
+  s-&gt;val--;
+  release(&amp;s-&gt;lock);
+}
+
+void sem_up(struct sem *s) {
+  acquire(&amp;s-&gt;lock);
+  s-&gt;val++;
+  wakeup(s); // מעיר את כל הממתינים על ערוץ הסמפור
+  release(&amp;s-&gt;lock);
+}</pre>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 mt-2 font-sans text-xs">
+                        <li><strong>אטומיות ה-sleep:</strong> השחרור של `s->lock` בתוך `sleep()` מתבצע רק לאחר שהתהליך סימן את עצמו כ-SLEEPING על ערוץ `s`, מה שמבטיח שום `sem_up` לא יקרא בינתיים ויפספס את ההשכמה.</li>
+                        <li><strong>שימוש ב-while:</strong> מבטיח שאם תהליכים מרובים מתעוררים, רק זה שתפס את המשאב ממשיך, והשאר חוזרים לישון.</li>
+                    </ul>
+                </div>
+                <div class="p-2.5 bg-rose-50/70 rounded-xl border border-rose-200 text-rose-900 text-xs leading-relaxed">
+                    <strong>⚠️ באג נפוץ מממ"ן 03:</strong> שחרור הסמפור כאשר יש עדיין תהליכים שישנים עליו, או חוסר בדיקת גבולות תקינות על ערך ה-`id` במרחב המשתמש.
+                </div>
+                <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                    🎯 שורה תחתונה: מימוש סמפורים ב-xv6 מדגים את העוצמה של שילוב Spinlocks יחד עם מנגנון השינה וההשכמה המובנה של הגרעין.
+                </div>
+            </div>
+        </details>
+    </div>
+</div>

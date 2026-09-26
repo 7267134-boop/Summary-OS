@@ -517,17 +517,17 @@
         tooltip.innerHTML = getTooltipDefaultHTML();
         document.body.appendChild(tooltip);
 
-        window.showAIModal = function(selectedText) {
+        window.showAIModal = function (selectedText) {
             const existing = document.getElementById('ai-quick-modal');
             if (existing) existing.remove();
-            
+
             const modal = document.createElement('div');
             modal.id = 'ai-quick-modal';
             modal.className = 'fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4';
-            
+
             const nameMap = { 'ai': 'ה-AI', 'avital': 'אביטל', 'yair': 'יאיר', 'yossi': 'יוסי', 'dino': 'דינו' };
             const personaName = nameMap[personaPref] || 'ה-AI';
-            
+
             modal.innerHTML = `
                 <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col" dir="rtl">
                     <div class="bg-sky-50 px-4 py-3 border-b border-sky-100 flex justify-between items-center">
@@ -570,17 +570,17 @@
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(modal);
-            
+
             const qInput = document.getElementById('ai-modal-question');
             setTimeout(() => qInput.focus(), 100);
-            
+
             const closeModal = () => modal.remove();
-            
+
             document.getElementById('ai-modal-close').addEventListener('click', closeModal);
             document.getElementById('ai-modal-cancel').addEventListener('click', closeModal);
-            
+
             const submitAction = () => {
                 const userQ = qInput.value.trim();
                 if (userQ) {
@@ -591,16 +591,16 @@
                 closeModal();
                 window.executeAIAsk();
             };
-            
+
             document.getElementById('ai-modal-submit').addEventListener('click', submitAction);
-            
+
             qInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     submitAction();
                 }
             });
-            
+
             modal.addEventListener('mousedown', (e) => {
                 if (e.target === modal) closeModal();
             });
@@ -612,11 +612,11 @@
 
             e.preventDefault();
             e.stopPropagation();
-            
+
             selectedRegionText = selectedText;
             const anchorNode = window.getSelection().anchorNode;
             hasCodeContext = anchorNode && anchorNode.parentElement && (anchorNode.parentElement.closest('pre') || anchorNode.parentElement.closest('code'));
-            
+
             tooltip.classList.remove('visible');
             window.showAIModal(selectedText);
         });
@@ -630,7 +630,6 @@
 
         document.addEventListener('mouseup', (e) => {
             if (e.target.closest('#ai-quick-tooltip')) return;
-            if (localStorage.getItem('ai_fab_minimized') === 'true') return;
 
             const selection = window.getSelection();
             if (selection && selection.toString().trim().length > 0) {
@@ -1130,7 +1129,7 @@
         let viewContext = "";
         const activeStep = document.querySelector('.step-container.active');
         const activeTab = document.querySelector('.tab-content.block') || document.querySelector('.tab-content:not(.hidden)');
-        
+
         if (activeStep) {
             viewContext = activeStep.innerText.trim();
         } else if (activeTab) {

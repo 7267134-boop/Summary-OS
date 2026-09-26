@@ -1,0 +1,243 @@
+        <div id="questions-io-virtualization" data-title="7.7 וירטואליזציה של קלט/פלט (I/O) - אמולציה, VirtIO, IOMMU ו-SR-IOV">
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 7.7.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.7.1: מדוע חיקוי תוכנתי מלא (Full Emulation) של התקני קלט/פלט סובל מביצועים ירודים במיוחד?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> באמולציה מלאה, ה-Hypervisor מדמה כרטיס חומרה ישן (למשל Intel e1000). כל קריאה או כתיבה של האורח לאוגרי הבקר הוירטואלי (PIO או MMIO) גורמת ל-Trap חומרתי ול-VM-Exit יקר, מה שמוביל לאלפי מעברי הקשר עבור כל חבילת רשת בודדת.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> הדפסת מסמך שבה הפקיד עוצר את המדפסת אחרי כל אות ואות, בודק אותה בזכוכית מגדלת ומאשר אותה ידנית לפני שהוא מאפשר להדפיס את האות הבאה.
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>מנהל התקן מקורי מבצע פעולות רבות מול אוגרי החומרה (בדיקת סטטוס, הגדרת אורך, כתיבת מצביעים, אישור פסיקות). בווירטואליזציה מלאה, אוגרים אלו ממופים כזיכרון שאינו קיים או כפקודות Port I/O (IN/OUT). כל פקודה כזו עוצרת את המעבד האורח ומבצעת יציאה ל-Hypervisor כדי שיעדכן את מכונת המצבים המדומה של ההתקן. שליחה של חבילת אתרנט פשוטה עשויה לדרוש עשרות יציאות VM-Exit, מה שחונק את המעבד ומגביל את קצב הרשת לשבריר מיכולת החומרה הפיזית.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: אמולציה מלאה גורמת ל-VM-Exit על כל גישה לאוגרי בקר מדומה, ומייצרת צוואר בקבוק ביצועי חריף.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.7.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.7.2: כיצד מנגנון VirtIO (פרא-וירטואליזציה של קלט/פלט) פותר את בעיית תקורת ה-I/O באמצעות Virtqueues ו-Batching?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> VirtIO מתקין באורח דרייבר מותאם המתקשר עם ה-Hypervisor דרך חוצצי טבעת אסינכרוניים בזיכרון משותף (Virtqueues). האורח מסוגל להעמיס עשרות בקשות לטבעת ולשלוח התראה מרוכזת אחת (Batching ב-VM-Exit בודד), או אף לפעול ב-Polling ללא VM-Exit כלל.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> במקום לרוץ לדואר עם כל מכתב בנפרד (אמולציה), מניחים שק דואר בכניסה למשרד (Virtqueue); מרכזים בו 100 מכתבים, וקוראים לדוור פעם אחת ביום לקחת את כל השק (Batching).
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>תקן VirtIO מגדיר מבנה חוצץ טבעתי יעיל בזיכרון RAM משותף בין האורח למארח. הטבעת מורכבת מטבלת מתארים (Descriptors), טבעת זמינות (Available Ring) שבה האורח מכניס בקשות, וטבעת שימוש (Used Ring) שבה ה-Hypervisor מחזיר תוצאות שהסתיימו. מנגנון זה מבטל לחלוטין את הצורך בלכידת אוגרים: המערכת האורחת כותבת ישירות לזיכרון RAM במהירות האפיק. רק לאחר שמספר חבילות הועמסו, נשלחת קריאת התראה קלה (Kick / Hypercall). הדבר מאפשר ל-VirtIO להגיע לקצבים של 10Gbps ו-40Gbps בעומסי רשת כבדים.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: VirtIO משתמש בחוצצי טבעת משותפים ובאיחוד בקשות (Batching) כדי להאיץ קלט/פלט למהירויות קרובות לחומרה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.7.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.7.3: מהו רכיב ה-IOMMU (I/O Memory Management Unit) ואיזו סכנת אבטחה חמורה של DMA הוא מונע?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> ה-IOMMU הוא רכיב חומרה פיזי הממוקם בין התקני ה-I/O לאפיק הזיכרון. הוא מתרגם כתובות DMA מכתובות פיזיות-אורח (GPA) לכתובות פיזיות אמיתיות (HPA), ומונע התקפת DMA Rogue שבה התקן חיצוני עלול לקרוא או לדרוס את זיכרון ה-Hypervisor או של מכונות אחרות.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> מאבטח חמוש בפתח מחסן חלפים: גם אם ספק חיצוני (התקן I/O) מגיע עם משאית לפרוק סחורה, השומר מוודא שהמשאית נוסעת אך ורק למדף המורשה עבורה, ואוסר עליה להיכנס לאגף הכספות או למדפים של לקוחות אחרים.
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>התקני PCIe מודרניים מבצעים גישה ישירה לזיכרון (Direct Memory Access - DMA) כדי להעביר נתונים במהירות ללא מעורבות המעבד. אולם, מערכת ההפעלה האורחת מכירה רק כתובות GPA. אם ניתן להתקן פיזי שמוקצה ל-VM לבצע DMA ללא פיקוח, האורח יכול להורות להתקן לכתוב לכתובת פיזית 0x1000 שהיא במקרה קוד ה-Hypervisor, ולהשתלט על השרת!
+                            ה-IOMMU (Intel VT-d או AMD-Vi) פותר בעיה זו: הוא מחזיק טבלאות תרגום ייעודיות לכל התקן PCIe. כל פניית DMA נבדקת בחומרה ומתורגמת ל-HPA המתאים לאותה מכונה בלבד. גישה לכתובת מחוץ לתחום נחסמת מיידית ומפעילה התראת אבטחה.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: IOMMU מתרגם כתובות DMA בחומרה ומבודד את הגישה לזיכרון, ובכך מגן על השרת המארח מפני התקפות והשחתת נתונים.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.7.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.7.4: מהי טכנולוגיית SR-IOV (Single Root I/O Virtualization) וכיצד היא מאפשרת שיתוף חומרתי של כרטיס רשת מהיר?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> SR-IOV הוא תקן חומרתי באפיק PCIe המאפשר להתקן פיזי יחיד להציג את עצמו כאילו הוא כולל פונקציה פיזית ראשית אחת (Physical Function - PF) ועשרות פונקציות וירטואליות עצמאיות (Virtual Functions - VFs), שכל אחת מהן מוקצית ל-VM נפרדת עם גישת Passthrough ישירה.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> מדפסת משרדית מרכזית ענקית שמגיעה עם 32 מגירות פלט אישיות נפרדות: לכל עובד יש גישה ישירה ובלעדית למגירה שלו ללא צורך במזכירה שתמיין את הדפים.
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>בהקצאה ישירה פשוטה (Passthrough), כרטיס רשת פיזי שלם מוקצה למכונה וירטואלית בודדת, ואף מכונה אחרת אינה יכולה להשתמש בו. SR-IOV פותר מגבלה זו בחומרה:
+                            - <em>Physical Function (PF):</em> ממשק ה-PCIe המלא של הכרטיס, המנוהל ע"י ה-Hypervisor ומאפשר הגדרת תצורה גלובלית, סינון והקצאת משאבים.
+                            - <em>Virtual Functions (VF):</em> גרסאות קלות משקל של הכרטיס (למשל תורי שידור/קליטה ורישומים בסיסיים). ה-Hypervisor מקצה כל VF ישירות ל-VM באמצעות IOMMU.
+                            התוצאה: המכונה הווירטואלית מקבלת ביצועי רשת מקסימליים (Wire Speed) עם שיהוי (Latency) אפסי, ללא שום תיווך של מתג תוכנתי (vSwitch) ב-Hypervisor.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: SR-IOV מפצל כרטיס פיזי בחומרה לעשרות פונקציות וירטואליות (VFs), ומעניק ביצועי חומרה ישירים למכונות רבות במקביל.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 7.7.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center text-sm md:text-base">
+                        <span>שאלה 7.7.5: מהו המחיר או הפשרה התפעולית בשימוש בהקצאה ישירה (Passthrough) או SR-IOV לעומת שימוש במתג וירטואלי תוכנתי (vSwitch)?</span>
+                        <span class="text-blue-500 font-bold group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-650 space-y-3">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong>תשובה ישירה:</strong> הפשרה המרכזית היא אובדן היכולת לבצע "ניוד חי" (Live Migration) בצורה פשוטה, כיוון שהמכונה הווירטואלית קשורה פיזית לחומרה ספציפית בשרת, לצד אובדן יכולות אבטחה וניטור של תעבורת רשת בתוך ה-Hypervisor.
+                        </div>
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-amber-950 text-xs md:text-sm leading-relaxed">
+                            <strong>אנלוגיה אינטואיטיבית:</strong> הלחמת כבל חשמל עבה ישירות לתוך קיר הבניין: מקבלים זרם חזק ויציב במיוחד, אבל אי אפשר להזיז את המכשיר לחדר אחר בלי לנתק את החשמל ולהרוס את החיבור.
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-xs md:text-sm leading-relaxed space-y-1.5">
+                            <strong>ניתוח אקדמי וטכנולוגי:</strong>
+                            <p>כאשר מכונה משתמשת ב-VirtIO ובמתג וירטואלי (vSwitch ב-Hypervisor), כל מצב המכונה שמור בזיכרון RAM ובתוכנה. ה-Hypervisor מסוגל לבצע Live Migration לשרת אחר בצורה שקופה לחלוטין. כמו כן, מתג תוכנתי מאפשר החלת חוקי חומת אש (Firewall), בדיקת חבילות עמוקה (DPI) ושיקוף תעבורה (Port Mirroring). לעומת זאת, כאשר מוקצה כרטיס ב-Passthrough או VF ב-SR-IOV, אוגרי החומרה והתורים הפנימיים של הכרטיס מחזיקים מצב פעיל שאינו נגיש להעתקה פשוטה. העברת המכונה דורשת ניתוק חומרתי (Hot-Unplug) של ה-VF לפני הניוד, מה שמסבך משמעותית את הניהול.</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-blue-100/70 text-blue-950 text-xs font-semibold border border-blue-200/60">
+                            📌 שורה תחתונה: גישת Passthrough ו-SR-IOV מעניקה ביצועי שיא, אך פוגעת בגמישות הניוד החי (Live Migration) וביכולות הניטור של ה-Hypervisor.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- שאלות אמריקאיות רב-ברירה -->
+            <div class="multiple-choice-list space-y-4 mt-6">
+                <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl mb-4 text-xs md:text-sm text-purple-900 leading-relaxed">
+                    <strong>🎯 שאלות אמריקאיות רב-ברירה:</strong> בחרו את התשובה הנכונה. לחיצה תחשוף מיד האם צדקתם עם הסבר מפורט.
+                </div>
+
+                <!-- שאלה 7.7.6 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.7.6">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.7.6: באיזה אופן מתבצעת התקשורת בין מנהל ההתקן של האורח לבין ה-Hypervisor במודל VirtIO?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. באמצעות משלוח חבילות UDP ברשת האינטרנט החיצונית.
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'exp-7-7-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. באמצעות חוצצי טבעת אסינכרוניים בזיכרון RAM משותף (Virtqueues) ללא צורך בלכידת אוגרים מרובה.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. באמצעות כתיבה לקבצים על גבי תקליטור CD-ROM וירטואלי.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-6')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. באמצעות פסיקות חומרה בלתי ניתנות למיסוך (NMI) בלבד.
+                        </button>
+                    </div>
+                    <div id="exp-7-7-6" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> VirtIO משתמש במבנה נתונים הנקרא Virtqueues בזיכרון משותף (Shared Memory Ring Buffers), המאפשר העברת מידע מהירה ביותר עם מעט מאוד פסיקות ו-Traps.
+                    </div>
+                </div>
+
+                <!-- שאלה 7.7.7 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.7.7">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.7.7: מה תפקידו העיקרי של רכיב ה-IOMMU בהקצאה ישירה (Device Passthrough)?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, true, 'exp-7-7-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. לתרגם כתובות DMA מכתובות פיזיות-אורח (GPA) לכתובות פיזיות אמיתיות (HPA) ולהגן על זיכרון המארח.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. להמיר תמונות דו-ממדיות לתלת-ממד במסך של המשתמש.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. להשבית את כל כרטיסי הרשת בשרת בעת עומס.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-7')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. לחשב את סכומי הביקורת של פרוטוקול TCP בלבד.
+                        </button>
+                    </div>
+                    <div id="exp-7-7-7" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> IOMMU הוא ה-MMU של התקני ה-I/O: הוא מתרגם בחומרה את כתובות ה-DMA שההתקן מנסה לגשת אליהן מ-GPA ל-HPA, ומונע מההתקן לגשת לזיכרון של מכונות אחרות או של ה-Hypervisor.
+                    </div>
+                </div>
+
+                <!-- שאלה 7.7.8 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.7.8">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.7.8: מה ההבדל בין Physical Function (PF) לבין Virtual Function (VF) בתקן SR-IOV?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. PF מיועד רק למדפסות ו-VF מיועד רק לעכברים.
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'exp-7-7-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. PF הוא ממשק ה-PCIe המלא המנוהל ע"י ה-Hypervisor לשליטה ותצורה, בעוד VF היא פונקציה וירטואלית קלת משקל המוקצית ישירות ל-VM.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. PF קיים רק בתוכנה ו-VF קיים רק בחומרה.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-8')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. אין שום הבדל, מדובר בשמות נרדפים.
+                        </button>
+                    </div>
+                    <div id="exp-7-7-8" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> ה-PF מציג את כל יכולות החומרה והניהול של ההתקן ל-Hypervisor, וממנו ניתן ליצור ולהקצות עשרות VFs עצמאיים למכונות האורחות.
+                    </div>
+                </div>
+
+                <!-- שאלה 7.7.9 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.7.9">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.7.9: מהי תופעת ה-Batching ב-VirtIO וכיצד היא תורמת לביצועים?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, true, 'exp-7-7-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. צבירת מספר בקשות I/O בחוצץ הטבעת ושליחת התראה מרוכזת יחידה (VM-Exit בודד) עבור כולן יחד.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. מחיקת חבילות רשת ישנות כדי לפנות מקום לחבילות חדשות.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. האטת מהירות העברת הנתונים לרמת חיבור חיוג מודם ישן.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-9')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. פיצול קובץ בודד ל-1000 קבצים קטנים.
+                        </button>
+                    </div>
+                    <div id="exp-7-7-9" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> איחוד בקשות (Batching) מקטין את מספר ה-VM-Exits: במקום לצאת ל-Hypervisor על כל מנות נתונים של 1.5KB, האורח כותב 64 מנות לטבעת ורק אז שולח התראה יחידה.
+                    </div>
+                </div>
+
+                <!-- שאלה 7.7.10 -->
+                <div class="border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm" data-question-id="7.7.10">
+                    <p class="font-bold text-slate-800 text-sm md:text-base mb-3">שאלה 7.7.10: מדוע הקצאת כרטיס גרפי (GPU Passthrough) מקובלת מאוד בלמידת מכונה (AI) למרות הקושי ב-Live Migration?</p>
+                    <div class="space-y-2">
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            א. כי למידת מכונה אינה זקוקה לזיכרון RAM כלל.
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'exp-7-7-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ב. כי אימון מודלים דורש גישה ישירה לכל עוצמת העיבוד והזיכרון של ה-GPU במהירות מקסימלית (Near-Zero Overhead), והביצועים עולים בחשיבותם על גמישות הניוד.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ג. כי כרטיסים גרפיים אינם תומכים בווירטואליזציה בשום צורה אחרת.
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'exp-7-7-10')" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-xs md:text-sm text-slate-700 block">
+                            ד. כי אמולציית GPU מהירה פי 100 מחומרה אמיתית.
+                        </button>
+                    </div>
+                    <div id="exp-7-7-10" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm leading-relaxed text-slate-700">
+                        <strong>הסבר:</strong> עומסי עבודה של אימון בינה מלאכותית (AI / Deep Learning) דורשים תקשורת רחבת סרט וזמני שיהוי אפסיים מול זיכרון ה-GPU (VRAM). חיקוי תוכנתי אינו בא בחשבון, והקצאה ישירה מעניקה ביצועי חומרה מלאים.
+                    </div>
+                </div>
+            </div>
+        </div>

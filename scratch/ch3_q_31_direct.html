@@ -1,0 +1,332 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 3.1: tab-3-1 (ניהול זיכרון ישיר - No Abstraction)          -->
+        <!-- ===================================================================== -->
+        <div id="questions-tab-3-1" data-title="שאלות מנחות ותרגול - 📝 3.1 ניהול זיכרון ישיר">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 3.1.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.1.1: מהו מודל "ניהול זיכרון ללא הפשטה" (No Memory Abstraction), כיצד תוכניות מתקשרות ישירות עם כתובות ה-RAM הפיזיות, ואילו שלוש תצורות ארגון קלאסיות אפיינו מודל זה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מהות המודל:</strong> במודל זה אין שום שכבת תיווך, אין זיכרון וירטואלי ואין MMU. הכתובת שהמעבד מייצר (למשל פקודת <code>MOV AX, [1000]</code>) נשלחת ישירות כפשוטה על גבי אפיק הכתובות הפיזי של ה-RAM. אם תוכנית פונה לכתובת 1000, היא ניגשת ישירות לתא הפיזי ה-1000 בצ'יפ הזיכרון.<br>
+                            <strong>שלוש תצורות הארגון ההיסטוריות:</strong>
+                            <br>1. <strong>מערכת ההפעלה בתחתית ה-RAM ותוכנית המשתמש מעליה:</strong> התצורה הנפוצה ביותר בעבר (למשל במחשבי Mainframe מוקדמים וב-MS-DOS). ה-OS יושבת בכתובות 0 עד $K$, ותוכנית המשתמש תופסת את כל שאר הזיכרון מ-$K$ ועד סוף ה-RAM.
+                            <br>2. <strong>מערכת ההפעלה ב-ROM בראש הזיכרון ותוכנית המשתמש ב-RAM:</strong> אופייני למחשבי כף יד מוקדמים (PalmOS) ומערכות משובצות ישנות. מערכת ההפעלה מוגנת מצריבה ב-ROM בכתובות הגבוהות, וקוד המשתמש רץ ב-RAM הנמוך.
+                            <br>3. <strong>מנהלי התקנים ב-ROM בראש הזיכרון, מערכת הפעלה ב-RAM בתחתית ותוכנית באמצע:</strong> המודל של ה-IBM PC המקורי (MS-DOS עם BIOS ב-ROM בכתובת 640KB-1MB, וקרנל DOS בתחתית ה-RAM).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו לחיות בבית ללא חדרים או קירות מפרידים: כולם (מערכת ההפעלה ותוכניות המשתמש) ישנים באותו אולם פתוח על אותה רצפה. אם מישהו הולך מתוך שינה או זורק כדור (כותב לכתובת אקראית בזיכרון), הוא עלול לפגוע בראשו של אדם אחר או להפיל את עמוד התווך של הבית (לדרוס את קוד מערכת ההפעלה). אין שום מנעולים ושום פרטיות.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הסכנות המבניות בהיעדר הפשטה:
+                            <br>• <strong>אפס בידוד ואבטחה:</strong> כל תוכנית משתמש פשוטה יכולה לקרוא ולכתוב לטבלאות הקרנל, לשנות את שגרות הטיפול בפסיקות (IVT - Interrupt Vector Table השוכן בכתובת 0 ב-x86 Real Mode), ולהשבית את המחשב לחלוטין.
+                            <br>• <strong>חוסר גמישות בגודל הזיכרון:</strong> אם התוכנית גדולה במעט מנפח ה-RAM הפיזי המותקן במחשב, היא פשוט אינה מסוגלת לרוץ כלל ללא ארגון ידני ומייגע של מקטעי Overlay ע"י המתכנת עצמו.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            טעות נפוצה היא לחשוב שמערכת הפעלה לא הייתה קיימת במודל זה. מערכת הפעלה הייתה קיימת (כמו DOS), אך היא שימשה כ<strong>ספריית פונקציות עזר (API / Runtime Library)</strong> יותר מאשר כריבון מגן. היא לא יכלה להגן על עצמה מפני תוכניות סוררות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ניהול זיכרון ללא הפשטה מפגיש את התוכנית ישירות עם ה-RAM הפיזי; הוא פשוט וזול בחומרה, אך מונע הגנה וחושף את המערכת להתרסקות מכל באג מקומי.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.1.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.1.2: מדוע לא ניתן להריץ שתי תוכניות במקביל על זיכרון פיזי ישיר ללא מנגנון שינוי מיקום (Relocation), וכיצד בעיית פקודות ה-JMP המוחלטות (Absolute Addressing) גורמת לדריסת זיכרון הדדית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>בעיית הכתובות המוחלטות (Absolute Addressing):</strong>
+                            בעת הידור (Compilation) של תוכנית לקובץ בינארי, המהדר קושר את פקודות הקפיצה (כגון <code>JMP 28</code> או <code>CALL 1040</code>) וקריאות המשתנים לכתובות פיזיות קבועות ומוחלטות, בהנחה שהתוכנית תוטען תמיד בכתובת התחלה קבועה (נניח כתובת 0 או מיד אחרי מערכת ההפעלה).<br>
+                            <strong>מדוע ריבוי תוכניות נכשל:</strong>
+                            אם ננסה להריץ תוכנית שנייה ($B$) במקביל לתוכנית ראשונה ($A$), ניאלץ לטעון את תוכנית $B$ במיקום זיכרון גבוה יותר (למשל מכתובת 16384 ואילך). אולם, פקודות המכונה בתוך $B$ עדיין מכילות כתובות מוחלטות של התחום הנמוך (למשל <code>JMP 28</code>).
+                            <br>כאשר תוכנית $B$ תבצע את פקודת הקפיצה <code>JMP 28</code>, המעבד יקפוץ לתא 28 ב-RAM – <strong>שהוא הקוד של תוכנית $A$ (או של מערכת ההפעלה)!</strong>
+                            תוכנית $B$ תקפוץ לאמצע קוד זר, תדרוס משתנים של תוכנית $A$, ושתי התוכניות יקרסו מיידית. ללא שינוי מיקום (Relocation), שתי תוכניות אינן יכולות לחלוק את הזיכרון.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            נניח ששני מכתבים נשלחים לשני אנשים שונים, ובתוך כל מכתב רשום: "היפגשו ברחוב הרצל מספר 5". אם שני האנשים ינסו להיפגש באותה עיר, הם יגיעו לאותו בית בדיוק ויפריעו זה לזה. כדי שיוכלו לפעול בשתי ערים שונות, מישהו חייב להוסיף שם של עיר (היסט / Offset) לפני מספר הבית, אחרת כולם יתנגשו באותו רחוב הרצל 5.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            ניתוח האסמבלי של הכשל לפי טננבאום:
+                            נניח שתוכנית $A$ באורך 16KB נטענת בכתובת 0.
+                            הפקודה הראשונה של תוכנית $B$ היא <code>MOV JMP, 28</code> (לקפוץ לפקודה שנמצאת בבית ה-28 של התוכנית).
+                            אם $B$ נטענת בכתובת 16,384 (16KB), הפקודה ה-28 של $B$ שוכנת פיזית בכתובת:
+                            $$16384 + 28 = 16412$$
+                            אם פקודת ה-JMP בקוד המכונה נשארה מקודדת כ-28, המעבד פשוט ייגש לתא 28 השייך לתוכנית $A$. הדבר בלתי אפשרי לביצוע ללא התאמת כתובות.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הבחנה בין קפיצות יחסיות למוחלטות: קפיצות יחסיות ל-PC (כגון <code>JMP $+12</code>) אינן מושפעות ממיקום הטעינה בזיכרון. אולם, קריאות לפונקציות גלובליות, טבלאות פונקציות וירטואליות (Vtables) וגישה למשתנים סטטיים וגלובליים מבוססות תמיד על כתובות ישירות, ולכן הבעיה היא בלתי נמנעת.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: פקודות גישה וקפיצה מוחלטות קשורות לכתובות ספציפיות; טעינת תוכנית למיקום שאינו תואם את הכתובת שעבורה הודרה תגרום לדריסת קוד וקריסה טוטאלית.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.1.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.1.3: כיצד פועל מנגנון "שינוי מיקום סטטי בזמן טעינה" (Static Relocation / Linker Relocation), ומהם חסרונותיו הקריטיים לעומת שינוי מיקום דינמי בחומרה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>עקרון שינוי מיקום סטטי (Static Relocation):</strong>
+                            פתרון תוכנתי מוקדם שבו קובץ ההרצה הבינארי מכיל לצד הקוד <strong>טבלת שינוי מיקום (Relocation Table)</strong> – רשימה מדויקת של כל הבתים בקובץ שמייצגים כתובות זיכרון מוחלטות.
+                            <br>בעת טעינת התוכנית לזיכרון הראשי (Loader Phase), מערכת ההפעלה מחליטה היכן לשבץ אותה (למשל החל מכתובת פיזית $C$). הטוען עובר על כל ערך בטבלת ה-Relocation, ו<strong>מוסיף מתמטית את הערך $C$ ישירות לתוך קוד המכונה בדיסק/RAM</strong> לפני שהתוכנית מתחילה לרוץ (למשל: הפקודה <code>JMP 28</code> משוכתבת בקוד עצמו ל-<code>JMP 16412</code>).<br>
+                            <strong>שלושת החסרונות הקריטיים של השיטה:</strong>
+                            <br>1. <strong>זמן טעינה איטי במיוחד:</strong> הטעינה דורשת סריקה ושינוי של אלפי כתובות בזיכרון, דבר המאט משמעותית את עליית התוכנית.
+                            <br>2. <strong>חוסר יכולת להזיז את התוכנית בזמן ריצה (No Swapping Flexibility):</strong> אם המערכת מפנה את התוכנית לדיסק (Swap Out) ומחזירה אותה מאוחר יותר (Swap In), היא <strong>חייבת להחזיר אותה בדיוק לאותה כתובת פיזית $C$</strong>! אם המקום תפוס, התוכנית תקועה, או שיש לבצע שוב סריקת שינוי מיקום מלאה.
+                            <br>3. <strong>אפס הגנת זיכרון (No Memory Protection):</strong> שינוי מיקום סטטי פותר רק את הקפיצות הנכונות, אך אינו מונע ממצביע שגוי של תוכנית אחת לגשת לתאי הזיכרון של תוכנית אחרת.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על ספר הוראות שבו כתוב "פנה למדף מספר 4". שינוי מיקום סטטי שקול לכך שלפני שהעובד מתחיל לעבוד, מנהל עובר עם עט טיפקס על כל עמודי הספר, מוחק את "4" וכותב במקומו "104" כי העובד שובץ בקומה 1. אם מחר העובד יעבור לקומה 2, צריך למחוק מחדש את כל המספרים בספר. בשינוי מיקום דינמי, לעומת זאת, אומרים לעובד: "הספר נשאר בעינו, פשוט תוסיף תמיד את מספר הקומה שבה אתה נמצא".
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            פורמט קובץ ההרצה (ELF / PE):
+                            טבלאות Relocation עדיין קיימות גם כיום בקבצי ספריות דינמיות משותפות (Shared Libraries / DLLs), כאשר ספרייה אינה מקומפלת כ-PIC (Position Independent Code). אולם בתוכניות רגילות, המעבר לשינוי מיקום <strong>דינמי בחומרה</strong> (באמצעות אוגר Base במעבד או טבלאות דפים ב-MMU) ביטל לחלוטין את הצורך בשכתוב קוד בזמן טעינה: הכתובות בקוד נשארות וירטואליות מ-0, והחומרה ממירה אותן בשבריר ננו-שנייה בכל מחזור שעון.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            סכנת שיתוף קוד: בשינוי מיקום סטטי, אם נרצה להריץ שני מופעים של אותה תוכנית (למשל שני עותקים של עורך טקסט), קוד המכונה של כל אחד מהם חייב להיות שונה פיזית (כי כל אחד מכיל כתובות מקוזזות אחרות). לא ניתן לשתף את מקטע הקוד (Text Segment) בין התהליכים, מה שמוביל לבזבוז RAM כפול.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: שינוי מיקום סטטי משכתב את כתובות הקוד בזמן הטעינה; הוא מייתר חומרה מיוחדת, אך מקבע את התוכנית למיקום בודד ואינו מספק שום הגנת זיכרון.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.1.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.1.4: כיצד מערכות מוקדמות כגון IBM 360 יישמו הגנת זיכרון ישיר באמצעות "מפתחות הגנה" בחומרה (Protection Keys), ומה היו גבולות היכולת של שיטה זו?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מנגנון מפתחות ההגנה של IBM 360 (משנת 1964):</strong>
+                            במערכת זו הזיכרון הפיזי חולק לבלוקים קבועים של 2KB. לכל בלוק זיכרון הוצמד <strong>רכיב חומרה של 4 סיביות ששמר "מפתח הגנה" (Key)</strong>.
+                            <br>• אוגר מצב המעבד (PSW - Program Status Word) הכיל אף הוא שדה מפתח של 4 סיביות המייצג את זהות התוכנית הרצה כעת.
+                            <br>• <strong>בדיקת החומרה בכל גישה:</strong> בכל פעולת קריאה או כתיבה לזיכרון, חומרת המעבד השוותה אוטומטית בין המפתח שב-PSW לבין המפתח של בלוק הזיכרון שאליו מנסים לגשת:
+                            אם המפתחות זהים – הגישה מותרת. אם שונים – החומרה זורקת פסיקת שגיאה ומערכת ההפעלה קוטלת את התוכנית הסוררת.
+                            <br>• <strong>מפתח-על (Master Key = 0):</strong> מפתח 0000 יועד לקרנל של מערכת ההפעלה ואפשר לו לגשת לכל הבלוקים במערכת ללא הגבלה.<br>
+                            <strong>גבולות היכולת של השיטה:</strong>
+                            1. <strong>מספר תהליכים מוגבל ביותר:</strong> שדה של 4 סיביות מאפשר לכל היותר 16 מפתחות שונים ($2^4 = 16$), ומתוכם אחד שמור למערכת ההפעלה (סה"כ עד 15 תוכניות משתמש במקביל).
+                            2. <strong>היעדר הפשטה:</strong> השיטה סיפקה הגנה בלבד, אך לא סיפקה מרחב כתובות פרטי; תוכניות עדיין נאלצו להשתמש בשינוי מיקום סטטי מסורבל.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על מלון עם 16 חדרים: כל חדר נפתח במפתח בעל צבע מסוים (אדום, ירוק, כחול). כל אורח מקבל מפתח בצבע מסוים ויכול לפתוח רק חדרים שהדלת שלהם צבועה באותו צבע. מנהל המלון מחזיק במפתח מאסטר שפותח את כל הדלתות (מפתח 0). השיטה מונעת גניבות, אך במלון יכולים להתארח רק 15 אורחים במקביל.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            המעבר ההיסטורי להגנה מבוססת מרחב כתובות:
+                            מפתחות ה-IBM 360 היו פריצת דרך באבטחת חומרה, אך סבלו מקיטוע פנימי וחיצוני ומסרבול ניהולי. הפתרון המודרני נטש את שיטת המפתחות הפיזיים לטובת <strong>טבלאות דפים וסיביות הרשאה ב-PTE (קריאה/כתיבה/ביצוע - R/W/X)</strong>, שבהן לכל תהליך יש טבלת מיפוי אישית המבודדת אותו הרמטית מכל תהליך אחר.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת ביצועים: החזקת רגיסטרי מפתחות ייעודיים לכל בלוק של 2KB דרשה רכיבי זיכרון SRAM יקרים בתוך בקר הזיכרון. ככל שנפח ה-RAM הפיזי צמח במחשבים, עלות תחזוקת מערך המפתחות נעשתה בלתי כלכלית.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: מפתחות הגנה בני 4 סיביות אפשרו בידוד חומרה בסיסי ללא הפשטת זיכרון, אך הוגבלו לעד 15 תוכניות במקביל ולא פתרו את בעיית הניידות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 3.1.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 3.1.5: מדוע מחשבים משובצים מודרניים פשוטים (Embedded Systems / IoT) ומכשירי רדיו עדיין בוחרים לפעול ללא הפשטת זיכרון, ומהם השיקולים ההנדסיים המצדיקים זאת?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            למרות שבמחשבים אישיים ובשרתים ניהול זיכרון ישיר נחשב למיושן, במיליארדי מיקרו-בקרים (Microcontrollers כגון ARM Cortex-M0/M3, AVR, PIC) ומכשירי IoT הוא עדיין <strong>המודל הדומיננטי והמועדף</strong> משיקולים הנדסיים מובהקים:
+                            <br>1. <strong>עלות כספית ושטח סיליקון (Die Size):</strong> יחידת ניהול זיכרון (MMU) תופסת שטח פיזי יקר על השבב ומייקרת את ייצורו. מיקרו-בקר שנמכר ב-50 סנט אינו יכול להכיל MMU.
+                            <br>2. <strong>צריכת הספק וסוללה (Low Power):</strong> תרגום כתובות בכל מחזור שעון, רענון טבלאות ו-TLB צורכים אנרגיה רבה. מכשירי קוצבי לב, חיישני חקלאות ושלטים הפועלים על סוללת מטבע למשך 5 שנים חייבים מעבד פשוט ללא MMU.
+                            <br>3. <strong>דטרמיניזם וזמן אמת קשיח (Hard Real-Time):</strong> בזיכרון וירטואלי, זמן הגישה לזיכרון אינו קבוע – הוא תלוי ב-TLB Hits/Misses וב-Page Faults. במערכת בקרת בלימה ברכב (ABS) או בקרת טילים, איחור בלתי צפוי בגלל דפדוף הוא קטלני. בזיכרון ישיר, <strong>זמן הגישה לכל הוראה ידוע מראש בדיוק של ננו-שנייה</strong> (דטרמיניזם מושלם).
+                            <br>4. <strong>אופי היישום הייעודי:</strong> מכשיר IoT מריץ לרוב תוכנה יחידה וקבועה שנצרבה במפעל. אין חשש מתוכנות זרות או מריבוי משתמשים.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו ההבדל בין משאית סמיטריילר ענקית (מחשב רב-תכליתי עם MMU) לבין קורקינט חשמלי פשוט (מיקרו-בקר ללא הפשטה): המשאית כוללת מיזוג אוויר, תא שינה ומערכות ניווט מתוחכמות, אך עולה הון ושותה דלק. הקורקינט קל משקל, זול וזריז, ומיועד לנסיעה קצרה במסלול קבוע מראש.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            מערכות הפעלה לזמן אמת (RTOS):
+                            מערכות כגון FreeRTOS, VxWorks או Zephyr פועלות לרוב במרחב כתובות פיזי אחיד (Flat Memory Model). המשימות נכתבות כחוטים הרצים באותו מרחב, וההגנה מתבססת (אם בכלל) על יחידת <strong>MPU (Memory Protection Unit)</strong> קלת-משקל המגדירה רק מספר מצומצם של תחומי כתובות מותרים בחומרה, ללא שום מנגנון תרגום כתובות או דפדוף.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            סכנת באגים ב-IoT: היעדר בידוד זיכרון הופך באגים כמו Buffer Overflow לקטלניים במיוחד במכשירי IoT – חריגת זיכרון בודדת יכולה לדרוס את כל מחסנית המערכת ולאפשר לתוקף להשתלט על המכשיר ברשת.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ניהול זיכרון ישיר משגשג במערכות משובצות בזכות חיסכון בחומרה, צריכת אנרגיה מינימלית ודטרמיניזם מוחלט הנדרש בזמן אמת קשיח.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה (מבחן עצמי):</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 3.1.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="tab-3-1" data-qid="3.1.1" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.1.1:</span>
+                        מהי המשמעות המדויקת של מצב שבו מחשב פועל ללא "הפשטת זיכרון" (No Memory Abstraction)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 1, 0)">
+                            א. המחשב אינו מכיל זיכרון RAM פיזי ורץ ישירות מהדיסק הקשיח.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 1, 1)">
+                            ב. כל כתובת שהתוכנית פונה אליה בקוד המכונה היא כתובת פיזית ממשית של תא בזיכרון הראשי, ללא תרגום או הגנה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 1, 2)">
+                            ג. מערכת ההפעלה אינה מורשית להשתמש במעבד ומנוהלת ע"י המשתמש.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 1, 3)">
+                            ד. הזיכרון מוצפן אוטומטית ברמת החומרה בכל פעולת קריאה.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה: בהיעדר הפשטת זיכרון, מרחב הכתובות של התוכנית זהה לחלוטין למרחב הפיזי של החומרה. הכתובת 1000 בקוד היא תא 1000 ב-RAM.<br>• א', ג' ו-ד' שגויות לחלוטין.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.1.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="tab-3-1" data-qid="3.1.2" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.1.2:</span>
+                        מדוע נכשל ניסיון נאיבי לטעון שתי תוכניות שונות לשני אזורים נפרדים בזיכרון הפיזי במערכת ללא תמיכת חומרה בשינוי מיקום?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 2, 0)">
+                            א. מכיוון שהמעבד מסוגל לחשב רק פעולת חיבור אחת בכל שנייה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 2, 1)">
+                            ב. מכיוון שתוכניות מחשב אינן תופסות מקום בזיכרון ה-RAM.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 2, 2)">
+                            ג. מכיוון שפקודות הקפיצה (JMP/CALL) והגישה לנתונים מכילות כתובות מוחלטות שנקבעו בזמן הידור, והתוכנית השנייה תקפוץ לקוד של התוכנית הראשונה ותדרוס אותה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 2, 3)">
+                            ד. מכיוון שחוקי התרמודינמיקה אוסרים על הימצאות שני זרמי חשמל באותו כרטיס זיכרון.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה: המהדר מייצר קוד מכונה עם כתובות מוחלטות (Absolute Addresses). אם תוכנית נטענת במיקום פיזי אחר מזה שעבורו הודרה, כל פקודת קפיצה מוחלטת תפנה לתחום הזיכרון של התוכנית הראשונה ותגרום להתרסקות.<br>• א', ב' ו-ד' הן טענות מופרכות.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.1.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="tab-3-1" data-qid="3.1.3" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.1.3:</span>
+                        כיצד פועל מנגנון שינוי המיקום הסטטי (Static Relocation) בזמן טעינת התוכנית (Load Time)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 3, 0)">
+                            א. הטוען של מערכת ההפעלה עובר על טבלת שינוי המיקום בקובץ ומשכתב פיזית את כתובות הקפיצה והמשתנים בקוד המכונה על ידי הוספת כתובת בסיס הטעינה.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 3, 1)">
+                            ב. המעבד מוסיף אוטומטית אוגר Base לכל כתובת בכל מחזור שעון.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 3, 2)">
+                            ג. התוכנית מומרת אוטומטית לשפת JavaScript ורצה בתוך הדפדפן.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 3, 3)">
+                            ד. הטוען מוחק את כל פקודות ה-JMP ומחליף אותן בפקודות NOP.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה: בשינוי מיקום סטטי, הקוד עצמו נערך ומשוכתב בזיכרון ע"י ה-Loader בטרם הריצה, כך שכל כתובת מעודכנת להסט הפיזי שנבחר.<br>• ב' מתאר שינוי מיקום דינמי בחומרה (Dynamic Relocation).<br>• ג' ו-ד' שגויות לחלוטין.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.1.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="tab-3-1" data-qid="3.1.4" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.1.4:</span>
+                        במחשב IBM 360 יושמה הגנת זיכרון באמצעות "מפתחות הגנה" בני 4 סיביות המוצמדים לכל בלוק זיכרון של 2KB. מה הייתה המגבלה הקריטית ביותר של שיטה זו?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 4, 0)">
+                            א. המערכת לא תמכה בזיכרון של יותר מ-64 בתים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 4, 1)">
+                            ב. המעבד היה נשרף פיזית אם שני מפתחות היו זהים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 4, 2)">
+                            ג. לא ניתן היה להריץ שום תוכנית משתמש כלל.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 4, 3)">
+                            ד. מספר המפתחות המקסימלי היה 16 בלבד ($2^4$), מה שהגביל את מספר התוכניות הפעילות במקביל לעד 15 (בניכוי מפתח הקרנל), וללא מתן מרחב כתובות פרטי.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה: עם 4 סיביות ניתן לקודד עד 16 ערכים בלבד. מפתח 0 שימש את הקרנל (Master Key), ונותרו 15 מפתחות בלבד לתהליכי משתמש, ללא הפשטה של מרחב כתובות.<br>• א', ב' ו-ג' שגויות לחלוטין.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 3.1.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="tab-3-1" data-qid="3.1.5" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 3.1.5:</span>
+                        מהי הסיבה המרכזית לכך שמערכות משובצות קריטיות לזמן אמת (כגון מערכת בקרת בלימה ABS ברכב) מעדיפות לפעול ללא יחידת ניהול זיכרון (MMU) וללא זיכרון וירטואלי?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 5, 0)">
+                            א. זיכרון וירטואלי אינו תומך בפעולות מתמטיות של חילוק.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 5, 1)">
+                            ב. זיכרון וירטואלי גורר חוסר דטרמיניזם בזמני תגובה (בגלל Page Faults ו-TLB Misses), בעוד שגישה ישירה מבטיחה זמני גישה קבועים, חזויים ומובטחים מראש בדיוק של ננו-שניות.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 5, 2)">
+                            ג. רכבים אינם מסוגלים לייצר חשמל עבור מעבדים בעלי MMU.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 3.1, 5, 3)">
+                            ד. תקני התעבורה אוסרים על שימוש במערכות הפעלה כלשהן.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה: במערכות זמן אמת קשיח (Hard Real-Time), עמידה ב-Deadline היא עניין של חיים ומוות. תופעות של החטאת TLB או פסיקת דף בלתי צפויה מייצרות השהיות משתנות (Jitter) הפוגעות בדטרמיניזם.<br>• א', ג' ו-ד' הן טענות חסרות שחר.
+                    </div>
+                </div>
+
+            </div>
+        </div>

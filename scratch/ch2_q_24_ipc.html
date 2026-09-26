@@ -1,0 +1,348 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 2.4: ipc (תקשורת וסנכרון תהליכים - IPC)                    -->
+        <!-- ===================================================================== -->
+        <div id="questions-ipc" data-title="שאלות מנחות ותרגול - 💬 2.4 תקשורת בין תהליכים (IPC)">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 2.4.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.4.1: מהו תנאי מרוץ (Race Condition), כיצד דוגמת ספריית ההדפסה (Print Spooler) ממחישה את קריסת שלמות הנתונים, ומהם ארבעת התנאים ההכרחיים לקיומו של פתרון נכון למניעה הדדית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>תנאי מרוץ (Race Condition)</strong> הוא כשל סנכרון שבו שניים או יותר תהליכים או תהליכונים ניגשים במקביל למשאב משותף (זיכרון, קובץ, משתנה), כאשר לפחות אחד מהם מבצע פעולת כתיבה, והתוצאה הסופית של המערכת תלויה באופן בלתי דטרמיניסטי בסדר ההרצה המדויק של הפקודות על ידי המעבד ובתזמון הפסיקות.<br>
+                            בדוגמת <strong>ספריית ההדפסה (Print Spooler)</strong>: קיים משתנה משותף <code>next_free_slot = 7</code>. תהליך א' קורא את הערך 7, אך בדיוק לפני שהוא מספיק לכתוב את שם הקובץ שלו לתא 7, פוקעת מנת הזמן שלו (Clock Interrupt). תהליך ב' עולה, קורא אף הוא את <code>next_free_slot = 7</code>, כותב את הקובץ שלו לתא 7 ומקדם את המשתנה ל-8. כשתהליך א' חוזר לרוץ, הוא ממשיך מהמקום שבו נעצר וכותב את הקובץ שלו לתא 7 – ובכך דורס ומוחק לחלוטין את הקובץ של תהליך ב' ללא כל התראה.<br>
+                            <strong>ארבעת התנאים למניעה הדדית תקנית:</strong>
+                            <br>1. <strong>מניעה הדדית מוחלטת (Mutual Exclusion):</strong> אסור לשני תהליכים לשהות בקטע הקריטי שלהם בו-זמנית.
+                            <br>2. <strong>אי-תלות בחומרה:</strong> אסור להניח הנחות לגבי מהירות המעבדים או מספר הליבות במערכת.
+                            <br>3. <strong>אי-חסימה מבחוץ (Progress):</strong> תהליך השוהה מחוץ לקטע הקריטי שלו (בקטע הלא-קריטי) אינו רשאי לחסום תהליך אחר מלהיכנס לקטע הקריטי.
+                            <br>4. <strong>זמן המתנה סופי / היעדר הרעבה (Bounded Waiting / No Starvation):</strong> תהליך המבקש להיכנס לקטע הקריטי חייב לקבל אישור כניסה תוך פרק זמן סופי, ולא ימתין לנצח.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תארו לעצמכם שני שותפים לדירה שרואים במקרר שנגמר החלב. שותף א' יוצא לסופר לקנות חלב. שותף ב' חוזר הביתה דקה אחריו, רואה מקרר ריק ויוצא אף הוא לסופר. שניהם חוזרים עם קרטון חלב ומגלים שבזבזו כסף ומקום במקרר. אם הפעולה של בדיקת החלב ויציאה לקנייה אינה "אטומית" ומוגנת (קטע קריטי), מתרחשת כפילות מיותרת או דריסה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הסכנה בתנאי מרוץ נובעת מכך שפקודות שנראות לנו כשורה בודדת בשפת עילית (כמו <code>counter++</code> או <code>next_free_slot++</code>) מתורגמות באסמבלי ל<strong>שלוש פקודות מכונה נפרדות</strong>:
+                            <br>1. <code>MOV Reg, [counter]</code> (קריאת הערך מהזיכרון לאוגר)
+                            <br>2. <code>ADD Reg, 1</code> (הגדלת הערך באוגר הפנימי של המעבד)
+                            <br>3. <code>MOV [counter], Reg</code> (כתיבת הערך מהאוגר חזרה לזיכרון הראשי)
+                            <br>פסיקת שעון או החלפת הקשר יכולה להתרחש <em>בכל שלב ביניהן</em>. אם תהליך ב' מתערב בין שלב 1 לשלב 3, הוא קורא ערך ישן, והכתיבה של תהליך א' תדרוס את השינויים של ב'. מכאן נובע הצורך המוחלט ב<strong>קטע קריטי (Critical Region)</strong> – קטע קוד שבו מובטחת מניעה הדדית (Mutual Exclusion) כך שרק ישות אחת רשאית לבצע אותו בכל רגע נתון.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מלכודת קלאסית בפתרונות סנכרון היא הפרת תנאי 3 (אי-חסימה מבחוץ). אם תהליך מתרסק, נתקע בלולאה ארוכה או מבצע I/O בחלק הלא-קריטי של הקוד, אסור בשום אופן שהדבר ימנע מתהליכים אחרים לגשת למשאב המשותף. אלגוריתם שבו תהליך מחוץ לקטע הקריטי קובע מי ירוץ הבא (כפי שקורה ב-Strict Alternation) הוא אלגוריתם פגום מיסודו.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: תנאי מרוץ משחית נתונים עקב חוסר אטומיות בין פקודות קריאה וכתיבה; פתרון תקני מחייב קטע קריטי העומד בכל 4 התנאים: מניעה הדדית, חופש מהנחות חומרה, אי-חסימה ע"י תהליך חיצוני, והמתנה סופית ללא הרעבה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.4.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.4.2: מדוע הפתרונות של השבתת פסיקות, משתני נעילה פשוטים והתחלפות קפדנית (Strict Alternation) נכשלו, וכיצד אלגוריתם פיטרסון (Peterson's Algorithm) מצליח לממש מניעה הדדית בתוכנה ללא חומרה ייעודית?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>מדוע נכשלו הפתרונות המוקדמים:</strong>
+                            <br>• <strong>השבתת פסיקות (Disabling Interrupts):</strong> כיבוי פסיקות (<code>cli</code>) בכניסה והדלקתן (<code>sti</code>) ביציאה. נכשל כי: (1) הענקת הרשאה כזו לקוד משתמש מסוכנת – לולאה אינסופית תשבית את המחשב כולו; (2) <strong>אינו עובד בריבוי ליבות/מעבדים</strong> – כיבוי פסיקות במעבד א' אינו מונע ממעבד ב' לגשת לאפיק הזיכרון במקביל.
+                            <br>• <strong>משתנה נעילה תוכנתי (Lock Variable):</strong> משתנה משותף <code>lock</code> (0 פנוי, 1 תפוס). נכשל כי הוא <strong>סובל מתנאי המרוץ בעצמו</strong>: שני תהליכים קוראים 0 יחד, שניהם כותבים 1 ושניהם נכנסים במקביל.
+                            <br>• <strong>התחלפות קפדנית (Strict Alternation):</strong> משתנה <code>turn</code> המאלץ תורות לסירוגין. נכשל כי הוא <strong>מפר את תנאי 3</strong>: אם תהליך 0 מבצע חישוב ארוך בקטע הלא-קריטי שלו כש-<code>turn=0</code>, תהליך 1 רוצה להיכנס שוב לקטע הקריטי אך נחסם בלולאת המתנה פעילה (Spinlock) ע"י תהליך שבכלל לא משתמש במשאב.<br>
+                            <strong>פתרון פיטרסון (Peterson's Algorithm - 1981):</strong> משלב מערך הבעת עניין <code>interested[2]</code> עם משתנה תור <code>turn</code>. הרעיון הגאוני מבוסס על <strong>אדיבות (Politeness)</strong>: תהליך מצהיר <code>interested[process] = TRUE</code> אך מיד מעביר את התור לחברו <code>turn = process</code>. תנאי ההמתנה הוא <code>while (turn == process && interested[other] == TRUE);</code>. אם שני התהליכים מנסים להיכנס בו-זמנית, האחרון שכותב ל-<code>turn</code> דורס את ערך הקודם, ולכן הוא זה שייתקע בלולאה בעוד שהראשון ייכנס מיידית.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            אנלוגיית הדלת הצרה: שני ג'נטלמנים (תהליך 0 ותהליך 1) מגיעים לדלת. כל אחד מצהיר שהוא מעוניין להיכנס (<code>interested=TRUE</code>), אך אומר לחברו בנימוס: "אחריך בבקשה!" (<code>turn=me</code>, כלומר אם התור שלי, אני מוכן לחכות לך). הג'נטלמן השני אומר גם הוא "אחריך!". מכיוון שהאמירה השנייה היא זו שנשמעת אחרונה בחדר (דריסת הערך של <code>turn</code>), הג'נטלמן השני הוא זה שנאלץ לעמוד ולחכות, בעוד שהראשון עובר בדלת בבטחה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            הוכחת נכונות אלגוריתם פיטרסון:
+                            <br>1. <strong>מניעה הדדית:</strong> כדי ששני התהליכים ישהו בקטע הקריטי יחד, שניהם חייבים לצאת מלולאת ה-<code>while</code>. פירוש הדבר הוא שברגע הכניסה התקיים עבור תהליך 0: <code>turn != 0 || interested[1] == FALSE</code>, ועבור תהליך 1: <code>turn != 1 || interested[0] == FALSE</code>. אך שניהם מעוניינים (<code>interested[0]=interested[1]=TRUE</code>), והמשתנה <code>turn</code> יכול להחזיק ערך בודד בלבד (0 או 1). סתירה! מכאן שמניעה הדדית מובטחת.
+                            <br>2. <strong>חופש מחסימה חיצונית:</strong> אם תהליך 1 נמצא בקטע הלא-קריטי, הרי ש-<code>interested[1] == FALSE</code>. כאשר תהליך 0 ינסה להיכנס, לולאת ה-<code>while</code> תסתיים מיד (כי <code>interested[other]</code> הוא שקר) ותהליך 0 ייכנס ללא שום עיכוב, ללא תלות ב-<code>turn</code>.
+                            <br>3. <strong>היעדר הרעבה:</strong> אם שניהם ממתינים, האחרון שקבע את <code>turn</code> מאפשר לראשון לרוץ. כשהראשון יוצא מהקטע הקריטי הוא מאפס את <code>interested[0] = FALSE</code>, דבר שמשחרר מיד את השני מהלולאה.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            במעבדים מודרניים עם ביצוע הוראות מחוץ לסדר (Out-of-Order Execution / Speculative Execution) ושמירה מקומית במטמון (Store Buffers), אלגוריתם פיטרסון התוכנתי עלול להיכשל ללא שימוש ב<strong>מחסומי זיכרון (Memory Barriers / Fences)</strong>! החומרה עלולה לשנות את סדר הכתיבה של <code>interested</code> ושל <code>turn</code> כדי לבצע אופטימיזציה, ובכך לפגוע בלוגיקה. זו הסיבה שבמערכות הפעלה מודרניות מסתמכים תמיד על הוראות חומרה אטומיות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: השבתת פסיקות נכשלה בגלל ריבוי ליבות, משתנה נעילה בגלל מרוץ עצמי, והתחלפות קפדנית בגלל חסימה ע"י תהליך חיצוני; פיטרסון הוכיח שסנכרון תוכנתי טהור אפשרי באמצעות שילוב חכם של עניין ותור אדיב.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.4.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.4.3: כיצד פועלת פקודת החומרה TSL (Test and Set Lock), מהי בעיית היפוך העדיפויות (Priority Inversion) הנוצרת תחת מנגנוני המתנה פעילה (Spinlocks), וכיצד מנגנון חסימה פותר אותה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>פקודת החומרה TSL (Test and Set Lock):</strong> הוראת מכונה אטומית הנתמכת בחומרה (<code>TSL RX, LOCK</code>). הפקודה קוראת את הערך של תא הזיכרון <code>LOCK</code> לתוך אוגר <code>RX</code>, ובאותו מחזור חומרה כותבת ערך שונה מאפס (1) לתוך <code>LOCK</code>. פעולה זו היא <strong>בלתי ניתנת לחלוקה (אטומית)</strong> מכיוון שהמעבד נועל פיזית את אפיק הזיכרון (Memory Bus) למשך ביצוע ההוראה, ומונע מכל מעבד או ליבה אחרת לגשת לזיכרון. אם הערך שנקרא ב-<code>RX</code> היה 0, הקטע הקריטי היה פנוי והתהליך נכנס; אם נקרא 1, הקטע תפוס והתהליך רץ בלולאה פעילה (Spinlock).<br>
+                            <strong>בעיית היפוך העדיפויות (Priority Inversion):</strong> נניח מערכת עם שני תהליכים: תהליך חלש בעדיפות נמוכה ($L$) ותהליך חזק בעדיפות גבוהה ($H$), והמתזמן תמיד בוחר את התהליך בעל העדיפות הגבוהה ביותר מבין המוכנים. תהליך $L$ נכנס לקטע הקריטי ותופס נעילת Spinlock. במהלך ריצתו, $H$ מתעורר (למשל מפעולת I/O). המתזמן מנשל מיד את $L$ ומעביר את המעבד ל-$H$. תהליך $H$ מנסה לתפוס את הנעילה, מגלה שהיא תפוסה ונכנס ללולאת <strong>המתנה פעילה (Busy Waiting)</strong>. המלכודת הקטלנית: מכיוון ש-$H$ נמצא במצב Ready/Running וזולל 100% מזמן המעבד, המתזמן <strong>לעולם לא ייתן למעבד לחזור ל-$L$</strong>. כתוצאה מכך, $L$ לעולם לא ישחרר את הנעילה, ו-$H$ ימתין בלולאה לנצח – <strong>Deadlock מוחלט</strong> הנובע משימוש בהמתנה פעילה.<br>
+                            <strong>הפתרון באמצעות מנגנון חסימה (Blocking):</strong> מעבר ממודל המתנה פעילה למודל שינה (<code>sleep()</code>). כאשר תהליך מגלה שהמשאב נעול, הוא אינו רץ בלולאה אלא קורא לקריאת מערכת שמעבירה אותו למצב <strong>Blocked</strong> ומפנה את המעבד. במצב זה, $H$ נחסם, המתזמן מקצה את המעבד ל-$L$, שמשלים את עבודתו בקטע הקריטי, משחרר את הנעילה ומעיר את $H$ (<code>wakeup()</code>).
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תארו לעצמכם מנהל בכיר בחברה ($H$) ועובד זוטר ($L$). העובד נכנס למחסן המסמכים ונועל את הדלת. המנהל מגיע לדלת, מגלה שהיא נעולה, ומתחיל לצעוק ולדפוק על הדלת ללא הפסקה (המתנה פעילה). כל עוד המנהל עומד וצועק, העובד שבפנים מפחד לצאת ולא יכול לסיים לקפל את הניירת. אם המנהל ימשיך לצעוק לנצח מבלי ללכת לשבת בחדרו (חסימה), שניהם ייתקעו שם לעד. על המנהל לחזור למשרדו לישון/לעבוד, והעובד יודיע לו בסיום שהדלת פתוחה.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            ההשוואה הטכנית בין Spinlock ל-Blocking Mutex:
+                            <br>• <strong>Spinlock (מבוסס TSL):</strong> חוסך את עלות החלפת ההקשר (Context Switch). מתאים אך ורק למערכות מרובות ליבות (Symmetric Multiprocessing - SMP) כאשר ידוע שהקטע הקריטי <strong>קצר ביותר</strong> (כמה עשרות הוראות מכונה) והתהליכון הנועל רץ במקביל על ליבה פיזית אחרת. במעבד יחיד (Uniprocessor), Spinlock הוא אסון מוחלט שמבזבז מחזורי מעבד לשווא.
+                            <br>• <strong>פתרון Priority Inheritance (הורשת עדיפויות):</strong> כאשר נדרש להשתמש בנעילות בזמן אמת, מערכות הפעלה מתקדמות מיישמות פרוטוקול הורשת עדיפות: ברגע ש-$H$ מנסה לתפוס נעילה שמוחזקת ע"י $L$, מערכת ההפעלה <strong>מעלה זמנית את עדיפותו של $L$ לרמה של $H$</strong>. הדבר מונע מתהליכי ביניים לעקוף את $L$, מאפשר לו לסיים את הקטע הקריטי במהירות שיא, וברגע שהוא משחרר את הנעילה עדיפותו חוזרת לרמתה המקורית ו-$H$ מקבל את המשאב.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            מקרה היסטורי מפורסם של Priority Inversion כמעט מוטט את משימת גשושית המאדים <em>Mars Pathfinder</em> ב-1997: משימת תקשורת בעדיפות נמוכה לקחה מנעול Mutex, משימת איסוף מידע בעדיפות בינונית מנעה ממנה להשלים את הקוד, ומשימת ניהול המחשב בעדיפות עליונה נתקעה בהמתנה למנעול, מה שגרם ל-Watchdog Timer לאפס את הגשושית שוב ושוב עד שהמהנדסים הפעילו מרחוק את פרוטוקול הורשת העדיפויות.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: TSL מבטיח מניעה הדדית ברמת החומרה אך מבוסס על המתנה פעילה; שילוב של Spinlock עם תזמון מבוסס עדיפויות יוצר קיפאון עקב Priority Inversion, הנפתר ע"י חסימת התהליך (Sleep) או הורשת עדיפות (Priority Inheritance).
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.4.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.4.4: מהי תופעת "פסיקת ההשכמה האבודה" (Lost Wakeup) בבעיית היצרן-צרכן, וכיצד סמפורים של דייקסטרה (Semaphores) עם פעולות Down ו-Up פותרים אותה באופן אטומי?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>בעיית היצרן-צרכן (Bounded Buffer Problem):</strong> יצרן מייצר פריטים ומכניסם למאגר מוגבל בגודל $N$, וצרכן שולף אותם. אם המאגר מלא, היצרן חייב להמתין; אם המאגר ריק, הצרכן חייב להמתין.<br>
+                            <strong>תופעת פסיקת ההשכמה האבודה (Lost Wakeup):</strong> נניח מימוש נאיבי המשתמש במשתנה <code>count</code> ובקריאות <code>sleep()</code> ו-<code>wakeup()</code>:
+                            <br>1. המאגר ריק (<code>count == 0</code>). הצרכן קורא את <code>count</code> ורואה שהוא 0, ומחליט להיכנס לשינה.
+                            <br>2. <strong>אסון התזמון:</strong> בדיוק לפני שהצרכן מבצע את פקודת ה-<code>sleep()</code>, מתרחשת החלפת הקשר והמעבד עובר ליצרן.
+                            <br>3. היצרן מייצר פריט, מכניסו למאגר ומקדם ל-<code>count = 1</code>. מכיוון שהמאגר היה ריק קודם, היצרן שולח אות <code>wakeup(consumer)</code> כדי להעיר את הצרכן.
+                            <br>4. <strong>הכשל הקטלני:</strong> הצרכן <em>עדיין לא ישן טכנית</em> (הוא היה במצב Ready/Running)! לכן, אות ההשכמה הולך לאיבוד בחלל.
+                            <br>5. הצרכן חוזר לרוץ, ומבצע כעת את ה-<code>sleep()</code> שהחליט עליו קודם. הוא נרדם לנצח.
+                            <br>6. היצרן ימשיך למלא את המאגר עד שיתמלא כולו ($N$), ואז יירדם גם הוא. <strong>שני התהליכים תקועים במבוי סתום (Deadlock) לצמיתות</strong>.<br>
+                            <strong>פתרון הסמפורים של דייקסטרה (Dijkstra - 1965):</strong>
+                            סמפור הוא משתנה שלם הפותר את הבעיה ע"י <strong>צבירת אותות השכמה (Counting Wakeups)</strong>. לסמפור שתי פעולות אטומיות הנתמכות ע"י הקרנל:
+                            <br>• <strong>Down (Wait / P):</strong> בודק אם הערך $> 0$. אם כן, מקטין ב-1 וממשיך. אם הערך הוא 0, התהליך נרדם ועובר למצב Blocked.
+                            <br>• <strong>Up (Signal / V):</strong> מגדיל את הערך ב-1. אם יש תהליכים ישנים הממתינים על הסמפור, הקרנל מעיר אחד מהם.
+                            <br>אם ה-Up מתבצע לפני ה-Down, הערך עולה ל-1 (ההשכמה נשמרת בסמפור!), וכאשר התהליך השני מבצע Down הוא לא נרדם אלא מקטין ל-0 וממשיך. שום השכמה אינה הולכת לאיבוד לעולם.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            תארו לעצמכם פעמון דלת רגיל: אם צלצלתם בפעמון בזמן שבעל הבית היה בחצר, הוא לא שמע את הצלצול והצלצול התנדף (Lost Wakeup). סמפור הוא כמו תיבת דואר: אם צלצלתם והוא לא היה בבית, שלשלתם מכתב לתיבה (ערך הסמפור עלה ל-1). כשהוא יחזור, הוא יבדוק את התיבה, יראה שיש מכתב (Down), ייקח אותו וימשיך בעבודתו מבלי להירדם.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            המימוש המלא והמדויק של בעיית היצרן-צרכן באמצעות 3 סמפורים:
+                            <br>1. <code>semaphore mutex = 1;</code> (סמפור בינארי להבטחת מניעה הדדית בגישה למאגר).
+                            <br>2. <code>semaphore empty = N;</code> (סופר כמה תאים פנויים נותרו במאגר).
+                            <br>3. <code>semaphore full = 0;</code> (סופר כמה תאים מלאים קיימים במאגר).
+                            <br>קוד היצרן:
+                            <code>down(&empty); down(&mutex); insert_item(); up(&mutex); up(&full);</code>
+                            <br>קוד הצרכן:
+                            <code>down(&full); down(&mutex); remove_item(); up(&mutex); up(&empty);</code>
+                            <br><strong>אטומיות מוחלטת:</strong> בדיקת ערך הסמפור, שינויו והרדמת/הערת התהליך מבוצעות כפעולה אחת בקרנל (עם השבתת פסיקות קצרה בליבה הבודדת או נעילת Bus רגעית), כך שלעולם לא יכולה להתרחש החלפת הקשר באמצע פעולת Down או Up.
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            <strong>מלכודת סדר ה-Down (מלכודת בחינות נפוצה):</strong> אם מתכנת ישנה את סדר הפקודות ביצרן ל:
+                            <code>down(&mutex); down(&empty);</code>
+                            נניח שהמאגר מלא (<code>empty == 0</code>). היצרן תופס את ה-<code>mutex</code> (נועל את המאגר), ואז מבצע <code>down(&empty)</code> ונרדם! כעת הצרכן מנסה לגשת למאגר, אך הוא נתקע על <code>down(&mutex)</code>. היצרן ישן ומחכה שהצרכן יפנה מקום, והצרכן ישן ומחכה שהיצרן ישחרר את ה-mutex. <strong>Deadlock קטלני!</strong> הכלל: תמיד בודקים מקום/פריטים (סמפורי ספירה) <em>לפני</em> שתופסים את נעילת המניעה ההדדית (סמפור Mutex).
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: פסיקת השכמה אבודה גורמת ל-Deadlock כאשר אות ה-wakeup נשלח לפני ה-sleep; סמפורים פותרים זאת ע"י שמירת מונה השכמות אטומי (Down/Up) שאינו מאבד אותות לעולם.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 2.4.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 2.4.5: מהם ההבדלים המהותיים בין סמפורים, מנעולי משתמש (Mutexes / Futexes), מבני פיקוח (Monitors) ומחסומים (Barriers), ומתי נעדיף מנגנון העברת הודעות (Message Passing)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            <strong>השוואה בין פרימיטיבי הסנכרון המרכזיים:</strong>
+                            <br>• <strong>סמפור (Semaphore):</strong> מנגנון קרנל המנהל מונה שלם. משמש הן למניעה הדדית (סמפור בינארי 0/1) והן ל<strong>סנכרון תלויות ומשאבים</strong> (סמפור סופר). פגיע לטעויות מתכנת בסדר ה-Up/Down.
+                            <br>• <strong>מנעול הדדי (Mutex):</strong> סמפור בינארי ייעודי למניעה הדדית (0 נעול, 1 פנוי) עם בעלות מוגדרת (התהליכון שנועל הוא היחיד שרשאי לשחרר).
+                            <br>• <strong>פיוטקס (Futex - Fast Userspace Mutex):</strong> שילוב ביצועים אופטימלי: הנעילה מתבצעת במרחב המשתמש באמצעות פקודה אטומית. כל עוד אין תחרות (אין Contention) – <strong>אין פנייה לקרנל כלל</strong>. רק כאשר המשאב תפוס מתבצעת קריאת מערכת להרדמת התהליכון.
+                            <br>• <strong>מבנה פיקוח (Monitor):</strong> מבנה נתונים של <strong>שפת תכנות עילית</strong> (כגון <code>synchronized</code> ב-Java). הקומפיילר מייצר את נעילות המניעה ההדדית אוטומטית בכניסה וביציאה מפונקציות, ומאפשר סנכרון גמיש דרך <strong>משתני תנאי (Condition Variables)</strong> עם <code>wait()</code> ו-<code>signal()</code>.
+                            <br>• <strong>מחסום (Barrier):</strong> מנגנון סנכרון קבוצתי לשלבים (Phases): אף תהליכון בקבוצה אינו מורשה להמשיך לשלב הבא עד שכל $N$ התהליכונים הגיעו למחסום.
+                            <br>• <strong>העברת הודעות (Message Passing):</strong> כל המנגנונים לעיל מניחים קיומו של <strong>זיכרון ראשי משותף (Shared Memory)</strong>. כאשר המערכת מבוזרת (רשת מחשבים, קלאסטר, שרתים עצמאיים ללא זיכרון פיזי משותף), מנגנון העברת הודעות (<code>send</code> / <code>receive</code>) הוא הפתרון היחיד האפשרי.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            הסמפור הוא אולר שוויצרי ידני – עוצמתי אך קל לחתוך איתו את האצבע. המוניטור הוא מכונית אוטונומית – עולים עליה, והמחשב מנווט, עוצר ומוודא שאף אחד לא מתנגש (הקומפיילר מגן). המחסום הוא מדריך טיולים שעוצר את כל הקבוצה במעבר ההרים ומסרב להמשיך עד שכולם התאספו. העברת הודעות היא דואר או שליחת הודעות וואטסאפ – כשאין לכם שולחן משותף לשבת סביבו, חייבים לשלוח חבילות מעבר לרשת.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            סמנטיקת ה-Signal במשתני תנאי של מוניטורים:
+                            <br>כאשר תהליכון בתוך מוניטור מפעיל <code>signal(c)</code> ומעיר תהליכון שהמתין ב-<code>wait(c)</code>, נוצרת בעיה: כעת שני תהליכים נמצאים בתוך המוניטור, מה שמפר מניעה הדדית!
+                            <br>קיימות 3 גישות קלאסיות לפתרון:
+                            <br>1. <strong>סמנטיקת Hoare:</strong> התהליכון המעיר מושהה מיד, והתהליכון שהתעורר רץ באופן מיידי. מבטיח שהתנאי עדיין נכון.
+                            <br>2. <strong>סמנטיקת Mesa / Java:</strong> התהליכון המעיר ממשיך לרוץ כרגיל, והתהליכון שהתעורר עובר לתור ה-Ready. כשהוא ייכנס שוב למוניטור, ייתכן שתהליך אחר כבר שינה את המצב, ולכן הוא <strong>חייב לבדוק את התנאי בלולאת <code>while</code> ולא ב-<code>if</code></strong> (<code>while (!condition) wait();</code>).
+                            <br>3. <strong>סמנטיקת Brinch Hansen:</strong> התהליכון המעיר חייב לצאת מהמוניטור מיד בעת שליחת ה-signal (<code>signal_and_exit</code>).
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            אתגרי העברת הודעות במערכות מבוזרות: בניגוד לסמפור שיושב ב-RAM אמין, בהעברת הודעות ברשת חבילות עלולות ללכת לאיבוד, להגיע באי-סדר, או להיות משוכפלות. הדבר מחייב מספור רציף (Sequence Numbers), שליחת אישורי קבלה (ACKs), מנגנוני פקיעת תוקף (Timeouts) ושיטות הצפנה ואימות (Authentication) כדי לוודא שהשולח והמקבל אותנטיים.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: סמפורים ומנעולים מספקים סנכרון זיכרון נמוך; פיוטקסים מייעלים אותם במרחב המשתמש; מוניטורים מספקים בטיחות קומפיילר עילית; מחסומים מסנכרנים שלבים קבוצתיים; והעברת הודעות היא הכלי הבלעדי למערכות מבוזרות ללא זיכרון משותף.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות / שאלות רב-ברירה (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list mt-8 space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>📝 שאלות תרגול רב-ברירה (מבחן עצמי):</strong> בחרו את התשובה הנכונה ביותר. לחיצה על אפשרות תציג מיד משוב צבעוני וניתוח טכנולוגי מעמיק.
+                </div>
+
+                <!-- שאלה אמריקאית 2.4.1 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="ipc" data-qid="2.4.1" data-correct="2">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.4.1:</span>
+                        איזה מבין ארבעת התנאים ההכרחיים למניעה הדדית תקנית מופר בפתרון התוכנה של "התחלפות קפדנית" (Strict Alternation) באמצעות משתנה <code>turn</code>?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 1, 0)">
+                            א. תנאי 1: שני תהליכים נכנסים לקטע הקריטי שלהם בו-זמנית.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 1, 1)">
+                            ב. תנאי 2: הפתרון מניח הנחות לגבי מספר הליבות או מהירות המעבד.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 1, 2)">
+                            ג. תנאי 3: תהליך השוהה מחוץ לקטע הקריטי (בקטע הלא-קריטי) חוסם תהליך אחר מלהיכנס לקטע הקריטי שלו.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 1, 3)">
+                            ד. הפתרון אינו מפר אף תנאי ונחשב לאלגוריתם המושלם למערכות מודרניות.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ג' נכונה. ב-Strict Alternation, אם תהליך 0 יצא מהקטע הקריטי וקבע <code>turn = 1</code>, ואז תהליך 1 נמצא בקטע הלא-קריטי שלו ומבצע לולאת חישוב ארוכה או פעולת I/O, תהליך 0 שרוצה להיכנס שוב לקטע הקריטי נתקע בלולאת <code>while (turn != 0)</code>. כלומר, תהליך הנמצא מחוץ לקטע הקריטי חוסם תהליך אחר מלגשת למשאב, וזוהי הפרה ישירה של תנאי 3.<br>• א' שגויה: מניעה הדדית מוחלטת מתקיימת.<br>• ב' שגויה: אינו מניח הנחות מהירות.<br>• ד' שגויה: הפתרון נפסל עקב הפרת תנאי 3.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.4.2 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="ipc" data-qid="2.4.2" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.4.2:</span>
+                        כיצד פותר אלגוריתם פיטרסון (Peterson's Algorithm) את ההתנגשות כאשר שני תהליכים מנסים להיכנס לקטע הקריטי בו-זמנית?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 2, 0)">
+                            א. הוא מגריל מספר אקראי בחומרה כדי לקבוע מי ייכנס ראשון.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 2, 1)">
+                            ב. שני התהליכים מצהירים על עניין, אך התהליך האחרון שכותב למשתנה turn מעביר את התור לחברו ונתקע בלולאת ההמתנה, בעוד שהראשון נכנס.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 2, 2)">
+                            ג. הוא משבית את קווי הפסיקות של המעבד עד שאחד התהליכים מסיים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 2, 3)">
+                            ד. הוא מעביר את שני התהליכים למצב Blocked ושולח אות למתזמן של הקרנל.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה. באלגוריתם פיטרסון, כל תהליך שמבקש להיכנס קובע <code>interested[me] = TRUE</code> ואז קובע <code>turn = me</code>. אם שניהם מבצעים זאת כמעט בו-זמנית, פעולות הכתיבה ל-<code>turn</code> מתרחשות בזו אחר זו על אפיק הזיכרון. הכתיבה השנייה דורסת את הראשונה, ולכן עבור התהליך השני מתקיים <code>turn == me</code> והוא נתקע בלולאת ה-while, בעוד שעבור התהליך הראשון תנאי הלולאה נשבר והוא נכנס מיידית.<br>• א', ג' ו-ד' שגויות: אלגוריתם פיטרסון הוא תוכנתי דטרמיניסטי טהור במרחב המשתמש.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.4.3 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="ipc" data-qid="2.4.3" data-correct="0">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.4.3:</span>
+                        מדוע השבתת פסיקות (Disabling Interrupts) אינה מספקת פתרון למניעה הדדית במחשבים מודרניים מרובי מעבדים או מרובי ליבות (Multi-core)?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 3, 0)">
+                            א. מכיוון שהשבתת פסיקות במעבד מסוים משפיעה רק על אותו מעבד, ואינה מונעת ממעבדים אחרים לגשת בו-זמנית לאפיק הזיכרון המשותף.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 3, 1)">
+                            ב. מכיוון שבמעבדים מרובי ליבות פקודת השבתת פסיקות אינה קיימת כלל בסט הפקודות.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 3, 2)">
+                            ג. מכיוון שפסיקות שעון מופקות אך ורק בדיסק הקשיח ולא ניתן לכבותן.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 3, 3)">
+                            ד. מכיוון שהשבתת פסיקות גורמת מיד ל-Page Fault בקרנל.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה א' נכונה. פקודת כיבוי פסיקות (כמו <code>cli</code> ב-x86) מכבה את קו הפסיקות של הליבה שמריצה את הפקודה בלבד. היא אינה מונעת מליבה אחרת הפועלת במקביל לגשת לזיכרון הראשי (Shared Memory) ולדרוס את הנתונים בקטע הקריטי. כדי לחסום ליבות אחרות נדרשת נעילת אפיק חומרתית כמו בפקודת TSL.<br>• ב' שגויה: הפקודה קיימת.<br>• ג' ו-ד' שגויות: פסיקות שעון מגיעות מטיימר (APIC), וכיבוי פסיקות אינו גורם ל-Page Fault.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.4.4 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="ipc" data-qid="2.4.4" data-correct="3">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.4.4:</span>
+                        נתון המימוש הקלאסי של בעיית היצרן-צרכן עם סמפורים: <code>mutex=1</code>, <code>empty=N</code>, <code>full=0</code>. מה יתרחש אם נשנה את סדר הפקודות בקוד היצרן כך ש-<code>down(&mutex)</code> יבוצע לפני <code>down(&empty)</code>, כאשר המאגר מלא לחלוטין?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 4, 0)">
+                            א. התוכנית תמשיך לפעול כרגיל ביעילות גבוהה יותר.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 4, 1)">
+                            ב. היצרן ידרוס פריטים קיימים במאגר ויגרום לאיבוד נתונים.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 4, 2)">
+                            ג. מערכת ההפעלה תזהה את הטעות ותהפוך את הסדר באופן אוטומטי.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 4, 3)">
+                            ד. היצרן ינעל את ה-mutex ויירדם על empty=0; הצרכן ייחסם בבואו לגשת למאגר על ה-mutex, וייווצר מבוי סתום (Deadlock) קבוע.
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ד' נכונה. כאשר המאגר מלא, <code>empty == 0</code>. אם היצרן מבצע קודם <code>down(&mutex)</code>, ה-mutex ננעל (ערכו 0). לאחר מכן היצרן מבצע <code>down(&empty)</code> ונכנס לתרדמת (Blocked) מכיוון שאין מקום פנוי. כעת הצרכן מנסה לגשת למאגר כדי להוציא פריט, אך הפקודה הראשונה שלו היא <code>down(&mutex)</code> – והוא נחסם מכיוון שהיצרן הישן מחזיק בנעילה! שני התהליכים תקועים במבוי סתום (Deadlock) שלעולם לא ישתחרר.<br>• א' שגויה: התוכנית קורסת ב-Deadlock.<br>• ב' שגויה: היצרן נרדם לפני הכתיבה.<br>• ג' שגויה: סמפורים הם מנגנון נמוך ומערכת ההפעלה אינה משנה סדר פקודות.
+                    </div>
+                </div>
+
+                <!-- שאלה אמריקאית 2.4.5 -->
+                <div class="mcq-card border border-slate-200 rounded-2xl bg-white p-5 shadow-sm" data-sub="ipc" data-qid="2.4.5" data-correct="1">
+                    <div class="font-bold text-xs md:text-sm text-slate-900 mb-3 leading-relaxed">
+                        <span class="text-indigo-600 font-extrabold ml-1">שאלה 2.4.5:</span>
+                        מהו היתרון הארכיטקטוני המרכזי של מנעול Futex (Fast Userspace Mutex) על פני Mutex רגיל של מערכת ההפעלה?
+                    </div>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 5, 0)">
+                            א. הוא אינו מאפשר חסימת תהליכים לעולם ומבצע תמיד Busy Waiting.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 5, 1)">
+                            ב. כאשר אין תחרות (המשאב פנוי), הנעילה והשחרור מתבצעים כולם במרחב המשתמש בפעולה אטומית ללא אף קריאת מערכת (Trap) לקרנל.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 5, 2)">
+                            ג. הוא מאפשר שיתוף מנעולים בין מחשבים שונים ברשת ללא צורך בכרטיס רשת.
+                        </div>
+                        <div class="mcq-option p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all" onclick="handleOptionClick(this, 2.4, 5, 3)">
+                            ד. הוא מונע באופן מוחלט כל צורך במשתני תנאי (Condition Variables).
+                        </div>
+                    </div>
+                    <div class="mcq-explanation hidden mt-4 p-4 rounded-xl border text-xs md:text-sm leading-relaxed"></div>
+                    <div class="mcq-explanation-content hidden">
+                        <strong>💡 הסבר מפורט:</strong> תשובה ב' נכונה. רוב הנעילות בתוכנה מתרחשות במצב שבו אין תחרות פעילה (Uncontended Case). מנעול Mutex קלאסי של הקרנל דורש System Call (Trap) בכל נעילה ושחרור. לעומת זאת, Futex מנסה קודם לנעול במרחב המשתמש בעזרת פקודה אטומית (כגון Compare-and-Swap). אם המנעול היה פנוי, הפעולה מסתיימת בתוך ננו-שניות ללא פנייה לקרנל. רק אם המשאב תפוס ויש צורך להרדים את התהליך (Contended Case), מתבצעת קריאת מערכת לגרעין.<br>• א' שגויה: פיוטקס אינו מבצע Busy Waiting בתחרות.<br>• ג' שגויה: דורש זיכרון משותף.<br>• ד' שגויה: פיוטקסים משמשים כבסיס למשתני תנאי.
+                    </div>
+                </div>
+            </div>
+        </div>

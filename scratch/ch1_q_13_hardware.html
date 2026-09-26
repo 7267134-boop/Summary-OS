@@ -1,0 +1,458 @@
+        <!-- ===================================================================== -->
+        <!-- SUB-CHAPTER 1.3: os-hardware (סקירה של חומרת המחשב)                   -->
+        <!-- ===================================================================== -->
+        <div id="questions-os-hardware" data-title="שאלות מנחות ותרגול - 💻 1.3 סקירה של חומרת המחשב">
+            
+            <!-- 1. שאלות פתוחות להעמקה (5 שאלות) -->
+            <div class="open-questions-list space-y-4">
+                <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl mb-4 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 שאלות מנחות להעמקה:</strong> לחצו על כל שאלה כדי לחשוף מיד את התשובה המפורטת, הניתוח הטכנולוגי והאנלוגיה האינטואיטיבית.
+                </div>
+
+                <!-- שאלה 1.3.1 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.3.1: מה תפקידם של אוגרי המעבד המיוחדים PC, SP ו-PSW, וכיצד הם משתתפים במעבר בין מצב משתמש למצב גרעין?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            שלושת האוגרים המיוחדים הם עמודי התווך של בקרת הריצה במעבד:
+                            1. <strong>מונה הפקודות (PC - Program Counter):</strong> מצביע על הכתובת בזיכרון של פקודת המכונה הבאה לביצוע. המעבד מקדם אותו אוטומטית לאחר כל הבאת פקודה (Fetch).
+                            2. <strong>מצביע המחסנית (SP - Stack Pointer):</strong> מצביע על ראש המחסנית הפעילה הנוכחית בזיכרון, המשמשת לאחסון מסגרות קריאה לפונקציות, משתנים מקומיים וכתובות חזרה.
+                            3. <strong>מילת מצב התוכנית (PSW - Program Status Word):</strong> אוגר בקרה קריטי המכיל את קודי התנאי האריתמטיים (Carry, Zero, Overflow), רמת עדיפות המעבד, ומעל הכל – את <strong>סיבית המצב (Mode Bit)</strong> הקובעת האם המעבד נמצא ב-Kernel Mode (0) או ב-User Mode (1).
+                            <strong>השתתפותם במעבר למצב גרעין:</strong>
+                            בעת פסיקה או קריאת מערכת (TRAP), חומרת המעבד שומרת באופן אטומי את ה-PC וה-PSW של תוכנית המשתמש במחסנית הגרעין (Kernel Stack), משנה את ה-Mode Bit ב-PSW למצב גרעין מיוחס (0), ומציבה ב-PC את כתובת שגרת הטיפול בליבה מתוך טבלת וקטורי הפסיקות.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על שחקן בהצגת תיאטרון: ה-PC הוא הסימניה במחזה שמראה איזה משפט הוא צריך לדקלם עכשיו; ה-SP הוא מחברת הרשמים שלו על השולחן; וה-PSW הוא התג שתלוי לו על הצוואר – אם כתוב עליו "שחקן פשוט" אסור לו להיכנס לחדר הבקרה, אך אם מתרחשת שריפה, מנהל הבמה מעביר אותו לתג "סדרן חירום" (Kernel Mode) ומורה לו מיד לפנות את הקהל לפי נוהל קבוע.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>החלפת מצביע מחסנית:</strong> במערכות מודרניות, בעת מעבר ל-Kernel Mode, המעבד מחליף אוטומטית גם את ה-SP כך שיצביע על מחסנית הליבה של התהליך ולא על מחסנית המשתמש, כדי למנוע זיהום של הגרעין.</li>
+                                <li><strong>הוראת החזרה (IRET):</strong> בסיום הטיפול, פקודת חומרה מיוחדת (כגון <code>IRET</code> ב-x86) שולפת את ה-PC וה-PSW השמורים ומחזירה את המעבד למצב משתמש ברצף מדויק.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            ניסיון של תוכנית משתמש לטעון ערך ישירות ל-PSW כדי להפוך את עצמה ל-Kernel Mode. החומרה תחסום זאת מיד כי טעינת PSW היא הוראה מיוחסת!
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ה-PC מנווט את ההוראה הבאה, ה-SP מנהל את המחסנית, וה-PSW מכיל את סיבית המצב הקובעת את רמת ההרשאה החומרתית של המעבד.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.3.2 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.3.2: כיצד מאזנת היררכיית הזיכרון במחשב בין מהירות, נפח ועלות, ומהו תפקידו של ה-TLB והמטמון (Cache)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            היררכיית הזיכרון מבוססת על פשרה הנדסית יסודית: זיכרון מהיר ביותר הוא יקר מאוד ובעל נפח זעיר, בעוד זיכרון בעל נפח ענק הוא זול אך איטי להחריד.
+                            <strong>שכבות ההיררכיה מהמהיר לאיטי:</strong>
+                            1. <strong>אוגרי המעבד (Registers):</strong> עשרות/מאות בתים, זמן גישה של מחזור שעון בודד (פחות מ-1 ננו-שנייה), מנוהלים ישירות על ידי המהדר.
+                            2. <strong>מטמון (Cache L1, L2, L3):</strong> מגה-בייטים בודדים, זיכרון SRAM מהיר (1–10 ננו-שניות), מנוהל לחלוטין בחומרה. תפקידו לשמור עותק של נתונים מבוקשים מה-RAM על בסיס <em>עקרון המקומיות</em> (זמן ומרחב).
+                            3. <strong>זיכרון ראשי (RAM):</strong> עשרות גיגה-בייטים, זיכרון DRAM (עשרות ננו-שניות), מנוהל על ידי מערכת ההפעלה.
+                            4. <strong>אחסון משני (SSD / HDD):</strong> טרה-בייטים, איטי פי עשרות אלפים עד מיליונים (מיקרו-שניות ב-SSD, מילי-שניות בדיסק מגנטי מכני).
+                            <strong>תפקיד ה-TLB (Translation Lookaside Buffer):</strong>
+                            מטמון חומרה מיוחד בתוך ה-MMU השומר את התרגומים האחרונים מכתובות וירטואליות למספרי מסגרות פיזיות ב-RAM. פגיעה ב-TLB (Hit) חוסכת מהמעבד לגשת לטבלת הדפים ב-RAM בכל קריאה או כתיבה.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            זה כמו סביבת עבודה של סטודנט בספריה: האוגרים הם העט שבידך; המטמון הוא הדף הפתוח מולך על השולחן (שליפה מיידית); ה-RAM הוא הספר שמונח על המדף לידך בחדר העבודה; והדיסק הקשיח הוא מחסן הספרים הראשי במרתף האוניברסיטה, שדורש ירידה במדרגות והמתנה לספרן.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>עקרון המקומיות בזמן (Temporal Locality):</strong> נתון שנגשו אליו כעת, סביר מאוד שייגשו אליו שוב בקרוב (כמו משתנה בלולאה).</li>
+                                <li><strong>עקרון המקומיות במרחב (Spatial Locality):</strong> נתון שנגשו אליו כעת, סביר שייגשו בקרוב לנתונים הסמוכים לו בזיכרון (כמו מעבר על מערך).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שמערכת ההפעלה מנהלת את ה-L1/L2 Cache. ה-Cache מנוהל 100% בחומרה ושקוף לחלוטין לתוכנה; מערכת ההפעלה מנהלת את ה-RAM, ה-Virtual Memory ואת הדיסק.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: היררכיית הזיכרון מאפשרת למחשב להציג זיכרון ענק במחיר זול עם מהירות ממוצעת הקרובה למהירות ה-Cache הודות לעקרון המקומיות.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.3.3 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.3.3: מה ההבדל בין בקר התקן (Device Controller) לבין מנהל התקן (Device Driver), ומי מהם ממומש בחומרה ומי בתוכנה?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            1. <strong>בקר התקן (Device Controller) – רכיב חומרה (Hardware):</strong>
+                            שבב אלקטרוני (או כרטיס מעגלים מודפס) המחובר לאפיק המחשב (Bus) ומפקח פיזית על ההתקן (למשל בקר SATA/NVMe בדיסק, או בקר USB). תפקידו להמיר זרם ביטים טוריים המגיעים מההתקן לבלוקי בתים בזיכרון, לבצע תיקון שגיאות (ECC), לשלוט במנועים מכניים, ולחשוף למעבד ממשק של אוגרי בקרה, סטטוס ונתונים.
+                            2. <strong>מנהל התקן (Device Driver) – רכיב תוכנה (Software):</strong>
+                            מודול תוכנה ייעודי השייך למערכת ההפעלה (רץ בדרך כלל ב-Kernel Mode). תפקידו לתרגם פקודות I/O מופשטות וגנריות של מערכת ההפעלה (כמו "קרא בלוק 45") לפקודות ספציפיות הנכתבות לאוגרי בקר החומרה (כמו כתיבת מספרי סקטורים לאוגרי הפקודה של הבקר והמתנה לפסיקה).
+                            <strong>סיכום ההבדל:</strong> הבקר הוא החומרה הפיזית השולטת ברכיב; הדרייבר הוא התוכנה בליבה היודעת לדבר עם הבקר בשפתו הייחודית.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על שגרירות זרה: הדיפלומט היפני שאינו דובר עברית הוא בקר ההתקן (חומרה עם חוקים משלו). המתורגמן הצמוד של משרד החוץ הישראלי הוא מנהל ההתקן (דרייבר תוכנה) – הוא מקבל הוראה בעברית ממנכ"ל המשרד (מערכת ההפעלה) ומתרגם אותה לניב היפני המדויק שהדיפלומט מבין.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>עצמאות מערכת ההפעלה:</strong> קיומו של הדרייבר מאפשר למערכת ההפעלה להישאר נקייה וגנרית: יצרן החומרה מספק את הדרייבר, והליבה פונה אליו דרך ממשק סטנדרטי (כמו פונקציות POSIX read/write).</li>
+                                <li><strong>סכנת יציבות:</strong> מאחר שרוב הדרייברים רצים ב-Kernel Mode, באג בדרייבר שכתב יצרן חומרה חיצוני הוא הגורם לרוב קריסות המחשב בעולם (BSOD).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            לחשוב שהדרייבר רץ על השבב של ההתקן. הדרייבר רץ על המעבד הראשי של המחשב כחלק מקוד הקרנל.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: Controller = שבב חומרה שמנהל את ההתקן הפיזי; Driver = תוכנה בליבה שמפעילה את הבקר ומתרגמת את הוראות מע"ה.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.3.4 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.3.4: מה ההבדל בין קלט/פלט בשיטת Polling, פסיקות (Interrupt-driven), וגישה ישירה לזיכרון (DMA)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            שלוש השיטות מייצגות שלבים בהתפתחות יעילות השימוש במעבד בעת פעולות קלט/פלט:
+                            1. <strong>דגימה מחזורית (Polling / Busy Waiting):</strong> המעבד כותב פקודה לבקר ההתקן ונכנס ללולאה אינסופית הבודקת שוב ושוב את אוגר הסטטוס: "האם סיימת? האם יש נתון?". החסרון: בזבוז 100% מזמן המעבד על המתנה סרק. מתאים רק להתקנים מהירים במיוחד או מערכות משובצות פשוטות.
+                            2. <strong>מונע פסיקות (Interrupt-driven I/O):</strong> המעבד נותן פקודה לבקר ומיד עובר לבצע תוכנית אחרת. כאשר הבקר מוכן (למשל בית נתונים הגיע מהמקלדת), הוא שולח אות חשמלי (פסיקה) למעבד. המעבד עוצר, קורא את הבית, וממשיך. היתרון: המעבד אינו מבזבז זמן סרק. החסרון: בהעברת קבצים גדולים, פסיקה על כל בית מייצרת תקורה בלתי נסבלת.
+                            3. <strong>גישה ישירה לזיכרון (DMA - Direct Memory Access):</strong> בקר מיוחד (בקר DMA) מקבל מהמעבד את כתובת הזיכרון, כיוון ההעברה וכמות הבתים (בלוק שלם, כגון 64KB). בקר ה-DMA מעביר את הבלוק כולו ישירות בין בקר ההתקן ל-RAM דרך אפיק הנתונים ללא שום מעורבות של המעבד! בסיום העברת הבלוק כולו, ה-DMA מייצר <strong>פסיקה אחת בלבד</strong> למעבד.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            בהזמנת פיצה:
+                            Polling משול לאדם שמתקשר לפיצרייה כל 10 שניות ושואל "הפיצה מוכנה?".
+                            Interrupt-driven משול לאדם שמבקש "תתקשרו אליי כשהפיצה מוכנה", אך השליח מתקשר על כל זית שמונח על המגש.
+                            DMA משול להזמנת מגש שלם: השליח מניח את כל המגש ישירות על שולחן המטבח ולוחץ על הפעמון פעם אחת בלבד כשהכל במקום.
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>גניבת מחזורים (Cycle Stealing):</strong> בקר ה-DMA משתמש באפיק המערכת במקביל למעבד. אם שניהם זקוקים לאפיק בו-זמנית, ה-DMA מקבל עדיפות ו"גונב" מחזור זיכרון בודד מהמעבד.</li>
+                                <li><strong>חיוניות לביצועים:</strong> כל התקני האחסון המודרניים (NVMe, SSD, כרטיסי רשת 10Gbps) מבוססים על DMA (או Bus Mastering DMA).</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה ש-DMA מייתר לחלוטין פסיקות. ה-DMA חייב פסיקה בסיום ההעברה כדי להודיע לקרנל שהנתונים ב-RAM מוכנים לעיבוד.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: Polling תוקע את המעבד בלולאה; Interrupt מעביר בית-בית עם פסיקה לכל תו; DMA מעביר בלוקים שלמים ישירות ל-RAM ומייצר פסיקה בודדת בסוף.
+                        </div>
+                    </div>
+                </details>
+
+                <!-- שאלה 1.3.5 -->
+                <details class="group border border-slate-200 rounded-2xl bg-white p-4 transition-all shadow-sm">
+                    <summary class="cursor-pointer font-bold text-xs md:text-sm text-slate-900 flex items-center justify-between list-none">
+                        <span>שאלה 1.3.5: כיצד מונעת החומרה מתוכנית משתמש לגשת לזיכרון של תוכנית אחרת, ומה תפקידם של אוגרי בסיס וגבול (Base and Limit Registers)?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-mono text-sm">▼</span>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2.5">
+                        <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-emerald-950 font-medium leading-relaxed">
+                            <strong class="text-emerald-900 block mb-1">🎯 תשובה ישירה ומפורטת:</strong>
+                            הגנת זיכרון נאכפת על ידי רכיב חומרה ייעודי – <strong>יחידת ניהול הזיכרון (MMU - Memory Management Unit)</strong> באמצעות אוגרי בסיס וגבול (או טבלאות דפים):
+                            1. <strong>אוגר בסיס (Base Register):</strong> מאחסן את הכתובת הפיזית ההתחלתית ב-RAM שהוקצתה לתהליך. כל כתובת לוגית/וירטואלית שהתהליך מייצר מתווספת אוטומטית בחומרה לערך אוגר הבסיס ($Address_{physical} = Address_{logical} + Base$).
+                            2. <strong>אוגר גבול (Limit Register):</strong> מאחסן את גודל מקטע הזיכרון המוקצה לתהליך (למשל 100KB).
+                            3. <strong>מנגנון הבדיקה בחומרה:</strong> לפני כל פנייה פיזית ל-RAM, חומרת ה-MMU משווה את הכתובת הלוגית: 
+                            האם $Address_{logical} < Limit$?
+                            - אם כן: הפנייה מאושרת והכתובת הפיזית נשלחת לאפיק הזיכרון.
+                            - אם לא (התוכנית מנסה לפנות מחוץ לתחום שלה): החומרה <strong>חוסמת את הפנייה מיד</strong> ומחוללת פסיקת חריגה (Memory Protection Fault / Segmentation Fault) המעבירה את השליטה לקרנל, שמסיים את התהליך הפוגע.
+                            4. <strong>אבטחת האוגרים:</strong> שינוי ערכי אוגרי Base ו-Limit מוגדר כ<strong>הוראה מיוחסת</strong> שניתנת לביצוע ב-Kernel Mode בלבד, כך שתוכנית משתמש אינה יכולה לשנות את גבולותיה בעצמה.
+                        </div>
+                        <p>
+                            <strong>💡 רקע והסבר אינטואיטיבי:</strong>
+                            חשבו על גדר חשמלית בחלקה חקלאית: אוגר הבסיס מגדיר היכן מתחילה החלקה שלך (מטר 500 בכביש), ואוגר הגבול מגדיר את אורך החלקה (100 מטר). כל עוד אתה צועד בתוך ה-100 מטר שלך, הכל כשורה. ברגע שרגלך מנסה לפסוע למטר ה-101 (לתוך חלקת השכן), גדר החשמל (החומרה) עוצרת אותך ומפעילה אזעקה במשטרה (הקרנל).
+                        </p>
+                        <div class="space-y-1.5">
+                            <strong>🔬 ניתוח טכנולוגי והעמקה אקדמית:</strong>
+                            <ul class="list-disc list-inside space-y-1 pr-2">
+                                <li><strong>טעינה בהחלפת הקשר:</strong> בכל פעם שמתזמן מערכת ההפעלה מעביר את המעבד לתהליך אחר (Context Switch), הליבה טוענת מחדש את אוגרי הבסיס והגבול של התהליך החדש.</li>
+                                <li><strong>מעבר לדפדוף (Paging):</strong> במערכות מודרניות, מודל Base & Limit הוחלף במערכת דפדוף (Paging) וטבלאות דפים (Page Tables), אך עקרון הבדיקה החומרתית של גבולות והרשאות (Read/Write/Execute) נותר זהה.</li>
+                            </ul>
+                        </div>
+                        <p>
+                            <strong>⚠️ מלכודות נפוצות ומקרי קצה:</strong>
+                            הנחה שבדיקת הגבולות נעשית בתוכנה באמצעות פקודות `if`. בדיקה בתוכנה הייתה מאטה את הגישה לזיכרון פי עשרה; הבדיקה נעשית במעגלים לוגיים מקביליים בחומרה באפס זמן.
+                        </p>
+                        <div class="p-2.5 rounded-xl bg-blue-100/60 text-blue-900 text-xs font-semibold">
+                            🎯 שורה תחתונה: ה-MMU בודק בחומרה שכל כתובת קטנה מה-Limit ומוסיף לה את ה-Base; חריגה מפעילה Trap מיידי לקרנל.
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 2. שאלות אמריקאיות אינטראקטיביות (5 שאלות פורמט B) -->
+            <div class="mcq-questions-list space-y-6">
+                <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl mb-4 text-xs md:text-sm text-indigo-900 leading-relaxed">
+                    <strong>🎯 תרגול שאלות אמריקאיות - 1.3 סקירה של חומרת המחשב:</strong> שאלות רב-ברירה להעמקה במבנה החומרה, זיכרונות, פסיקות ומנגנוני I/O.
+                </div>
+
+                <!-- שאלה אמריקאית 1.3.1 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.3.1">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 1 (1.3.1): איזה אוגר מעבד מכיל את סיבית מצב העבודה (Mode Bit) המבדילה בין מצב משתמש למצב גרעין?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.3.1</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_3_1_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. מונה הפקודות (PC - Program Counter).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_1_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. מצביע המחסנית (SP - Stack Pointer).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_3_1_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. מילת מצב התוכנית (PSW - Program Status Word).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_1_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. אוגר האקומולטור (Accumulator / EAX).</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_3_1_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ה-PC מכיל את כתובת ההוראה הבאה, לא את סיביות המצב.
+                    </div>
+                    <div id="q1_3_1_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ה-SP מצביע על ראש מחסנית הקריאות בזיכרון.
+                    </div>
+                    <div id="q1_3_1_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> ה-PSW (Program Status Word) מכיל את סיביות הבקרה הקריטיות של המעבד, כולל ה-Mode Bit הקובע האם המעבד נמצא ב-Kernel Mode (0) או User Mode (1).
+                    </div>
+                    <div id="q1_3_1_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ה-EAX הוא אוגר נתונים כללי לחישובים והעברת ערכי חזרה.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.3.1</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>אבטחת ה-PSW:</strong> פקודת שינוי ישיר של ה-PSW היא פקודה מיוחסת (Privileged Instruction). אם תוכנית משתמש מנסה לשנותו, המעבד יסרב ויחולל Trap.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.3.2 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.3.2">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 2 (1.3.2): מהו היתרון המרכזי של שימוש ב-DMA (Direct Memory Access) בהשוואה לקלט/פלט מונחה פסיקות רגיל?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.3.2</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_3_2_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. DMA מבטל את הצורך בזיכרון RAM ומאפשר להריץ תוכניות ישירות מהדיסק.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_3_2_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. בקר ה-DMA מעביר בלוק נתונים שלם ישירות בין ההתקן ל-RAM ללא התערבות המעבד, ומחולל פסיקה בודדת רק בסיום כל הבלוק.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_2_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. DMA מכפיל את מהירות הסיבוב המכנית של הדיסק הקשיח.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_2_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. DMA מאפשר למשתמש לבצע פעולות I/O ללא בדיקת הרשאות של מערכת ההפעלה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_3_2_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> DMA אינו מבטל את ה-RAM אלא מעביר נתונים ישירות אליו.
+                    </div>
+                    <div id="q1_3_2_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> זוהי מהות ה-DMA: שחרור המעבד מהצורך לטפל בכל בית בנפרד (שיוצר אלפי פסיקות), והעברת בלוק שלם באוטונומיה מלאה עם פסיקה אחת בסוף.
+                    </div>
+                    <div id="q1_3_2_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מהירות הסיבוב היא מגבלה מכנית של המנוע בדיסק.
+                    </div>
+                    <div id="q1_3_2_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> אתחול בקר ה-DMA מבוצע על ידי הקרנל בלבד לאחר בדיקת הרשאות קפדנית.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.3.2</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>השוואת עומס:</strong> בהעברת קובץ של 1MB: בשיטת פסיקות רגילה המעבד מופרע כמיליון פעמים! ב-DMA המעבד מופרע פעם אחת בלבד בסיום העברת כל המגה-בייט.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.3.3 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.3.3">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 3 (1.3.3): מהו תפקידו העיקרי של זיכרון המטמון (Cache) בהיררכיית הזיכרון?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.3.3</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_3_3_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. לשמור קבצים לצמיתות גם לאחר כיבוי אספקת החשמל למחשב.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_3_3_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. לגשר על פער המהירות העצום שבין המעבד המהיר לבין זיכרון ה-RAM האיטי באמצעות שמירת נתונים מבוקשים מקומית.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_3_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. להחליף את הצורך במערכת הפעלה בעת טעינת מחשב.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_3_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. לנהל את חיבורי הרשת והאינטרנט של המחשב.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_3_3_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> זיכרון מטמון הוא SRAM נדיף (Volatile) שמאבד את תוכנו בכיבוי חשמל.
+                    </div>
+                    <div id="q1_3_3_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> המעבד מהיר פי עשרות מונים מגישה ל-RAM. ה-Cache מאחסן שורות זיכרון שנמצאות בשימוש תדיר ומספק אותן במהירות שעון המעבד.
+                    </div>
+                    <div id="q1_3_3_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> מטמון הוא רכיב חומרה בלבד ואינו מהווה תחליף למערכת הפעלה.
+                    </div>
+                    <div id="q1_3_3_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ניהול רשת מבוצע על ידי כרטיס הרשת ומנהל ההתקן בליבה.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.3.3</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>פגיעה מול החמצה:</strong> כאשר המעבד מבקש נתון שנמצא במטמון יש Cache Hit (מהירות מקסימלית); כאשר הנתון אינו במטמון יש Cache Miss ונאלצים להמתין למחזורי גישה ל-RAM.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.3.4 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.3.4">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 4 (1.3.4): מהו תפקידו המרכזי של מנהל ההתקן (Device Driver)?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.3.4</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_3_4_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. לכוונן את מנוע המאוורר כדי למנוע התחממות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_4_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. לשמש כשבב חומרה המולחם על גבי לוח האם.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_3_4_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. להוות מודול תוכנה בליבה המתרגם פקודות I/O גנריות של מערכת ההפעלה לפקודות ספציפיות הנכתבות לאוגרי בקר החומרה.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_4_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. לספק סביבת פיתוח גרפית למתכנתים.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_3_4_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> בקרת מאווררים מבוצעת על ידי חיישנים ו-BIOS/ACPI.
+                    </div>
+                    <div id="q1_3_4_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> השבב המולחם הוא בקר ההתקן (Controller), לא הדרייבר שהוא תוכנה.
+                    </div>
+                    <div id="q1_3_4_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> הדרייבר הוא מודול התוכנה המגשר בין הקרנל הכללי לבין הייחודיות של כל בקר חומרה ספציפי.
+                    </div>
+                    <div id="q1_3_4_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> סביבת פיתוח היא IDE רגיל הרץ ב-User Mode.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.3.4</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>אחידות הממשק:</strong> בזכות הדרייברים, מערכת ההפעלה יכולה להתייחס לכל דיסק (SATA, NVMe, USB Flash) באותו האופן בדיוק דרך קריאות <code>read</code> ו-<code>write</code>.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- שאלה אמריקאית 1.3.5 -->
+                <div class="q-item-box bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all" data-qid="1.3.5">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">שאלה 5 (1.3.5): כיצד מגינה יחידת ה-MMU על מרחב הזיכרון באמצעות אוגרי Base ו-Limit?</span>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-mono shrink-0">מזהה: 1.3.5</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 mb-4">
+                        <button onclick="handleOptionClick(this, false, 'q1_3_5_opt0')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>א. היא מצפינה את כל תוכן הזיכרון באמצעות מפתח RSA בכל שתי שניות.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, true, 'q1_3_5_opt1')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ב. היא מוודאת בחומרה שהכתובת הלוגית קטנה מערך ה-Limit ומוסיפה לה את ערך ה-Base לקבלת הכתובת הפיזית; חריגה מפעילה Trap מיידית.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_5_opt2')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ג. היא מוחקת את תוכן הדיסק הקשיח כאשר תוכנית מסתיימת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                        <button onclick="handleOptionClick(this, false, 'q1_3_5_opt3')" class="q-option-btn w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-xs md:text-sm flex items-center justify-between">
+                            <span>ד. היא מעבירה את כל פניות הזיכרון דרך כרטיס הרשת.</span>
+                            <span class="opt-icon opacity-0"></span>
+                        </button>
+                    </div>
+
+                    <div id="q1_3_5_opt0" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> הגנת זיכרון אינה מבוססת על הצפנה אלא על בדיקת גבולות כתובת פיזית.
+                    </div>
+                    <div id="q1_3_5_opt1" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-emerald-50 border border-emerald-200 text-emerald-800">
+                        ✅ <strong>תשובה נכונה!</strong> החומרה מוודאת שהפנייה בתוך התחום המותר ($Logical < Limit$) ומבצעת Relocation באמצעות הוספת ה-Base. כל חריגה חוסמת את הגישה מיד.
+                    </div>
+                    <div id="q1_3_5_opt2" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> ה-MMU מנהלת זיכרון RAM בלבד ואינה נוגעת בדיסק הקשיח.
+                    </div>
+                    <div id="q1_3_5_opt3" class="hidden p-4 rounded-xl text-xs md:text-sm mb-3 bg-rose-50 border border-rose-200 text-rose-800">
+                        ❌ <strong>תשובה שגויה:</strong> פניות זיכרון מתבצעות ישירות על אפיק הזיכרון הפנימי.
+                    </div>
+
+                    <details class="group mt-4 border-t border-slate-100 pt-3">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between list-none">
+                            <span>📖 הרחבה והסבר מעמיק לשאלה 1.3.5</span>
+                            <span class="group-open:rotate-180 transition-transform font-mono">▼</span>
+                        </summary>
+                        <div class="mt-2 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                            <p><strong>אטימות חומרה:</strong> אוגרי Base ו-Limit ניתנים לשינוי אך ורק באמצעות פקודות מיוחסות ב-Kernel Mode בעת ביצוע החלפת הקשר (Context Switch).</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
